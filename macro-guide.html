@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>경제지표와 주가 — CPI·고용·FOMC 읽는 법</title>
+<meta name="description" content="미국 CPI, 고용보고서, FOMC가 언제 발표되고 주가를 어떻게 움직이는지. 예상치와 실적치의 차이가 만드는 반응을 시뮬레이터로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --cpi:#8E4B3A;
+    --job:#3A5A8E;
+    --fed:#7A5C9E;
+    --etc:#4C7A6D;
+    --up:#C0392B;
+    --down:#2C5F9E;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+    --neutral:#5B5648;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  /* 달력 */
+  .cal{
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 14px 10px;
+    margin:6px 0 0;
+  }
+  .calgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;}
+  .calhead{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-faint);
+    text-align:center;
+    padding-bottom:5px;
+  }
+  .cell{
+    aspect-ratio:1/1;
+    border:1px solid var(--rule);
+    border-radius:2px;
+    background:var(--card);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    color:var(--ink-faint);
+    padding:3px 4px;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .cell.has{cursor:pointer;transition:all .15s ease;}
+  .cell.has:hover{border-color:var(--ink-soft);}
+  .cell.on{box-shadow:0 0 0 2px var(--ink) inset;}
+  .cell .dots{display:flex;flex-wrap:wrap;gap:2px;margin-top:auto;}
+  .cell .dot{width:6px;height:6px;border-radius:50%;}
+
+  .callegend{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:12px;
+    justify-content:center;
+  }
+  .callegend span{display:inline-flex;align-items:center;gap:5px;}
+  .callegend i{width:8px;height:8px;border-radius:50%;display:inline-block;}
+  .kst{font-family:'IBM Plex Mono',monospace;font-size:12px;}
+
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0 8px;}
+  .pc > div{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 18px;
+  }
+  .pc h5{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:500;
+    margin:0 0 10px;
+    letter-spacing:.04em;
+  }
+  .pc .good h5{color:#3F6B52;}
+  .pc .bad h5{color:var(--cpi);}
+  .pc ul{margin:0;padding-left:16px;}
+  .pc li{font-size:14px;color:var(--ink-soft);margin-bottom:8px;line-height:1.62;}
+  .pc li:last-child{margin-bottom:0;}
+  .pc li b{color:var(--ink);font-weight:600;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:720px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:-14px;margin-bottom:24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .pc{grid-template-columns:1fr;}
+    .cell{font-size:9px;padding:2px 3px;}
+    .cell .dot{width:5px;height:5px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">경제지표 · 투자 공부 노트</div>
+    <h1>경제지표와 주가<br>— CPI·고용·FOMC 읽는 법</h1>
+    <p class="lede">밤사이 미국에서 숫자 하나가 발표되면 다음 날 아침 내 계좌가 흔들립니다. 그런데 <b>주가를 움직이는 건 그 숫자 자체가 아닙니다.</b> <b>「사람들이 예상했던 것과 얼마나 달랐는가」</b>입니다. 이 문서는 어떤 지표가 언제 나오고, 예상치와의 차이가 어떻게 주가로 이어지며, 그게 왜 <b>미국을 넘어 한국까지</b> 번지는지를 다룹니다.</p>
+    <div class="callout">
+      <b>미리 말해두면.</b> 이 문서를 읽고 나서도 <b>지표 발표에 맞춰 매매하는 것은 권하지 않습니다.</b> 발표 직후 몇 초 안에 가격이 정해지고, 그 자리에는 <b>전용 회선과 알고리즘을 갖춘 상대</b>가 있습니다. 이 문서의 목적은 매매가 아니라 <b>「왜 내 계좌가 어제 그렇게 움직였는가」를 이해하는 것</b>입니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="지표 세부 항목과 전이 경로까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#surprise">1. 서프라이즈</a>
+    <a href="#calendar">2. 발표 달력</a>
+    <a href="#cpi">3. CPI</a>
+    <a href="#jobs">4. 고용보고서</a>
+    <a href="#fomc">5. FOMC</a>
+    <a href="#others">6. 나머지 지표</a>
+    <a href="#global">7. 왜 전 세계가</a>
+    <a href="#korea">8. 한국 시장</a>
+    <a href="#do">9. 무엇을 할까</a>
+  </nav>
+
+  <!-- ══════════ 1. 서프라이즈 ══════════ -->
+  <section id="surprise">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 핵심 원리</span>
+      <h2>주가를 움직이는 건 숫자가 아니라 「예상과의 차이」</h2>
+      <p class="one">이걸 이해하면 <b>「좋은 지표가 나왔는데 왜 주가가 떨어지지?」</b>라는 의문이 대부분 풀립니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>시험에서 <b>90점</b>을 받았어. 엄마가 좋아하실까? <b>알 수 없어.</b> 엄마가 <b>"우리 애는 70점쯤 하겠지"</b> 하고 계셨으면 아주 좋아하시겠지. 그런데 <b>"당연히 100점 맞겠지"</b> 하고 계셨으면 오히려 실망하실 거야.</p>
+      <p>주식 시장이 딱 이래. <b>90점(=발표된 숫자)이 중요한 게 아니라, 엄마의 기대(=예상치)와 얼마나 달랐는지</b>가 중요해. 이 차이를 <b>서프라이즈</b>라고 불러.</p>
+      <p>그래서 이런 일이 생겨. <b>"물가가 올랐다는데 주가가 폭등"</b> — 사람들이 <b>더 많이 오를 줄 알았는데 덜 올랐기 때문</b>이야. 숫자만 보면 이해가 안 되지만, <b>기대와 비교하면</b> 말이 돼.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SIMULATOR · 예상치와 실적치</div>
+      <p class="labsub">미국 소비자물가(CPI) 발표라고 해봅시다. <b>예상치</b>는 이미 주가에 반영되어 있습니다. 움직이는 것은 <b>차이</b>뿐입니다.</p>
+
+      <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="예상치와 실적치의 차이에 따른 주가 반응">
+        <line class="axis" x1="60" y1="130" x2="612" y2="130"/>
+        <text class="axt" x="52" y="134" text-anchor="end">0</text>
+        <text class="axt" x="64" y="26">주가 반응</text>
+        <line class="gridl" x1="336" y1="20" x2="336" y2="240"/>
+        <text class="axt" x="336" y="256" text-anchor="middle">발표 시점</text>
+        <path id="spPath" fill="none" stroke="#C0392B" stroke-width="2.8" stroke-linejoin="round"/>
+        <circle id="spDot" r="6" fill="#C0392B"/>
+        <text id="spTag" class="lblb" text-anchor="middle"></text>
+      </svg>
+
+      <div class="ctrl-row">
+        <label for="spExp">시장 예상치</label>
+        <input type="range" id="spExp" min="1" max="5" step="0.1" value="3.0">
+        <span class="val" id="spExpV">3.0%</span>
+      </div>
+      <div class="ctrl-row">
+        <label for="spAct">실제 발표치</label>
+        <input type="range" id="spAct" min="1" max="5" step="0.1" value="3.0">
+        <span class="val" id="spActV">3.0%</span>
+      </div>
+
+      <div class="readout">
+        <div><span class="rk">서프라이즈</span><span class="rv" id="spGap">0.0%p</span></div>
+        <div><span class="rk">예상되는 주가 방향</span><span class="rv" id="spDir">보합</span></div>
+        <div><span class="rk">금리 기대</span><span class="rv" id="spRate">변화 없음</span></div>
+      </div>
+
+      <div class="verdict" id="spVerdict" style="--vc:var(--neutral)">
+        <div class="vh">해석</div>
+        <div class="vt">예상과 같으면 거의 움직이지 않습니다</div>
+        <p>이미 가격에 반영되어 있기 때문입니다. 이걸 <b>「선반영」</b>이라고 합니다. 손잡이를 움직여 <b>차이를 만들어보세요.</b></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「선반영」이라는 말의 뜻</h3>
+      <p>발표 전에 이미 <b>수많은 기관이 예측치를 내놓고, 그 예측을 전제로 매매가 이루어집니다.</b> 그래서 예상대로 나오면 <b>새로운 정보가 없는 것</b>이고 가격은 거의 안 움직입니다.</p>
+      <p>여기서 개인 투자자가 가장 자주 하는 실수가 나옵니다. <b>「물가가 높게 나왔으니 주식을 팔아야지」</b>라고 뉴스를 보고 판단하는 것. 그 「높다」가 <b>예상보다 높은 것인지</b>를 확인하지 않으면, 이미 반영이 끝난 뒤에 뒤늦게 움직이는 셈이 됩니다.</p>
+
+      <h3>세 번째 변수 — 국면(regime)</h3>
+      <p>같은 서프라이즈라도 <b>시장이 지금 무엇을 걱정하고 있느냐</b>에 따라 반응이 뒤집힙니다. 물가를 걱정하는 국면에서는 <b>경기가 좋다는 지표가 악재</b>가 되고, 침체를 걱정하는 국면에서는 <b>같은 지표가 호재</b>가 됩니다. 4장에서 자세히 봅니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2. 달력 ══════════ -->
+  <section id="calendar">
+    <div class="prod-head" style="--edge:var(--fed)">
+      <span class="prod-tag">02 · 발표 달력</span>
+      <h2>한 달 동안 무엇이 언제 나오나</h2>
+      <p class="one">날짜에 표시된 칸을 눌러보세요. 대체로 <b>매달 같은 리듬</b>으로 반복됩니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>학교에 <b>시간표</b>가 있는 것처럼, 경제에도 <b>매달 반복되는 시간표</b>가 있어. 몇 일쯤에 어떤 숫자가 나오는지 대충 정해져 있지.</p>
+      <p>그중에서도 <b>제일 중요한 세 개</b>가 있어. <b>물가(CPI)</b>, <b>일자리(고용보고서)</b>, 그리고 <b>금리를 정하는 회의(FOMC)</b>야. 이 셋이 나오는 날은 밤에 시장이 크게 출렁여.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CALENDAR · 대략적인 월간 리듬</div>
+      <p class="labsub">아래는 <b>「보통 이 무렵에 나온다」</b>는 패턴입니다. 정확한 날짜는 매달 다르므로 <b>반드시 경제 캘린더로 확인</b>하세요.</p>
+
+      <div class="cal">
+        <div class="calgrid">
+          <div class="calhead">일</div><div class="calhead">월</div><div class="calhead">화</div>
+          <div class="calhead">수</div><div class="calhead">목</div><div class="calhead">금</div><div class="calhead">토</div>
+        </div>
+        <div class="calgrid" id="calGrid" style="margin-top:2px;"></div>
+        <div class="callegend">
+          <span><i style="background:#8E4B3A"></i>물가</span>
+          <span><i style="background:#3A5A8E"></i>고용</span>
+          <span><i style="background:#7A5C9E"></i>연준</span>
+          <span><i style="background:#4C7A6D"></i>경기·소비</span>
+        </div>
+      </div>
+
+      <div class="verdict" id="calVerdict" style="--vc:var(--fed)">
+        <div class="vh">달력</div>
+        <div class="vt">점이 찍힌 날을 눌러보세요</div>
+        <p>각 지표가 <b>무엇을 재는지</b>, <b>한국 시간 몇 시에 나오는지</b>, <b>얼마나 중요한지</b>를 확인할 수 있습니다.</p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>한국 시간 계산.</b> 미국 주요 지표는 대부분 <b>미 동부시간 오전 8시 30분</b>에 발표됩니다. 한국 시간으로는 <b>서머타임 기간(대략 3월~11월)에 밤 21:30</b>, <b>그 외 기간에는 밤 22:30</b>입니다. FOMC 성명은 <b>동부시간 오후 2시</b>라 한국은 <b>새벽 3시(서머타임) 또는 4시</b>가 됩니다.</p>
+      <p>즉 <b>한국 장이 끝난 뒤 밤에 발표되고, 다음 날 아침 갭으로 반영</b>됩니다. 그래서 한국 투자자는 <b>대응할 시간이 거의 없습니다.</b> 이것이 8장의 주제입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3. CPI ══════════ -->
+  <section id="cpi">
+    <div class="prod-head" style="--edge:var(--cpi)">
+      <span class="prod-tag">03 · CPI</span>
+      <h2>CPI — 물가가 주가를 흔드는 경로</h2>
+      <p class="one">물가 자체가 주가를 움직이는 게 아니라, <b>물가 → 금리 기대 → 주가</b>라는 두 단계를 거칩니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>물가가 오른다는 건 <b>같은 돈으로 살 수 있는 게 줄어든다</b>는 뜻이야. 과자 값이 1,000원에서 1,500원이 되는 거지.</p>
+      <p>그럼 왜 주식이 떨어질까? <b>두 단계</b>를 거쳐. <b>①</b> 물가가 너무 오르면 중앙은행이 <b>금리를 올려서</b> 사람들이 돈을 덜 쓰게 만들어. <b>②</b> 금리가 오르면 <b>은행에 넣어도 이자를 많이 주니까</b> 굳이 위험한 주식을 살 이유가 줄어들지. 게다가 <b>회사들도 빌린 돈 이자를 더 내야 해서</b> 이익이 줄어.</p>
+      <p>그래서 <b>물가 지표는 사실상 「금리가 어떻게 될까」를 알려주는 힌트</b>로 읽는 거야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CHAIN · 물가에서 주가까지 세 단계</div>
+      <p class="labsub">CPI 서프라이즈가 어떤 경로로 주가에 닿는지 단계별로 보여줍니다. 손잡이를 움직여보세요.</p>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="물가 서프라이즈가 금리 기대를 거쳐 주가로 이어지는 경로">
+        <g id="chNodes"></g>
+        <defs>
+          <marker id="chA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#8A8474"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <div class="ctrl-row">
+        <label for="cpGap">CPI 서프라이즈</label>
+        <input type="range" id="cpGap" min="-0.5" max="0.5" step="0.1" value="0.2">
+        <span class="val" id="cpGapV">+0.2%p</span>
+      </div>
+
+      <div class="verdict" id="cpVerdict" style="--vc:var(--cpi)">
+        <div class="vh">경로</div>
+        <div class="vt">예상보다 물가가 높게 나온 경우</div>
+        <p>금리 인하 기대가 미뤄지고 할인율이 올라 주가에 부담이 됩니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>헤드라인 CPI와 근원(core) CPI</h3>
+      <p><b>헤드라인</b>은 모든 품목을 포함한 값이고, <b>근원</b>은 <b>에너지와 식료품을 뺀</b> 값입니다. 왜 빼느냐면, 이 둘은 <b>날씨나 지정학적 사건으로 크게 출렁여서</b> 물가의 추세를 흐리기 때문입니다.</p>
+      <p>중앙은행이 정책을 정할 때 더 중시하는 것은 <b>근원</b>입니다. 그래서 시장 반응도 <b>근원 CPI가 예상과 얼마나 달랐는지</b>에 더 크게 반응하는 경우가 많습니다. 뉴스에서 「물가 하락」이라고 해도 <b>근원이 안 떨어졌으면 주가는 안 좋을 수</b> 있습니다.</p>
+
+      <h3>전년 대비(YoY)와 전월 대비(MoM)</h3>
+      <p><b>YoY</b>는 1년 전 같은 달과 비교한 값이라 <b>큰 흐름</b>을 봅니다. <b>MoM</b>은 지난달 대비라 <b>가장 최근의 속도</b>를 봅니다. YoY는 <b>1년 전 숫자가 높았느냐 낮았느냐</b>에 따라 자동으로 오르내리는 <b>기저효과</b>가 있어서, 시장은 <b>MoM의 흐름</b>도 함께 봅니다.</p>
+
+      <h3>PCE — 연준이 더 보는 지표</h3>
+      <p>미 연준이 공식 목표(2%)로 삼는 물가 지표는 CPI가 아니라 <b>PCE 물가지수</b>입니다. 계산 방식이 달라 <b>대체로 CPI보다 낮게 나오는</b> 경향이 있습니다. 매달 말경 발표되며, CPI만큼 화제가 되지는 않지만 <b>정책 판단에는 더 직접적</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4. 고용 ══════════ -->
+  <section id="jobs">
+    <div class="prod-head" style="--edge:var(--job)">
+      <span class="prod-tag">04 · 고용보고서</span>
+      <h2>「좋은 뉴스가 나쁜 뉴스」가 되는 순간</h2>
+      <p class="one">경제지표에서 가장 헷갈리는 현상입니다. 그런데 원리는 간단합니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>운동회에서 <b>우리 반이 너무 잘하고 있어.</b> 좋은 일이지? 그런데 <b>선생님이 "너희 반은 잘하니까 다른 반한테 핸디캡을 주자"</b> 하고 규칙을 바꾸실 것 같으면? <b>잘하는 게 오히려 걱정거리</b>가 되잖아.</p>
+      <p>경제도 똑같아. 일자리가 많이 늘어나면 <b>사람들이 돈을 많이 벌고 많이 써서</b> 물가가 더 오를 수 있어. 그러면 중앙은행이 <b>"아직 금리를 못 내리겠네"</b> 하고 생각하지. 그래서 <b>고용이 너무 좋으면 주가가 떨어지는</b> 이상한 일이 생겨.</p>
+      <p>반대로 <b>경기가 무너질까 봐 걱정하는 때</b>에는 고용이 좋으면 <b>"다행이다!"</b> 하고 주가가 올라. <b>같은 숫자인데 걱정거리가 뭐냐에 따라 반대로 읽히는</b> 거야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">REGIME · 같은 지표, 반대 해석</div>
+      <p class="labsub">비농업 신규 고용이 <b>예상 18만 명</b>이었다고 해봅시다. 실제 발표치와 <b>시장이 지금 무엇을 걱정하는지</b>를 각각 바꿔보세요.</p>
+
+      <div class="btnrow" id="jbRegime">
+        <button data-v="0" class="on">🔥 인플레를 걱정하는 국면</button>
+        <button data-v="1">❄️ 침체를 걱정하는 국면</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="jbAct">실제 신규 고용</label>
+        <input type="range" id="jbAct" min="-50" max="400" step="10" value="180">
+        <span class="val" id="jbActV">18.0만</span>
+      </div>
+
+      <div class="stack">
+        <div class="srow">
+          <span class="sname">예상</span>
+          <div class="strack"><div class="sfill" style="background:#5B5648;width:45%;opacity:.4"></div></div>
+          <span class="sval">18.0만</span>
+        </div>
+        <div class="srow">
+          <span class="sname">실제</span>
+          <div class="strack"><div class="sfill" id="jbBar" style="background:#3A5A8E;width:45%"></div></div>
+          <span class="sval" id="jbVal">18.0만</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div><span class="rk">서프라이즈</span><span class="rv" id="jbGap">0.0만</span></div>
+        <div><span class="rk">경기 신호</span><span class="rv" id="jbEcon">중립</span></div>
+        <div><span class="rk">주가 반응</span><span class="rv" id="jbStock">보합</span></div>
+      </div>
+
+      <div class="verdict" id="jbVerdict" style="--vc:var(--job)">
+        <div class="vh">해석</div>
+        <div class="vt">손잡이를 움직여보세요</div>
+        <p>같은 숫자가 국면에 따라 <b>정반대로 해석</b>되는 것을 확인할 수 있습니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>고용보고서에는 여러 숫자가 들어 있습니다</h3>
+      <p><b>① 비농업 신규 고용(NFP).</b> 가장 주목받는 헤드라인 숫자입니다. <b>② 실업률.</b> 낮을수록 좋아 보이지만, <b>구직을 포기한 사람은 실업자로 세지 않기 때문에</b> 낮은 실업률이 항상 좋은 뜻은 아닙니다. <b>③ 시간당 평균임금.</b> 임금이 빠르게 오르면 <b>물가 압력</b>으로 읽혀 오히려 악재가 될 수 있습니다. <b>④ 경제활동참가율.</b> 일할 의사가 있는 사람의 비율입니다.</p>
+      <p>그래서 <b>「고용 호조」 헤드라인만 보고 판단하면 안 됩니다.</b> 신규 고용은 좋은데 임금이 튀었다면 시장은 <b>부정적으로</b> 반응할 수 있습니다.</p>
+
+      <h3>수정치에 주의</h3>
+      <p>고용 숫자는 <b>다음 달에 크게 수정되는 일이 흔합니다.</b> 발표 당일 「호조」로 반응했다가 한 달 뒤 <b>대폭 하향 수정</b>되는 경우가 반복돼 왔습니다. <b>한 달치 숫자에 큰 의미를 두기 어려운 이유</b>입니다.</p>
+
+      <h3>주간 신규 실업수당 청구</h3>
+      <p>매주 목요일에 나옵니다. 월간 고용보고서보다 <b>훨씬 빠르지만 변동이 큽니다.</b> 그래서 보통 <b>4주 이동평균</b>으로 봅니다. 고용 시장이 꺾이는지 <b>가장 먼저 신호가 나오는</b> 지표 중 하나로 취급됩니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5. FOMC ══════════ -->
+  <section id="fomc">
+    <div class="prod-head" style="--edge:var(--fed)">
+      <span class="prod-tag">05 · FOMC</span>
+      <h2>FOMC — 금리 결정보다 「앞으로의 말」이 더 중요합니다</h2>
+      <p class="one">금리 결정 자체는 대부분 이미 예상되어 있습니다. 시장이 반응하는 건 <b>다른 세 가지</b>입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>선생님이 <b>"오늘 숙제는 없어요"</b>라고 하셨어. 그런데 다들 이미 <b>"오늘은 숙제 없을 것 같은데?"</b> 하고 짐작하고 있었다면 별로 안 놀라겠지.</p>
+      <p>진짜 중요한 건 그다음 말이야. <b>"대신 다음 주부터는 매일 낼 거예요"</b>라고 하시면? 그때 다들 술렁이지. FOMC도 똑같아. <b>오늘 금리를 어떻게 했는지보다, 「앞으로 어떻게 할 생각인지」</b>에 시장이 훨씬 크게 반응해.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">FOMC · 무엇에 반응하나</div>
+      <p class="labsub">FOMC 발표는 여러 조각으로 이루어집니다. 각각을 눌러 <b>어느 정도로 시장을 움직이는지</b> 확인하세요.</p>
+
+      <div class="btnrow" id="fmBtns">
+        <button data-v="0" class="on">① 금리 결정</button>
+        <button data-v="1">② 성명문 문구</button>
+        <button data-v="2">③ 점도표</button>
+        <button data-v="3">④ 기자회견</button>
+      </div>
+
+      <div class="stack">
+        <div class="srow">
+          <span class="sname">예상 가능성</span>
+          <div class="strack"><div class="sfill" id="fmBar1" style="background:#4C7A6D;width:92%"></div></div>
+          <span class="sval" id="fmV1">매우 높음</span>
+        </div>
+        <div class="srow">
+          <span class="sname">시장 충격력</span>
+          <div class="strack"><div class="sfill" id="fmBar2" style="background:#8E4B3A;width:20%"></div></div>
+          <span class="sval" id="fmV2">낮음</span>
+        </div>
+      </div>
+
+      <div class="verdict" id="fmVerdict" style="--vc:var(--fed)">
+        <div class="vh">① 금리 결정</div>
+        <div class="vt">대부분 이미 알려져 있습니다</div>
+        <p>연준은 <b>기습을 하지 않으려 노력</b>합니다. 회의 전 몇 주 동안 위원들의 발언과 선물시장 가격을 통해 <b>거의 확정적으로 예상</b>되는 경우가 많습니다. 그래서 결정 자체로는 잘 안 움직입니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>점도표(dot plot)</h3>
+      <p>분기마다(연 4회) 함께 공개되며, <b>FOMC 위원 각각이 생각하는 향후 적정 금리 수준</b>을 점으로 찍은 그림입니다. <b>「올해 몇 번 내릴 생각인가」</b>가 여기서 드러나기 때문에 시장이 매우 민감하게 반응합니다.</p>
+      <p>다만 <b>점도표는 약속이 아니라 그 시점의 전망</b>입니다. 다음 분기에 완전히 바뀔 수 있고, 실제로 자주 바뀌어 왔습니다.</p>
+
+      <h3>「매파적」과 「비둘기파적」</h3>
+      <p><b>매파적(hawkish)</b>은 <b>물가를 잡는 데 무게를 두는 태도</b>입니다 — 금리를 높게 오래 유지하겠다는 쪽. 주식에는 대체로 부담입니다. <b>비둘기파적(dovish)</b>은 <b>경기와 고용에 무게를 두는 태도</b>로, 금리 인하에 열려 있다는 신호입니다.</p>
+      <p>재밌는 건 <b>같은 결정을 하고도 태도가 다를 수 있다</b>는 것입니다. 금리를 올리면서도 <b>「이번이 마지막일 수 있다」</b>고 하면 시장은 <b>호재로</b> 받아들입니다. 이런 경우를 <b>「매파적 인상」이 아니라 「비둘기파적 인상」</b>이라고 부릅니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6. 나머지 지표 ══════════ -->
+  <section id="others">
+    <div class="prod-head" style="--edge:var(--etc)">
+      <span class="prod-tag">06 · 나머지</span>
+      <h2>그 외에 자주 나오는 지표들</h2>
+      <p class="one">중요도 순으로 정리했습니다. 아래로 갈수록 <b>단독으로는 시장을 크게 움직이지 않습니다.</b></p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>지표</th><th>발표 시기</th><th>무엇을 재나</th><th>중요도</th><th>보는 법</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>CPI</th><td>매월 중순</td><td>소비자물가</td><td>★★★</td>
+            <td><b>근원(core) MoM</b>을 먼저 봅니다</td>
+          </tr>
+          <tr>
+            <th>고용보고서</th><td>매월 첫째 금요일</td><td>신규 고용·실업률·임금</td><td>★★★</td>
+            <td>헤드라인보다 <b>임금 상승률</b>이 물가와 직결</td>
+          </tr>
+          <tr>
+            <th>FOMC</th><td>연 8회</td><td>기준금리와 향후 방침</td><td>★★★</td>
+            <td>결정보다 <b>점도표·기자회견</b></td>
+          </tr>
+          <tr>
+            <th>PCE 물가</th><td>매월 말경</td><td>연준의 공식 물가 지표</td><td>★★</td>
+            <td>CPI로 이미 대략 예측 가능</td>
+          </tr>
+          <tr>
+            <th>ISM PMI</th><td>매월 초</td><td>제조업·서비스업 체감 경기</td><td>★★</td>
+            <td><b>50이 기준선</b>. 아래면 위축</td>
+          </tr>
+          <tr>
+            <th>소매판매</th><td>매월 중순</td><td>소비의 힘</td><td>★★</td>
+            <td>미국 경제의 <b>3분의 2가 소비</b></td>
+          </tr>
+          <tr>
+            <th>주간 실업수당</th><td>매주 목요일</td><td>고용의 단기 변화</td><td>★★</td>
+            <td><b>4주 이동평균</b>으로 봅니다</td>
+          </tr>
+          <tr>
+            <th>GDP</th><td>분기별 (3회 수정)</td><td>경제 전체 규모</td><td>★</td>
+            <td>이미 지난 분기 이야기라 반응이 작음</td>
+          </tr>
+          <tr>
+            <th>소비자심리</th><td>매월 2회</td><td>사람들의 기분</td><td>★</td>
+            <td><b>기대 인플레이션</b> 항목을 봅니다</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="scrollhint">← 표를 옆으로 밀어보세요 →</div>
+
+    <div class="plain">
+      <b>발표 시기에 대하여.</b> 위는 <b>통상적인 패턴</b>이며 매달 정확한 날짜는 다릅니다. 공휴일이나 특별한 사정으로 조정되기도 합니다. <b>실제 일정은 증권사 앱의 경제 캘린더나 각 통계기관 홈페이지</b>에서 확인하세요.
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7. 전 세계 ══════════ -->
+  <section id="global">
+    <div class="prod-head" style="--edge:var(--fed)">
+      <span class="prod-tag">07 · 전이 경로</span>
+      <h2>미국 지표가 왜 전 세계를 움직이나</h2>
+      <p class="one">미국 물가 숫자 하나가 <b>한국 주식, 브라질 채권, 일본 엔화</b>까지 흔드는 데는 세 개의 통로가 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>학교에서 <b>제일 큰 형</b>이 "나 오늘 돈 아껴 쓸래"라고 하면 어떻게 될까? 그 형한테 물건을 팔던 애들은 <b>장사가 안 되겠지.</b> 그 형한테 돈을 빌렸던 애들은 <b>갚으라고 할까 봐 불안해지고.</b> 그리고 다들 <b>"형이 저러는 걸 보니 뭔가 안 좋은가 봐"</b> 하고 덩달아 조심하게 돼.</p>
+      <p>미국이 그 큰 형이야. 세계에서 가장 큰 소비자이고, 가장 많은 돈을 굴리고, <b>모두가 쓰는 돈(달러)</b>을 만드는 나라거든. 그래서 미국의 숫자 하나가 <b>세 갈래로 전 세계에 퍼져.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TRANSMISSION · 미국 CPI가 예상보다 높게 나왔다면</div>
+      <p class="labsub">각 나라·자산을 눌러 <b>어떤 경로로 영향을 받는지</b> 확인하세요.</p>
+
+      <div class="btnrow" id="glBtns">
+        <button data-v="0" class="on">🇺🇸 미국 증시</button>
+        <button data-v="1">🇰🇷 한국 증시</button>
+        <button data-v="2">🌏 신흥국</button>
+        <button data-v="3">🇯🇵 일본</button>
+        <button data-v="4">🥇 금·원자재</button>
+      </div>
+
+      <div class="grid3" id="glCards">
+        <div class="minicard" style="--edge:var(--fed)">
+          <div class="mt">금리 경로</div>
+          <div class="mv" id="glV1" style="font-size:14px">할인율 상승</div>
+          <div class="mn" id="glN1">미래 이익의 현재가치 하락</div>
+        </div>
+        <div class="minicard" style="--edge:var(--cpi)">
+          <div class="mt">환율 경로</div>
+          <div class="mv" id="glV2" style="font-size:14px">달러 강세</div>
+          <div class="mn" id="glN2">—</div>
+        </div>
+        <div class="minicard" style="--edge:var(--etc)">
+          <div class="mt">위험선호 경로</div>
+          <div class="mv" id="glV3" style="font-size:14px">위축</div>
+          <div class="mn" id="glN3">안전자산으로 이동</div>
+        </div>
+      </div>
+
+      <div class="verdict" id="glVerdict" style="--vc:var(--fed)">
+        <div class="vh">🇺🇸 미국 증시</div>
+        <div class="vt">가장 직접적으로 맞습니다</div>
+        <p>금리 인하 기대가 미뤄지면서 <b>할인율이 올라</b> 특히 성장주가 크게 흔들립니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>세 개의 통로</h3>
+      <p><b>① 금리(할인율) 통로.</b> 미국 국채 금리는 <b>전 세계 자산 가격의 기준점</b>입니다. 미국 금리가 오르면 다른 나라 자산도 <b>더 높은 수익률을 요구받고</b>, 그만큼 가격이 내려갑니다. 특히 <b>먼 미래의 이익</b>에 값을 매긴 성장주가 크게 영향을 받습니다.</p>
+      <p><b>② 환율(달러) 통로.</b> 미국 금리가 오르면 <b>달러의 매력이 커져 달러가 강해집니다.</b> 그러면 신흥국에서 <b>달러 자금이 빠져나가고</b>, 달러 빚을 진 나라·기업의 <b>부담이 커집니다.</b> 원유·금 같은 <b>달러로 매겨지는 자산</b>도 대체로 눌립니다.</p>
+      <p><b>③ 위험선호 통로.</b> 시장 참여자들이 <b>불안해지면 위험자산을 전반적으로 줄입니다.</b> 논리적 연결이 없어도 <b>같이 떨어지는</b> 이유가 이것입니다. 상관관계가 평소보다 높아지는 국면입니다.</p>
+
+      <h3>모두가 같은 방향은 아닙니다</h3>
+      <p>미국 금리 상승은 <b>일본에는 다른 의미</b>일 수 있습니다. 미·일 금리차가 벌어지면 엔화가 약해지고, <b>수출 기업 이익에는 유리</b>하게 작용하는 면이 있습니다. 반대로 <b>엔캐리 트레이드</b>가 관련된 국면에서는 급격한 되돌림이 나타나기도 합니다.</p>
+      <p>즉 <b>「미국 지표 나쁨 = 전 세계 하락」이라는 단순한 공식은 없습니다.</b> 각 시장이 <b>어떤 통로에 더 노출되어 있는지</b>를 봐야 합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 8. 한국 ══════════ -->
+  <section id="korea">
+    <div class="prod-head" style="--edge:var(--cpi)">
+      <span class="prod-tag">08 · 한국 시장</span>
+      <h2>한국 투자자에게 특히 불리한 구조</h2>
+      <p class="one">시차 때문에 <b>대응할 시간이 거의 없다</b>는 점을 알고 있어야 합니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>미국 지표는 우리가 <b>자는 밤에</b> 발표돼. 그 소식을 듣고 미국 애들은 <b>바로 사고팔 수 있지만</b>, 우리는 <b>자고 있어서</b> 아무것도 못 해.</p>
+      <p>그리고 아침에 눈을 뜨면? 이미 <b>가격이 다 정해진 채로</b> 시장이 열려. 어제 종가보다 <b>훌쩍 떨어진 자리에서 시작</b>하는 거야. 이걸 <b>갭</b>이라고 해. <b>그 사이 구간에서는 아무도 사고팔지 못했어.</b></p>
+    </div>
+
+    <div class="pc">
+      <div class="bad">
+        <h5>◤ 구조적으로 불리한 점</h5>
+        <ul>
+          <li><b>시차.</b> 주요 지표가 한국 밤에 발표되어 <b>대응할 시간이 없습니다.</b></li>
+          <li><b>갭으로 반영.</b> 손절 주문을 걸어놔도 <b>그 가격을 건너뛰고</b> 체결됩니다.</li>
+          <li><b>이중 노출.</b> 미국 지표 + 한국 지표 + 환율까지 함께 영향받습니다.</li>
+          <li><b>수출 의존.</b> 반도체·자동차 중심이라 <b>미국 소비와 기술 사이클</b>에 민감합니다.</li>
+          <li><b>환율 증폭.</b> 달러가 강해지면 외국인 자금 이탈과 주가 하락이 <b>동시에</b> 옵니다.</li>
+        </ul>
+      </div>
+      <div class="good">
+        <h5>◤ 그래서 할 수 있는 것</h5>
+        <ul>
+          <li><b>야간 선물·MSCI 한국지수</b>로 밤사이 분위기를 미리 볼 수 있습니다.</li>
+          <li><b>중요 지표 발표일을 미리 알아두기.</b> 그날 큰 주문을 피하는 것만으로 충분합니다.</li>
+          <li><b>갭을 전제로 포지션 크기를 정하기.</b> 손절선을 믿고 크게 담지 않습니다.</li>
+          <li><b>지표에 맞춰 매매하지 않기.</b> 애초에 이길 수 없는 게임입니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>한국 자체 지표</h3>
+      <p><b>한국은행 금융통화위원회</b>(연 8회)가 기준금리를 결정합니다. 다만 <b>미 연준의 방향을 크게 벗어나기 어렵습니다</b> — 금리차가 지나치게 벌어지면 <b>자금 유출과 환율 압력</b>이 생기기 때문입니다.</p>
+      <p>그 외에 <b>수출입 통계</b>(매월 1일, 특히 <b>반도체 수출 증감률</b>), <b>소비자물가</b>(매월 초), <b>산업활동동향</b> 등이 있습니다. 그중 <b>수출 통계는 매월 1일 아침에 나와서</b> 한국 투자자가 <b>실시간으로 반응할 수 있는 몇 안 되는 지표</b>입니다.</p>
+
+      <div class="note">
+        <p><b>가장 실용적인 결론.</b> 중요 지표 발표 다음 날 아침에는 <b>시장가 주문을 쓰지 마세요.</b> 갭으로 출발한 데다 개장 직후는 변동이 극심해서, 시장가로 넣으면 <b>생각과 전혀 다른 가격에 체결</b>됩니다. 이건 <b>「호가창 읽는 법」 문서에서 다룬 사고의 전형적인 발생 상황</b>입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 9. 무엇을 할까 ══════════ -->
+  <section id="do">
+    <div class="prod-head" style="--edge:var(--warn-ink)">
+      <span class="prod-tag">09 · 결론</span>
+      <h2>그래서 개인 투자자는 무엇을 해야 하나</h2>
+      <p class="one">솔직한 답은 <b>「대부분의 경우 아무것도 하지 않는 것」</b>입니다.</p>
+    </div>
+
+    <div class="deep">
+      <h3>지표 매매가 개인에게 불리한 이유</h3>
+      <p><b>① 속도에서 이길 수 없습니다.</b> 발표 순간의 가격은 <b>밀리초 단위로 거래하는 시스템</b>이 정합니다. 뉴스를 읽고 앱을 여는 순간 <b>이미 끝나 있습니다.</b></p>
+      <p><b>② 방향을 맞혀도 집니다.</b> 서프라이즈 방향을 맞혀도 <b>시장이 그걸 어떻게 해석할지</b>는 또 다른 문제입니다. 나쁜 물가 지표에 주가가 오르는 일이 흔합니다.</p>
+      <p><b>③ 갭 때문에 손절이 안 통합니다.</b> 한국 투자자에게는 특히 그렇습니다.</p>
+      <p><b>④ 한 번의 판단으로 끝나지 않습니다.</b> 지표는 매달 나옵니다. <b>열 번 맞히고 한 번 크게 틀리면</b> 전부 사라집니다.</p>
+
+      <h3>그럼 왜 공부하나</h3>
+      <p><b>① 내 계좌를 이해하기 위해서.</b> 아무 이유 없이 흔들린 게 아니라는 걸 알면 <b>불필요한 공포 매도</b>를 줄일 수 있습니다.</p>
+      <p><b>② 국면을 아는 것만으로 충분한 경우가 많습니다.</b> 지금이 <b>인플레를 걱정하는 국면인지 침체를 걱정하는 국면인지</b>만 알아도, 뉴스가 왜 그렇게 해석되는지 이해됩니다.</p>
+      <p><b>③ 일정을 피하기 위해서.</b> 중요 발표 직전에 <b>큰 금액을 새로 넣지 않는 것</b>만으로도 불필요한 변동을 피할 수 있습니다.</p>
+      <p><b>④ 자산 배분의 언어이기 때문입니다.</b> 금리가 어디로 가는지는 <b>주식·채권 비중</b>을 정하는 데 실제로 쓰입니다. 이건 <b>타이밍 매매와 다릅니다.</b></p>
+    </div>
+
+    <ul class="check" id="mcCheck">
+      <li><b>이번 주 중요 발표가 있는지 확인했는가?</b> CPI·고용보고서·FOMC 세 개만 챙기면 충분합니다.</li>
+      <li><b>발표 다음 날 아침에 시장가 주문을 피했는가?</b> 갭 + 개장 직후 변동의 조합은 최악입니다.</li>
+      <li><b>「예상 대비」로 읽었는가?</b> 숫자가 높다/낮다가 아니라 예상과의 차이입니다.</li>
+      <li><b>지금이 어떤 국면인지 아는가?</b> 인플레 걱정인지, 침체 걱정인지.</li>
+      <li><b>헤드라인 말고 세부를 봤는가?</b> 근원 물가, 임금 상승률처럼.</li>
+      <li><b>지표를 보고 매매하려는 것은 아닌가?</b> 이해하는 것과 거래하는 것은 다릅니다.</li>
+      <li><b>내 포지션이 갭을 견딜 크기인가?</b> 손절선을 믿고 크게 담지 않았는지.</li>
+      <li><b>한 달치 숫자에 과하게 반응하고 있지 않은가?</b> 수정치가 크게 바뀌는 일이 흔합니다.</li>
+    </ul>
+    <div class="checkcount" id="mcCheckCount">0 / 8 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>마지막으로.</b> 경제지표를 알면 <b>세상이 더 잘 보이지만, 그게 더 잘 맞히는 것으로 이어지지는 않습니다.</b> 오히려 지표를 막 배운 시기가 가장 위험합니다 — <b>모든 발표에 대응하고 싶어지기 때문</b>입니다.</p>
+      <p>이 문서의 값어치는 <b>「대응하는 능력」이 아니라 「대응하지 않아도 되는 이유를 아는 것」</b>에 있습니다. 그리고 이 시리즈에서 반복되는 원칙은 여기서도 같습니다 — <b>이해하지 못한 것을, 남의 말을 듣고, 감당 못 할 금액으로 사지 않는 것.</b></p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 경제지표와 주가<br>
+    <a href="index.html">← 문서 목록으로</a> · <a href="bond-guide.html">채권 교과서</a> · <a href="orderbook-guide.html">호가창 읽는 법</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 모든 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.<br>
+    발표 일정·시각은 통상적인 패턴이며 매월 달라집니다. 실제 일정은 경제 캘린더로 확인하세요.<br>
+    시뮬레이터의 반응 크기는 방향과 구조를 설명하기 위해 단순화한 모형이며 실제 시장 반응의 예측이 아닙니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 1. 서프라이즈 ══════════ */
+function spDraw(){
+  var exp = +document.getElementById('spExp').value;
+  var act = +document.getElementById('spAct').value;
+  document.getElementById('spExpV').textContent = exp.toFixed(1) + '%';
+  document.getElementById('spActV').textContent = act.toFixed(1) + '%';
+
+  var gap = act - exp;                       // 물가는 높을수록 주식에 악재
+  var react = -gap * 4;                      // 설명용 단순 모형 (%)
+
+  // 발표 전은 평평, 발표 후 반응
+  var d = 'M60,130 L336,130';
+  var end = 130 - react / 6 * 100;
+  end = Math.max(24, Math.min(236, end));
+  d += ' L' + (336 + 40) + ',' + ((130 + end) / 2 - react * 1.2).toFixed(1) +
+       ' L' + 612 + ',' + end.toFixed(1);
+  var path = document.getElementById('spPath');
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', react >= 0 ? '#C0392B' : '#2C5F9E');
+  document.getElementById('spDot').setAttribute('cx', 612);
+  document.getElementById('spDot').setAttribute('cy', end.toFixed(1));
+  document.getElementById('spDot').setAttribute('fill', react >= 0 ? '#C0392B' : '#2C5F9E');
+  var tag = document.getElementById('spTag');
+  tag.setAttribute('x', 570);
+  tag.setAttribute('y', (end + (react >= 0 ? -14 : 20)).toFixed(1));
+  tag.setAttribute('fill', react >= 0 ? '#C0392B' : '#2C5F9E');
+  tag.textContent = Math.abs(gap) < 0.05 ? '' : pct(react);
+
+  var ge = document.getElementById('spGap');
+  ge.textContent = (gap > 0 ? '+' : '') + gap.toFixed(1) + '%p';
+  ge.style.color = Math.abs(gap) < 0.05 ? 'var(--ink)' : (gap > 0 ? 'var(--down)' : 'var(--up)');
+  document.getElementById('spDir').textContent =
+    Math.abs(gap) < 0.05 ? '보합' : (gap > 0 ? '하락' : '상승');
+  document.getElementById('spRate').textContent =
+    Math.abs(gap) < 0.05 ? '변화 없음' : (gap > 0 ? '인하 기대 후퇴' : '인하 기대 강화');
+
+  var t, p, col;
+  if(Math.abs(gap) < 0.05){
+    col = 'var(--neutral)';
+    t = '예상과 같으면 거의 움직이지 않습니다';
+    p = '이미 가격에 반영되어 있기 때문입니다. 이걸 <b>「선반영」</b>이라고 합니다. 손잡이를 움직여 <b>차이를 만들어보세요.</b><br><br>여기서 중요한 사실 하나 — <b>물가가 3%든 5%든, 예상과 같기만 하면 주가는 거의 안 움직입니다.</b> 숫자의 절대 수준이 아니라 <b>차이</b>가 시장을 움직입니다.';
+  } else if(gap > 0.25){
+    col = '#8E4B3A';
+    t = '큰 폭의 상방 서프라이즈 — 강한 하락 압력';
+    p = '예상 <b>' + exp.toFixed(1) + '%</b>보다 <b>' + gap.toFixed(1) + '%p</b> 높게 나왔습니다. 시장은 즉시 <b>「금리를 더 오래 높게 유지하겠구나」</b>로 해석합니다.<br><br>연쇄 반응 — <b>국채 금리 급등 → 할인율 상승 → 성장주 급락 → 달러 강세 → 신흥국 자금 이탈.</b> 이런 날은 <b>지수 전체가 함께 빠지고</b>, 개별 종목의 실적이 좋아도 소용이 없습니다.';
+  } else if(gap > 0){
+    col = 'var(--down)';
+    t = '예상보다 높게 나왔습니다 — 부담';
+    p = '차이는 <b>+' + gap.toFixed(1) + '%p</b>. 금리 인하 기대가 조금 뒤로 밀리면서 주가에 부담이 됩니다. <b>차이가 작으면 반응도 작습니다</b> — 시장은 <b>차이의 크기에 비례해서</b> 반응합니다.';
+  } else if(gap < -0.25){
+    col = '#C0392B';
+    t = '큰 폭의 하방 서프라이즈 — 강한 상승 동력';
+    p = '예상 <b>' + exp.toFixed(1) + '%</b>보다 <b>' + Math.abs(gap).toFixed(1) + '%p</b> 낮게 나왔습니다. <b>「생각보다 물가가 잡히고 있다」</b>는 뜻이라 금리 인하 기대가 살아납니다.<br><br>이럴 때 <b>「물가가 여전히 높은데 왜 주가가 폭등하지?」</b>라는 의문이 생깁니다. 답은 간단합니다 — <b>절대 수준이 아니라 예상과의 차이</b>가 움직이기 때문입니다. 물가가 4%여도 <b>5%를 예상했다면 호재</b>입니다.';
+  } else {
+    col = 'var(--up)';
+    t = '예상보다 낮게 나왔습니다 — 우호적';
+    p = '차이는 <b>' + gap.toFixed(1) + '%p</b>. 금리 인하 기대가 조금 앞당겨지며 주가에 우호적입니다. 다만 차이가 작아 <b>반응도 제한적</b>입니다.';
+  }
+  verdict('spVerdict', col, t, p);
+}
+document.getElementById('spExp').addEventListener('input', spDraw);
+document.getElementById('spAct').addEventListener('input', spDraw);
+
+/* ══════════ 2. 달력 ══════════ */
+var EVENTS = {
+  1:  [{ k:'etc', n:'ISM 제조업 PMI', kst:'밤 24:00 무렵', imp:'★★',
+         d:'제조업 구매 담당자들에게 「지난달보다 나아졌나」를 물어 만든 체감 지표입니다. <b>50이 기준선</b>으로, 아래면 위축입니다. 실제 생산 통계보다 <b>빠르게 나오는 것</b>이 장점입니다.' },
+       { k:'etc', n:'한국 수출입 통계', kst:'아침 09:00 무렵', imp:'★★',
+         d:'한국 투자자가 <b>실시간으로 반응할 수 있는 몇 안 되는 지표</b>입니다. 특히 <b>반도체 수출 증감률</b>은 코스피 전체 이익 전망과 직결됩니다. 매월 1일 아침에 나옵니다.' }],
+  3:  [{ k:'etc', n:'ISM 서비스업 PMI', kst:'밤 24:00 무렵', imp:'★★',
+         d:'미국 경제는 <b>서비스업 비중이 훨씬 큽니다.</b> 그래서 제조업 PMI보다 이쪽이 경기 판단에 더 중요한 경우가 많습니다.' }],
+  6:  [{ k:'job', n:'고용보고서 (비농업 신규 고용)', kst:'밤 21:30 / 22:30', imp:'★★★',
+         d:'매월 <b>첫째 금요일</b>에 나오는 <b>가장 큰 이벤트 중 하나</b>입니다. 신규 고용·실업률·시간당 임금이 한 번에 발표됩니다.<br><br>헤드라인 숫자보다 <b>임금 상승률</b>을 봐야 합니다 — 임금이 빠르게 오르면 물가 압력으로 읽혀 <b>고용이 좋아도 주가가 빠질 수</b> 있습니다.' }],
+  12: [{ k:'cpi', n:'소비자물가지수 (CPI)', kst:'밤 21:30 / 22:30', imp:'★★★',
+         d:'<b>가장 큰 변동성을 만드는 지표</b>입니다. 발표 직후 몇 초 만에 지수 선물이 1~2% 움직이는 일이 흔합니다.<br><br>봐야 할 것은 <b>근원(core) CPI의 전월 대비(MoM)</b>입니다. 에너지·식료품을 뺀 값이라 <b>물가의 추세</b>를 더 잘 보여주고, 연준이 실제로 보는 숫자에 가깝습니다.' }],
+  15: [{ k:'etc', n:'소매판매', kst:'밤 21:30 / 22:30', imp:'★★',
+         d:'미국 경제의 <b>3분의 2가 소비</b>입니다. 소비가 꺾이면 경기 전체가 꺾입니다. 자동차·주유소를 뺀 <b>근원 소매판매</b>를 함께 봅니다.' }],
+  18: [{ k:'fed', n:'FOMC 성명·기자회견', kst:'새벽 03:00 / 04:00', imp:'★★★',
+         d:'연 8회 열립니다. <b>금리 결정 자체는 대부분 예상되어 있고</b>, 시장이 반응하는 것은 <b>성명문 문구 변화 · 점도표(분기별) · 의장 기자회견</b>입니다.<br><br>한국 시간 <b>새벽</b>에 나오므로, 다음 날 한국 시장은 <b>이미 정해진 결과를 받아들고</b> 시작합니다.' }],
+  20: [{ k:'job', n:'주간 신규 실업수당 청구', kst:'밤 21:30 / 22:30', imp:'★★',
+         d:'<b>매주 목요일</b>에 나옵니다. 가장 빠른 고용 지표지만 <b>주 단위 변동이 커서</b> 보통 <b>4주 이동평균</b>으로 봅니다. 고용 시장이 꺾이는 신호가 <b>가장 먼저 나타나는</b> 곳 중 하나입니다.' }],
+  27: [{ k:'cpi', n:'PCE 물가지수', kst:'밤 21:30 / 22:30', imp:'★★',
+         d:'연준이 <b>공식 목표(2%)로 삼는 물가 지표</b>입니다. CPI와 계산 방식이 달라 <b>대체로 조금 낮게</b> 나옵니다.<br><br>CPI가 먼저 나오기 때문에 <b>어느 정도 예측이 되어</b> CPI만큼 큰 반응을 만들지는 않는 편입니다. 다만 <b>정책 판단에는 더 직접적</b>입니다.' },
+       { k:'etc', n:'GDP (분기)', kst:'밤 21:30 / 22:30', imp:'★',
+         d:'분기별로 <b>속보치 → 잠정치 → 확정치</b> 세 번 발표됩니다. <b>이미 지난 분기 이야기</b>라 시장 반응은 상대적으로 작습니다.' }]
+};
+(function(){
+  var COL = { cpi:'#8E4B3A', job:'#3A5A8E', fed:'#7A5C9E', etc:'#4C7A6D' };
+  var g = '';
+  // 1일이 수요일인 달을 가정합니다.
+  for(var i = 0; i < 3; i++) g += '<div class="cell" style="opacity:.35"></div>';
+  for(var d = 1; d <= 30; d++){
+    var ev = EVENTS[d];
+    var dots = '';
+    if(ev) ev.forEach(function(e){ dots += '<span class="dot" style="background:' + COL[e.k] + '"></span>'; });
+    g += '<div class="cell' + (ev ? ' has' : '') + '"' + (ev ? ' data-d="' + d + '" tabindex="0" role="button"' : '') +
+         '><span>' + d + '</span><div class="dots">' + dots + '</div></div>';
+  }
+  document.getElementById('calGrid').innerHTML = g;
+
+  document.querySelectorAll('#calGrid .cell.has').forEach(function(cell){
+    function open(){
+      document.querySelectorAll('#calGrid .cell').forEach(function(c){ c.classList.remove('on'); });
+      cell.classList.add('on');
+      var ev = EVENTS[+cell.getAttribute('data-d')];
+      var body = ev.map(function(e){
+        return '<b style="color:' + COL[e.k] + '">' + e.n + '</b> · ' + e.imp +
+               '<br><span class="kst">한국 시간 ' + e.kst + '</span><br>' + e.d;
+      }).join('<br><br>');
+      document.getElementById('calVerdict').querySelector('.vh').textContent = cell.getAttribute('data-d') + '일 무렵';
+      verdict('calVerdict', COL[ev[0].k], ev.length > 1 ? ev.length + '개의 발표가 겹칩니다' : ev[0].n, body);
+    }
+    cell.addEventListener('click', open);
+    cell.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
+    });
+  });
+})();
+
+/* ══════════ 3. CPI 전달 경로 ══════════ */
+function cpDraw(){
+  var gap = +document.getElementById('cpGap').value;
+  document.getElementById('cpGapV').textContent = (gap > 0 ? '+' : '') + gap.toFixed(1) + '%p';
+
+  var hot = gap > 0.05, cold = gap < -0.05;
+  var steps = [
+    { x:110, label:'CPI', v: Math.abs(gap) < 0.05 ? '예상대로' : (hot ? '예상보다 높음' : '예상보다 낮음') },
+    { x:270, label:'금리 기대', v: Math.abs(gap) < 0.05 ? '유지' : (hot ? '인하 후퇴' : '인하 앞당김') },
+    { x:430, label:'국채 금리', v: Math.abs(gap) < 0.05 ? '보합' : (hot ? '상승' : '하락') },
+    { x:570, label:'주가', v: Math.abs(gap) < 0.05 ? '보합' : (hot ? '하락' : '상승') }
+  ];
+  var col = Math.abs(gap) < 0.05 ? '#5B5648' : (hot ? '#2C5F9E' : '#C0392B');
+  var g = '';
+  steps.forEach(function(s, i){
+    if(i > 0){
+      g += '<path d="M' + (steps[i-1].x + 52) + ',95 L' + (s.x - 52) + ',95" stroke="#8A8474" stroke-width="1.4" marker-end="url(#chA)"/>';
+    }
+    g += '<rect x="' + (s.x - 52) + '" y="62" width="104" height="66" rx="4" fill="' + col +
+         '" fill-opacity=".12" stroke="' + col + '" stroke-width="1.4"/>' +
+         '<text class="axt" x="' + s.x + '" y="86" text-anchor="middle">' + s.label + '</text>' +
+         '<text class="lblb" x="' + s.x + '" y="110" text-anchor="middle" fill="' + col + '" style="font-size:12px">' + s.v + '</text>';
+  });
+  document.getElementById('chNodes').innerHTML = g;
+
+  var t, p;
+  if(Math.abs(gap) < 0.05){
+    t = '예상과 같으면 사슬이 움직이지 않습니다';
+    p = '물가가 예상대로 나오면 <b>금리 기대가 바뀌지 않고</b>, 따라서 주가도 크게 움직이지 않습니다. 손잡이를 좌우로 밀어보세요.';
+  } else if(hot){
+    t = '예상보다 물가가 높게 나온 경우';
+    p = '<b>물가 ↑ → 금리 인하 기대 후퇴 → 국채 금리 ↑ → 할인율 ↑ → 주가 ↓</b><br><br>여기서 <b>가장 크게 맞는 것이 성장주</b>입니다. 성장주의 가치는 <b>먼 미래의 이익</b>에 있는데, 할인율이 오르면 <b>먼 미래일수록 현재가치가 더 많이 깎이기</b> 때문입니다. 반면 <b>지금 당장 현금을 버는 회사</b>(가치주·배당주)는 상대적으로 덜 흔들립니다.';
+  } else {
+    t = '예상보다 물가가 낮게 나온 경우';
+    p = '<b>물가 ↓ → 금리 인하 기대 강화 → 국채 금리 ↓ → 할인율 ↓ → 주가 ↑</b><br><br>이때는 <b>성장주가 가장 크게 오릅니다.</b> 같은 이유가 반대로 작동하기 때문입니다. <b>「물가 지표 하나에 나스닥이 3% 오르는」</b> 일이 이렇게 생깁니다.<br><br>단, <b>물가가 너무 급하게 떨어지면</b> 시장이 <b>「경기가 무너지는 신호」</b>로 읽어 오히려 주가가 빠지기도 합니다. 다음 장의 국면 개념입니다.';
+  }
+  verdict('cpVerdict', col, t, p);
+}
+document.getElementById('cpGap').addEventListener('input', cpDraw);
+
+/* ══════════ 4. 고용 · 국면 ══════════ */
+var JB_REGIME = 0;
+function jbDraw(){
+  var act = +document.getElementById('jbAct').value;
+  var exp = 180;
+  document.getElementById('jbActV').textContent = (act / 10).toFixed(1) + '만';
+  document.getElementById('jbVal').textContent = (act / 10).toFixed(1) + '만';
+  document.getElementById('jbBar').style.width = Math.max(2, (act + 50) / 450 * 100) + '%';
+
+  var gap = act - exp;
+  var strong = gap > 40, weak = gap < -40;
+  var ge = document.getElementById('jbGap');
+  ge.textContent = (gap > 0 ? '+' : '') + (gap / 10).toFixed(1) + '만';
+  ge.style.color = Math.abs(gap) <= 40 ? 'var(--ink)' : (gap > 0 ? 'var(--up)' : 'var(--down)');
+  document.getElementById('jbEcon').textContent = strong ? '경기 강함' : (weak ? '경기 약함' : '중립');
+
+  var stockUp;
+  if(Math.abs(gap) <= 40) stockUp = null;
+  else if(JB_REGIME === 0) stockUp = !strong;      // 인플레 국면: 강한 고용 = 악재
+  else stockUp = strong;                            // 침체 국면: 강한 고용 = 호재
+
+  var se = document.getElementById('jbStock');
+  se.textContent = stockUp === null ? '보합' : (stockUp ? '상승' : '하락');
+  se.style.color = stockUp === null ? 'var(--ink)' : (stockUp ? 'var(--up)' : 'var(--down)');
+  document.getElementById('jbBar').style.background = stockUp === null ? '#3A5A8E' : (stockUp ? '#C0392B' : '#2C5F9E');
+
+  var t, p, col;
+  if(Math.abs(gap) <= 40){
+    col = 'var(--neutral)';
+    t = '예상 범위 안 — 시장은 다른 것을 봅니다';
+    p = '고용이 예상과 비슷하면 <b>헤드라인으로는 움직이지 않고</b>, 시장은 같은 보고서 안의 <b>임금 상승률</b>이나 <b>실업률 세부</b>를 봅니다. 손잡이를 크게 움직여보세요.';
+  } else if(JB_REGIME === 0 && strong){
+    col = '#2C5F9E';
+    t = '「좋은 뉴스가 나쁜 뉴스」 — 바로 이 경우입니다';
+    p = '신규 고용이 <b>' + (act / 10).toFixed(1) + '만 명</b>으로 예상(18만)을 크게 웃돌았습니다. 경제는 <b>튼튼하다</b>는 뜻인데, 주가는 <b>떨어집니다.</b><br><br>이유 — 고용이 강하면 <b>사람들이 돈을 더 벌고 더 쓰고</b>, 그러면 <b>물가가 안 잡힙니다.</b> 중앙은행은 <b>금리를 더 오래 높게</b> 유지하려 하고, 그게 주식에 부담이 됩니다.<br><br><b>「경제가 좋으면 주가가 오른다」는 상식이 통하지 않는 국면</b>입니다.';
+  } else if(JB_REGIME === 0 && weak){
+    col = '#C0392B';
+    t = '「나쁜 뉴스가 좋은 뉴스」 — 반대의 경우';
+    p = '고용이 <b>' + (act / 10).toFixed(1) + '만 명</b>으로 크게 부진합니다. 경제에는 나쁜 소식인데 주가는 <b>오릅니다.</b><br><br>시장이 <b>「이제 금리를 내릴 수 있겠다」</b>고 읽기 때문입니다.<br><br><b>다만 이 논리에는 한계선이 있습니다.</b> 고용이 <b>너무 심하게</b> 무너지면 시장은 「금리 인하」가 아니라 <b>「침체가 온다」</b>로 해석을 바꿉니다. 그때부터는 <b>나쁜 뉴스가 그냥 나쁜 뉴스</b>가 됩니다 — 그 전환점이 어디인지는 <b>지나봐야 압니다.</b>';
+  } else if(JB_REGIME === 1 && strong){
+    col = '#C0392B';
+    t = '침체 걱정 국면에서는 강한 고용이 안도 신호';
+    p = '고용 <b>' + (act / 10).toFixed(1) + '만 명</b>. 같은 숫자인데 이번엔 <b>주가가 오릅니다.</b><br><br>시장이 <b>「경기가 무너질까」</b>를 걱정하고 있었기 때문입니다. 강한 고용은 <b>「아직 괜찮다」</b>는 증거가 됩니다. 이때는 <b>「경제가 좋으면 주가가 오른다」는 상식이 정상 작동</b>합니다.<br><br><b>위 버튼을 바꿔가며 같은 숫자를 다시 보세요</b> — 지표는 그대로인데 결론이 뒤집힙니다. <b>그래서 「무엇이 나올까」보다 「지금 시장이 무엇을 걱정하는가」가 더 중요합니다.</b>';
+  } else {
+    col = '#2C5F9E';
+    t = '침체 걱정 국면에서 약한 고용은 그냥 악재';
+    p = '고용 <b>' + (act / 10).toFixed(1) + '만 명</b>으로 부진합니다. 이미 침체를 걱정하던 시장에 <b>걱정을 확인시켜주는 숫자</b>라 주가가 떨어집니다.<br><br>이 국면에서는 <b>금리 인하 기대가 위안이 되지 못합니다.</b> 「금리를 내려도 이미 늦었다」는 인식이 퍼지면, <b>인하 자체가 악재로 읽히기도</b> 합니다.';
+  }
+  verdict('jbVerdict', col, t, p);
+}
+bindBtnRow('#jbRegime', function(v){ JB_REGIME = +v; jbDraw(); });
+document.getElementById('jbAct').addEventListener('input', jbDraw);
+
+/* ══════════ 5. FOMC ══════════ */
+var FM = [
+  { pred:92, imp:20, pw:'매우 높음', iw:'낮음', h:'① 금리 결정', color:'#4C7A6D',
+    t:'대부분 이미 알려져 있습니다',
+    p:'연준은 <b>기습을 하지 않으려 노력</b>합니다. 회의 전 몇 주 동안 위원들의 발언과 <b>금리선물 시장 가격</b>을 통해 거의 확정적으로 예상되는 경우가 많습니다. 그래서 결정 자체로는 잘 안 움직입니다.<br><br>예외는 <b>예상을 벗어난 경우</b>인데, 그때는 충격이 매우 큽니다.' },
+  { pred:55, imp:60, pw:'중간', iw:'중간', h:'② 성명문 문구', color:'#9E7A2E',
+    t:'단어 하나가 바뀌면 해석이 달라집니다',
+    p:'성명문은 <b>지난번 문장과 거의 같게</b> 유지하다가 <b>일부 단어만 바꿉니다.</b> 시장은 그 변화를 문장 단위로 비교합니다.<br><br>예를 들어 <b>「추가 인상이 적절할 수 있다」</b>가 <b>「추가 조정의 정도를 판단할 때」</b>로 바뀌면, 이는 <b>인상 사이클이 끝나간다는 신호</b>로 읽힙니다. 실제로 이런 문구 변화만으로 지수가 크게 움직인 사례가 많습니다.' },
+  { pred:35, imp:85, pw:'낮음', iw:'매우 높음', h:'③ 점도표', color:'#7A5C9E',
+    t:'분기마다 나오는 가장 강력한 신호',
+    p:'FOMC 위원 각각이 생각하는 <b>향후 적정 금리 수준</b>을 점으로 찍은 그림입니다. 연 4회(분기별) 공개됩니다.<br><br><b>「올해 몇 번 내릴 생각인가」</b>가 여기서 드러나기 때문에 시장이 매우 민감합니다. 점 하나가 위아래로 옮겨져 <b>중간값이 바뀌면</b> 그 자체가 큰 뉴스가 됩니다.<br><br><b>주의</b> — 점도표는 <b>약속이 아니라 그 시점의 전망</b>입니다. 다음 분기에 완전히 바뀔 수 있고, 실제로 자주 바뀌어 왔습니다.' },
+  { pred:20, imp:95, pw:'매우 낮음', iw:'가장 높음', h:'④ 기자회견', color:'#8E4B3A',
+    t:'가장 예측하기 어렵고 가장 크게 움직입니다',
+    p:'성명 발표 30분 뒤 의장이 기자들의 질문에 답합니다. <b>준비된 문서가 아니라 즉석 답변</b>이라 시장이 가장 예측하기 어려워하는 구간입니다.<br><br>실제로 <b>성명 직후에는 올랐다가 기자회견 중에 반대로 뒤집히는</b> 일이 흔합니다. 같은 날 안에서 <b>지수가 두 번 방향을 바꾸는</b> 것이 이 때문입니다.<br><br>이 구간이 한국 시간으로 <b>새벽 3~4시</b>라, 한국 투자자는 <b>아침에 결과만 받아들게</b> 됩니다.' }
+];
+bindBtnRow('#fmBtns', function(v){
+  var f = FM[+v];
+  document.getElementById('fmBar1').style.width = f.pred + '%';
+  document.getElementById('fmBar2').style.width = f.imp + '%';
+  document.getElementById('fmV1').textContent = f.pw;
+  document.getElementById('fmV2').textContent = f.iw;
+  document.getElementById('fmVerdict').querySelector('.vh').textContent = f.h;
+  verdict('fmVerdict', f.color, f.t, f.p);
+});
+
+/* ══════════ 7. 전이 경로 ══════════ */
+var GL = [
+  { v:['할인율 상승', '해당 없음', '위축'],
+    n:['미래 이익의 현재가치 하락', '자국 통화라 영향 없음', '안전자산으로 이동'],
+    h:'🇺🇸 미국 증시', color:'#7A5C9E',
+    t:'가장 직접적으로 맞습니다',
+    p:'금리 인하 기대가 미뤄지면서 <b>할인율이 올라</b> 주가가 눌립니다. 특히 <b>먼 미래 이익에 값을 매긴 성장주·기술주</b>가 크게 흔들립니다.<br><br>반면 <b>은행</b>은 금리가 오르면 예대마진이 개선되어 <b>오히려 오르기도</b> 합니다. 「미국 증시가 하락」이라고 해도 <b>업종별로 방향이 갈립니다.</b>' },
+  { v:['할인율 상승', '원화 약세', '외국인 순매도'],
+    n:['미국 금리를 따라감', '수출엔 유리, 자금엔 불리', '수급이 직접 악화'],
+    h:'🇰🇷 한국 증시', color:'#8E4B3A',
+    t:'세 경로에 모두 노출됩니다',
+    p:'한국은 <b>세 통로가 전부 작동</b>합니다.<br><br><b>① 금리</b> — 미국 금리를 따라 국내 금리도 오릅니다. <b>② 환율</b> — 달러가 강해지면 원화가 약해집니다. 수출 기업 실적에는 유리한 면이 있지만, <b>외국인 입장에서는 환차손</b>이 생겨 <b>한국 주식을 파는 이유</b>가 됩니다. <b>③ 위험선호</b> — 신흥국으로 분류되어 위험 회피 국면에 먼저 팔립니다.<br><br>게다가 <b>반도체 비중이 커서</b> 미국 기술주와 <b>거의 같이 움직입니다.</b> 그래서 미국 지표에 대한 민감도가 특히 높습니다.' },
+  { v:['자금 유출', '통화 급락', '가장 크게 위축'],
+    n:['달러 부채 부담 증가', '수입 물가 상승', '가장 먼저 팔리는 자산'],
+    h:'🌏 신흥국', color:'#8E4B3A',
+    t:'가장 크게 타격받는 그룹',
+    p:'달러가 강해지면 <b>달러로 빚을 진 나라와 기업의 부담이 커집니다.</b> 같은 빚인데 <b>갚아야 할 자국 통화 금액이 늘어나기</b> 때문입니다.<br><br>동시에 <b>수입 물가가 올라</b> 자국 물가가 뛰고, 그러면 <b>경기가 나쁜데도 금리를 올려야 하는</b> 곤란한 상황이 됩니다.<br><br>역사적으로 <b>미국 금리 급등기에 신흥국 위기가 반복</b>된 배경입니다.' },
+  { v:['제한적', '엔 약세', '혼재'],
+    n:['자국 금리를 낮게 유지해와', '수출 기업엔 유리', '엔캐리와 얽혀 복잡'],
+    h:'🇯🇵 일본', color:'#4C7A6D',
+    t:'다른 나라와 반대로 움직이기도 합니다',
+    p:'일본은 <b>오랫동안 초저금리를 유지</b>해왔습니다. 미국 금리가 오르면 <b>미·일 금리차가 벌어져 엔화가 약해지고</b>, 이는 <b>수출 기업 이익에 유리</b>합니다. 그래서 <b>미국 금리 상승기에 일본 증시가 오르는</b> 일이 있었습니다.<br><br>다만 <b>엔캐리 트레이드</b>가 얽혀 있어 복잡합니다. 금리차가 급격히 좁혀지거나 엔이 급등하면 <b>대규모 청산이 일어나 전 세계 위험자산이 함께 무너지는</b> 일이 벌어집니다.<br><br><b>「미국 지표 나쁨 = 전 세계 하락」이라는 단순한 공식이 없다</b>는 대표적 사례입니다.' },
+  { v:['보유 매력 하락', '달러 강세로 부담', '금은 예외적'],
+    n:['이자 없는 자산이 불리해짐', '달러로 표시되어 눌림', '위기감이 커지면 오히려 상승'],
+    h:'🥇 금·원자재', color:'#9E7A2E',
+    t:'두 힘이 반대로 작용합니다',
+    p:'<b>불리한 쪽</b> — 금리가 오르면 <b>이자를 주지 않는 금</b>의 상대 매력이 떨어집니다. 또 원자재는 <b>달러로 가격이 매겨져</b> 달러가 강해지면 눌립니다.<br><br><b>유리한 쪽</b> — 물가가 높다는 건 <b>화폐 가치가 떨어진다</b>는 뜻이라, 실물 자산 수요가 늘 수 있습니다. 그리고 <b>위기감이 커지면 금은 안전자산으로</b> 매수됩니다.<br><br>그래서 금은 <b>같은 지표에도 상황에 따라 반대로 움직입니다.</b> 「금리 오르면 금은 하락」이라는 단순 공식이 자주 빗나가는 이유입니다.' }
+];
+bindBtnRow('#glBtns', function(v){
+  var s = GL[+v];
+  for(var i = 0; i < 3; i++){
+    document.getElementById('glV' + (i + 1)).textContent = s.v[i];
+    document.getElementById('glN' + (i + 1)).textContent = s.n[i];
+  }
+  document.getElementById('glVerdict').querySelector('.vh').textContent = s.h;
+  verdict('glVerdict', s.color, s.t, s.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#mcCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#mcCheck li.done').length;
+      document.getElementById('mcCheckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 여섯 번째 항목이 가장 어렵고, 가장 중요합니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+spDraw(); cpDraw(); jbDraw();
+document.querySelector('#fmBtns button[data-v="0"]').click();
+document.querySelector('#glBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
