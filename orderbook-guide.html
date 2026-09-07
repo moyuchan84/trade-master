@@ -1,0 +1,1185 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>호가창 읽는 법 — MTS·HTS 주문 사고 방지</title>
+<meta name="description" content="호가창 구조, 시장가와 지정가의 차이, 거래량과 가격의 관계, 유동성 함정, 수급 읽기까지. 실제 호가를 소진해가며 계산하는 인터랙티브 주문 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --up:#C0392B;      /* 한국 시장 관례: 상승·매수 = 붉은색 */
+    --down:#2C5F9E;    /* 하락·매도 = 파란색 */
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+    --neutral:#5B5648;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  /* ── 호가창 ── */
+  .book{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    border:1px solid var(--rule);
+    border-radius:3px;
+    overflow:hidden;
+    background:var(--paper);
+    max-width:520px;
+    margin:0 auto;
+  }
+  .book .bhead{
+    display:grid;
+    grid-template-columns:1fr 118px 1fr;
+    background:#EFEADF;
+    border-bottom:1px solid var(--rule);
+    font-size:11px;
+    color:var(--ink-soft);
+  }
+  .book .bhead > div{padding:7px 10px;text-align:center;}
+  .brow{
+    display:grid;
+    grid-template-columns:1fr 118px 1fr;
+    border-bottom:1px solid #EAE4D6;
+    position:relative;
+    transition:background .2s ease;
+  }
+  .brow:last-child{border-bottom:none;}
+  .brow.cur{background:#F5EDE4;}
+  .brow .qty{
+    padding:6px 10px;
+    position:relative;
+    display:flex;
+    align-items:center;
+    min-height:29px;
+  }
+  .brow .qty.l{justify-content:flex-end;}
+  .brow .qty.r{justify-content:flex-start;}
+  .brow .qbar{
+    position:absolute;
+    top:4px;bottom:4px;
+    opacity:.20;
+    border-radius:2px;
+    transition:width .3s ease;
+  }
+  .brow .qty.l .qbar{right:6px;background:var(--down);}
+  .brow .qty.r .qbar{left:6px;background:var(--up);}
+  .brow .qty span{position:relative;z-index:1;}
+  .brow .px{
+    padding:6px 8px;
+    text-align:center;
+    font-weight:500;
+    border-left:1px solid #EAE4D6;
+    border-right:1px solid #EAE4D6;
+    background:var(--card);
+  }
+  .brow.ask .px{color:var(--down);}
+  .brow.bid .px{color:var(--up);}
+  .brow.cur .px{background:var(--ink);color:var(--paper);}
+  .brow.eaten{background:#F6E3DE;}
+  .brow.eaten .qty span{text-decoration:line-through;opacity:.5;}
+  .book .bfoot{
+    display:grid;
+    grid-template-columns:1fr 118px 1fr;
+    background:#EFEADF;
+    border-top:1px solid var(--rule);
+    font-size:11px;
+    color:var(--ink-soft);
+  }
+  .book .bfoot > div{padding:7px 10px;text-align:center;}
+
+  .bookwrap{margin:6px 0 0;}
+  .booknote{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--ink-faint);
+    text-align:center;
+    margin-top:9px;
+  }
+
+  /* 클릭 가능한 해설 핀 */
+  .pinrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:14px 0 0;}
+  .pinrow button{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    padding:6px 12px;
+    border:1px solid var(--rule);
+    background:var(--card);
+    color:var(--ink-soft);
+    border-radius:99px;
+    cursor:pointer;
+    transition:all .16s ease;
+  }
+  .pinrow button:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .pinrow button.on{background:var(--ink);border-color:var(--ink);color:var(--paper);}
+
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0 8px;}
+  .pc > div{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 18px;
+  }
+  .pc h5{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:500;
+    margin:0 0 10px;
+    letter-spacing:.04em;
+  }
+  .pc .good h5{color:#3F6B52;}
+  .pc .bad h5{color:var(--up);}
+  .pc ul{margin:0;padding-left:16px;}
+  .pc li{font-size:14px;color:var(--ink-soft);margin-bottom:8px;line-height:1.62;}
+  .pc li:last-child{margin-bottom:0;}
+  .pc li b{color:var(--ink);font-weight:600;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:-14px;margin-bottom:24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .pc{grid-template-columns:1fr;}
+    .book{font-size:11.5px;}
+    .book .bhead,.brow,.book .bfoot{grid-template-columns:1fr 92px 1fr;}
+    .brow .qty{padding:5px 7px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">주문 실전 · 투자 공부 노트</div>
+    <h1>호가창 읽는 법<br>— 사고가 나기 전에 알아야 할 것들</h1>
+    <p class="lede">종목을 잘 고르고도 <b>주문 한 번에 손해를 보는 일</b>이 생깁니다. 시장가로 눌렀더니 생각보다 훨씬 비싸게 사졌다거나, 팔려고 보니 사려는 사람이 없다거나. 이건 종목 분석이 아니라 <b>주문 방식과 호가창을 몰라서 생기는 사고</b>이고, 다행히 <b>미리 알면 대부분 피할 수 있습니다.</b></p>
+    <div class="callout">
+      <b>이 문서의 목적.</b> 호가창을 보고 <b>주가 방향을 맞히는 법</b>을 알려주는 문서가 아닙니다. 그건 대체로 불가능하고, 가능하다고 주장하는 사람은 대개 뭔가를 팔고 있습니다. 이 문서는 <b>내가 낸 주문이 실제로 어떻게 체결되는지</b>를 이해해서 <b>불필요한 손실을 막는 것</b>이 목적입니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="주문 유형·제도·용어까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#book">1. 호가창이란</a>
+    <a href="#order">2. 지정가와 시장가</a>
+    <a href="#direction">3. 방향을 읽을 수 있나</a>
+    <a href="#volume">4. 거래량</a>
+    <a href="#liquidity">5. 유동성 함정</a>
+    <a href="#flow">6. 외국인·기관·개인</a>
+    <a href="#time">7. 시간대별 함정</a>
+    <a href="#checklist">8. 주문 체크리스트</a>
+  </nav>
+
+  <!-- ══════════ 1. 호가창 ══════════ -->
+  <section id="book">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 기본 구조</span>
+      <h2>호가창 — 사려는 줄과 팔려는 줄이 마주 보고 있는 표</h2>
+      <p class="one">복잡해 보이지만 실제로는 <b>두 개의 줄</b>이 전부입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>벼룩시장에 <b>딱지</b>를 사고파는 곳이 있다고 해보자. 한쪽에는 <b>팔려는 아이들</b>이 팻말을 들고 서 있어. "나는 5,100원 받아야 팔아", "나는 5,200원", "나는 5,300원"… <b>싸게 파는 아이가 맨 앞</b>에 서 있지.</p>
+      <p>맞은편에는 <b>사려는 아이들</b>이 서 있어. "나는 5,000원까지만 낼래", "나는 4,900원"… <b>비싸게 사겠다는 아이가 맨 앞</b>이야.</p>
+      <p>여기서 중요한 건 — <b>지금 이 순간에는 거래가 일어나지 않는다</b>는 거야. 가장 싸게 팔겠다는 5,100원과 가장 비싸게 사겠다는 5,000원 사이에 <b>100원의 틈</b>이 있으니까. 누군가 <b>"에이, 그냥 5,100원 줄게!"</b> 하고 건너와야 비로소 거래가 성사돼. 그 순간이 <b>체결</b>이야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">INTERACTIVE · 아래 버튼을 눌러 각 부분을 확인하세요</div>
+      <p class="labsub">실제 MTS·HTS 호가창과 같은 배치입니다. 한국 시장에서는 <b>매도가 파란색, 매수가 빨간색</b>으로 표시됩니다.</p>
+
+      <div class="bookwrap" id="bk1"></div>
+      <div class="booknote">이 종목의 호가단위는 100원 — 50,000원과 50,100원 사이에 다른 가격은 없습니다</div>
+
+      <div class="pinrow" id="bkPins">
+        <button data-v="0" class="on">① 매도 잔량</button>
+        <button data-v="1">② 매수 잔량</button>
+        <button data-v="2">③ 현재가</button>
+        <button data-v="3">④ 스프레드</button>
+        <button data-v="4">⑤ 호가단위</button>
+      </div>
+
+      <div class="verdict" id="bkVerdict" style="--vc:var(--down)">
+        <div class="vh">① 매도 잔량</div>
+        <div class="vt">「이 가격이면 팔겠다」고 걸어둔 물량</div>
+        <p>위쪽 파란 구간입니다. <b>50,100원에 5,200주를 팔겠다는 주문이 대기 중</b>이라는 뜻입니다. 내가 지금 사려면 이 물량을 걷어와야 합니다. 위로 올라갈수록 비싼 가격이고, <b>가장 아래(50,100원)가 지금 살 수 있는 가장 싼 가격</b>입니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>호가단위(틱)</h3>
+      <p>주가마다 <b>움직일 수 있는 최소 단위</b>가 정해져 있습니다. 50,000원짜리 주식은 100원 단위로만 호가가 존재하므로 <b>50,050원이라는 가격은 아예 낼 수 없습니다.</b> 대체로 <b>주가가 비쌀수록 단위도 커집니다</b>(1원 → 5원 → 10원 → 50원 → 100원 → …).</p>
+      <p>이게 왜 중요하냐면, <b>호가 한 칸의 크기가 곧 최소 손익</b>이기 때문입니다. 5,000원짜리 주식에서 한 칸은 10원(0.2%)이지만, 500,000원짜리에서 한 칸은 1,000원(0.2%)입니다. <b>단타를 할수록 이 단위와 수수료가 수익을 갉아먹습니다.</b></p>
+      <p class="plain"><b>확인이 필요합니다.</b> 호가단위 구간은 제도 개편으로 바뀌어 왔고 ETF·ETN은 별도 기준이 적용됩니다. 정확한 값은 <b>거래하는 증권사 안내나 거래소 공지</b>로 확인하세요.</p>
+
+      <h3>10호가와 총잔량</h3>
+      <p>일반적으로 <b>위아래 10단계씩</b> 보여줍니다. 그 바깥에도 주문은 존재하지만 화면에 안 보일 뿐입니다. 화면 아래의 <b>총잔량</b>은 보이는 10호가의 합계인 경우가 많은데, <b>이 숫자로 매수세·매도세를 판단하는 건 위험합니다</b> — 다음 장에서 이유를 봅니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2. 지정가와 시장가 ══════════ -->
+  <section id="order">
+    <div class="prod-head" style="--edge:var(--up)">
+      <span class="prod-tag">02 · 사고가 나는 지점</span>
+      <h2>지정가와 시장가 — 여기서 대부분의 주문 사고가 납니다</h2>
+      <p class="one">「시장가」 버튼이 무슨 뜻인지 정확히 알고 누르는 사람은 생각보다 적습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>딱지를 사는 방법이 두 가지 있어.</p>
+      <p><b>① 지정가 —</b> "나는 <b>5,100원까지만</b> 낼래. 그 값에 파는 사람 있으면 사고, 없으면 안 살래." 값을 내가 정하는 대신, <b>안 사질 수도 있어.</b></p>
+      <p><b>② 시장가 —</b> "값은 상관없어. <b>지금 당장 100장 사줘.</b>" 무조건 사지는데, <b>얼마에 사질지는 나도 몰라.</b> 앞에 있는 아이한테 5,100원에 10장 사고, 다음 아이한테 5,300원에 20장 사고… 이렇게 <b>줄을 따라 올라가면서</b> 사거든.</p>
+      <p>여기서 사고가 나. 파는 아이가 몇 명 없는 딱지를 <b>시장가로 100장</b> 사겠다고 하면? <b>맨 끝에 있는 "1만 원 받아야 팔아" 하는 아이 것까지 사게 돼.</b> 5,100원인 줄 알았는데 평균 7,000원에 산 거지. 아래에서 직접 해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SIMULATOR · 시장가로 사면 실제로 얼마에 사지나</div>
+      <p class="labsub">현재가는 둘 다 <b>50,000원</b>입니다. 종목을 바꿔가며 같은 수량을 시장가로 사보세요. <b>붉게 칠해지는 호가가 내가 걷어간 물량</b>입니다.</p>
+
+      <div class="btnrow" id="mkStock">
+        <button data-v="0" class="on">대형주 (호가가 두껍다)</button>
+        <button data-v="1">중소형주 (호가가 얇다)</button>
+      </div>
+
+      <div class="bookwrap" id="bk2"></div>
+
+      <div class="ctrl-row" style="margin-top:16px;">
+        <label for="mkQty">시장가 매수 수량</label>
+        <input type="range" id="mkQty" min="100" max="3000" step="100" value="500">
+        <span class="val" id="mkQtyV">500주</span>
+      </div>
+
+      <div class="readout">
+        <div><span class="rk">내가 본 가격</span><span class="rv">50,100원</span><span class="rn">1호가</span></div>
+        <div><span class="rk">실제 평균 체결가</span><span class="rv" id="mkAvg">50,100원</span></div>
+        <div><span class="rk">더 낸 돈</span><span class="rv" id="mkSlip">+0.0%</span><span class="rn" id="mkSlipWon">0원</span></div>
+      </div>
+
+      <div class="verdict" id="mkVerdict" style="--vc:var(--up)">
+        <div class="vh">판정</div>
+        <div class="vt">대형주에서는 시장가가 별문제가 되지 않습니다</div>
+        <p>호가마다 수천 주씩 쌓여 있어서 <b>500주 정도는 1호가에서 다 체결</b>됩니다. 이런 종목이라면 시장가로 사도 손해가 거의 없습니다. 이제 <b>「중소형주」 버튼</b>을 누르고 같은 수량을 사보세요.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>주문 유형 정리</h3>
+      <div class="tablewrap">
+        <table class="cmp">
+          <thead>
+            <tr><th>주문 유형</th><th>뜻</th><th>언제 쓰나</th><th>주의</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>지정가</th>
+              <td>가격을 정해서 그 값 이하(매수)로만 체결</td>
+              <td><b>기본으로 쓸 것.</b> 대부분의 상황</td>
+              <td>체결이 안 될 수 있음</td>
+            </tr>
+            <tr>
+              <th>시장가</th>
+              <td>가격 무관, 즉시 체결</td>
+              <td>유동성 큰 종목을 급히 정리할 때</td>
+              <td><b>얇은 종목에서 크게 밀림</b></td>
+            </tr>
+            <tr>
+              <th>조건부지정가</th>
+              <td>장중엔 지정가, 미체결 시 마감 동시호가에 시장가 전환</td>
+              <td>당일 안에 반드시 체결하고 싶을 때</td>
+              <td>마감가가 불리할 수 있음</td>
+            </tr>
+            <tr>
+              <th>최유리지정가</th>
+              <td>주문 시점의 <b>반대편 1호가</b>로 지정가 주문</td>
+              <td>빨리 체결하되 무한정 밀리긴 싫을 때</td>
+              <td>1호가 물량이 적으면 잔량이 남음</td>
+            </tr>
+            <tr>
+              <th>최우선지정가</th>
+              <td>주문 시점의 <b>같은 편 1호가</b>로 지정가 주문</td>
+              <td>줄 맨 앞에 서고 싶을 때</td>
+              <td>체결이 안 될 수 있음</td>
+            </tr>
+            <tr>
+              <th>IOC / FOK</th>
+              <td>즉시 체결되는 만큼만(IOC) / 전량 아니면 취소(FOK)</td>
+              <td>부분 체결을 통제하고 싶을 때</td>
+              <td>초보에게는 필요 없는 경우가 대부분</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="scrollhint">← 표를 옆으로 밀어보세요 →</div>
+    </div>
+
+    <div class="note">
+      <p><b>실무 원칙 하나만 기억한다면.</b> <b>기본은 언제나 지정가입니다.</b> 시장가는 ① 하루 거래대금이 충분히 큰 종목에서 ② 소액을 ③ 정말 급하게 처리해야 할 때만 쓰세요. 그 외에는 <b>「최유리지정가」가 시장가보다 훨씬 안전한 대안</b>입니다 — 즉시 체결을 노리면서도 <b>가격 상한이 걸려 있기</b> 때문입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3. 방향 읽기 ══════════ -->
+  <section id="direction">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">03 · 솔직한 이야기</span>
+      <h2>호가창으로 오를지 내릴지 알 수 있나</h2>
+      <p class="one">결론부터 — <b>대체로 알 수 없습니다.</b> 그 이유를 알아야 잘못된 판단을 피할 수 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>사려는 아이들 줄이 <b>훨씬 길면</b> 딱지 값이 오를 것 같지? 그럴듯한데, <b>함정이 두 개</b> 있어.</p>
+      <p><b>함정 ①</b> — 줄에 서 있는 건 <b>"이 값이면 살게"</b> 하는 사람들이야. 값이 정말 오르기 시작하면 <b>그 줄은 순식간에 사라져.</b> "5,000원이면 산다"던 아이가 5,500원엔 안 사니까. <b>보이는 줄은 언제든 없어질 수 있어.</b></p>
+      <p><b>함정 ②</b> — 어떤 어른들은 <b>살 생각도 없으면서 일부러 큰 팻말을 세워둬.</b> 남들이 "우와 사려는 사람 많네" 하고 따라 사면, 그때 슬쩍 팻말을 치우고 자기 것을 팔아버려. <b>보이는 게 진짜가 아닐 수 있다는 뜻이야.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SCENARIO · 네 가지 호가창을 비교해보세요</div>
+      <p class="labsub">각 버튼을 눌러 호가창이 어떻게 달라지는지, 그리고 <b>그걸로 무엇을 알 수 있고 없는지</b>를 확인하세요.</p>
+
+      <div class="btnrow" id="dirBtns">
+        <button data-v="0" class="on">① 매수 우위처럼 보임</button>
+        <button data-v="1">② 매도 우위처럼 보임</button>
+        <button data-v="2">③ 허수 주문</button>
+        <button data-v="3">④ 호가가 텅 빔</button>
+      </div>
+
+      <div class="bookwrap" id="bk3"></div>
+
+      <div class="readout">
+        <div><span class="rk">매도 총잔량</span><span class="rv" id="dirAsk" style="color:var(--down)">62,700</span></div>
+        <div><span class="rk">매수 총잔량</span><span class="rv" id="dirBid" style="color:var(--up)">75,700</span></div>
+        <div><span class="rk">비율</span><span class="rv" id="dirRatio">1.21</span><span class="rn">매수 / 매도</span></div>
+      </div>
+
+      <div class="verdict" id="dirVerdict" style="--vc:var(--up)">
+        <div class="vh">시나리오 ①</div>
+        <div class="vt">매수 잔량이 많다 — 그래서 오를까요?</div>
+        <p>사려는 대기 물량이 파는 쪽보다 많습니다. 직관적으로는 상승 신호처럼 보입니다. <b>그런데 이 잔량은 「지금 이 가격이면 사겠다」는 뜻일 뿐입니다.</b> 가격이 오르기 시작하면 그 주문들은 대부분 <b>체결되지 않고 취소</b>됩니다. 실제로 잔량 비율과 이후 주가 방향의 관계는 <b>일관되지 않습니다.</b></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>그럼 호가창은 왜 보나</h3>
+      <p>방향 예측이 아니라 <b>실행을 위해</b> 봅니다. 구체적으로 세 가지입니다.</p>
+      <p><b>① 지금 얼마에 사고팔 수 있는지.</b> 1호가 가격과 그 물량을 보면 <b>내 주문이 즉시 체결될지</b>를 알 수 있습니다.</p>
+      <p><b>② 내 주문 크기가 시장에 비해 큰지.</b> 내가 사려는 수량이 1~3호가 물량보다 크다면 <b>나 자신이 가격을 밀어 올리게 됩니다.</b> 이건 예측이 아니라 산수입니다.</p>
+      <p><b>③ 스프레드가 얼마나 벌어져 있는지.</b> 1호가 매도와 1호가 매수의 차이가 크다면 <b>사자마자 그만큼 손실 상태</b>로 시작합니다. 왕복 비용이 수수료보다 클 수 있습니다.</p>
+
+      <h3>체결강도라는 지표</h3>
+      <p>HTS에 <b>체결강도</b>라는 값이 있습니다. <b>매도호가를 걷어가며 체결된 물량</b>(적극적 매수) 대비 <b>매수호가에 던져서 체결된 물량</b>(적극적 매도)의 비율입니다. 100보다 크면 걷어가는 쪽이 우세했다는 뜻입니다.</p>
+      <p>잔량보다는 의미가 있습니다 — <b>실제로 체결된 것</b>이니까요. 다만 이것도 <b>이미 일어난 일</b>이고, 큰 주문을 잘게 쪼개는 알고리즘이 일반화된 지금은 해석이 더 어려워졌습니다. <b>참고 지표이지 신호가 아닙니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4. 거래량 ══════════ -->
+  <section id="volume">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">04 · 거래량</span>
+      <h2>거래량이 말해주는 것, 그리고 말해주지 않는 것</h2>
+      <p class="one">먼저 아주 흔한 오해 하나를 걷어내고 시작합니다.</p>
+    </div>
+
+    <div class="note">
+      <p><b>「매수 거래량」과 「매도 거래량」은 따로 존재하지 않습니다.</b> 모든 체결에는 <b>산 사람 1명과 판 사람 1명</b>이 반드시 있습니다. 100주가 거래됐다면 누군가 100주를 샀고 동시에 누군가 100주를 판 것입니다. 그래서 <b>"오늘은 매수가 매도보다 많았다"는 말은 성립하지 않습니다.</b></p>
+      <p>그럼 "매수세가 강했다"는 무슨 뜻일까요? <b>기다리지 않고 매도호가를 걷어가며 산 물량이 많았다</b>는 뜻입니다. 급한 쪽이 어디였는가의 문제이지, 수량이 더 많았다는 뜻이 아닙니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>거래량은 <b>"오늘 딱지가 몇 장이나 주인이 바뀌었나"</b>야. 값이 오른 것도 내린 것도 아니고, <b>얼마나 활발했는지</b>만 알려줘.</p>
+      <p>그래서 <b>값과 함께 봐야</b> 의미가 생겨. 딱지 값이 올랐는데 <b>수백 장이 거래됐다면</b> 많은 아이들이 "이거 좋다!" 하고 동의한 거야. 그런데 값은 올랐는데 <b>겨우 세 장 거래됐다면?</b> 그건 그냥 <b>두세 명이 자기들끼리 비싸게 주고받은 것</b>일 수도 있어. 아래에서 네 가지 경우를 보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CHART · 가격과 거래량을 같이 읽기</div>
+      <p class="labsub">위는 주가, 아래 막대는 거래량입니다. 같은 모양의 상승도 <b>거래량이 다르면 전혀 다른 이야기</b>가 됩니다.</p>
+
+      <div class="btnrow" id="volBtns">
+        <button data-v="0" class="on">① 거래량 동반 상승</button>
+        <button data-v="1">② 거래량 없는 상승</button>
+        <button data-v="2">③ 거래량 폭증 후 급락</button>
+        <button data-v="3">④ 바닥에서 거래량 소멸</button>
+      </div>
+
+      <svg viewBox="0 0 640 320" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주가 흐름과 거래량 막대를 함께 보여주는 차트">
+        <line class="axis" x1="60" y1="180" x2="612" y2="180"/>
+        <line class="axis" x1="60" y1="20" x2="60" y2="180"/>
+        <line class="axis" x1="60" y1="290" x2="612" y2="290"/>
+        <text class="axt" x="52" y="24" text-anchor="end">고</text>
+        <text class="axt" x="52" y="184" text-anchor="end">저</text>
+        <text class="lbl" x="64" y="16">주가</text>
+        <text class="lbl" x="64" y="212">거래량</text>
+        <g id="volBars"></g>
+        <path id="volPrice" fill="none" stroke="#C0392B" stroke-width="2.6" stroke-linejoin="round"/>
+        <text class="axt" x="336" y="312" text-anchor="middle">시간 →</text>
+      </svg>
+
+      <div class="verdict" id="volVerdict" style="--vc:var(--up)">
+        <div class="vh">시나리오 ①</div>
+        <div class="vt">거래량이 늘면서 오른다 — 가장 건강한 모양</div>
+        <p>많은 참여자가 <b>실제로 돈을 걸고 동의</b>하면서 올라간 상승입니다. 그만큼 <b>되돌림이 나와도 받쳐줄 사람이 있다</b>는 뜻이기도 합니다. 다만 이건 <b>「이미 일어난 일에 대한 설명」</b>이지 앞으로 더 오른다는 보장은 아닙니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>거래량보다 거래대금</h3>
+      <p><b>거래량(주식 수)</b>은 주가가 다르면 비교가 안 됩니다. 1,000원짜리 10만 주와 100,000원짜리 1만 주는 <b>같은 10억 원</b>입니다. 종목 간 비교나 <b>「내 주문이 이 시장에 비해 큰가」</b>를 볼 때는 <b>거래대금</b>을 봐야 합니다.</p>
+      <p>실용적인 기준 하나 — <b>내 주문 금액이 그 종목 하루 거래대금의 1%를 넘는다면</b>, 나 자신이 가격에 영향을 줄 가능성을 생각해야 합니다. 하루 거래대금 1억 원인 종목에 1,000만 원을 넣는다면 <b>사는 것도 파는 것도 쉽지 않습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5. 유동성 함정 ══════════ -->
+  <section id="liquidity">
+    <div class="prod-head" style="--edge:var(--down)">
+      <span class="prod-tag">05 · 유동성 함정</span>
+      <h2>살 때는 몰랐는데 팔 때 알게 되는 것</h2>
+      <p class="one">거래량이 적은 종목의 진짜 위험은 <b>사는 순간이 아니라 파는 순간</b>에 드러납니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>아무도 안 모으는 희귀한 딱지를 샀어. 살 때는 좋았지. 그런데 <b>팔려고 보니 사겠다는 아이가 딱 두 명</b>이야. 한 명은 "3,000원이면 살게", 다른 한 명은 "2,000원이면". 넌 5,000원에 샀는데 말이야.</p>
+      <p>다 팔려면 <b>2,000원에라도 넘겨야 해.</b> 딱지에 문제가 생긴 것도 아니고 값이 떨어진 것도 아닌데, <b>단지 사려는 사람이 없어서</b> 반값이 되는 거야. 이게 <b>유동성 위험</b>이야. 아래에서 확인해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SIMULATOR · 이 종목을 팔면 얼마나 밀릴까</div>
+      <p class="labsub">현재가 <b>50,000원</b>인 종목을 <b>시장가로 전량 매도</b>한다고 해봅시다. 종목 유형과 금액을 바꿔보세요.</p>
+
+      <div class="btnrow" id="lqStock">
+        <button data-v="0" class="on">대형주</button>
+        <button data-v="1">중소형주</button>
+        <button data-v="2">거래 거의 없는 종목</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="lqAmt">팔려는 금액</label>
+        <input type="range" id="lqAmt" min="100" max="10000" step="100" value="1000">
+        <span class="val" id="lqAmtV">1,000만원</span>
+      </div>
+
+      <div class="stack">
+        <div class="srow">
+          <span class="sname">받고 싶던 돈</span>
+          <div class="strack"><div class="sfill" style="background:#5B5648;width:100%;opacity:.35"></div></div>
+          <span class="sval" id="lqWant">1,000만</span>
+        </div>
+        <div class="srow">
+          <span class="sname">실제 받는 돈</span>
+          <div class="strack"><div class="sfill" id="lqBar" style="background:#C0392B;width:100%"></div></div>
+          <span class="sval" id="lqGet">1,000만</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div><span class="rk">평균 체결가</span><span class="rv" id="lqAvg">50,000원</span></div>
+        <div><span class="rk">밀린 폭</span><span class="rv" id="lqSlip" style="color:var(--down)">0.0%</span></div>
+        <div><span class="rk">사라진 돈</span><span class="rv" id="lqLoss">0원</span></div>
+      </div>
+
+      <div class="verdict" id="lqVerdict" style="--vc:var(--down)">
+        <div class="vh">판정</div>
+        <div class="vt">대형주에서는 이 정도 금액이 문제되지 않습니다</div>
+        <p>1~2호가에서 전부 소화됩니다. 이제 <b>「거래 거의 없는 종목」</b> 버튼을 누르고 같은 금액을 팔아보세요.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>유동성이 사라지는 순간은 따로 있습니다</h3>
+      <p>더 나쁜 것은 <b>평소에는 그럭저럭 거래되던 종목도 정작 필요할 때 유동성이 마른다</b>는 점입니다. 악재 공시가 나오거나 시장 전체가 급락할 때, <b>사려던 주문들이 일제히 취소되면서 호가창이 텅 빕니다.</b> 팔아야 하는 사람은 많은데 사려는 사람이 없으니 <b>하한가에 잠기는</b> 일이 생깁니다.</p>
+      <p>그래서 유동성은 <b>「평소 거래량」이 아니라 「최악의 날에도 빠져나올 수 있는가」</b>로 판단해야 합니다.</p>
+
+      <h3>확인하는 방법</h3>
+      <p><b>① 하루 평균 거래대금.</b> 며칠치를 보세요. 하루만 튄 것일 수 있습니다. <b>② 호가 스프레드.</b> 1호가 매수·매도 차이가 0.5%를 넘으면 이미 신호입니다. <b>③ 10호가 총잔량.</b> 내 예상 투자금과 비교해보세요. <b>④ 상장주식수 대비 유통 물량.</b> 대주주 지분이 압도적이면 실제 유통량은 훨씬 적습니다.</p>
+
+      <h3>「소수 거래로 만든 가격」</h3>
+      <p>거래가 거의 없는 종목은 <b>단 몇 주의 거래로 가격이 크게 움직입니다.</b> 호가가 비어 있으면 100주 매수만으로 몇 % 상승이 만들어집니다. 차트에는 <b>멀쩡한 상승</b>으로 그려지지만 실제로는 <b>아무도 그 가격에 사고팔 수 없습니다.</b></p>
+      <p>이 성질은 악용되기도 합니다. 얇은 호가에서 <b>가격을 만들어 놓고</b> 관심을 끈 뒤 물량을 넘기는 방식입니다. <b>거래량 없이 급등하는 종목을 조심하라</b>는 조언의 근거가 이것입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6. 수급 ══════════ -->
+  <section id="flow">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">06 · 수급</span>
+      <h2>외국인·기관·개인 — 누가 사고 누가 팔았나</h2>
+      <p class="one">먼저 반드시 알아야 할 산수가 하나 있습니다.</p>
+    </div>
+
+    <div class="note">
+      <p><b>세 주체의 순매수를 다 더하면 0입니다.</b> 누군가 샀다면 누군가는 판 것이기 때문입니다(정확히는 기타법인까지 포함해 합이 0). 그래서 <b>"개인이 대량 매수했다"는 말은 곧 "외국인·기관이 대량 매도했다"는 말과 같습니다.</b> 같은 사실을 어느 쪽에서 보느냐의 차이일 뿐입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>딱지 시장에 <b>세 무리</b>가 있어. <b>외국에서 온 큰손 형들</b>, <b>회사 돈으로 사는 아저씨들</b>, 그리고 <b>우리 같은 개인</b>이야.</p>
+      <p>사람들은 "큰손 형들이 사면 오른다"고 믿어. 그럴 때가 있긴 해. 그런데 <b>이 정보는 대개 장이 끝난 뒤에 나와.</b> 즉 <b>이미 다 오르고 난 다음에</b> "아, 큰손이 샀구나" 하고 알게 되는 거야. <b>그걸 보고 따라 사면 이미 늦은 경우가 많아.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SCENARIO · 네 가지 수급 조합</div>
+      <p class="labsub">각 조합이 <b>일반적으로</b> 어떻게 해석되는지, 그리고 그 해석의 한계는 무엇인지 정리했습니다.</p>
+
+      <div class="btnrow" id="flBtns">
+        <button data-v="0" class="on">외인↑ 기관↑ 개인↓</button>
+        <button data-v="1">외인↓ 기관↓ 개인↑</button>
+        <button data-v="2">외인↑ 기관↓ 개인↓</button>
+        <button data-v="3">외인↓ 기관↑ 개인↓</button>
+      </div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="외국인 기관 개인의 순매수 방향을 막대로 표현한 그림">
+        <line class="axis" x1="60" y1="100" x2="612" y2="100"/>
+        <text class="axt" x="52" y="104" text-anchor="end">0</text>
+        <g id="flBars"></g>
+        <text class="lbl" x="160" y="192" text-anchor="middle">외국인</text>
+        <text class="lbl" x="336" y="192" text-anchor="middle">기관</text>
+        <text class="lbl" x="512" y="192" text-anchor="middle">개인</text>
+        <text class="axt" x="620" y="40" text-anchor="end">순매수</text>
+        <text class="axt" x="620" y="170" text-anchor="end">순매도</text>
+      </svg>
+
+      <div class="verdict" id="flVerdict" style="--vc:var(--up)">
+        <div class="vh">조합 ①</div>
+        <div class="vt">외국인·기관이 함께 사고 개인이 파는 경우</div>
+        <p>가장 「좋다」고 여겨지는 조합입니다. 자금력이 크고 분석 인력을 갖춘 쪽이 동시에 매수했다는 뜻이니까요. <b>다만 이건 이미 지나간 하루에 대한 기록입니다.</b> 그리고 외국인 매수 중에는 <b>공매도 상환, 지수 편입에 따른 기계적 매수, 차익거래</b>처럼 종목 전망과 무관한 것도 섞여 있습니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>수급 데이터를 볼 때 조심할 것</h3>
+      <p><b>① 후행 정보입니다.</b> 확정치는 장 마감 후에 나옵니다. 장중 잠정치는 부정확할 수 있습니다.</p>
+      <p><b>② 「외국인」은 하나의 생각을 가진 집단이 아닙니다.</b> 수십 년 보는 연기금부터 초 단위로 거래하는 알고리즘까지 전부 「외국인」으로 집계됩니다. 이들이 같은 이유로 사는 게 아닙니다.</p>
+      <p><b>③ 종목 전망과 무관한 매매가 섞여 있습니다.</b> 지수 편입·제외에 따른 기계적 매매, 선물과의 차익거래, 공매도 상환, 환헤지 조정 등이 모두 순매수로 집계됩니다.</p>
+      <p><b>④ 「개인은 늘 틀린다」는 것도 과장입니다.</b> 개인이 산 뒤에 오른 경우도 많습니다. 이 통념을 그대로 믿고 <b>반대로 하는 것</b> 역시 근거 없는 전략입니다.</p>
+
+      <h3>그래도 쓸모가 있는 경우</h3>
+      <p><b>하루가 아니라 추세로 볼 때</b>입니다. 특정 주체가 <b>수 주에서 수 개월에 걸쳐 꾸준히</b> 한 방향으로 쌓고 있다면, 단발성 이벤트보다는 의미 있는 정보일 가능성이 큽니다. 하지만 이것도 <b>다른 근거(실적·업황)와 함께</b> 볼 때 이야기이지, 수급만 보고 사는 건 <b>남의 발자국을 따라 걷는 것</b>에 가깝습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7. 시간대 ══════════ -->
+  <section id="time">
+    <div class="prod-head" style="--edge:var(--down)">
+      <span class="prod-tag">07 · 시간대</span>
+      <h2>시간대마다 규칙이 다릅니다</h2>
+      <p class="one">모르고 주문했다가 예상과 전혀 다른 가격에 체결되는 대표적인 구간들.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>벼룩시장에도 <b>규칙이 다른 시간</b>이 있어. 문을 열기 직전 30분 동안은 <b>거래를 하지 않고 주문만 모아둬.</b> 그리고 문 여는 순간 <b>모아둔 걸 한 번에 딱 하나의 가격으로</b> 처리해. 이걸 <b>동시호가</b>라고 해.</p>
+      <p>이때는 호가창에 보이는 게 <b>「지금 이 가격일 것 같아요」라는 예상치</b>일 뿐이야. 마지막 순간에 큰 주문이 들어오면 <b>확 바뀔 수 있어.</b> 그래서 이 시간에 시장가로 주문하면 <b>생각과 전혀 다른 값에 사질 수 있어.</b></p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>시간대</th><th>어떻게 체결되나</th><th>주의할 점</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>장 시작 전<br>동시호가</th>
+            <td>주문을 모아뒀다가 <b>단일 가격</b>으로 한 번에 체결</td>
+            <td>표시되는 예상 체결가는 <b>계속 바뀝니다.</b> 시장가 주문은 시가가 크게 튀면 그대로 당합니다</td>
+          </tr>
+          <tr>
+            <th>장중<br>(정규장)</th>
+            <td>가격·시간 우선으로 계속 체결</td>
+            <td>가장 정상적인 구간. 다만 <b>개장 직후와 마감 직전은 변동이 큽니다</b></td>
+          </tr>
+          <tr>
+            <th>장 마감<br>동시호가</th>
+            <td>다시 주문을 모아 <b>종가를 결정</b></td>
+            <td>종가에 영향을 주려는 주문이 몰리기도 합니다. <b>조건부지정가가 여기서 시장가로 전환</b>됩니다</td>
+          </tr>
+          <tr>
+            <th>시간외<br>거래</th>
+            <td>종가로 거래하거나, 일정 시간마다 단일가로 체결</td>
+            <td><b>참여자가 훨씬 적어 호가가 매우 얇습니다.</b> 가격 변동 범위에도 제한이 있습니다</td>
+          </tr>
+          <tr>
+            <th>VI 발동<br>(변동성 완화)</th>
+            <td>가격이 급변하면 <b>2분간 단일가</b>로 전환</td>
+            <td>갑자기 체결이 멈춘 것처럼 보입니다. <b>고장이 아닙니다.</b> 급등락 시 자주 발동합니다</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="scrollhint">← 표를 옆으로 밀어보세요 →</div>
+
+    <div class="plain">
+      <b>확인이 필요합니다.</b> 정확한 시간대·가격 제한폭·VI 발동 기준은 제도 변경으로 조정되어 왔고 시장(코스피·코스닥)이나 종목 유형에 따라서도 다릅니다. <b>거래 전 증권사 안내나 거래소 공지</b>로 현재 기준을 확인하세요.
+    </div>
+
+    <div class="note">
+      <p><b>가장 흔한 사고.</b> 장 시작 전에 <b>시장가로 예약주문</b>을 걸어두는 것입니다. 밤사이 좋은 뉴스가 나와 시가가 <b>+15%</b>로 출발하면, 그 가격에 그대로 체결됩니다. <b>「어제 종가 근처에서 사질 것」이라는 기대는 아무 근거가 없습니다.</b> 예약주문은 반드시 <b>지정가</b>로 거세요.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 8. 체크리스트 ══════════ -->
+  <section id="checklist">
+    <div class="prod-head" style="--edge:var(--warn-ink)">
+      <span class="prod-tag">08 · 실전</span>
+      <h2>주문 버튼을 누르기 전 8초</h2>
+      <p class="one">아래를 확인하는 데 8초면 충분하고, 그 8초가 대부분의 주문 사고를 막습니다.</p>
+    </div>
+
+    <ul class="check" id="obCheck">
+      <li><b>지정가인가 시장가인가?</b> 기본은 지정가. 시장가를 골랐다면 <b>왜</b> 골랐는지 답할 수 있어야 합니다.</li>
+      <li><b>수량의 0 개수를 다시 셌는가?</b> 10주와 100주, 1,000주. <b>가장 흔하고 가장 비싼 실수</b>입니다.</li>
+      <li><b>가격 자리를 확인했는가?</b> 50,000원 자리에 5,000원 또는 500,000원을 넣지 않았는지.</li>
+      <li><b>매수 탭인가 매도 탭인가?</b> 반대로 눌러 체결되면 <b>왕복 비용과 세금이 그대로 손실</b>입니다.</li>
+      <li><b>1~3호가 물량이 내 수량보다 많은가?</b> 적다면 <b>내가 가격을 밀어 올리게 됩니다.</b></li>
+      <li><b>스프레드가 얼마인가?</b> 1호가 매수·매도 차이가 크면 사자마자 손실로 시작합니다.</li>
+      <li><b>지금이 동시호가 시간대인가?</b> 08:30~09:00, 15:20~15:30 무렵이라면 규칙이 다릅니다.</li>
+      <li><b>이 금액이 하루 거래대금에 비해 큰가?</b> 1%를 넘는다면 <b>나눠서 주문</b>하는 것을 고려하세요.</li>
+    </ul>
+    <div class="checkcount" id="obCheckCount">0 / 8 확인함</div>
+
+    <h3>사고가 났을 때</h3>
+    <p><b>미체결 주문은 취소·정정이 됩니다.</b> 잘못 냈다는 걸 알아차렸다면 <b>즉시 주문 내역에서 취소</b>하세요. 하지만 <b>이미 체결된 주문은 되돌릴 수 없습니다.</b> 시장가 주문이 위험한 진짜 이유가 이것입니다 — <b>취소할 시간 자체를 주지 않습니다.</b></p>
+    <p>체결된 뒤에 발견했다면, <b>당황해서 곧바로 반대매매를 하는 것</b>이 두 번째 실수가 되는 경우가 많습니다. 잠시 멈추고 <b>지금 이 포지션을 원래 계획대로 들고 갈 수 있는지</b>부터 판단하세요.</p>
+
+    <div class="pc">
+      <div class="good">
+        <h5>◤ 이렇게 하세요</h5>
+        <ul>
+          <li><b>지정가를 기본으로.</b> 급하면 최유리지정가.</li>
+          <li><b>큰 금액은 나눠서.</b> 한 번에 다 넣지 않습니다.</li>
+          <li><b>주문 전 호가창을 한 번 본다.</b> 1~3호가 물량과 스프레드.</li>
+          <li><b>거래대금이 충분한 종목을 고른다.</b> 유동성도 종목 선택 기준입니다.</li>
+          <li><b>예약주문은 반드시 지정가로.</b></li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h5>◤ 이건 피하세요</h5>
+        <ul>
+          <li><b>얇은 종목에 시장가.</b> 이 문서에서 가장 강조하는 것입니다.</li>
+          <li><b>급등하는 종목을 따라 시장가로 매수.</b> 최악의 조합입니다.</li>
+          <li><b>호가 잔량만 보고 방향 판단.</b> 언제든 취소될 수 있는 숫자입니다.</li>
+          <li><b>수급 뉴스를 보고 다음 날 추격 매수.</b> 이미 지나간 정보입니다.</li>
+          <li><b>거래량 없이 급등한 종목 매수.</b> 팔 때 사줄 사람이 없습니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>마지막으로.</b> 이 문서의 내용은 <b>수익을 늘려주지 않습니다.</b> 대신 <b>안 내도 될 손실을 줄여줍니다.</b> 좋은 종목을 골라놓고 주문 한 번에 몇 %를 흘리는 일, 팔아야 할 때 못 파는 일 — 이런 건 실력이 아니라 <b>알고 모르고의 문제</b>입니다.</p>
+      <p>그리고 이 시리즈에서 반복되는 원칙은 여기서도 같습니다 — <b>이해하지 못한 버튼은 누르지 않는 것.</b></p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 호가창 읽는 법<br>
+    <a href="index.html">← 문서 목록으로</a> · <a href="financial-products-guide.html">금융상품 도감</a> · <a href="asset-strategy-guide.html">자산군별 접근법</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 모든 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.<br>
+    호가·주문 유형·시간대 규정은 제도 변경으로 달라질 수 있으므로 거래 전 증권사 안내로 확인하세요.<br>
+    시뮬레이터의 호가와 수치는 구조를 이해하기 위해 만든 예시이며 실제 종목의 시세가 아닙니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 호가창 렌더러 ══════════ */
+function renderBook(el, asks, bids, opt){
+  opt = opt || {};
+  var maxQ = 0;
+  asks.concat(bids).forEach(function(r){ if(r.q > maxQ) maxQ = r.q; });
+  var eaten = opt.eaten || {};
+
+  var h = '<div class="book"><div class="bhead"><div>매도 잔량</div><div>호가</div><div>매수 잔량</div></div>';
+
+  // 매도호가는 비싼 것부터 위에서 아래로
+  asks.slice().reverse().forEach(function(r){
+    var w = maxQ ? (r.q / maxQ * 100) : 0;
+    var cls = 'brow ask' + (eaten[r.p] ? ' eaten' : '');
+    h += '<div class="' + cls + '">' +
+         '<div class="qty l"><div class="qbar" style="width:' + w + '%"></div><span>' + r.q.toLocaleString('ko-KR') + '</span></div>' +
+         '<div class="px">' + r.p.toLocaleString('ko-KR') + '</div>' +
+         '<div class="qty r"></div></div>';
+  });
+
+  // 현재가 줄
+  if(opt.current){
+    h += '<div class="brow cur"><div class="qty l"></div><div class="px">' +
+         opt.current.toLocaleString('ko-KR') + '</div><div class="qty r"></div></div>';
+  }
+
+  // 매수호가는 비싼 것부터
+  bids.forEach(function(r){
+    var w = maxQ ? (r.q / maxQ * 100) : 0;
+    var cls = 'brow bid' + (eaten[r.p] ? ' eaten' : '');
+    h += '<div class="' + cls + '">' +
+         '<div class="qty l"></div>' +
+         '<div class="px">' + r.p.toLocaleString('ko-KR') + '</div>' +
+         '<div class="qty r"><div class="qbar" style="width:' + w + '%"></div><span>' + r.q.toLocaleString('ko-KR') + '</span></div></div>';
+  });
+
+  var ta = asks.reduce(function(s, r){ return s + r.q; }, 0);
+  var tb = bids.reduce(function(s, r){ return s + r.q; }, 0);
+  h += '<div class="bfoot"><div>' + ta.toLocaleString('ko-KR') + '</div><div>총잔량</div><div>' +
+       tb.toLocaleString('ko-KR') + '</div></div></div>';
+
+  el.innerHTML = h;
+}
+
+/* 시장가 체결 계산 — 호가를 순서대로 소진합니다. */
+function sweep(levels, qty){
+  var remain = qty, cost = 0, used = {}, n = 0;
+  for(var i = 0; i < levels.length && remain > 0; i++){
+    var take = Math.min(remain, levels[i].q);
+    if(take > 0){ cost += take * levels[i].p; remain -= take; used[levels[i].p] = true; n++; }
+  }
+  var filled = qty - remain;
+  return { filled:filled, cost:cost, avg: filled ? cost / filled : 0, used:used, levels:n, unfilled:remain };
+}
+
+/* ══════════ 호가 데이터 ══════════ */
+var BOOKS = {
+  big: {
+    asks:[{p:50100,q:5200},{p:50200,q:6800},{p:50300,q:4100},{p:50400,q:7500},{p:50500,q:5900},
+          {p:50600,q:8200},{p:50700,q:6100},{p:50800,q:9400},{p:50900,q:7000},{p:51000,q:12500}],
+    bids:[{p:50000,q:6300},{p:49900,q:7100},{p:49800,q:5400},{p:49700,q:8800},{p:49600,q:6200},
+          {p:49500,q:9100},{p:49400,q:7600},{p:49300,q:5900},{p:49200,q:8300},{p:49100,q:11000}]
+  },
+  small: {
+    asks:[{p:50100,q:120},{p:50300,q:80},{p:50600,q:210},{p:51000,q:65},{p:51500,q:150},
+          {p:52000,q:90},{p:52800,q:40},{p:53500,q:180},{p:54200,q:55},{p:55000,q:300}],
+    bids:[{p:50000,q:95},{p:49800,q:60},{p:49400,q:130},{p:48900,q:45},{p:48200,q:110},
+          {p:47500,q:70},{p:46800,q:35},{p:46000,q:160},{p:45100,q:50},{p:44000,q:220}]
+  },
+  dead: {
+    asks:[{p:50500,q:30},{p:52000,q:15},{p:54000,q:40},{p:57000,q:20},{p:60000,q:100},
+          {p:63000,q:25},{p:66000,q:60},{p:70000,q:35},{p:75000,q:80},{p:80000,q:150}],
+    bids:[{p:49000,q:25},{p:47000,q:12},{p:44000,q:30},{p:41000,q:18},{p:38000,q:55},
+          {p:35000,q:20},{p:32000,q:40},{p:29000,q:15},{p:26000,q:70},{p:22000,q:120}]
+  }
+};
+
+/* ══════════ 1. 기본 호가창 ══════════ */
+renderBook(document.getElementById('bk1'), BOOKS.big.asks, BOOKS.big.bids, { current:50000 });
+
+var BKPIN = [
+  ['var(--down)', '① 매도 잔량', '「이 가격이면 팔겠다」고 걸어둔 물량',
+   '위쪽 파란 구간입니다. <b>50,100원에 5,200주를 팔겠다는 주문이 대기 중</b>이라는 뜻입니다. 내가 지금 사려면 이 물량을 걷어와야 합니다. 위로 올라갈수록 비싼 가격이고, <b>가장 아래(50,100원)가 지금 살 수 있는 가장 싼 가격</b>입니다.'],
+  ['var(--up)', '② 매수 잔량', '「이 가격이면 사겠다」고 걸어둔 물량',
+   '아래쪽 빨간 구간입니다. <b>50,000원에 6,300주를 사겠다는 주문이 대기 중</b>입니다. 내가 지금 팔려면 이쪽에 던져야 합니다. <b>가장 위(50,000원)가 지금 팔 수 있는 가장 비싼 가격</b>입니다.'],
+  ['var(--ink)', '③ 현재가', '마지막으로 체결된 가격',
+   '가운데 검은 줄입니다. <b>「지금 살 수 있는 가격」이 아니라 「방금 거래가 성사된 가격」</b>입니다. 지금 사려면 50,100원을 내야 하고, 팔려면 50,000원을 받습니다. <b>현재가는 이미 지나간 값이라는 점</b>이 헷갈리기 쉬운 부분입니다.'],
+  ['var(--neutral)', '④ 스프레드', '사는 값과 파는 값의 틈',
+   '1호가 매도(50,100)와 1호가 매수(50,000)의 차이인 <b>100원(0.2%)</b>입니다. <b>지금 사서 곧바로 팔면 이만큼 손해</b>입니다. 거래가 활발한 종목일수록 이 틈이 좁고, 얇은 종목일수록 크게 벌어집니다. <b>수수료보다 스프레드가 더 큰 비용인 경우가 많습니다.</b>'],
+  ['var(--neutral)', '⑤ 호가단위', '가격이 움직일 수 있는 최소 폭',
+   '이 종목은 <b>100원 단위</b>라서 50,000원과 50,100원 사이에 다른 가격이 존재하지 않습니다. <b>50,050원에 주문을 내는 것 자체가 불가능</b>합니다. 주가가 비쌀수록 단위가 커지고, 단위가 클수록 <b>한 칸 움직일 때의 손익도 큽니다.</b>']
+];
+bindBtnRow('#bkPins', function(v){
+  var d = BKPIN[+v];
+  document.getElementById('bkVerdict').querySelector('.vh').textContent = d[1];
+  verdict('bkVerdict', d[0], d[2], d[3]);
+});
+
+/* ══════════ 2. 시장가 시뮬레이터 ══════════ */
+var MK_KIND = 'big';
+function mkDraw(){
+  var qty = parseInt(document.getElementById('mkQty').value, 10);
+  document.getElementById('mkQtyV').textContent = qty.toLocaleString('ko-KR') + '주';
+
+  var bk = BOOKS[MK_KIND];
+  var r = sweep(bk.asks, qty);
+  renderBook(document.getElementById('bk2'), bk.asks, bk.bids, { current:50000, eaten:r.used });
+
+  var base = 50100;
+  var slip = r.filled ? (r.avg - base) / base * 100 : 0;
+  var extra = r.filled ? (r.avg - base) * r.filled : 0;
+
+  document.getElementById('mkAvg').textContent =
+    r.filled ? Math.round(r.avg).toLocaleString('ko-KR') + '원' : '체결 없음';
+  var se = document.getElementById('mkSlip');
+  se.textContent = pct(slip);
+  se.style.color = slip > 0.5 ? 'var(--up)' : 'var(--ink)';
+  document.getElementById('mkSlipWon').textContent =
+    Math.round(extra).toLocaleString('ko-KR') + '원 더 냈습니다';
+
+  var t, p, col;
+  if(MK_KIND === 'big'){
+    col = 'var(--up)';
+    if(r.levels <= 1){
+      t = '대형주에서는 시장가가 별문제가 되지 않습니다';
+      p = '호가마다 수천 주씩 쌓여 있어서 <b>' + qty.toLocaleString('ko-KR') + '주가 1호가에서 전부 체결</b>됩니다. 이런 종목이라면 시장가로 사도 손해가 거의 없습니다. 이제 <b>「중소형주」 버튼</b>을 누르고 같은 수량을 사보세요.';
+    } else {
+      t = '호가 ' + r.levels + '단계를 걷어갔지만 아직 감당 가능합니다';
+      p = '평균 <b>' + Math.round(r.avg).toLocaleString('ko-KR') + '원</b>에 체결되어 1호가보다 <b>' + pct(slip) + '</b> 비쌉니다. 금액으로는 <b>' + Math.round(extra).toLocaleString('ko-KR') + '원.</b> 유동성이 큰 종목이라 이 정도로 그칩니다 — <b>「중소형주」에서 같은 수량을 사보면 차이가 분명해집니다.</b>';
+    }
+  } else {
+    col = 'var(--down)';
+    if(r.unfilled > 0){
+      t = '호가에 있는 물량을 전부 사도 모자랍니다';
+      p = '보이는 10호가를 <b>전부 걷어가도 ' + r.unfilled.toLocaleString('ko-KR') + '주가 남습니다.</b> 평균 체결가는 <b>' + Math.round(r.avg).toLocaleString('ko-KR') + '원(' + pct(slip) + ')</b>. 이 정도면 <b>내 주문 하나가 주가를 10% 가까이 밀어 올린 것</b>입니다. 그리고 그렇게 올린 가격은 <b>내가 팔려는 순간 사라집니다.</b>';
+    } else if(slip > 3){
+      t = '이것이 시장가 사고입니다';
+      p = '50,100원인 줄 알고 눌렀는데 평균 <b>' + Math.round(r.avg).toLocaleString('ko-KR') + '원</b>에 샀습니다. <b>' + pct(slip) + ' 비싸게, 금액으로 ' + Math.round(extra).toLocaleString('ko-KR') + '원</b>을 더 냈습니다. 호가 <b>' + r.levels + '단계</b>를 타고 올라갔기 때문입니다. <b>지정가로 50,100원에 걸었다면 120주만 사고 멈췄을 것</b>이고, 그게 훨씬 나은 결과입니다.';
+    } else {
+      t = '수량이 적으면 얇은 종목에서도 괜찮습니다';
+      p = '<b>' + qty.toLocaleString('ko-KR') + '주</b>는 1~2호가에서 소화됩니다. 문제는 <b>금액이 커질 때</b>입니다. 수량 손잡이를 오른쪽으로 밀어보세요 — <b>어느 지점부터 급격히 나빠지는지</b> 보입니다.';
+    }
+  }
+  verdict('mkVerdict', col, t, p);
+}
+bindBtnRow('#mkStock', function(v){ MK_KIND = (+v === 1) ? 'small' : 'big'; mkDraw(); });
+document.getElementById('mkQty').addEventListener('input', mkDraw);
+
+/* ══════════ 3. 방향 읽기 ══════════ */
+function mkBook(askQ, bidQ){
+  var a = [], b = [];
+  for(var i = 0; i < 10; i++){
+    a.push({ p:50100 + i * 100, q:askQ[i] });
+    b.push({ p:50000 - i * 100, q:bidQ[i] });
+  }
+  return { asks:a, bids:b };
+}
+var DIR = [
+  { book: mkBook([3200,4100,3800,5200,4600,5800,4900,6300,5500,7100],
+                 [8200,7600,9100,6800,8400,7200,9800,6500,8900,7500]),
+    h:'시나리오 ①', color:'var(--up)',
+    t:'매수 잔량이 많다 — 그래서 오를까요?',
+    p:'사려는 대기 물량이 파는 쪽보다 많습니다. 직관적으로는 상승 신호처럼 보입니다. <b>그런데 이 잔량은 「지금 이 가격이면 사겠다」는 뜻일 뿐입니다.</b> 가격이 오르기 시작하면 그 주문들은 대부분 <b>체결되지 않고 취소</b>됩니다. 실제로 잔량 비율과 이후 주가 방향의 관계는 <b>일관되지 않습니다.</b>' },
+  { book: mkBook([9200,8400,10100,7800,9600,8200,11000,7500,9900,8600],
+                 [3100,3800,3300,4600,3900,5100,4200,5800,4700,6200]),
+    h:'시나리오 ②', color:'var(--down)',
+    t:'매도 잔량이 두껍다 — 저항일까, 기회일까',
+    p:'위쪽에 팔겠다는 물량이 쌓여 있습니다. 흔히 <b>「매물벽」</b>이라 부르며 저항으로 해석합니다. 하지만 <b>정반대 해석도 가능합니다</b> — 큰 매수세가 들어와 이 벽을 걷어내면 <b>위에 남은 물량이 없어져 오히려 급등</b>합니다. 실제로 「돌파」라 불리는 상승은 이런 식으로 일어납니다. <b>같은 그림이 두 가지 반대 결론을 지지한다면, 그건 신호가 아닙니다.</b>' },
+  { book: mkBook([3400,4200,3900,4800,4300,5100,4600,5400,4900,5700],
+                 [42000,3600,4100,3800,4500,4000,4900,4300,5200,4600]),
+    h:'시나리오 ③', color:'var(--warn-ink)',
+    t:'1호가에만 거대한 물량 — 진짜일까요?',
+    p:'매수 1호가에 <b>다른 호가의 열 배가 넘는 물량</b>이 홀로 서 있습니다. 「큰손이 받치고 있다」고 읽기 쉽습니다. 하지만 이런 주문은 <b>가격이 다가가면 사라지는 경우가 흔합니다.</b> 체결시킬 의사 없이 <b>남들의 판단을 흔들려고 내는 주문</b>은 시세조종으로 금지되어 있지만, 호가창에서 큰 물량이 떴다 사라지는 일은 계속 관찰됩니다. <b>한 호가에만 몰린 비정상적 물량은 근거로 삼지 마세요.</b>' },
+  { book: mkBook([120,80,210,65,150,90,40,180,55,300],
+                 [95,60,130,45,110,70,35,160,50,220]),
+    h:'시나리오 ④', color:'var(--warn-ink)',
+    t:'호가가 텅 비었다 — 방향보다 먼저 걱정할 것',
+    p:'양쪽 모두 물량이 거의 없습니다. 이런 종목에서는 <b>방향을 읽는 게 문제가 아닙니다.</b> 몇백 주 주문 하나로 가격이 몇 % 움직이고, <b>내가 팔려는 순간 받아줄 사람이 없습니다.</b> 이 호가창에서 읽어야 할 유일한 정보는 <b>「여기 들어가면 나오기 어렵다」</b>입니다.' }
+];
+function dirShow(i){
+  var s = DIR[i];
+  renderBook(document.getElementById('bk3'), s.book.asks, s.book.bids, { current:50000 });
+  var ta = s.book.asks.reduce(function(x, r){ return x + r.q; }, 0);
+  var tb = s.book.bids.reduce(function(x, r){ return x + r.q; }, 0);
+  document.getElementById('dirAsk').textContent = ta.toLocaleString('ko-KR');
+  document.getElementById('dirBid').textContent = tb.toLocaleString('ko-KR');
+  document.getElementById('dirRatio').textContent = (tb / ta).toFixed(2);
+  document.getElementById('dirVerdict').querySelector('.vh').textContent = s.h;
+  verdict('dirVerdict', s.color, s.t, s.p);
+}
+bindBtnRow('#dirBtns', function(v){ dirShow(+v); });
+
+/* ══════════ 4. 거래량 ══════════ */
+var VOL = [
+  { price:[40,42,41,45,44,49,52,51,57,60,59,65,68,67,73,76],
+    vol:[20,24,22,34,30,46,52,44,63,70,58,78,84,72,90,96],
+    h:'시나리오 ①', color:'var(--up)',
+    t:'거래량이 늘면서 오른다 — 가장 건강한 모양',
+    p:'많은 참여자가 <b>실제로 돈을 걸고 동의</b>하면서 올라간 상승입니다. 그만큼 <b>되돌림이 나와도 받쳐줄 사람이 있다</b>는 뜻이기도 합니다. 다만 이건 <b>「이미 일어난 일에 대한 설명」</b>이지 앞으로 더 오른다는 보장은 아닙니다.' },
+  { price:[40,43,41,47,45,52,50,58,56,64,62,70,68,76,74,82],
+    vol:[18,9,7,11,6,8,5,9,4,7,5,6,4,8,5,6],
+    h:'시나리오 ②', color:'var(--warn-ink)',
+    t:'거래량 없이 오른다 — 차트만 예쁜 상승',
+    p:'가격은 두 배 가까이 올랐는데 <b>거래량은 거의 없습니다.</b> 소수의 거래로 만들어진 가격이라 <b>그 가격에 실제로 사고팔 수 있는 물량이 없습니다.</b> 들어가긴 쉬워도 <b>나올 때 받아줄 사람이 없어</b> 되돌림이 오면 호가가 순식간에 비어버립니다. <b>거래량 없이 급등하는 종목을 조심하라</b>는 조언의 근거가 이것입니다.' },
+  { price:[40,44,48,53,58,64,70,77,85,92,88,74,62,55,50,47],
+    vol:[22,28,34,40,48,56,68,82,96,120,110,88,70,52,40,32],
+    h:'시나리오 ③', color:'var(--down)',
+    t:'거래량 폭증 후 급락 — 손바뀜이 일어난 자리',
+    p:'꼭대기에서 거래량이 <b>가장 크게 터졌습니다.</b> 이 말은 <b>그 가격에 사준 사람이 아주 많았다</b>는 뜻입니다. 그리고 곧바로 떨어졌다면, 그 많은 사람들이 <b>지금 물려 있다</b>는 뜻이기도 합니다. 나중에 가격이 이 근처로 돌아오면 <b>본전에 팔려는 물량</b>이 쏟아지기 쉽습니다.' },
+  { price:[80,72,64,58,52,47,43,40,38,37,36,36,35,36,35,36],
+    vol:[90,74,62,50,40,32,26,20,16,12,9,7,6,5,5,6],
+    h:'시나리오 ④', color:'var(--neutral)',
+    t:'거래량이 말라간다 — 관심이 사라진 상태',
+    p:'가격도 거래량도 함께 줄어 <b>바닥에 눌어붙은</b> 모양입니다. 「팔 사람이 다 팔았다」는 해석도, 「아무도 관심 없다」는 해석도 가능합니다. <b>둘 다 맞을 수 있어서 신호로 쓰기 어렵습니다.</b> 다만 실용적으로 확실한 것 하나 — <b>이 상태에서는 큰 금액을 넣고 빼기가 어렵습니다.</b>' }
+];
+function volShow(i){
+  var s = VOL[i];
+  var n = s.price.length, step = 552 / (n - 1);
+  var d = '', bars = '';
+  var maxV = Math.max.apply(null, s.vol);
+  s.price.forEach(function(v, k){
+    var x = 60 + step * k;
+    d += (k === 0 ? 'M' : ' L') + x.toFixed(1) + ',' + (180 - v / 100 * 155).toFixed(1);
+    var bh = s.vol[k] / maxV * 78;
+    bars += '<rect x="' + (x - step * 0.32).toFixed(1) + '" y="' + (290 - bh).toFixed(1) +
+            '" width="' + (step * 0.64).toFixed(1) + '" height="' + bh.toFixed(1) +
+            '" fill="' + (s.color === 'var(--up)' ? '#C0392B' : '#5B5648') + '" fill-opacity=".38" rx="1"/>';
+  });
+  document.getElementById('volBars').innerHTML = bars;
+  var path = document.getElementById('volPrice');
+  path.setAttribute('d', d);
+  path.setAttribute('stroke', s.color === 'var(--down)' ? '#2C5F9E' : '#C0392B');
+  drawPath(path, 750);
+  document.getElementById('volVerdict').querySelector('.vh').textContent = s.h;
+  verdict('volVerdict', s.color, s.t, s.p);
+}
+bindBtnRow('#volBtns', function(v){ volShow(+v); });
+
+/* ══════════ 5. 유동성 함정 ══════════ */
+var LQ_KIND = 'big';
+function lqDraw(){
+  var amt = parseFloat(document.getElementById('lqAmt').value);      // 만원
+  document.getElementById('lqAmtV').textContent = amt.toLocaleString('ko-KR') + '만원';
+
+  var qty = Math.round(amt * 10000 / 50000);                          // 50,000원 기준 주식 수
+  var r = sweep(BOOKS[LQ_KIND].bids, qty);
+  var want = amt * 10000;
+  var got = r.cost;
+  var slip = r.filled ? (r.avg - 50000) / 50000 * 100 : 0;
+
+  document.getElementById('lqWant').textContent = amt.toLocaleString('ko-KR') + '만';
+  document.getElementById('lqGet').textContent = Math.round(got / 10000).toLocaleString('ko-KR') + '만';
+  document.getElementById('lqBar').style.width = Math.max(2, got / want * 100) + '%';
+  document.getElementById('lqAvg').textContent =
+    r.filled ? Math.round(r.avg).toLocaleString('ko-KR') + '원' : '—';
+  var se = document.getElementById('lqSlip');
+  se.textContent = pct(slip); signColor(se, slip);
+  document.getElementById('lqLoss').textContent =
+    Math.round((want - got) / 10000).toLocaleString('ko-KR') + '만원';
+
+  var t, p, col;
+  if(r.unfilled > 0){
+    col = 'var(--down)';
+    t = '보이는 호가를 전부 써도 다 못 팝니다';
+    p = '10호가를 <b>전부 걷어내도 ' + r.unfilled.toLocaleString('ko-KR') + '주가 남습니다.</b> 그리고 여기까지 오는 동안 평균 체결가는 <b>' + Math.round(r.avg).toLocaleString('ko-KR') + '원(' + pct(slip) + ')</b>이 됐습니다. 이건 <b>회사에 나쁜 일이 생겨서가 아니라 단지 사려는 사람이 없어서</b> 벌어지는 손실입니다. 이런 종목은 <b>애초에 들어갈 금액을 제한</b>하는 것 말고는 대책이 없습니다.';
+  } else if(slip < -5){
+    col = 'var(--down)';
+    t = '팔았더니 ' + Math.round((want - got) / 10000).toLocaleString('ko-KR') + '만원이 증발했습니다';
+    p = '평균 <b>' + Math.round(r.avg).toLocaleString('ko-KR') + '원</b>에 체결되어 현재가보다 <b>' + pct(slip) + '</b> 낮습니다. 호가 <b>' + r.levels + '단계</b>를 타고 내려갔기 때문입니다. <b>「현재가 50,000원」은 내 물량 전부에 적용되는 가격이 아닙니다</b> — 계좌에 찍힌 평가금액은 <b>1주를 팔 때의 가격</b>으로 계산된 값일 뿐입니다.';
+  } else if(slip < -1){
+    col = 'var(--warn-ink)';
+    t = '조금씩 밀리기 시작합니다';
+    p = '평균 <b>' + Math.round(r.avg).toLocaleString('ko-KR') + '원(' + pct(slip) + ')</b>. 아직 견딜 만하지만 금액을 늘리면 급격히 나빠집니다. 실전에서는 <b>여러 번에 나눠서, 지정가로</b> 파는 것이 답입니다.';
+  } else {
+    col = 'var(--up)';
+    t = '이 정도 금액은 문제되지 않습니다';
+    p = '1~2호가에서 전부 소화됩니다. 이제 <b>「거래 거의 없는 종목」</b> 버튼을 누르고 같은 금액을 팔아보세요 — <b>같은 50,000원짜리 주식인데 결과가 완전히 다릅니다.</b>';
+  }
+  verdict('lqVerdict', col, t, p);
+}
+bindBtnRow('#lqStock', function(v){
+  LQ_KIND = ['big', 'small', 'dead'][+v];
+  lqDraw();
+});
+document.getElementById('lqAmt').addEventListener('input', lqDraw);
+
+/* ══════════ 6. 수급 ══════════ */
+var FLOW = [
+  { v:[70, 45, -115], h:'조합 ①', color:'var(--up)',
+    t:'외국인·기관이 함께 사고 개인이 파는 경우',
+    p:'가장 「좋다」고 여겨지는 조합입니다. 자금력이 크고 분석 인력을 갖춘 쪽이 동시에 매수했다는 뜻이니까요. <b>다만 이건 이미 지나간 하루에 대한 기록입니다.</b> 그리고 외국인 매수 중에는 <b>공매도 상환, 지수 편입에 따른 기계적 매수, 차익거래</b>처럼 종목 전망과 무관한 것도 섞여 있습니다.' },
+  { v:[-80, -50, 130], h:'조합 ②', color:'var(--down)',
+    t:'개인만 사고 외국인·기관이 파는 경우',
+    p:'흔히 <b>「개인이 물량을 받아준다」</b>고 표현하는 상황입니다. 통계적으로 이 조합 이후 성과가 좋지 않았다는 이야기가 많지만, <b>반례도 많습니다</b> — 기관이 판 뒤 크게 오른 종목도 얼마든지 있습니다. 더 유용한 질문은 <b>「왜 팔았는가」</b>입니다. 펀드 환매 때문일 수도, 지수 조정 때문일 수도 있고, 그건 종목 전망과 무관합니다.' },
+  { v:[95, -35, -60], h:'조합 ③', color:'var(--neutral)',
+    t:'외국인만 사는 경우',
+    p:'환율이 안정되거나 글로벌 자금이 한국 시장 전체로 들어올 때 자주 나타납니다. <b>종목 고유의 이유가 아니라 「한국 주식 전체를 사는 흐름」의 일부</b>일 수 있다는 뜻입니다. 그래서 <b>같은 날 같은 방향인 종목이 많다면</b> 개별 종목 신호로 보기 어렵습니다.' },
+  { v:[-55, 88, -33], h:'조합 ④', color:'var(--neutral)',
+    t:'기관만 사는 경우',
+    p:'국내 기관은 <b>연기금·투신·보험 등 성격이 아주 다른 주체</b>가 묶여 있습니다. 연기금의 장기 분할 매수와 투신의 단기 매매는 의미가 전혀 다릅니다. HTS에서 <b>기관을 세부 주체별로 나눠 보는 기능</b>이 있다면 그쪽이 훨씬 유용합니다.' }
+];
+function flShow(i){
+  var s = FLOW[i];
+  var g = '', xs = [160, 336, 512];
+  s.v.forEach(function(v, k){
+    var h = Math.abs(v) / 130 * 70;
+    var y = v > 0 ? 100 - h : 100;
+    var col = v > 0 ? '#C0392B' : '#2C5F9E';
+    g += '<rect x="' + (xs[k] - 34) + '" y="' + y.toFixed(1) + '" width="68" height="' + h.toFixed(1) +
+         '" fill="' + col + '" fill-opacity=".45" rx="2"/>';
+    g += '<text class="lblb" x="' + xs[k] + '" y="' + (v > 0 ? y - 8 : y + h + 18) +
+         '" text-anchor="middle" fill="' + col + '">' + (v > 0 ? '+' : '') + v + '</text>';
+  });
+  document.getElementById('flBars').innerHTML = g;
+  document.getElementById('flVerdict').querySelector('.vh').textContent = s.h;
+  verdict('flVerdict', s.color, s.t, s.p);
+}
+bindBtnRow('#flBtns', function(v){ flShow(+v); });
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#obCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#obCheck li.done').length;
+      document.getElementById('obCheckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 이 8초를 매번 지키면 주문 사고는 거의 사라집니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+mkDraw(); dirShow(0); volShow(0); lqDraw(); flShow(0);
+</script>
+</body>
+</html>
