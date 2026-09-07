@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>투자 공부 노트 — 주식회사의 원리부터 자산군별 전략까지</title>
-<meta name="description" content="회사가 주식이 되는 원리부터 자산군별 접근법까지, 투자 공부 과정에서 정리한 문서 모음입니다.">
+<title>투자 공부 노트 — 주식회사의 원리부터 시장의 역사까지</title>
+<meta name="description" content="주식이 무엇인지부터 주문·지표·시장·역사까지, 읽는 순서대로 정리한 투자 학습 자료 10편. 그림과 시뮬레이터로 직접 움직여보며 공부합니다.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
@@ -12,18 +12,14 @@
     --paper:#F6F3EC;
     --ink:#232019;
     --ink-soft:#5B5648;
+    --ink-faint:#8A8474;
     --rule:#D9D2C0;
     --card:#FCFBF7;
-    --accent-a:#8E4B3A;
-    --accent-b:#3A5A8E;
-    --accent-c:#4C7A6D;
-    --accent-d:#7A5C9E;
-    --accent-e:#9E7A2E;
-    --accent-f:#C0392B;
-    --accent-g:#7A6E58;
-    --accent-h:#9E7A2E;
-    --accent-i:#7A5C9E;
-    --accent-j:#8E4B3A;
+    --p1:#3A5A8E;   /* PART I  · 기초 */
+    --p2:#C0392B;   /* PART II · 사기 전에 */
+    --p3:#9E7A2E;   /* PART III· 고르는 눈 */
+    --p4:#7A5C9E;   /* PART IV · 큰 그림 */
+    --p5:#4C7A6D;   /* PART V  · 운용 */
   }
   *{box-sizing:border-box;}
   body{
@@ -34,7 +30,7 @@
     line-height:1.7;
     -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:760px;margin:0 auto;padding:64px 24px 100px;}
+  .wrap{max-width:780px;margin:0 auto;padding:64px 24px 100px;}
 
   h1,h2,h3{
     font-family:'Newsreader', serif;
@@ -53,30 +49,60 @@
   h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
   .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
 
-  .rule{
-    margin:44px 0 40px;
-    border:0;
-    border-top:1px solid var(--rule);
+  /* ── 처음이라면 ── */
+  .start{
+    margin:34px 0 0;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--p1);
+    border-radius:3px;
+    padding:20px 22px;
   }
-
-  .section-label{
+  .start .sh{
     font-family:'IBM Plex Mono', monospace;
-    font-size:12.5px;
-    color:var(--ink-soft);
-    letter-spacing:0.04em;
-    margin-bottom:22px;
+    font-size:11.5px;
+    color:var(--p1);
+    letter-spacing:.04em;
+    margin-bottom:9px;
   }
+  .start p{font-size:14.5px;color:var(--ink-soft);margin:0 0 14px;max-width:60ch;}
+  .start ol{margin:0;padding-left:19px;}
+  .start li{font-size:14.3px;color:var(--ink-soft);margin-bottom:7px;line-height:1.6;}
+  .start li:last-child{margin-bottom:0;}
+  .start a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule);font-weight:600;}
+  .start a:hover{border-bottom-color:var(--ink);}
+
+  hr.rule{margin:44px 0 0;border:0;border-top:1px solid var(--rule);}
+
+  /* ── 파트 ── */
+  .part{margin:46px 0 0;}
+  .part-head{
+    border-left:3px solid var(--edge);
+    padding-left:16px;
+    margin-bottom:20px;
+  }
+  .part-num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--edge);
+    letter-spacing:.06em;
+    display:block;
+    margin-bottom:5px;
+  }
+  .part-head h2{font-size:22px;margin:0 0 6px;line-height:1.35;}
+  .part-head p{font-size:14.2px;color:var(--ink-soft);margin:0;max-width:58ch;}
 
   ol.docs{list-style:none;margin:0;padding:0;}
-  ol.docs li{margin-bottom:16px;}
+  ol.docs li{margin-bottom:12px;}
+  ol.docs li:last-child{margin-bottom:0;}
 
   a.doc{
     display:block;
     background:var(--card);
     border:1px solid var(--rule);
-    border-left:3px solid var(--edge, var(--rule));
+    border-left:3px solid var(--edge);
     border-radius:3px;
-    padding:24px 26px;
+    padding:20px 22px;
     text-decoration:none;
     color:inherit;
     transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
@@ -85,30 +111,27 @@
     transform:translateY(-2px);
     box-shadow:0 6px 20px rgba(35,32,25,.07);
     border-color:#C8BFA8;
-    border-left-color:var(--edge, var(--rule));
+    border-left-color:var(--edge);
   }
-  a.doc:focus-visible{
-    outline:2px solid var(--edge, var(--ink));
-    outline-offset:3px;
-  }
+  a.doc:focus-visible{outline:2px solid var(--edge);outline-offset:3px;}
 
   .doc .num{
     font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    color:var(--edge, var(--ink-soft));
+    font-size:11.5px;
+    color:var(--edge);
     display:block;
-    margin-bottom:8px;
+    margin-bottom:7px;
   }
-  .doc h2{font-size:21px;line-height:1.35;margin:0 0 10px;}
-  .doc p{margin:0;font-size:14.8px;color:var(--ink-soft);}
+  .doc h3{font-size:19px;line-height:1.36;margin:0 0 9px;}
+  .doc p{margin:0;font-size:14.4px;color:var(--ink-soft);}
   .doc .meta{
-    margin-top:14px;
+    margin-top:13px;
     font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    color:var(--ink-soft);
+    font-size:11.5px;
+    color:var(--ink-faint);
     display:flex;
     flex-wrap:wrap;
-    gap:6px 14px;
+    gap:5px 13px;
   }
 
   .note{
@@ -118,25 +141,30 @@
     padding:18px 20px;
     font-size:14.2px;
     border-radius:2px;
-    margin:48px 0 0;
+    margin:52px 0 0;
   }
   .note b{font-weight:600;}
+  .note p{margin:0;max-width:none;}
+  .note p + p{margin-top:10px;}
 
   footer{
-    margin-top:56px;
+    margin-top:44px;
     padding-top:22px;
     border-top:1px solid var(--rule);
     font-family:'IBM Plex Mono', monospace;
     font-size:12px;
     color:var(--ink-soft);
+    line-height:1.9;
   }
   footer a{color:var(--ink-soft);}
 
   @media (max-width:600px){
     .wrap{padding:44px 20px 72px;}
-    h1{font-size:29px;}
-    a.doc{padding:20px 20px;}
-    .doc h2{font-size:19px;}
+    h1{font-size:28px;}
+    .part-head h2{font-size:19px;}
+    a.doc{padding:17px 18px;}
+    .doc h3{font-size:17px;}
+    .start{padding:17px 18px;}
   }
 </style>
 </head>
@@ -145,99 +173,160 @@
 
   <header class="top">
     <div class="kicker">투자 공부 노트 · TRADE MASTER</div>
-    <h1>회사가 주식이 되는 원리부터,<br>자산군별로 잃지 않는 법까지</h1>
-    <p class="lede">투자를 공부하면서 정리한 문서들입니다. 앞의 두 편은 “주식이라는 물건이 대체 무엇인가”를 회사의 탄생 순서대로 따라가고, 세 번째는 그 주식을 여러 모양으로 포장한 금융상품들을 뜯어봅니다. 마지막 한 편은 그렇게 이해한 것을 실제 자산군에 어떻게 적용할지를 다룹니다. 위에서부터 순서대로 읽는 것을 권합니다.<br><br>네 편 모두 <b>「쉽게 보기」 모드</b>와 손으로 움직여보는 그래프·시뮬레이터를 담고 있어, 아이나 투자가 처음인 사람과 함께 보기 좋습니다.</p>
+    <h1>주식회사의 원리부터<br>시장의 역사까지</h1>
+    <p class="lede">투자를 공부하면서 정리한 문서 열 편입니다. <b>앞에서 뒤로 읽도록 순서를 짜두었고</b>, 각 부는 앞부의 내용을 전제로 합니다. 모든 문서에 <b>「쉽게 보기」 모드</b>와 손으로 움직여보는 그래프·시뮬레이터가 들어 있어, 아이나 투자가 처음인 사람과 함께 보기 좋습니다.</p>
+
+    <div class="start">
+      <div class="sh">처음이라면 — 이 세 편만 먼저</div>
+      <p>전부 읽을 필요는 없습니다. <b>계좌를 막 열었다면</b> 아래 순서만으로도 큰 사고는 대부분 피할 수 있습니다.</p>
+      <ol>
+        <li><a href="stock-company-basics.html">내가 사는 게 무엇인지</a> — 주식이라는 물건의 정체</li>
+        <li><a href="orderbook-guide.html">주문을 어떻게 넣는지</a> — 시장가 한 번에 몇 %를 흘리지 않기</li>
+        <li><a href="asset-strategy-guide.html">얼마를 넣어야 하는지</a> — 한 번의 판단이 치명상이 되지 않게</li>
+      </ol>
+    </div>
   </header>
 
   <hr class="rule">
 
-  <div class="section-label">DOCUMENTS · 10</div>
+  <!-- ══════════ PART I ══════════ -->
+  <section class="part" style="--edge:var(--p1)">
+    <div class="part-head">
+      <span class="part-num">PART I · 기초</span>
+      <h2>내가 사는 것이 대체 무엇인가</h2>
+      <p>회사가 만들어져 「주식」이 되고 주가가 움직이기까지. 나머지 아홉 편이 전부 여기서 출발합니다.</p>
+    </div>
+    <ol class="docs">
+      <li>
+        <a class="doc" href="stock-company-basics.html">
+          <span class="num">01 · 로드맵</span>
+          <h3>회사는 어떻게 '주식'이 되고, 주가는 왜 움직이는가</h3>
+          <p>창업부터 상장, 투자자 분석까지의 흐름을 순서대로 따라가며 각 단계에서 꼭 이해해야 할 개념만 짚었습니다. 지금 어디를 배우고 있는지 감을 잡는 <b>지도</b> 역할을 합니다.</p>
+          <div class="meta"><span>레버리지</span><span>재무제표 3표</span><span>EPS·PER</span><span>희석</span><span>청산 순위</span></div>
+        </a>
+      </li>
+      <li>
+        <a class="doc" href="stock-company-basics-detailed.html">
+          <span class="num">02 · 심화</span>
+          <h3>회사의 탄생부터 주가 분석까지 — 챕터를 따라가는 지도</h3>
+          <p>01과 <b>같은 목차를 훨씬 깊게</b> 풀어 쓴 버전입니다. 01을 읽고 더 알고 싶어진 항목만 골라 읽어도 됩니다. 온 가족 퀴즈로 마무리합니다.</p>
+          <div class="meta"><span>지분 파이</span><span>이자보상배율</span><span>락업 해제</span><span>가족 퀴즈</span></div>
+        </a>
+      </li>
+    </ol>
+  </section>
 
-  <ol class="docs">
-    <li>
-      <a class="doc" href="stock-company-basics.html" style="--edge:var(--accent-b)">
-        <span class="num">01 — 로드맵 · 인터랙티브</span>
-        <h2>회사는 어떻게 '주식'이 되고, 주가는 왜 움직이는가</h2>
-        <p>회사가 창업되는 순간부터 상장, 투자자 분석까지의 흐름을 그대로 따라가며 각 단계에서 꼭 이해해야 할 개념만 짚었습니다. 지금 어느 지점을 읽고 있는지 감을 잡는 용도의 지도.</p>
-        <div class="meta"><span>레버리지</span><span>재무제표 3표</span><span>EPS·PER</span><span>희석</span><span>청산 순위</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="stock-company-basics-detailed.html" style="--edge:var(--accent-c)">
-        <span class="num">02 — 심화 · 인터랙티브</span>
-        <h2>회사의 탄생부터 주가 분석까지 — 챕터를 따라가는 지도</h2>
-        <p>창업 → 소유권과 주식 → 차입 → 재무비율 → 상장 → 희석 → 채권·우선주 → 자본조달 선택 → 종합 사례. 01의 목차를 그대로 따라가되 각 단계를 훨씬 깊게 풀어 쓴 버전입니다.</p>
-        <div class="meta"><span>지분 파이</span><span>이자보상배율</span><span>락업 해제</span><span>가족 퀴즈</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="financial-products-guide.html" style="--edge:var(--accent-d)">
-        <span class="num">03 — 도감 · 인터랙티브</span>
-        <h2>주식 말고도 살 수 있는 것들 — ETF·ETN·커버드콜·ELS</h2>
-        <p>증권사 앱에 있는 상품들은 겉모습만 비슷하고 속은 완전히 다른 물건입니다. 무엇으로 만들어졌고, 어디서 사고, 무엇을 조심해야 하는지. 커버드콜 손익 그래프와 ELS 시나리오 시뮬레이터를 직접 움직여볼 수 있고, <b>「쉽게 보기」 모드</b>는 아이와 함께 읽기 좋습니다.</p>
-        <div class="meta"><span>ETF</span><span>ETN</span><span>커버드콜</span><span>ELS</span><span>시뮬레이터</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="bond-guide.html" style="--edge:var(--accent-e)">
-        <span class="num">04 — 채권 · 인터랙티브</span>
-        <h2>돈을 빌려주고 받는 종이 한 장 — 채권의 모든 것</h2>
-        <p>금리 뉴스가 무슨 뜻인지, 장단기 금리차가 왜 화제인지, 포트폴리오에 채권을 얼마나 담아야 하는지. 가격과 금리가 반대로 움직이는 원리부터 수익률 곡선·신용 스프레드·엔캐리까지, 채권을 한 주도 사지 않더라도 <b>다른 모든 자산을 보는 눈이 바뀝니다.</b></p>
-        <div class="meta"><span>가격·금리</span><span>듀레이션</span><span>수익률 곡선</span><span>스프레드</span><span>엔캐리</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="asset-strategy-guide.html" style="--edge:var(--accent-a)">
-        <span class="num">05 — 실전 · 인터랙티브</span>
-        <h2>확률을 조금이라도 내 편으로 만드는 법</h2>
-        <p>“오르는 말에 올라타기”와 “폭락할 때 줍기”가 반복해서 실패하는 이유는 타이밍이 아니라 원칙의 부재입니다. 자산군별로 검증된 접근 방식과, 각 시장에서 반복적으로 손실을 부르는 패턴을 정리했습니다.</p>
-        <div class="meta"><span>손실 회복 곡선</span><span>레버리지 청산</span><span>금리·채권</span><span>롤오버 비용</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="orderbook-guide.html" style="--edge:var(--accent-f)">
-        <span class="num">06 — 주문 실전 · 인터랙티브</span>
-        <h2>호가창 읽는 법 — 사고가 나기 전에 알아야 할 것들</h2>
-        <p>종목을 잘 고르고도 <b>주문 한 번에 손해를 보는 일</b>이 있습니다. 시장가로 눌렀더니 훨씬 비싸게 사졌다거나, 팔려니 사줄 사람이 없다거나. 실제 호가를 소진해가며 계산하는 시뮬레이터로 <b>내 주문이 어떻게 체결되는지</b>를 눈으로 확인합니다. 처음 계좌를 연 사람이 가장 먼저 읽으면 좋은 편.</p>
-        <div class="meta"><span>호가창</span><span>시장가·지정가</span><span>거래량</span><span>유동성</span><span>수급</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="chart-guide.html" style="--edge:var(--accent-g)">
-        <span class="num">07 — 차트 · 인터랙티브</span>
-        <h2>차트 읽는 법 — 캔들·이평선·거래량, 그리고 그 뒤의 사람들</h2>
-        <p>차트의 선들은 예측 도구가 아니라 <b>이미 매매한 사람들이 남긴 발자국</b>입니다. 이평선이 지지가 되는 것도 선에 힘이 있어서가 아니라 <b>그 가격에 산 사람들의 본전 심리</b> 때문입니다. 실제 140일 데이터로 이평선을 계산하고 골든크로스를 검증해보며, 각 지표가 왜 통하는지와 <b>어디까지만 믿어야 하는지</b>를 함께 다룹니다.</p>
-        <div class="meta"><span>캔들</span><span>거래량 4국면</span><span>매물대</span><span>이평선</span><span>골든크로스 검증</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="valuation-guide.html" style="--edge:var(--accent-h)">
-        <span class="num">08 — 지표 · 인터랙티브</span>
-        <h2>밸류에이션 지표 — PER·PBR·ROE·EV/EBITDA 제대로 읽기</h2>
-        <p>「PER이 낮으니 싸다」는 반은 맞고 반은 틀립니다. 각 지표가 <b>정확히 무엇을 재는지</b>, 종목 선정에 얼마나 쓸모가 있는지, 그리고 <b>나라와 업종마다 기준이 다른 이유</b>까지. PBR = PER × ROE 항등식과 ROE 듀폰 분해를 직접 계산해보고, PER 6배인 네 회사를 진단해 <b>가치 함정</b>을 가려냅니다.</p>
-        <div class="meta"><span>PER·이익수익률</span><span>PBR=PER×ROE</span><span>듀폰 분해</span><span>EV/EBITDA</span><span>코리아 디스카운트</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="macro-guide.html" style="--edge:var(--accent-i)">
-        <span class="num">09 — 경제지표 · 인터랙티브</span>
-        <h2>경제지표와 주가 — CPI·고용·FOMC 읽는 법</h2>
-        <p>밤사이 미국에서 숫자 하나가 나오면 다음 날 내 계좌가 흔들립니다. 그런데 주가를 움직이는 건 <b>숫자 자체가 아니라 「예상과 얼마나 달랐는가」</b>입니다. 월간 발표 달력, 예상치와 실적치의 차이가 만드는 반응, <b>「좋은 뉴스가 나쁜 뉴스」가 되는 이유</b>, 그리고 미국 지표가 한국까지 번지는 세 개의 통로를 다룹니다.</p>
-        <div class="meta"><span>서프라이즈</span><span>발표 달력</span><span>CPI</span><span>고용·국면</span><span>FOMC</span><span>전이 경로</span></div>
-      </a>
-    </li>
-    <li>
-      <a class="doc" href="history-guide.html" style="--edge:var(--accent-j)">
-        <span class="num">10 — 역사 · 인터랙티브</span>
-        <h2>주식시장 100년 — 폭락과 회복, 그리고 사이클</h2>
-        <p>시장은 백 년 동안 여러 번 무너졌고 그때마다 다시 올라왔습니다. 다만 어떤 회복은 <b>다섯 달</b>, 어떤 회복은 <b>25년</b>이 걸렸습니다. 1929년 대공황부터 코로나까지 연표에서 사건을 눌러보고, 장기 상승 테마와 통화량의 관계, 그리고 <b>다섯 개 지표로 지금 국면을 가늠하는 대시보드</b>까지.</p>
-        <div class="meta"><span>100년 연표</span><span>회복 기간</span><span>하루 최대 낙폭</span><span>버블 6단계</span><span>통화량</span><span>사이클 대시보드</span></div>
-      </a>
-    </li>
-  </ol>
+  <!-- ══════════ PART II ══════════ -->
+  <section class="part" style="--edge:var(--p2)">
+    <div class="part-head">
+      <span class="part-num">PART II · 사기 전에</span>
+      <h2>계좌를 열었다면 이것부터</h2>
+      <p>종목을 잘 고르고도 <b>주문 한 번</b>에, 혹은 <b>상품을 잘못 이해해서</b> 손해를 보는 일이 흔합니다. 실력이 아니라 알고 모르고의 문제입니다.</p>
+    </div>
+    <ol class="docs">
+      <li>
+        <a class="doc" href="orderbook-guide.html">
+          <span class="num">03 · 주문 실전</span>
+          <h3>호가창 읽는 법 — 사고가 나기 전에 알아야 할 것들</h3>
+          <p>시장가로 눌렀더니 훨씬 비싸게 사졌다거나, 팔려니 사줄 사람이 없다거나. 실제 호가를 소진해가며 계산하는 시뮬레이터로 <b>내 주문이 어떻게 체결되는지</b>를 눈으로 확인합니다.</p>
+          <div class="meta"><span>호가창</span><span>시장가·지정가</span><span>거래량</span><span>유동성 함정</span><span>수급</span></div>
+        </a>
+      </li>
+      <li>
+        <a class="doc" href="financial-products-guide.html">
+          <span class="num">04 · 상품 도감</span>
+          <h3>주식 말고도 살 수 있는 것들 — ETF·ETN·커버드콜·ELS</h3>
+          <p>증권사 앱의 상품들은 <b>겉모습만 비슷하고 속은 완전히 다른 물건</b>입니다. 무엇으로 만들어졌고 어디서 사고 무엇을 조심해야 하는지. ELS 시나리오 시뮬레이터가 특히 볼 만합니다.</p>
+          <div class="meta"><span>ETF</span><span>ETN</span><span>커버드콜</span><span>ELS</span><span>상품 선택</span></div>
+        </a>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ══════════ PART III ══════════ -->
+  <section class="part" style="--edge:var(--p3)">
+    <div class="part-head">
+      <span class="part-num">PART III · 고르는 눈</span>
+      <h2>무엇을 보고 판단하나</h2>
+      <p>숫자로 보는 법과 그림으로 보는 법. 둘 다 <b>답이 아니라 질문을 만들어주는 도구</b>라는 점을 함께 다룹니다.</p>
+    </div>
+    <ol class="docs">
+      <li>
+        <a class="doc" href="valuation-guide.html">
+          <span class="num">05 · 지표</span>
+          <h3>밸류에이션 지표 — PER·PBR·ROE·EV/EBITDA 제대로 읽기</h3>
+          <p>「PER이 낮으니 싸다」는 반은 맞고 반은 틀립니다. PBR = PER × ROE 항등식과 ROE 듀폰 분해를 직접 계산해보고, <b>나라와 업종마다 기준이 다른 이유</b>와 <b>가치 함정</b>을 가려냅니다.</p>
+          <div class="meta"><span>PER·이익수익률</span><span>PBR=PER×ROE</span><span>듀폰 분해</span><span>코리아 디스카운트</span></div>
+        </a>
+      </li>
+      <li>
+        <a class="doc" href="chart-guide.html">
+          <span class="num">06 · 차트</span>
+          <h3>차트 읽는 법 — 캔들·이평선·거래량, 그리고 그 뒤의 사람들</h3>
+          <p>차트의 선은 예측 도구가 아니라 <b>이미 매매한 사람들이 남긴 발자국</b>입니다. 이평선이 지지가 되는 것도 <b>그 가격에 산 사람들의 본전 심리</b> 때문입니다. 골든크로스를 실제 데이터로 검증해봅니다.</p>
+          <div class="meta"><span>캔들</span><span>거래량 4국면</span><span>매물대</span><span>이평선</span><span>골든크로스 검증</span></div>
+        </a>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ══════════ PART IV ══════════ -->
+  <section class="part" style="--edge:var(--p4)">
+    <div class="part-head">
+      <span class="part-num">PART IV · 큰 그림</span>
+      <h2>내 종목 밖에서 벌어지는 일들</h2>
+      <p>금리·경제지표·역사. 개별 종목을 아무리 잘 골라도 <b>이 힘들이 계좌를 흔듭니다.</b> 여기부터는 맞히기가 아니라 <b>「왜 흔들렸는지 이해하기」</b>가 목적입니다.</p>
+    </div>
+    <ol class="docs">
+      <li>
+        <a class="doc" href="bond-guide.html">
+          <span class="num">07 · 채권</span>
+          <h3>돈을 빌려주고 받는 종이 한 장 — 채권의 모든 것</h3>
+          <p>금리 뉴스가 무슨 뜻인지, 장단기 금리차가 왜 화제인지, 포트폴리오에 얼마나 담아야 하는지. <b>채권을 한 주도 사지 않더라도 다른 모든 자산을 보는 눈이 바뀝니다.</b></p>
+          <div class="meta"><span>가격·금리</span><span>듀레이션</span><span>수익률 곡선</span><span>스프레드</span><span>엔캐리</span></div>
+        </a>
+      </li>
+      <li>
+        <a class="doc" href="macro-guide.html">
+          <span class="num">08 · 경제지표</span>
+          <h3>경제지표와 주가 — CPI·고용·FOMC 읽는 법</h3>
+          <p>주가를 움직이는 건 숫자 자체가 아니라 <b>「예상과 얼마나 달랐는가」</b>입니다. 월간 발표 달력, <b>「좋은 뉴스가 나쁜 뉴스」가 되는 이유</b>, 미국 지표가 한국까지 번지는 세 개의 통로.</p>
+          <div class="meta"><span>서프라이즈</span><span>발표 달력</span><span>CPI</span><span>고용·국면</span><span>FOMC</span></div>
+        </a>
+      </li>
+      <li>
+        <a class="doc" href="history-guide.html">
+          <span class="num">09 · 역사</span>
+          <h3>주식시장 100년 — 폭락과 회복, 그리고 사이클</h3>
+          <p>시장은 여러 번 무너졌고 그때마다 다시 올라왔습니다. 다만 어떤 회복은 <b>다섯 달</b>, 어떤 회복은 <b>25년</b>이 걸렸습니다. 연표에서 사건을 눌러보고, 다섯 지표로 지금 국면을 가늠해봅니다.</p>
+          <div class="meta"><span>100년 연표</span><span>회복 기간</span><span>버블 6단계</span><span>통화량</span><span>사이클 대시보드</span></div>
+        </a>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ══════════ PART V ══════════ -->
+  <section class="part" style="--edge:var(--p5)">
+    <div class="part-head">
+      <span class="part-num">PART V · 그래서 어떻게</span>
+      <h2>배운 것을 실제 돈에 적용하기</h2>
+      <p>앞의 아홉 편이 <b>「무엇을·왜」</b>였다면, 마지막 한 편은 <b>「얼마를·어떻게」</b>입니다. 결국 여기로 수렴합니다.</p>
+    </div>
+    <ol class="docs">
+      <li>
+        <a class="doc" href="asset-strategy-guide.html">
+          <span class="num">10 · 실전 운용</span>
+          <h3>확률을 조금이라도 내 편으로 만드는 법</h3>
+          <p>“오르는 말에 올라타기”와 “폭락할 때 줍기”가 반복해서 실패하는 이유는 타이밍이 아니라 <b>원칙의 부재</b>입니다. 자산군별 접근 방식과, 각 시장에서 반복적으로 손실을 부르는 패턴을 정리했습니다.</p>
+          <div class="meta"><span>포지션 사이징</span><span>손실 회복 곡선</span><span>레버리지 청산</span><span>금리·채권</span><span>롤오버 비용</span></div>
+        </a>
+      </li>
+    </ol>
+  </section>
 
   <div class="note">
-    <b>참고.</b> 이 문서들은 개인 학습용 정리이며 특정 종목이나 상품에 대한 투자 권유가 아닙니다. 모든 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.
+    <p><b>참고.</b> 개인 학습용 정리이며 특정 종목이나 상품에 대한 투자 권유가 아닙니다. 모든 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.</p>
+    <p>문서 안의 수치 중 <b>국가별·업종별 배수, 역사적 낙폭과 회복 기간, 지표 발표 시각</b> 등은 자료와 시점에 따라 달라지는 <b>대략적인 값</b>입니다. 실제 판단 전에는 최신 데이터로 확인하세요.</p>
   </div>
 
   <footer>
