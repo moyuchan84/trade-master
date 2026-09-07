@@ -196,6 +196,86 @@ body.simple .deep{display:none;}
   color:var(--ink);
 }
 
+/* ── 체크리스트 ── */
+ul.check{list-style:none;margin:18px 0 0;padding:0;}
+ul.check li{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:3px;
+  padding:13px 15px 13px 44px;
+  margin-bottom:9px;
+  position:relative;
+  cursor:pointer;
+  font-size:14.2px;
+  color:var(--ink-soft);
+  transition:all .16s ease;
+  line-height:1.62;
+}
+ul.check li::before{
+  content:"";
+  position:absolute;
+  left:15px;
+  top:15px;
+  width:16px;
+  height:16px;
+  border:1.5px solid var(--rule);
+  border-radius:2px;
+  transition:all .16s ease;
+}
+ul.check li.done{background:var(--kid-bg);border-color:#C5D0B8;color:var(--kid-ink);}
+ul.check li.done::before{background:var(--kid-ink);border-color:var(--kid-ink);}
+ul.check li.done::after{
+  content:"";
+  position:absolute;
+  left:20.5px;
+  top:18px;
+  width:5px;
+  height:9px;
+  border:solid var(--kid-bg);
+  border-width:0 2px 2px 0;
+  transform:rotate(45deg);
+}
+ul.check li b{color:var(--ink);font-weight:600;}
+ul.check li.done b{color:var(--kid-ink);}
+.checkcount{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);margin-top:13px;}
+
+/* ── 퀴즈 ── */
+.quiz{margin:4px 0 0;}
+.quizq{
+  background:var(--paper);
+  border:1px solid var(--rule);
+  border-radius:3px;
+  padding:15px 17px;
+  margin-bottom:11px;
+}
+.quizq .qq{font-size:14.6px;color:var(--ink);margin-bottom:11px;line-height:1.6;}
+.quizq .qbtns{display:flex;gap:8px;flex-wrap:wrap;}
+.quizq .qbtns button{
+  font-family:'IBM Plex Sans KR',sans-serif;
+  font-size:13.5px;
+  padding:7px 18px;
+  border:1px solid var(--rule);
+  background:var(--card);
+  color:var(--ink-soft);
+  border-radius:3px;
+  cursor:pointer;
+  transition:all .16s ease;
+}
+.quizq .qbtns button:hover{border-color:var(--ink-soft);color:var(--ink);}
+.quizq .qbtns button.right{background:var(--kid-ink);border-color:var(--kid-ink);color:#fff;}
+.quizq .qbtns button.wrong{background:var(--neg);border-color:var(--neg);color:#fff;}
+.quizq .qa{
+  display:none;
+  margin-top:12px;
+  padding-top:12px;
+  border-top:1px solid var(--rule);
+  font-size:13.8px;
+  color:var(--ink-soft);
+  line-height:1.7;
+}
+.quizq.answered .qa{display:block;}
+.quizq .qa b{color:var(--ink);font-weight:600;}
+
 /* ── 해설 박스 ── */
 .verdict{
   margin-top:15px;
