@@ -7,12 +7,12 @@
 <meta name="description" content="ETF, ETN, 커버드콜, ELS, 개별주식이 각각 무엇이고 어떻게 다른지 그림과 시뮬레이터로 비교합니다. 초보자와 아이가 함께 볼 수 있는 투자 학습 자료.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
 <style>
   :root{
     --paper:#F6F3EC;
     --ink:#232019;
     --ink-soft:#5B5648;
-    --ink-faint:#8A8474;
     --rule:#D9D2C0;
     --card:#FCFBF7;
     --stock:#8E4B3A;
@@ -22,9 +22,6 @@
     --els:#9E7A2E;
     --warn-bg:#F1E6DD;
     --warn-ink:#6B3A22;
-    --kid-bg:#EDF0E8;
-    --kid-ink:#3F5233;
-    --kid-rule:#D5DCCB;
   }
   *{box-sizing:border-box;}
   body{
@@ -65,36 +62,6 @@
   }
   .callout b{font-weight:600;}
 
-  /* 읽기 모드 토글 */
-  .toolbar{
-    margin:40px 0 0;
-    padding:16px 18px;
-    background:var(--card);
-    border:1px solid var(--rule);
-    border-radius:3px;
-    display:flex;
-    align-items:center;
-    gap:14px;
-    flex-wrap:wrap;
-  }
-  .toolbar .tl{font-family:'IBM Plex Mono', monospace;font-size:12px;color:var(--ink-soft);}
-  .seg{display:flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden;}
-  .seg button{
-    font-family:'IBM Plex Sans KR',sans-serif;
-    font-size:13.5px;
-    padding:8px 16px;
-    border:0;
-    background:transparent;
-    color:var(--ink-soft);
-    cursor:pointer;
-    transition:background .15s ease,color .15s ease;
-  }
-  .seg button + button{border-left:1px solid var(--rule);}
-  .seg button.on{background:var(--ink);color:var(--paper);}
-  .toolbar .hint{font-size:13px;color:var(--ink-faint);}
-
-  body.simple .deep{display:none;}
-
   /* 목차 */
   nav.toc{
     margin:24px 0 56px;
@@ -130,24 +97,6 @@
   h3{font-size:18px;margin:32px 0 10px;}
   p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
 
-  /* 아이 눈높이 */
-  .analogy{
-    background:var(--kid-bg);
-    border:1px solid var(--kid-rule);
-    border-radius:3px;
-    padding:18px 20px;
-    margin:20px 0 24px;
-  }
-  .analogy .al{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11.5px;
-    color:var(--kid-ink);
-    letter-spacing:.04em;
-    margin-bottom:8px;
-  }
-  .analogy p{margin:0;font-size:14.8px;color:var(--kid-ink);line-height:1.75;max-width:none;}
-  .analogy p + p{margin-top:10px;}
-
   /* 장단점 */
   .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0 8px;}
   .pc > div{
@@ -169,94 +118,6 @@
   .pc li{font-size:14px;color:var(--ink-soft);margin-bottom:8px;line-height:1.62;}
   .pc li:last-child{margin-bottom:0;}
   .pc li b{color:var(--ink);font-weight:600;}
-
-  /* 인터랙티브 */
-  .lab{
-    background:var(--card);
-    border:1px solid var(--rule);
-    border-radius:3px;
-    padding:22px 22px 24px;
-    margin:26px 0;
-  }
-  .lab .labtitle{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11.5px;
-    color:var(--ink-soft);
-    letter-spacing:.05em;
-    margin-bottom:5px;
-  }
-  .lab .labsub{font-size:14px;color:var(--ink-soft);margin:0 0 18px;max-width:60ch;}
-  .lab svg{display:block;width:100%;height:auto;overflow:visible;}
-
-  .axis{stroke:var(--rule);stroke-width:1;}
-  .gridl{stroke:var(--rule);stroke-width:.7;stroke-dasharray:2 4;}
-  .axt{font-family:'IBM Plex Mono',monospace;font-size:10.5px;fill:var(--ink-faint);}
-  .lbl{font-family:'IBM Plex Sans KR',sans-serif;font-size:12px;fill:var(--ink-soft);}
-  .lblb{font-family:'IBM Plex Sans KR',sans-serif;font-size:12.5px;font-weight:600;}
-
-  .ctrl-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
-  .ctrl-row label{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:12px;
-    color:var(--ink-soft);
-    min-width:132px;
-  }
-  .ctrl-row input[type=range]{flex:1;min-width:150px;accent-color:var(--cc);height:22px;}
-  .ctrl-row .val{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:13px;
-    color:var(--ink);
-    min-width:66px;
-    text-align:right;
-    font-weight:500;
-  }
-
-  .readout{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
-    margin-top:18px;
-    padding-top:18px;
-    border-top:1px solid var(--rule);
-  }
-  .readout > div{text-align:center;}
-  .readout .rk{
-    font-family:'IBM Plex Mono', monospace;
-    font-size:11px;
-    color:var(--ink-faint);
-    display:block;
-    margin-bottom:5px;
-  }
-  .readout .rv{font-family:'IBM Plex Mono', monospace;font-size:21px;font-weight:500;}
-  .readout .rn{font-size:12px;color:var(--ink-soft);display:block;margin-top:3px;}
-
-  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
-  .btnrow button{
-    font-family:'IBM Plex Sans KR',sans-serif;
-    font-size:13.5px;
-    padding:9px 15px;
-    border:1px solid var(--rule);
-    background:var(--paper);
-    color:var(--ink-soft);
-    border-radius:3px;
-    cursor:pointer;
-    transition:all .16s ease;
-    text-align:left;
-  }
-  .btnrow button:hover{border-color:#B9AF97;color:var(--ink);}
-  .btnrow button.on{background:var(--ink);border-color:var(--ink);color:var(--paper);}
-
-  .verdict{
-    margin-top:16px;
-    padding:16px 18px;
-    border-radius:3px;
-    border-left:3px solid var(--vc,var(--rule));
-    background:var(--paper);
-  }
-  .verdict .vh{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--vc,var(--ink-soft));margin-bottom:6px;}
-  .verdict .vt{font-size:16px;font-weight:600;margin-bottom:7px;font-family:'Newsreader',serif;}
-  .verdict p{font-size:14px;color:var(--ink-soft);margin:0;max-width:none;}
-  .verdict p + p{margin-top:8px;}
 
   /* 지도 */
   .mapdetail{
@@ -304,49 +165,6 @@
   table.cmp tbody tr:hover td{background:#F8F5EC;}
   .dot-i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;}
   .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:-14px;margin-bottom:24px;}
-
-  /* 체크리스트 */
-  ul.check{list-style:none;margin:20px 0 0;padding:0;}
-  ul.check li{
-    background:var(--card);
-    border:1px solid var(--rule);
-    border-radius:3px;
-    padding:14px 16px 14px 46px;
-    margin-bottom:9px;
-    position:relative;
-    cursor:pointer;
-    font-size:14.3px;
-    color:var(--ink-soft);
-    transition:all .16s ease;
-    line-height:1.62;
-  }
-  ul.check li::before{
-    content:"";
-    position:absolute;
-    left:16px;
-    top:16px;
-    width:16px;
-    height:16px;
-    border:1.5px solid var(--rule);
-    border-radius:2px;
-    transition:all .16s ease;
-  }
-  ul.check li.done{background:var(--kid-bg);border-color:#C5D0B8;color:var(--kid-ink);}
-  ul.check li.done::before{background:var(--kid-ink);border-color:var(--kid-ink);}
-  ul.check li.done::after{
-    content:"";
-    position:absolute;
-    left:21.5px;
-    top:19px;
-    width:5px;
-    height:9px;
-    border:solid var(--kid-bg);
-    border-width:0 2px 2px 0;
-    transform:rotate(45deg);
-  }
-  ul.check li b{color:var(--ink);font-weight:600;}
-  ul.check li.done b{color:var(--kid-ink);}
-  .checkcount{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);margin-top:14px;}
 
   /* 어디서 사나 */
   .buy{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0;}
@@ -397,11 +215,6 @@
     .prod-head h2{font-size:21px;}
     .pc{grid-template-columns:1fr;}
     .buy{grid-template-columns:1fr;}
-    .readout{grid-template-columns:1fr;gap:14px;}
-    .readout .rv{font-size:19px;}
-    .lab{padding:18px 15px 20px;}
-    .ctrl-row label{min-width:100%;}
-    .btnrow button{width:100%;}
   }
 </style>
 </head>
@@ -423,7 +236,9 @@
       <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
       <button id="mFull" onclick="setMode('full')">자세히 보기</button>
     </div>
-    <span class="hint" id="modeHint">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+    <span class="hint" id="modeHint"
+            data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+            data-full="구조·비용·세금까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
   </div>
 
   <nav class="toc">
@@ -1211,17 +1026,8 @@
 
 </div>
 
+<script src="interactive.js"></script>
 <script>
-/* ══════════ 읽기 모드 ══════════ */
-function setMode(m){
-  document.body.className = m;
-  document.getElementById('mSimple').classList.toggle('on', m === 'simple');
-  document.getElementById('mFull').classList.toggle('on', m === 'full');
-  document.getElementById('modeHint').textContent = (m === 'simple')
-    ? '비유와 그림 위주 — 아이와 함께 보기 좋아요'
-    : '구조·비용·세금까지 전부 표시합니다';
-}
-
 /* ══════════ 지도 ══════════ */
 var MAPTEXT = {
   stock: ['개별주식 — 천장도 바닥도 없다',

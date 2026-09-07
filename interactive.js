@@ -9,10 +9,11 @@ function setMode(m){
   var s = document.getElementById('mSimple'), f = document.getElementById('mFull');
   if(s) s.classList.toggle('on', m === 'simple');
   if(f) f.classList.toggle('on', m === 'full');
+  // 문서마다 다른 안내 문구를 쓰고 싶으면 #modeHint 에 data-simple / data-full 을 달아둡니다.
   var h = document.getElementById('modeHint');
   if(h) h.textContent = (m === 'simple')
-    ? '비유와 그림 위주 — 아이와 함께 보기 좋아요'
-    : '용어와 상세 설명까지 전부 표시합니다';
+    ? (h.dataset.simple || '비유와 그림 위주 — 아이와 함께 보기 좋아요')
+    : (h.dataset.full || '용어와 상세 설명까지 전부 표시합니다');
 }
 
 /* 부호를 붙인 퍼센트 문자열 */
