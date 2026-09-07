@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>투자 공부 노트 — 주식회사의 원리부터 자산군별 전략까지</title>
+<meta name="description" content="회사가 주식이 되는 원리부터 자산군별 접근법까지, 투자 공부 과정에서 정리한 문서 모음입니다.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --accent-a:#8E4B3A;
+    --accent-b:#3A5A8E;
+    --accent-c:#4C7A6D;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .rule{
+    margin:44px 0 40px;
+    border:0;
+    border-top:1px solid var(--rule);
+  }
+
+  .section-label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    letter-spacing:0.04em;
+    margin-bottom:22px;
+  }
+
+  ol.docs{list-style:none;margin:0;padding:0;}
+  ol.docs li{margin-bottom:16px;}
+
+  a.doc{
+    display:block;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--edge, var(--rule));
+    border-radius:3px;
+    padding:24px 26px;
+    text-decoration:none;
+    color:inherit;
+    transition:border-color .18s ease, transform .18s ease, box-shadow .18s ease;
+  }
+  a.doc:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 20px rgba(35,32,25,.07);
+    border-color:#C8BFA8;
+    border-left-color:var(--edge, var(--rule));
+  }
+  a.doc:focus-visible{
+    outline:2px solid var(--edge, var(--ink));
+    outline-offset:3px;
+  }
+
+  .doc .num{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge, var(--ink-soft));
+    display:block;
+    margin-bottom:8px;
+  }
+  .doc h2{font-size:21px;line-height:1.35;margin:0 0 10px;}
+  .doc p{margin:0;font-size:14.8px;color:var(--ink-soft);}
+  .doc .meta{
+    margin-top:14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 14px;
+  }
+
+  .note{
+    background:#F1E6DD;
+    color:#6B3A22;
+    border-left:3px solid #6B3A22;
+    padding:18px 20px;
+    font-size:14.2px;
+    border-radius:2px;
+    margin:48px 0 0;
+  }
+  .note b{font-weight:600;}
+
+  footer{
+    margin-top:56px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:600px){
+    .wrap{padding:44px 20px 72px;}
+    h1{font-size:29px;}
+    a.doc{padding:20px 20px;}
+    .doc h2{font-size:19px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">투자 공부 노트 · TRADE MASTER</div>
+    <h1>회사가 주식이 되는 원리부터,<br>자산군별로 잃지 않는 법까지</h1>
+    <p class="lede">투자를 공부하면서 정리한 문서들입니다. 앞의 두 편은 “주식이라는 물건이 대체 무엇인가”를 회사의 탄생 순서대로 따라가고, 마지막 한 편은 그렇게 이해한 것을 실제 자산군에 어떻게 적용할지를 다룹니다. 위에서부터 순서대로 읽는 것을 권합니다.</p>
+  </header>
+
+  <hr class="rule">
+
+  <div class="section-label">DOCUMENTS · 3</div>
+
+  <ol class="docs">
+    <li>
+      <a class="doc" href="stock-company-basics.html" style="--edge:var(--accent-b)">
+        <span class="num">01 — 로드맵</span>
+        <h2>회사는 어떻게 '주식'이 되고, 주가는 왜 움직이는가</h2>
+        <p>회사가 창업되는 순간부터 상장, 투자자 분석까지의 흐름을 그대로 따라가며 각 단계에서 꼭 이해해야 할 개념만 짚었습니다. 지금 어느 지점을 읽고 있는지 감을 잡는 용도의 지도.</p>
+        <div class="meta"><span>주린이 로드맵</span><span>전체 흐름</span></div>
+      </a>
+    </li>
+    <li>
+      <a class="doc" href="stock-company-basics-detailed.html" style="--edge:var(--accent-c)">
+        <span class="num">02 — 심화</span>
+        <h2>회사의 탄생부터 주가 분석까지 — 챕터를 따라가는 지도</h2>
+        <p>창업 → 소유권과 주식 → 차입 → 재무비율 → 상장 → 희석 → 채권·우선주 → 자본조달 선택 → 종합 사례. 01의 목차를 그대로 따라가되 각 단계를 훨씬 깊게 풀어 쓴 버전입니다.</p>
+        <div class="meta"><span>챕터별 심화</span><span>다이어그램 포함</span></div>
+      </a>
+    </li>
+    <li>
+      <a class="doc" href="asset-strategy-guide.html" style="--edge:var(--accent-a)">
+        <span class="num">03 — 실전</span>
+        <h2>확률을 조금이라도 내 편으로 만드는 법</h2>
+        <p>“오르는 말에 올라타기”와 “폭락할 때 줍기”가 반복해서 실패하는 이유는 타이밍이 아니라 원칙의 부재입니다. 자산군별로 검증된 접근 방식과, 각 시장에서 반복적으로 손실을 부르는 패턴을 정리했습니다.</p>
+        <div class="meta"><span>국내주식</span><span>미국주식</span><span>채권</span><span>코인</span><span>원자재</span></div>
+      </a>
+    </li>
+  </ol>
+
+  <div class="note">
+    <b>참고.</b> 이 문서들은 개인 학습용 정리이며 특정 종목이나 상품에 대한 투자 권유가 아닙니다. 모든 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.
+  </div>
+
+  <footer>
+    github.com/moyuchan84/trade-master · <a href="https://github.com/moyuchan84/trade-master">저장소 보기</a>
+  </footer>
+
+</div>
+</body>
+</html>

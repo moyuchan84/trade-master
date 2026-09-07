@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>손실 확률을 낮추는 자산군별 접근법</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --accent-kr:#8E4B3A;
+    --accent-us:#3A5A8E;
+    --accent-coin:#7A5C9E;
+    --accent-bond:#4C7A6D;
+    --accent-com:#9E7A2E;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:56px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:44px 0 60px;
+    padding-top:20px;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    padding-bottom:20px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section.principles{margin-bottom:64px;}
+  section.principles h2{font-size:22px;margin-bottom:6px;}
+  .principles .sub{color:var(--ink-soft);font-size:14.5px;margin:0 0 24px;}
+  .p-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--rule);border:1px solid var(--rule);}
+  .p-item{background:var(--card);padding:20px 22px;}
+  .p-item .num{font-family:'IBM Plex Mono', monospace;font-size:12px;color:var(--ink-soft);display:block;margin-bottom:6px;}
+  .p-item h4{margin:0 0 6px;font-size:15.5px;font-family:'IBM Plex Sans KR',sans-serif;font-weight:600;}
+  .p-item p{margin:0;font-size:13.8px;color:var(--ink-soft);}
+  @media (max-width:600px){.p-grid{grid-template-columns:1fr;}}
+
+  .asset{
+    margin-bottom:56px;
+    padding-left:22px;
+    border-left:3px solid var(--accent);
+  }
+  .asset .tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--accent);
+    margin-bottom:8px;
+  }
+  .asset h2{font-size:25px;margin:0 0 14px;}
+  .asset .desc{font-size:14.8px;color:var(--ink-soft);margin:0 0 22px;max-width:60ch;}
+
+  .block{margin-bottom:20px;}
+  .block h4{
+    font-size:13px;
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:500;
+    color:var(--ink);
+    margin:0 0 10px;
+  }
+  .block ul{margin:0;padding-left:18px;}
+  .block li{font-size:14.5px;margin-bottom:6px;color:var(--ink);}
+  .block li span.dim{color:var(--ink-soft);}
+
+  table.metrics{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13.8px;
+    margin-top:4px;
+  }
+  table.metrics th, table.metrics td{
+    text-align:left;
+    padding:9px 10px;
+    border-bottom:1px solid var(--rule);
+    vertical-align:top;
+  }
+  table.metrics th{
+    font-family:'IBM Plex Mono', monospace;
+    font-weight:500;
+    font-size:12px;
+    color:var(--ink-soft);
+  }
+
+  .fail{
+    background:var(--card);
+    border:1px solid var(--rule);
+    padding:14px 16px;
+    font-size:13.8px;
+    color:var(--ink-soft);
+  }
+  .fail b{color:var(--ink);font-weight:600;}
+
+  .reality{
+    font-size:14.8px;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--accent);
+    padding:14px 16px;
+  }
+
+  footer{
+    margin-top:70px;
+    padding-top:26px;
+    border-top:1px solid var(--rule);
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  footer p{max-width:62ch;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">투자 참고 자료 · 2026</div>
+    <h1>확률을 조금이라도 내 편으로 만드는 법</h1>
+    <p class="lede">"오르는 말에 올라타기"와 "폭락할 때 줍기"가 반복해서 실패했다면, 문제는 타이밍을 못 맞춘 게 아니라 근거와 원칙 없이 매번 새로 판단했기 때문일 가능성이 높습니다. 자산군별로 실제로 검증된 접근 방식과, 각 시장에서 반복적으로 손실을 부르는 패턴을 정리했습니다.</p>
+    <div class="callout">
+      <b>먼저 짚을 것:</b> 아래 내용 중 어떤 것도 "승률을 보장"하지 않습니다. 특정 종목이나 코인을 사라는 추천도 아닙니다. 장기간에 걸쳐 통계적으로 더 자주 재현된 원칙과, 각 시장의 구조적 특징을 정리한 참고 자료입니다. 최종 판단과 책임은 본인에게 있습니다.
+    </div>
+  </header>
+
+  <nav class="toc">
+    <a href="#principles">공통 원칙</a>
+    <a href="#kr">국내주식</a>
+    <a href="#us">미국주식</a>
+    <a href="#coin">코인</a>
+    <a href="#bond">채권</a>
+    <a href="#com">원자재</a>
+  </nav>
+
+  <section class="principles" id="principles">
+    <h2>자산군보다 먼저 — 공통 원칙 7가지</h2>
+    <p class="sub">무엇을 사느냐보다, 아래 원칙을 지키느냐가 장기 결과를 더 크게 좌우한다는 근거가 많습니다.</p>
+    <div class="p-grid">
+      <div class="p-item"><span class="num">01</span><h4>포지션 사이징</h4><p>확신이 있어도 한 종목·코인에 전체 자산의 일정 비율(예: 10~20%) 이상을 넣지 않는다. 몰빵의 기대수익이 아무리 높아도, 한 번의 오판이 회복 불가능한 손실이 된다.</p></div>
+      <div class="p-item"><span class="num">02</span><h4>레버리지 배제</h4><p>선물·마진·코인 레버리지는 수익률뿐 아니라 손실률도 배로 만든다. 특히 변동성이 큰 코인에서 레버리지는 청산으로 이어지는 가장 흔한 경로다.</p></div>
+      <div class="p-item"><span class="num">03</span><h4>진입·청산 기준 사전 설정</h4><p>매수 전에 "왜 사는지, 어디서 손절하는지, 어디서 익절하는지"를 글로 적어둔다. 매수 이후에 감정이 개입되면 기준이 무너진다.</p></div>
+      <div class="p-item"><span class="num">04</span><h4>매매일지</h4><p>진입 근거와 결과를 기록하면, 반복되는 실수 패턴(추격매수, 물타기 타이밍 등)이 데이터로 드러난다.</p></div>
+      <div class="p-item"><span class="num">05</span><h4>시간지평 일치</h4><p>1~2년 안에 쓸 돈은 변동성 큰 자산에 넣지 않는다. 급하게 현금화해야 할 때 손절 타이밍과 겹치는 게 가장 흔한 실패 원인이다.</p></div>
+      <div class="p-item"><span class="num">06</span><h4>비용 관리</h4><p>매매 수수료, 세금, 잦은 매매 빈도는 장기 수익률을 갉아먹는다. 확신이 부족한 상태의 잦은 매매는 대부분 비용만 남긴다.</p></div>
+      <div class="p-item"><span class="num">07</span><h4>정기 리밸런싱</h4><p>분기·반기 단위로 비중을 원래 계획으로 되돌린다. 오른 자산을 일부 덜고 내린 자산을 채우는 기계적 규칙이, 감정적 판단보다 나은 경우가 많다.</p></div>
+    </div>
+  </section>
+
+  <section class="asset" id="kr" style="--accent:var(--accent-kr)">
+    <div class="tag">국내주식</div>
+    <h2>한국 증시 — 구조적 리스크를 먼저 이해하기</h2>
+    <p class="desc">국내 증시는 오너 지배구조, 물적분할·유상증자 같은 소액주주 희석 이슈, 외국인 수급 의존도가 수익률에 큰 영향을 미친다는 점이 미국 시장과 다릅니다.</p>
+
+    <div class="block">
+      <h4>확인할 근거</h4>
+      <ul>
+        <li>업종 평균 대비 PER·PBR — 절대 저평가가 아니라 <span class="dim">동종업계 대비</span> 위치</li>
+        <li>최근 3~5년 ROE 추세와 배당성향의 일관성</li>
+        <li>최대주주 지분율, 물적분할·유상증자·전환사채 발행 이력</li>
+        <li>외국인·기관 수급 동향 (거래소 공시 기준 순매수 추이)</li>
+        <li>실적 컨센서스 대비 서프라이즈 방향성</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h4>흔한 실패 패턴</h4>
+      <div class="fail">테마주(정치·바이오·2차전지 등) 급등 후 뒤늦은 추격매수 → 유동성 낮은 소형주에 자산 집중 → 지배구조 리스크(물적분할, 대규모 유상증자)를 사전 확인하지 않고 매수.</div>
+    </div>
+
+    <div class="reality">현실적 접근: 코스피200/배당 우량주 인덱스를 코어로 두고, 개별 종목 비중은 원칙 1(포지션 사이징)을 그대로 적용. 급등 중인 종목을 뒤따라 사는 대신, 수급이 몰리기 전 데이터(공시, 실적)로 먼저 판단.</div>
+  </section>
+
+  <section class="asset" id="us" style="--accent:var(--accent-us)">
+    <div class="tag">미국주식</div>
+    <h2>미국 증시 — "종목을 잘 고르기"보다 검증된 사실</h2>
+    <p class="desc">S&P다우존스의 SPIVA 보고서는 장기적으로 액티브 펀드매니저 대다수가 자기 벤치마크 지수를 이기지 못한다는 것을 반복적으로 보여줍니다. 전문 운용역도 어려운 일을, 개인이 뉴스와 감으로 반복해서 맞히긴 더 어렵습니다.</p>
+
+    <div class="block">
+      <h4>학계에서 근거가 쌓인 팩터</h4>
+      <table class="metrics">
+        <tr><th>팩터</th><th>의미</th></tr>
+        <tr><td>퀄리티</td><td>높은 ROE, 낮은 부채비율, 안정적 잉여현금흐름</td></tr>
+        <tr><td>밸류</td><td>이익·자산 대비 저평가된 가격</td></tr>
+        <tr><td>모멘텀</td><td>최근 6~12개월 상대적으로 견조한 주가 흐름</td></tr>
+        <tr><td>로우볼</td><td>변동성이 낮은 종목이 위험 대비 수익이 나은 경향</td></tr>
+      </table>
+      <p style="font-size:13px;color:var(--ink-soft);margin-top:10px;">단, 이 팩터들도 수년씩 시장 평균에 뒤처지는 구간이 존재합니다. "항상 이긴다"는 팩터는 없습니다.</p>
+    </div>
+
+    <div class="block">
+      <h4>흔한 실패 패턴</h4>
+      <div class="fail">헤드라인 뉴스나 SNS 화제성만으로 매수 → 손절 기준 없이 하락분을 계속 물타기 → 한두 종목(특히 빅테크 한 종목)에 자산 대부분을 집중.</div>
+    </div>
+
+    <div class="reality">현실적 접근: S&P500 또는 전세계 지수 ETF를 코어로 정기 적립(달러코스트에버리징) 하고, 확신 있는 개별 종목은 전체 자산의 10~20% 이내 "위성" 비중으로 제한.</div>
+  </section>
+
+  <section class="asset" id="coin" style="--accent:var(--accent-coin)">
+    <div class="tag">코인</div>
+    <h2>가상자산 — 대부분의 알트코인은 결국 사라진다</h2>
+    <p class="desc">비트코인·이더리움 정도를 제외하면, 상장된 알트코인 상당수가 몇 년 안에 거래량이 말라붙거나 가치가 사실상 소멸합니다. "다음 대박 코인 찾기"는 확률적으로 복권에 가깝습니다.</p>
+
+    <div class="block">
+      <h4>확인할 근거</h4>
+      <ul>
+        <li>시가총액 순위와 거래소 유동성 (상위 코인일수록 생존 확률 높음)</li>
+        <li>온체인 데이터 — 활성 지갑 수, 거래소 유입/유출 추이</li>
+        <li>실제 사용처 유무 (투기 수요만으로 지탱되는지)</li>
+        <li>토큰 발행 구조 — 팀·재단 물량 락업 해제 일정</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h4>흔한 실패 패턴</h4>
+      <div class="fail">선물·레버리지 거래로 인한 강제청산 → 이미 급등한 코인을 SNS 화제성 보고 뒤늦게 매수 → 스캠성 프로젝트에 "상장 초기"라는 이유만으로 진입.</div>
+    </div>
+
+    <div class="reality">현실적 접근: 전체 투자자산 중 감당 가능한 소액(투기자산으로 취급)만 배분, 레버리지·선물 배제, 비트코인·이더리움 중심의 분할매수를 우선 고려.</div>
+  </section>
+
+  <section class="asset" id="bond" style="--accent:var(--accent-bond)">
+    <div class="tag">채권</div>
+    <h2>채권 — 수익을 극대화하는 자산이 아니라 완충재</h2>
+    <p class="desc">채권의 역할은 "많이 버는 것"이 아니라 주식이 급락할 때 포트폴리오 전체의 변동성을 낮추는 것입니다. 이 역할과 기대치를 헷갈리면 실망하기 쉽습니다.</p>
+
+    <div class="block">
+      <h4>확인할 근거</h4>
+      <ul>
+        <li>금리 사이클 방향 — 금리 상승기엔 기존 채권가격 하락, 하락기엔 상승(반비례 관계)</li>
+        <li>듀레이션(만기) — 만기가 길수록 금리 변화에 더 민감</li>
+        <li>국채 대비 신용스프레드 — 회사채는 발행사 부도 위험만큼 금리가 높음</li>
+        <li>해외채권 투자 시 환헷지 여부</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h4>흔한 실패 패턴</h4>
+      <div class="fail">금리 상승기에 장기채 비중을 늘려 평가손 확대 → 채권을 주식처럼 단기 매매 시도 → 채권형 상품인데 고금리라는 이유만으로 신용등급을 확인하지 않고 매수.</div>
+    </div>
+
+    <div class="reality">현실적 접근: 투자 기간과 나이(현금이 필요한 시점)에 맞춰 안전자산 비중을 정하고, 주식이 급락할 때 리밸런싱 재원으로 활용.</div>
+  </section>
+
+  <section class="asset" id="com" style="--accent:var(--accent-com)">
+    <div class="tag">원자재</div>
+    <h2>원자재 — 방향성 베팅보다 분산 목적</h2>
+    <p class="desc">대부분의 원자재 ETF는 선물 계약을 기반으로 하기 때문에, 실물 가격이 그대로 반영되지 않고 만기 이월(롤오버) 과정에서 비용이 발생합니다. 단기 시황 베팅에는 구조적으로 불리합니다.</p>
+
+    <div class="block">
+      <h4>확인할 근거</h4>
+      <ul>
+        <li>콘탱고/백워데이션 여부 — 선물 롤오버 비용 구조</li>
+        <li>금(金)은 인플레이션·달러 약세 국면에서 분산 효과, 산업금속은 경기 사이클과 연동</li>
+        <li>공급망 이슈(생산국 정치 리스크, 재고 수준)</li>
+      </ul>
+    </div>
+
+    <div class="block">
+      <h4>흔한 실패 패턴</h4>
+      <div class="fail">단기 뉴스(전쟁, 감산 발표 등)에 반응해 뒤늦게 진입 → 레버리지 원자재 ETF를 장기 보유(롤오버 비용 누적) → 방향성 예측만으로 큰 비중 베팅.</div>
+    </div>
+
+    <div class="reality">현실적 접근: 포트폴리오 분산·인플레이션 헤지 목적으로 금 등을 소액(5~10% 내외) 편입하는 정도로 활용, 단기 방향성 베팅은 지양.</div>
+  </section>
+
+  <footer>
+    <p>이 문서는 일반적인 투자 개념과 각 자산군의 구조적 특징을 정리한 교육 목적 참고 자료이며, 특정 종목·코인에 대한 매수·매도 추천이 아닙니다. 과거의 경향이나 팩터가 미래에도 동일하게 재현된다는 보장은 없으며, 모든 투자는 원금 손실 가능성을 수반합니다. 개인의 재무 상황에 맞는 결정은 필요 시 전문 자격을 갖춘 재무상담사와 상의하시길 권합니다.</p>
+  </footer>
+
+</div>
+</body>
+</html>

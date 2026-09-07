@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>주식회사의 원리 — 챕터별 심화 가이드</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F3F1EC;
+    --ink:#20232B;
+    --ink-soft:#5B5F6B;
+    --rule:#D7D3C6;
+    --card:#FBFAF6;
+    --accent:#33506B;
+    --accent-2:#8E6B3A;
+    --p1:#33506B;
+    --p2:#5C7A4A;
+    --p3:#8E6B3A;
+    --p4:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.75;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:780px;margin:0 auto;padding:60px 24px 110px;}
+  h1,h2,h3{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+
+  header.top{margin-bottom:36px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:33px;line-height:1.32;margin:0 0 16px;}
+  .lede{font-size:15.5px;color:var(--ink-soft);max-width:62ch;margin:0 0 16px;}
+  .note{font-size:13px;color:var(--ink-soft);border-left:3px solid var(--rule);padding-left:14px;max-width:62ch;}
+
+  /* ---- interactive diagram ---- */
+  .diagram-wrap{
+    margin:44px 0 56px;
+    background:var(--card);
+    border:1px solid var(--rule);
+    padding:22px 20px 14px;
+  }
+  .diagram-wrap .dtitle{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  svg{width:100%;height:auto;display:block;}
+  .node-circle{fill:var(--card);stroke:var(--rule);stroke-width:1.5;transition:all .18s ease;cursor:pointer;}
+  .node-group:hover .node-circle, .node-group.active .node-circle{stroke-width:2.5;}
+  .node-label{font-family:'IBM Plex Sans KR',sans-serif;font-size:11px;fill:var(--ink);pointer-events:none;}
+  .node-num{font-family:'IBM Plex Mono',monospace;font-size:13px;fill:var(--ink-soft);pointer-events:none;}
+  .flow-line{stroke:var(--rule);stroke-width:1.5;fill:none;}
+  .part-band{font-family:'IBM Plex Mono',monospace;font-size:10.5px;fill:var(--ink-soft);}
+  #tooltip{
+    margin-top:12px;
+    min-height:38px;
+    font-size:13px;
+    color:var(--ink-soft);
+    border-top:1px solid var(--rule);
+    padding-top:10px;
+  }
+  #tooltip b{color:var(--ink);}
+
+  /* ---- part header ---- */
+  .part-header{
+    margin:64px 0 8px;
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+  }
+  .part-header .p-num{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--partcolor);}
+  .part-header h2{font-size:26px;margin:0;}
+  .part-desc{font-size:14px;color:var(--ink-soft);max-width:60ch;margin:6px 0 30px;}
+
+  /* ---- chapter card ---- */
+  .chapter{
+    margin:0 0 40px;
+    padding:26px 26px 22px;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:4px solid var(--partcolor);
+    scroll-margin-top:24px;
+  }
+  .chapter.flash{animation:flash 1s ease;}
+  @keyframes flash{0%{background:#EFE6D3;}100%{background:var(--card);}}
+  .chapter .ctag{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--partcolor);margin-bottom:6px;}
+  .chapter h3{font-size:20px;margin:0 0 14px;}
+  .chapter p{font-size:14.8px;margin:0 0 13px;max-width:62ch;}
+  .chapter p:last-of-type{margin-bottom:0;}
+
+  .must{
+    margin:18px 0 0;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    padding:14px 16px;
+  }
+  .must .mtitle{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--partcolor);margin-bottom:8px;}
+  .must ul{margin:0;padding-left:18px;}
+  .must li{font-size:13.8px;margin-bottom:5px;}
+  .must li:last-child{margin-bottom:0;}
+
+  details.more{margin-top:16px;border-top:1px dashed var(--rule);padding-top:12px;}
+  details.more summary{
+    cursor:pointer;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    outline:none;
+  }
+  details.more summary:hover{color:var(--ink);}
+  details.more .ex{font-size:14px;margin-top:12px;color:var(--ink-soft);}
+  details.more .ex b{color:var(--ink);}
+
+  /* synthesis */
+  section.synth{margin-top:60px;padding-top:38px;border-top:1px solid var(--rule);}
+  .synth h2{font-size:26px;margin:0 0 10px;}
+  .synth .part-desc{margin-bottom:26px;}
+  .synth-table{width:100%;border-collapse:collapse;font-size:14px;margin:18px 0 26px;}
+  .synth-table th,.synth-table td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--rule);vertical-align:top;}
+  .synth-table th{font-family:'IBM Plex Mono',monospace;font-weight:500;font-size:11.5px;color:var(--ink-soft);}
+
+  .myth{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--p4);
+    padding:14px 16px;
+    margin-bottom:12px;
+    font-size:14px;
+  }
+  .myth .wrong{color:var(--p4);font-weight:600;}
+  .myth .right{color:var(--p2);font-weight:600;}
+
+  footer{margin-top:66px;padding-top:26px;border-top:1px solid var(--rule);font-size:12.8px;color:var(--ink-soft);}
+  footer p{max-width:62ch;margin:0 0 10px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">챕터별 심화 가이드 · 주식회사의 원리</div>
+    <h1>회사의 탄생부터 주가 분석까지 — 챕터를 따라가는 지도</h1>
+    <p class="lede">확인된 목차 구조(창업 → 소유권과 주식 → 차입 → 재무비율 → 상장 → 희석 → 채권·우선주 → 자본조달 선택 → 종합 사례 적용)를 따라, 각 단계를 더 깊게 풀어 썼습니다. 위 다이어그램의 원을 눌러보면 해당 챕터로 바로 이동합니다.</p>
+    <div class="note">이 문서는 책의 문장을 발췌·번역한 것이 아니라, 공개된 목차 순서를 참고해 각 개념을 제가 새로 설명하고 가상의 예시로 풀어낸 학습 자료입니다. 중반부(4~17장 사이 세부 장) 전체 목차까지는 확인하지 못해, 해당 구간은 "책이 이 지점에서 보통 다루는 주제"로 범위를 넓혀 정리했습니다. 정확한 장별 사례는 원문에서 확인해주세요.</div>
+  </header>
+
+  <div class="diagram-wrap">
+    <div class="dtitle">흐름 다이어그램 — 클릭해서 이동</div>
+    <svg viewBox="0 0 760 210" xmlns="http://www.w3.org/2000/svg">
+      <text x="6" y="16" class="part-band">PART I · 자본구조</text>
+      <text x="286" y="16" class="part-band">PART II · 재무분석</text>
+      <text x="466" y="16" class="part-band">PART III · 자본시장</text>
+      <text x="660" y="16" class="part-band">PART IV</text>
+
+      <path class="flow-line" d="M50,60 L710,60"/>
+
+      <g class="node-group" data-target="ch1" onclick="jump('ch1',this)">
+        <circle class="node-circle" cx="50" cy="60" r="26"></circle>
+        <text x="50" y="65" text-anchor="middle" class="node-num">1</text>
+      </g>
+      <g class="node-group" data-target="ch2" onclick="jump('ch2',this)">
+        <circle class="node-circle" cx="146" cy="60" r="26"></circle>
+        <text x="146" y="65" text-anchor="middle" class="node-num">2</text>
+      </g>
+      <g class="node-group" data-target="ch3" onclick="jump('ch3',this)">
+        <circle class="node-circle" cx="242" cy="60" r="26"></circle>
+        <text x="242" y="65" text-anchor="middle" class="node-num">3</text>
+      </g>
+      <g class="node-group" data-target="ch4" onclick="jump('ch4',this)">
+        <circle class="node-circle" cx="338" cy="60" r="26"></circle>
+        <text x="338" y="65" text-anchor="middle" class="node-num">4</text>
+      </g>
+      <g class="node-group" data-target="ch5" onclick="jump('ch5',this)">
+        <circle class="node-circle" cx="434" cy="60" r="26"></circle>
+        <text x="434" y="65" text-anchor="middle" class="node-num">5</text>
+      </g>
+      <g class="node-group" data-target="ch6" onclick="jump('ch6',this)">
+        <circle class="node-circle" cx="530" cy="60" r="26"></circle>
+        <text x="530" y="65" text-anchor="middle" class="node-num">6</text>
+      </g>
+      <g class="node-group" data-target="ch7" onclick="jump('ch7',this)">
+        <circle class="node-circle" cx="626" cy="60" r="26"></circle>
+        <text x="626" y="65" text-anchor="middle" class="node-num">7·8</text>
+      </g>
+      <g class="node-group" data-target="ch9" onclick="jump('ch9',this)">
+        <circle class="node-circle" cx="710" cy="60" r="26"></circle>
+        <text x="710" y="65" text-anchor="middle" class="node-num">종합</text>
+      </g>
+
+      <text x="50" y="104" text-anchor="middle" class="node-label">창업</text>
+      <text x="146" y="104" text-anchor="middle" class="node-label">소유권</text>
+      <text x="242" y="104" text-anchor="middle" class="node-label">차입</text>
+      <text x="338" y="104" text-anchor="middle" class="node-label">재무비율</text>
+      <text x="434" y="104" text-anchor="middle" class="node-label">상장</text>
+      <text x="530" y="104" text-anchor="middle" class="node-label">희석</text>
+      <text x="626" y="104" text-anchor="middle" class="node-label">채권·선택</text>
+      <text x="710" y="104" text-anchor="middle" class="node-label">사례적용</text>
+    </svg>
+    <div id="tooltip">원을 눌러보세요 — 해당 챕터 설명으로 이동하고 잠깐 강조 표시됩니다.</div>
+  </div>
+
+  <!-- PART I -->
+  <div class="part-header" style="--partcolor:var(--p1)">
+    <span class="p-num">PART I</span>
+    <h2>회사는 어떻게 태어나 자본을 조달하는가</h2>
+  </div>
+  <p class="part-desc">회사가 만들어지는 순간부터, 성장을 위해 남의 돈(지분 또는 부채)을 끌어오는 과정까지의 3개 챕터.</p>
+
+  <div class="chapter" id="ch1" style="--partcolor:var(--p1)">
+    <div class="ctag">1장 · 사업 시작하기</div>
+    <h3>창업자의 돈에서 '주식'이라는 개념이 나오기까지</h3>
+    <p>누군가 사업을 시작하려면 초기 자본이 필요합니다. 창업자 혼자 돈을 대면 회사는 100% 창업자 소유지만, 자본이 부족하면 가족·지인·엔젤투자자에게 지분을 나눠주고 돈을 받습니다. 이 순간 회사는 법적으로 하나의 독립된 인격체(법인)가 되고, 그 법인의 소유권이 "주식"이라는 단위로 쪼개집니다.</p>
+    <p>중요한 건, 주식을 산다는 것이 회사에 "돈을 빌려주는 것"이 아니라 "회사의 일부를 소유하는 것"이라는 차이입니다. 빌려준 돈(대출)은 회사 실적과 무관하게 원금과 이자를 돌려받을 권리가 있지만, 주식은 회사가 잘되면 그만큼 더 벌고 안되면 그만큼 잃습니다. 이 비대칭적 위험을 감수하는 대가로 주주는 상한 없는 성장의 몫을 가져갈 잠재력을 얻습니다.</p>
+    <div class="must">
+      <div class="mtitle">필수로 기억할 것</div>
+      <ul>
+        <li>주식 = 회사 소유권의 조각. 채권 = 회사에 대한 대출.</li>
+        <li>초기 자본구조(창업자 vs 투자자 지분율)가 이후 모든 의사결정(상장, 경영권)의 출발점이 된다.</li>
+        <li>법인 설립 이후 회사의 재산과 창업자 개인의 재산은 법적으로 분리된다.</li>
+      </ul>
+    </div>
+    <details class="more">
+      <summary>예시로 더 보기</summary>
+      <div class="ex">가상의 카페 프랜차이즈 '두리커피'를 창업자가 5천만 원으로 시작했다고 가정해봅시다. 총 지분을 1,000주로 나누고 창업자가 1,000주를 전부 갖습니다. 매장을 늘리려 1억 원이 더 필요해지자, 투자자에게 500주를 새로 발행해 팔면 창업자 지분율은 100%에서 66.7%(1,000/1,500)로 낮아집니다. 이게 이후 6장에서 다룰 '희석'의 가장 단순한 형태입니다.</div>
+    </details>
+  </div>
+
+  <div class="chapter" id="ch2" style="--partcolor:var(--p1)">
+    <div class="ctag">2장 · 소유권과 주식</div>
+    <h3>주식 1주가 실제로 주는 권리</h3>
+    <p>주식을 보유하면 크게 세 가지 권리가 따라옵니다. 첫째, 주주총회에서 이사 선임 등에 투표할 수 있는 <b>의결권</b>. 둘째, 회사가 이익을 배당으로 나눌 때 지분율만큼 받을 <b>배당권</b>. 셋째, 회사가 청산될 때 부채를 다 갚고 남는 재산을 나눠 받을 <b>잔여재산분배권</b>입니다. 다만 이 잔여재산분배권은 채권자·우선주주보다 순위가 밀립니다 — 회사가 망하면 보통주 주주가 가장 마지막에, 그것도 남는 게 있을 때만 받습니다.</p>
+    <p>또한 액면가(주식에 표시된 명목상 최초 가격)와 실제 시장에서 거래되는 시가는 완전히 다른 개념입니다. 액면가는 대부분 회계·법적 절차에서만 의미가 있고, 투자자에게 중요한 건 시장이 지금 그 회사를 얼마로 평가하는지(시가총액)입니다.</p>
+    <div class="must">
+      <div class="mtitle">필수로 기억할 것</div>
+      <ul>
+        <li>주주의 3대 권리: 의결권, 배당권, 잔여재산분배권.</li>
+        <li>회사 청산 시 지급 순위: 채권자 → 우선주주 → 보통주주 순.</li>
+        <li>액면가 ≠ 시가. 투자 판단에는 시가(시가총액)가 기준.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch3" style="--partcolor:var(--p1)">
+    <div class="ctag">3장 · 기업의 성장에 따른 차입</div>
+    <h3>왜 잘나가는 회사도 빚을 지는가</h3>
+    <p>회사가 성장하려면 공장, 인력, 재고에 선제적으로 돈을 써야 하는데, 그 돈이 매출로 돌아오는 데는 시간이 걸립니다. 이 간극을 메우는 방법이 차입입니다. 차입의 장점은 지분을 나누지 않고도 자본을 조달할 수 있다는 것 — 이자를 갚고 남는 이익은 온전히 기존 주주 몫입니다. 이걸 흔히 <b>레버리지 효과</b>라고 부릅니다: 빌린 돈으로 벌어들인 수익률이 이자율보다 높으면, 주주 입장에서의 실질 수익률은 더 커집니다.</p>
+    <p>문제는 반대 방향으로도 똑같이 작동한다는 것입니다. 사업이 예상만큼 안 되더라도 이자는 정해진 대로 갚아야 하므로, 부채비율이 높은 회사는 경기가 나빠질 때 이익이 훨씬 가파르게 무너집니다. 그래서 투자자는 부채비율뿐 아니라, 영업이익이 이자비용을 몇 배나 감당할 수 있는지(이자보상배율)를 함께 봅니다.</p>
+    <div class="must">
+      <div class="mtitle">필수로 기억할 것</div>
+      <ul>
+        <li>레버리지는 좋을 때 수익을 키우고, 나쁠 때 손실도 키우는 양날의 검.</li>
+        <li>이자보상배율이 낮으면(예: 1~2배 이하) 경기 둔화 시 위험 신호.</li>
+        <li>차입 vs 지분 조달의 선택은 8장에서 더 정교하게 다뤄진다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PART II -->
+  <div class="part-header" style="--partcolor:var(--p2)">
+    <span class="p-num">PART II</span>
+    <h2>숫자로 회사를 읽는 법</h2>
+  </div>
+  <p class="part-desc">재무제표에서 뽑아낸 비율들이 투자자에게 무엇을 말해주는지 정리한 구간.</p>
+
+  <div class="chapter" id="ch4" style="--partcolor:var(--p2)">
+    <div class="ctag">4장 · 투자자들이 살펴야 하는 재무비율</div>
+    <h3>같은 숫자도 비율로 바꾸면 비교가 가능해진다</h3>
+    <p>매출 1조 원과 100억 원 회사를 그냥 비교하는 건 의미가 없습니다. 그래서 투자자는 절대 금액이 아니라 비율을 봅니다. 핵심은 크게 세 갈래로 나뉩니다: <b>수익성</b>(회사가 돈을 얼마나 잘 버는가), <b>안정성</b>(빚을 감당할 체력이 있는가), <b>가치평가</b>(지금 주가가 그 실적에 비해 싼가 비싼가).</p>
+    <table class="synth-table">
+      <tr><th>구분</th><th>지표</th><th>의미</th></tr>
+      <tr><td>수익성</td><td>ROE, 영업이익률</td><td>자기자본·매출 대비 얼마나 효율적으로 이익을 내는가</td></tr>
+      <tr><td>안정성</td><td>부채비율, 이자보상배율</td><td>빚을 갚을 체력이 있는가</td></tr>
+      <tr><td>가치평가</td><td>PER, PBR</td><td>이익·자산 대비 지금 주가 수준이 어떤가</td></tr>
+    </table>
+    <p>중요한 건 이 비율들을 <b>동종업계 안에서, 그리고 그 회사의 과거 흐름과</b> 비교하는 것입니다. PER 30배가 어떤 업종에선 비싼 편이고, 어떤 성장 업종에선 오히려 낮은 편일 수 있습니다. 절대 숫자 하나만 보고 "싸다/비싸다"를 판단하는 건 이 장이 가장 경계하는 실수입니다.</p>
+    <div class="must">
+      <div class="mtitle">필수로 기억할 것</div>
+      <ul>
+        <li>비율은 항상 <b>업종 평균</b>, <b>과거 자기 자신</b>과 비교해서 해석한다.</li>
+        <li>수익성 좋은 회사도 부채비율이 과도하면 안정성에서 감점.</li>
+        <li>가치평가 지표(PER·PBR)는 "싸다"의 근거이지 "오른다"의 보장이 아니다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- PART III -->
+  <div class="part-header" style="--partcolor:var(--p3)">
+    <span class="p-num">PART III</span>
+    <h2>회사가 자본시장과 만나는 순간</h2>
+  </div>
+  <p class="part-desc">상장, 신주발행, 채권·우선주까지 — 회사가 외부 자본시장에서 돈을 조달하는 실제 방식들.</p>
+
+  <div class="chapter" id="ch5" style="--partcolor:var(--p3)">
+    <div class="ctag">5장 · 회사의 상장 — 신주모집과 구주매출</div>
+    <h3>IPO에서 실제로 오가는 돈의 방향</h3>
+    <p>상장(IPO)은 회사 주식을 처음으로 일반 투자자가 살 수 있게 증권거래소에 등록하는 절차입니다. 이때 팔리는 물량은 두 종류로 나뉩니다.</p>
+    <table class="synth-table">
+      <tr><th>신주모집</th><td>회사가 새 주식을 발행해서 판매 — 그 대금이 <b>회사로</b> 들어가 사업 자금으로 쓰인다.</td></tr>
+      <tr><th>구주매출</th><td>창업자·기존 투자자(VC 등)가 갖고 있던 지분을 판매 — 그 대금이 <b>파는 사람에게</b> 간다.</td></tr>
+    </table>
+    <p>공모 비율에 신주모집과 구주매출이 어떻게 섞여 있는지를 보면, 이 IPO가 "회사 성장 자금을 위한 것"인지 "기존 투자자의 현금화"인지 힌트를 얻을 수 있습니다. 구주매출 비중이 지나치게 크면, 내부자들이 상장 시점에 지분을 대거 정리하고 있다는 신호로 해석되기도 합니다.</p>
+    <div class="must">
+      <div class="mtitle">필수로 기억할 것</div>
+      <ul>
+        <li>신주모집 = 회사로 돈이 들어감. 구주매출 = 기존 주주에게 돈이 감.</li>
+        <li>상장 직후 락업(보호예수) 해제 시점에 매물이 쏟아질 수 있어 주가 변동 요인이 된다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="chapter" id="ch6" style="--partcolor:var(--p3)">
+    <div class="ctag">6장 · 이익희석</div>
+    <h3>회사는 커지는데 내 몫은 작아지는 이유</h3>
+    <p>회사가 자금을 조달하려고 새 주식을 발행할 때마다, 전체 발행주식수가 늘어납니다. 회사 전체의 순이익이 그대로거나 조금 늘어도, 늘어난 주식 수만큼 나눠야 하니 1주당 이익(EPS)은 오히려 줄어들 수 있습니다. 이것이 <b>희석</b>입니다.</p>
+    <p>희석 자체는 나쁜 게 아닙니다. 관건은 회사가 새로 조달한 돈으로 희석분을 상쇄하고도 남을 만큼의 추가 이익을 만들어내는가입니다. 좋은 유상증자는 "지분은 줄었지만 회사가 훨씬 커져서 결국 내 몫의 절대 가치는 늘어난" 경우이고, 나쁜 유상증자는 "지분만 줄고 조달한 돈이 이익으로 이어지지 못한" 경우입니다.</p>
+    <div class="must">
+      <div class="mtitle">필수로 기억할 것</div>
+      <ul>
+        <li>희석 = 주식 수 증가로 인한 주당 가치 감소.</li>
+        <li>유상증자 공시가 나오면 "조달한 돈을 어디에 쓰는지"를 먼저 확인한다.</li>
+        <li>자사주매입은 반대로 주식 수를 줄여 희석과 반대 효과를 낸다.</li>
+      </ul>
+    </div>
+    <details class="more">
+      <summary>예시로 더 보기</summary>
+      <div class="ex">두리커피가 순이익 10억 원, 발행주식 100만 주로 EPS 1,000원이었다고 합시다. 신규 매장 확장을 위해 20만 주를 추가 발행해 자금을 조달하면 발행주식은 120만 주가 됩니다. 만약 그 확장으로 순이익이 12억 원으로 늘면 EPS는 1,000원(12억/120만)으로 유지되어 희석 효과가 상쇄된 것이고, 순이익이 10억 원에 그대로 머문다면 EPS는 833원으로 줄어 순수하게 희석만 발생한 것입니다.</div>
+    </details>
+  </div>
+
+  <div class="chapter" id="ch7" style="--partcolor:var(--p3)">
+    <div class="ctag">7·8장 · 채권·우선주, 그리고 자본조달의 선택</div>
+    <h3>보통주 말고 다른 조달 수단들, 그리고 회사의 저울질</h3>
+    <p>회사가 자본을 조달하는 메뉴는 보통주만 있는 게 아닙니다. <b>채권</b>은 정해진 이자를 주고 만기에 원금을 갚는 대출 성격의 증권으로, 회사 실적이 얼마든 정해진 이자만 받는 대신 회사가 망할 때 보통주 주주보다 먼저 돈을 돌려받습니다. <b>우선주</b>는 그 중간 지점 — 배당을 보통주보다 우선적으로, 대체로 더 높은 고정 비율로 받지만 의결권이 없는 경우가 많습니다.</p>
+    <p>회사 입장에서는 자금이 필요할 때마다 "보통주를 더 팔까, 채권을 발행할까, 우선주를 발행할까"를 저울질합니다. 보통주는 지분 희석은 있지만 갚을 의무는 없고, 채권은 지분 희석은 없지만 반드시 갚아야 합니다. 이 선택은 회사의 현재 부채비율, 금리 환경, 경영진이 지분을 얼마나 지키고 싶은지에 따라 달라집니다. 금리가 낮을 때는 채권 발행이 유리하고, 주가가 고평가돼 있을 때는 신주 발행이 회사 입장에서 유리한 경우가 많습니다.</p>
+    <div class="must">
+      <div class="mtitle">필수로 기억할 것</div>
+      <ul>
+        <li>청산 순위: 채권 &gt; 우선주 &gt; 보통주.</li>
+        <li>채권 발행 = 갚을 의무 O, 지분 희석 X. 신주 발행 = 갚을 의무 X, 지분 희석 O.</li>
+        <li>회사의 조달 수단 선택 자체가 경영진의 자신감·금리 환경을 읽는 힌트가 된다.</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SYNTHESIS -->
+  <section class="synth" id="ch9">
+    <div class="part-header" style="--partcolor:var(--p4);margin-top:0;">
+      <span class="p-num">종합 사례 적용</span>
+      <h2>흔한 오해 바로잡기 + 실제로 겹쳐서 읽는 법</h2>
+    </div>
+    <p class="part-desc">여기까지의 개념을 한 회사에 겹쳐서 적용하고, 초보 투자자가 가장 자주 하는 오해를 바로잡는 마무리 구간입니다.</p>
+
+    <h3 style="font-size:18px;">흔히 하는 오해</h3>
+    <div class="myth"><span class="wrong">오해:</span> "PER이 낮으면 무조건 저평가된 좋은 주식이다." <br><span class="right">정리:</span> PER이 낮은 이유가 시장이 그 회사의 성장 둔화나 리스크를 이미 반영했기 때문일 수 있습니다. PER은 업종·성장률과 함께 봐야 의미가 생깁니다.</div>
+    <div class="myth"><span class="wrong">오해:</span> "유상증자는 무조건 악재다." <br><span class="right">정리:</span> 조달한 자금이 이익 성장으로 이어지면 장기적으로는 호재가 될 수 있습니다. 단기 주가 하락은 희석에 대한 반사적 반응인 경우가 많습니다.</div>
+    <div class="myth"><span class="wrong">오해:</span> "부채가 많은 회사는 무조건 위험하다." <br><span class="right">정리:</span> 이자보상배율과 현금흐름을 함께 봐야 합니다. 안정적 현금흐름을 가진 회사의 적정 레버리지는 오히려 주주 수익률을 높이는 정상적인 전략입니다.</div>
+    <div class="myth"><span class="wrong">오해:</span> "재무제표 숫자 하나만 좋으면 좋은 회사다." <br><span class="right">정리:</span> 손익계산서·재무상태표·현금흐름표 세 가지를 같이 봐야, 장부상 이익과 실제 현금 사정의 괴리 같은 위험 신호를 놓치지 않습니다.</div>
+
+    <h3 style="font-size:18px;margin-top:32px;">겹쳐서 읽는 법 — 가상 사례</h3>
+    <p style="font-size:14.8px;">가상의 상장사 '두리커피'가 신규 해외 진출을 위해 신주 20%를 추가 발행한다고 발표했다고 해봅시다. 지금까지 배운 개념을 겹쳐서 읽으면:</p>
+    <table class="synth-table">
+      <tr><th>1단계</th><td>신주모집인지 구주매출인지 확인 → 신주모집이면 회사로 자금 유입 (5장)</td></tr>
+      <tr><th>2단계</th><td>발행 비율만큼 EPS 희석 예상치 계산 (6장)</td></tr>
+      <tr><th>3단계</th><td>왜 채권이 아니라 신주를 택했는지 확인 — 이미 부채비율이 높은 상태였는지 (3·7·8장)</td></tr>
+      <tr><th>4단계</th><td>조달 자금이 투입될 사업의 예상 이익 기여도를 향후 실적으로 추적 (4장, ROE 변화 관찰)</td></tr>
+    </table>
+    <p style="font-size:14.8px;">이렇게 한 가지 공시를 여러 챕터의 개념으로 겹쳐 읽는 습관이, 결국 "왜 이 회사 주가가 이렇게 움직였는가"를 스스로 설명할 수 있게 해주는 핵심입니다.</p>
+  </section>
+
+  <footer>
+    <p>이 문서는 「주식이 오르고 내리는 이유」의 공개된 목차 구조(1~8장, 후반부 사례 적용 챕터)를 뼈대로 삼아, 개념 설명과 예시를 새로 작성한 학습 자료입니다. 책 원문의 문장이나 실제 사례(JMC, 애보트랩스 등)를 그대로 옮기지 않았으며, 정확한 세부 내용과 저자의 실제 설명 방식은 원문에서 확인하시길 권합니다.</p>
+    <p>특정 종목·회사에 대한 투자 추천이 아닌 일반 교육 목적 자료입니다.</p>
+  </footer>
+
+</div>
+
+<script>
+function jump(id, el){
+  document.querySelectorAll('.node-group').forEach(function(g){ g.classList.remove('active'); });
+  el.classList.add('active');
+  var target = document.getElementById(id);
+  var tooltips = {
+    ch1: '1장 · 사업 시작하기 — 창업 자본과 주식 개념의 출발점',
+    ch2: '2장 · 소유권과 주식 — 의결권·배당권·잔여재산분배권',
+    ch3: '3장 · 성장에 따른 차입 — 레버리지의 양면성',
+    ch4: '4장 · 투자자들이 살펴야 하는 재무비율 — 수익성·안정성·가치평가',
+    ch5: '5장 · 상장 — 신주모집과 구주매출의 차이',
+    ch6: '6장 · 이익희석 — 주식 수 증가와 주당 가치',
+    ch7: '7·8장 · 채권·우선주와 자본조달의 선택',
+    ch9: '종합 사례 적용 — 오해 바로잡기와 실전 겹쳐읽기'
+  };
+  document.getElementById('tooltip').innerHTML = '<b>' + tooltips[id] + '</b>';
+  if(target){
+    target.scrollIntoView({behavior:'smooth', block:'start'});
+    target.classList.remove('flash');
+    void target.offsetWidth;
+    target.classList.add('flash');
+  }
+}
+</script>
+
+</body>
+</html>
