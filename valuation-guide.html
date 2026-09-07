@@ -1,0 +1,1215 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>밸류에이션 지표 — PER·PBR·ROE·EV/EBITDA 제대로 읽기</title>
+<meta name="description" content="PER, PBR, ROE, EV/EBITDA가 각각 무엇을 재는지, 종목 선정에 얼마나 쓸모가 있는지, 그리고 나라와 업종마다 기준이 다른 이유까지. 계산식으로 검증하는 인터랙티브 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --per:#3A5A8E;
+    --pbr:#4C7A6D;
+    --roe:#9E7A2E;
+    --ev:#7A5C9E;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+    --neutral:#5B5648;
+    --bad:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .formula{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--edge,var(--rule));
+    padding:14px 16px;
+    border-radius:3px;
+    margin:16px 0;
+    max-width:none;
+    line-height:1.8;
+  }
+  .formula b{color:var(--ink);font-weight:600;}
+
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0 8px;}
+  .pc > div{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 18px;
+  }
+  .pc h5{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:500;
+    margin:0 0 10px;
+    letter-spacing:.04em;
+  }
+  .pc .good h5{color:#3F6B52;}
+  .pc .bad h5{color:var(--bad);}
+  .pc ul{margin:0;padding-left:16px;}
+  .pc li{font-size:14px;color:var(--ink-soft);margin-bottom:8px;line-height:1.62;}
+  .pc li:last-child{margin-bottom:0;}
+  .pc li b{color:var(--ink);font-weight:600;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:-14px;margin-bottom:24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .pc{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">밸류에이션 · 투자 공부 노트</div>
+    <h1>PER·PBR·ROE·EV/EBITDA<br>— 숫자가 실제로 재고 있는 것</h1>
+    <p class="lede">「PER이 낮으니 싸다」는 말은 <b>반은 맞고 반은 틀립니다.</b> 각 지표는 <b>서로 다른 것을 재는 자</b>이고, 같은 숫자라도 업종과 나라가 다르면 의미가 완전히 달라집니다. 이 문서는 각 지표가 <b>정확히 무엇을 재는지</b>, <b>종목 선정에 얼마나 쓸모가 있는지</b>, 그리고 <b>왜 나라마다 기준이 다른지</b>를 계산으로 확인합니다.</p>
+    <div class="callout">
+      <b>결론을 먼저.</b> 밸류에이션 지표는 <b>「싸다/비싸다」의 근거이지 「오른다」의 근거가 아닙니다.</b> 싼 데는 대개 이유가 있고, 그 이유가 <b>일시적인지 구조적인지</b>를 가리는 것이 진짜 일입니다. 지표는 <b>질문을 만들어주는 도구</b>이지 답이 아닙니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산식과 업종별 기준까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#why">1. 왜 비율인가</a>
+    <a href="#per">2. PER</a>
+    <a href="#pbr">3. PBR</a>
+    <a href="#roe">4. ROE</a>
+    <a href="#ev">5. EV/EBITDA</a>
+    <a href="#others">6. 나머지 지표들</a>
+    <a href="#country">7. 나라마다 다른 이유</a>
+    <a href="#sector">8. 업종마다 다른 이유</a>
+    <a href="#trap">9. 가치 함정</a>
+    <a href="#checklist">10. 체크리스트</a>
+  </nav>
+
+  <!-- ══════════ 1. 왜 비율인가 ══════════ -->
+  <section id="why">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 출발점</span>
+      <h2>절대 금액으로는 비교가 안 되기 때문에</h2>
+      <p class="one">「주가 5만 원」은 아무것도 말해주지 않습니다. 비싼지 싼지는 <b>무엇에 대비해서</b>를 정해야 답할 수 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>사과 한 봉지가 <b>1만 원</b>이야. 비싼 걸까? <b>알 수 없어.</b> 사과가 세 개 들었으면 비싼 거고, 서른 개 들었으면 싼 거잖아. 그래서 우리는 <b>「한 개당 얼마」</b>로 바꿔서 비교하지.</p>
+      <p>주식도 똑같아. <b>「주가 5만 원」</b>만으로는 아무것도 몰라. <b>"그 회사가 1년에 얼마를 버는데?"</b>를 같이 알아야 비싼지 싼지 말할 수 있어. 그래서 만든 게 <b>PER</b>이야 — <b>「몇 년치 벌이로 회사 값을 다 치르나」</b>.</p>
+      <p>재는 자가 여러 개인 이유도 간단해. <b>사과는 개수로 재고, 우유는 부피로 재고, 고기는 무게로 재잖아.</b> 회사도 <b>이익으로 재는 자(PER)</b>, <b>재산으로 재는 자(PBR)</b>, <b>효율로 재는 자(ROE)</b>가 따로 있어.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">OVERVIEW · 각 지표는 무엇을 재나</div>
+      <p class="labsub">눌러서 비교해보세요. 같은 회사를 <b>다른 자</b>로 재는 것입니다.</p>
+
+      <div class="grid3" id="ovCards">
+        <div class="minicard on" data-v="0" style="--edge:var(--per)">
+          <div class="mt">이익으로 재기</div>
+          <div class="mv" style="font-size:16px">PER</div>
+          <div class="mn">몇 년치 벌이인가</div>
+        </div>
+        <div class="minicard" data-v="1" style="--edge:var(--pbr)">
+          <div class="mt">재산으로 재기</div>
+          <div class="mv" style="font-size:16px">PBR</div>
+          <div class="mn">가진 것 대비 몇 배인가</div>
+        </div>
+        <div class="minicard" data-v="2" style="--edge:var(--roe)">
+          <div class="mt">효율로 재기</div>
+          <div class="mv" style="font-size:16px">ROE</div>
+          <div class="mn">주주 돈을 얼마나 잘 굴리나</div>
+        </div>
+      </div>
+
+      <div class="verdict" id="ovVerdict" style="--vc:var(--per)">
+        <div class="vh">PER</div>
+        <div class="vt">이익 대비 가격 — 「몇 년치 벌이로 회사를 살 수 있나」</div>
+        <p>PER 10배는 <b>지금 이익이 그대로 유지된다면 10년이면 원금을 회수</b>한다는 뜻입니다. 가장 널리 쓰이지만 <b>적자 기업에는 쓸 수 없고</b>, 이익이 일시적으로 튀면 숫자가 크게 왜곡됩니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2. PER ══════════ -->
+  <section id="per">
+    <div class="prod-head" style="--edge:var(--per)">
+      <span class="prod-tag">02 · PER</span>
+      <h2>PER — 몇 년치 벌이로 이 회사를 살 수 있나</h2>
+      <p class="one">가장 많이 쓰이고, 가장 많이 오해받는 지표입니다.</p>
+    </div>
+
+    <div class="formula" style="--edge:var(--per)">
+      <b>PER</b> = 주가 ÷ 주당순이익(EPS) = 시가총액 ÷ 순이익<br>
+      <b>이익수익률</b> = 1 ÷ PER — 「이 회사를 사면 연 몇 %를 버는 셈인가」
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>떡볶이 가게를 통째로 <b>1억 원</b>에 판대. 그 가게가 <b>1년에 1천만 원</b>을 번다면, <b>10년이면 본전</b>이지? 이 <b>10년</b>이 PER이야.</p>
+      <p>그럼 PER이 낮을수록 무조건 좋을까? <b>아니야.</b> 왜 어떤 가게는 5년이면 본전인데 아무도 안 살까? <b>내년에 손님이 확 줄 것 같으니까</b> 그런 거야. 반대로 20년이나 걸리는 가게를 사람들이 사겠다고 줄 서는 이유는? <b>내년에 열 배로 벌 것 같으니까.</b></p>
+      <p>그러니까 PER은 <b>「지금 얼마 버나」와 「앞으로 얼마 벌 것 같나」가 합쳐진 숫자</b>야. 낮으면 싼 게 아니라 <b>사람들이 미래를 안 좋게 본다</b>는 뜻일 수도 있어.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CALCULATOR · PER과 이익수익률</div>
+      <p class="labsub">PER의 <b>역수</b>가 이익수익률입니다. 이걸 <b>국채 금리와 비교</b>하면 「주식이 채권보다 매력적인가」를 대략 가늠할 수 있습니다.</p>
+
+      <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="PER과 이익수익률의 반비례 관계 곡선">
+        <line class="axis" x1="60" y1="205" x2="610" y2="205"/>
+        <line class="axis" x1="60" y1="20" x2="60" y2="205"/>
+        <text class="axt" x="60" y="223" text-anchor="middle">5배</text>
+        <text class="axt" x="335" y="223" text-anchor="middle">30배</text>
+        <text class="axt" x="610" y="223" text-anchor="middle">55배</text>
+        <text class="axt" x="335" y="242" text-anchor="middle">PER →</text>
+        <text class="axt" x="52" y="24" text-anchor="end">20%</text>
+        <text class="axt" x="52" y="209" text-anchor="end">0%</text>
+        <line id="peBond" x1="60" x2="610" stroke="#4C7A6D" stroke-width="1.6" stroke-dasharray="5 4"/>
+        <text id="peBondT" class="axt" x="616" y="0" fill="#4C7A6D">국채 금리</text>
+        <path id="peCurve" fill="none" stroke="#3A5A8E" stroke-width="2.6"/>
+        <line id="peCursor" stroke="#232019" stroke-width="1" stroke-dasharray="2 3" opacity=".4"/>
+        <circle id="peDot" r="6" fill="#3A5A8E"/>
+      </svg>
+
+      <div class="ctrl-row">
+        <label for="peVal">PER</label>
+        <input type="range" id="peVal" min="5" max="55" step="1" value="15">
+        <span class="val" id="peValV">15배</span>
+      </div>
+      <div class="ctrl-row">
+        <label for="peRate">국채 금리</label>
+        <input type="range" id="peRate" min="1" max="8" step="0.5" value="3.5">
+        <span class="val" id="peRateV">3.5%</span>
+      </div>
+
+      <div class="readout">
+        <div><span class="rk">이익수익률</span><span class="rv" id="peYield" style="color:var(--per)">6.67%</span></div>
+        <div><span class="rk">국채 대비</span><span class="rv" id="peSpread">+3.17%p</span></div>
+        <div><span class="rk">원금 회수까지</span><span class="rv" id="pePayback">15년</span><span class="rn">이익이 그대로라면</span></div>
+      </div>
+
+      <div class="verdict" id="peVerdict" style="--vc:var(--per)">
+        <div class="vh">해석</div>
+        <div class="vt">이익 대비 보상이 국채보다 큽니다</div>
+        <p>주식은 위험자산이므로 <b>국채보다 더 줘야</b> 살 이유가 생깁니다. 그 차이를 <b>주식 위험 프리미엄</b>이라고 부릅니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>PER이 높다 = 비싸다가 아닌 이유</h3>
+      <p>PER은 <b>「현재 이익」 대비 가격</b>입니다. 그런데 주가는 <b>미래 이익</b>을 보고 매겨집니다. 그래서 <b>내년에 이익이 두 배가 될 회사</b>는 지금 PER이 40배여도 <b>내년 기준으로는 20배</b>가 됩니다. 성장주의 PER이 높은 건 이 때문이고, <b>그 성장이 실현되지 않으면 그때부터 비싼 게 됩니다.</b></p>
+
+      <h3>후행 PER과 선행 PER</h3>
+      <p><b>후행(trailing) PER</b>은 <b>이미 발표된 지난 4분기 이익</b>으로 계산합니다. 사실이지만 과거입니다. <b>선행(forward) PER</b>은 <b>애널리스트들의 향후 12개월 이익 전망치</b>로 계산합니다. 더 유용하지만 <b>전망이 틀리면 같이 틀립니다.</b> 뉴스에 「PER 12배」라고 나올 때 <b>어느 쪽인지 확인하지 않으면 완전히 다른 이야기</b>가 됩니다.</p>
+
+      <h3>PER을 쓸 수 없는 경우</h3>
+      <p><b>① 적자 기업</b> — 분모가 음수라 의미가 없습니다. <b>② 이익이 크게 출렁이는 기업</b> — 반도체·해운·정유 같은 경기민감 업종은 <b>이익이 정점일 때 PER이 가장 낮아 보입니다.</b> 이걸 「싸다」로 읽는 것이 대표적인 함정입니다. <b>③ 일회성 이익이 섞인 경우</b> — 부동산을 팔아 생긴 이익 때문에 PER이 낮아 보일 수 있습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3. PBR ══════════ -->
+  <section id="pbr">
+    <div class="prod-head" style="--edge:var(--pbr)">
+      <span class="prod-tag">03 · PBR</span>
+      <h2>PBR — 가진 재산 대비 몇 배에 팔리나</h2>
+      <p class="one">그리고 <b>PBR·PER·ROE 세 지표가 사실은 하나의 식으로 묶여 있다</b>는 사실.</p>
+    </div>
+
+    <div class="formula" style="--edge:var(--pbr)">
+      <b>PBR</b> = 주가 ÷ 주당순자산(BPS) = 시가총액 ÷ 자본<br>
+      <b>PBR = PER × ROE</b> — 세 지표는 독립적이지 않습니다
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>떡볶이 가게를 <b>지금 당장 정리</b>한다고 해보자. 솥이랑 그릇이랑 남은 재료를 다 팔고 빚을 갚으면 <b>5천만 원</b>이 남는대. 이게 그 가게의 <b>순자산</b>이야.</p>
+      <p>그런데 이 가게가 시장에서 <b>1억 원</b>에 거래되고 있어. 재산은 5천만 원인데 값은 1억이니까 <b>2배</b>지? 이게 PBR이야. <b>사람들이 「이 가게는 재산보다 더 값어치가 있다」고 생각한다</b>는 뜻이야 — 장사를 잘하니까.</p>
+      <p>그럼 <b>PBR이 1보다 작으면</b>? "이 가게는 <b>지금 당장 정리하는 게 계속 하는 것보다 낫다</b>"고 시장이 보고 있다는 뜻이야. 좀 무서운 이야기지.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SIMULATOR · PBR = PER × ROE</div>
+      <p class="labsub">세 지표는 <b>수학적으로 묶여 있습니다.</b> 두 개를 정하면 나머지 하나는 자동으로 결정됩니다. 직접 확인해보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="pbPer">PER</label>
+        <input type="range" id="pbPer" min="3" max="40" step="1" value="12">
+        <span class="val" id="pbPerV">12배</span>
+      </div>
+      <div class="ctrl-row">
+        <label for="pbRoe">ROE</label>
+        <input type="range" id="pbRoe" min="1" max="30" step="1" value="10">
+        <span class="val" id="pbRoeV">10%</span>
+      </div>
+
+      <div class="stack">
+        <div class="srow">
+          <span class="sname">PER</span>
+          <div class="strack"><div class="sfill" id="pbBar1" style="background:#3A5A8E;width:30%"></div></div>
+          <span class="sval" id="pbV1">12배</span>
+        </div>
+        <div class="srow">
+          <span class="sname">× ROE</span>
+          <div class="strack"><div class="sfill" id="pbBar2" style="background:#9E7A2E;width:33%"></div></div>
+          <span class="sval" id="pbV2">10%</span>
+        </div>
+        <div class="srow">
+          <span class="sname">= PBR</span>
+          <div class="strack"><div class="sfill" id="pbBar3" style="background:#4C7A6D;width:40%"></div></div>
+          <span class="sval" id="pbV3">1.20배</span>
+        </div>
+      </div>
+
+      <div class="verdict" id="pbVerdict" style="--vc:var(--pbr)">
+        <div class="vh">해석</div>
+        <div class="vt">PBR은 「ROE가 얼마나 좋은가」의 결과입니다</div>
+        <p>ROE를 낮춰보세요. PER이 그대로여도 <b>PBR이 1 아래로 내려갑니다.</b> 즉 <b>PBR이 낮은 회사는 대체로 ROE가 낮은 회사</b>입니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>PBR 1배 미만이 왜 생기나</h3>
+      <p>위 식에서 답이 나옵니다. <b>PBR = PER × ROE</b>이므로, ROE가 낮으면 PBR도 낮아집니다. 예를 들어 <b>ROE 5%에 PER 12배</b>면 PBR은 <b>0.6배</b>입니다.</p>
+      <p>즉 PBR 1배 미만은 시장이 <b>「이 회사는 주주 돈을 받아서 자본비용만큼도 못 벌고 있다」</b>고 판단하고 있다는 뜻입니다. <b>재산이 많아도 그 재산으로 돈을 못 벌면</b> 시장은 할인해서 값을 매깁니다.</p>
+
+      <h3>PBR이 특히 유용한 곳과 위험한 곳</h3>
+      <p><b>유용한 곳 —</b> <b>은행·보험 같은 금융업</b>입니다. 자산 대부분이 <b>금융자산이라 장부가치가 실제 가치에 가깝고</b>, 이익이 출렁여도 자본은 비교적 안정적이기 때문입니다. <b>적자 기업</b>에도 쓸 수 있다는 것이 PER 대비 장점입니다.</p>
+      <p><b>위험한 곳 —</b> 자산 대부분이 <b>사람·브랜드·기술</b>인 회사입니다. 소프트웨어 회사의 진짜 자산은 개발자와 코드인데 <b>장부에는 거의 잡히지 않습니다.</b> 그래서 PBR이 10배, 20배로 나오는데 그게 「비싸다」는 뜻이 아닙니다. <b>애초에 이 자를 대면 안 되는 회사</b>인 것입니다.</p>
+      <p>또 하나 — <b>장부가치가 진짜인지</b>도 봐야 합니다. 팔리지 않는 재고, 회수 못 할 매출채권, 옛날 가격으로 잡힌 부동산이 모두 「자산」으로 적혀 있습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4. ROE ══════════ -->
+  <section id="roe">
+    <div class="prod-head" style="--edge:var(--roe)">
+      <span class="prod-tag">04 · ROE</span>
+      <h2>ROE — 주주 돈으로 얼마나 잘 버나</h2>
+      <p class="one">그리고 <b>같은 ROE 20%도 세 가지 전혀 다른 경로</b>로 만들어질 수 있다는 것.</p>
+    </div>
+
+    <div class="formula" style="--edge:var(--roe)">
+      <b>ROE</b> = 순이익 ÷ 자기자본<br>
+      <b>듀폰 분해:</b> ROE = <b>순이익률</b>(순이익÷매출) × <b>자산회전율</b>(매출÷자산) × <b>재무레버리지</b>(자산÷자본)
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>친구 셋이 각각 <b>100만 원</b>으로 장사를 해서 <b>똑같이 20만 원</b>을 벌었어. ROE는 셋 다 <b>20%</b>야. 그런데 방법이 완전히 달라.</p>
+      <p><b>A</b>는 명품 가방을 팔아. <b>한 개 팔 때마다 많이 남겨.</b> (높은 이익률)<br>
+      <b>B</b>는 편의점을 해. <b>하나당 조금 남지만 엄청 많이 팔아.</b> (높은 회전율)<br>
+      <b>C</b>는 <b>은행에서 400만 원을 빌려서</b> 500만 원으로 장사했어. (높은 레버리지)</p>
+      <p>셋 중 누가 제일 위험할까? <b>C야.</b> 장사가 조금만 안돼도 <b>빌린 돈 때문에 무너져.</b> ROE 숫자만 보면 셋이 똑같은데, <b>속을 뜯어봐야 진짜가 보여.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DUPONT · 같은 ROE, 다른 속사정</div>
+      <p class="labsub">세 회사 모두 <b>ROE가 20%</b>입니다. 버튼을 눌러 무엇이 그 ROE를 만들었는지 확인하세요.</p>
+
+      <div class="btnrow" id="duBtns">
+        <button data-v="0" class="on">A · 고마진형</button>
+        <button data-v="1">B · 박리다매형</button>
+        <button data-v="2">C · 레버리지형</button>
+      </div>
+
+      <div class="stack">
+        <div class="srow">
+          <span class="sname">순이익률</span>
+          <div class="strack"><div class="sfill" id="duBar1" style="background:#4C7A6D;width:80%"></div></div>
+          <span class="sval" id="duV1">20.0%</span>
+        </div>
+        <div class="srow">
+          <span class="sname">자산회전율</span>
+          <div class="strack"><div class="sfill" id="duBar2" style="background:#3A5A8E;width:25%"></div></div>
+          <span class="sval" id="duV2">0.77회</span>
+        </div>
+        <div class="srow">
+          <span class="sname">재무레버리지</span>
+          <div class="strack"><div class="sfill" id="duBar3" style="background:#8E4B3A;width:26%"></div></div>
+          <span class="sval" id="duV3">1.30배</span>
+        </div>
+      </div>
+
+      <div class="readout two">
+        <div><span class="rk">ROE (세 값의 곱)</span><span class="rv" id="duRoe" style="color:var(--roe)">20.0%</span></div>
+        <div><span class="rk">부채비율</span><span class="rv" id="duDebt">30%</span></div>
+      </div>
+
+      <div class="verdict" id="duVerdict" style="--vc:var(--roe)">
+        <div class="vh">A · 고마진형</div>
+        <div class="vt">파는 것마다 많이 남기는 회사</div>
+        <p>순이익률 <b>20%</b>가 ROE를 만들었습니다. 브랜드나 기술로 <b>가격 결정력</b>을 가진 회사입니다. 부채도 적어 <b>가장 튼튼한 형태</b>입니다. 다만 이런 마진은 <b>경쟁자가 들어오면 깎이므로</b> 그 방어막이 얼마나 오래갈지가 관건입니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>ROE를 볼 때 확인할 것</h3>
+      <p><b>① 지속되는가.</b> 한 해 반짝 높은 ROE는 의미가 적습니다. <b>5년 이상 꾸준히</b> 두 자릿수를 유지했는지가 훨씬 중요합니다.</p>
+      <p><b>② 어디서 왔는가.</b> 위 듀폰 분해입니다. <b>레버리지로 만든 ROE</b>는 불황에 가장 먼저 무너집니다.</p>
+      <p><b>③ 자본이 줄어서 오른 건 아닌가.</b> ROE는 <b>분모가 자기자본</b>입니다. 회사가 <b>자사주를 대량 매입해 소각</b>하면 자본이 줄어 ROE가 올라갑니다. 이익이 늘지 않아도 숫자는 좋아집니다 — 나쁜 일은 아니지만 <b>「장사를 더 잘하게 됐다」는 뜻은 아닙니다.</b></p>
+
+      <h3>ROE와 자본비용</h3>
+      <p>회사가 <b>주주에게 요구받는 최소 수익률</b>을 자본비용이라고 합니다. <b>ROE가 자본비용보다 낮으면</b> 그 회사는 사업을 할수록 <b>주주 가치를 깎아먹고 있는</b> 셈입니다. 앞 장에서 본 <b>PBR 1배 미만</b>이 바로 이 상태를 시장이 가격에 반영한 결과입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5. EV/EBITDA ══════════ -->
+  <section id="ev">
+    <div class="prod-head" style="--edge:var(--ev)">
+      <span class="prod-tag">05 · EV/EBITDA</span>
+      <h2>EV/EBITDA — 빚까지 포함한 「진짜 인수 가격」</h2>
+      <p class="one">PER이 놓치는 것을 잡아주는 지표입니다. 대신 <b>이것만의 함정</b>도 있습니다.</p>
+    </div>
+
+    <div class="formula" style="--edge:var(--ev)">
+      <b>EV</b>(기업가치) = 시가총액 + 순부채(총차입 − 현금)<br>
+      <b>EBITDA</b> = 영업이익 + 감가상각비 — 「현금이 실제로 얼마나 들어오나」의 근사치<br>
+      <b>EV/EBITDA</b> = 이 회사를 <b>빚까지 떠안고 통째로 사면</b> 몇 년이 걸리나
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>떡볶이 가게를 <b>1억 원</b>에 판다고 해. 그런데 계약서를 읽어보니 <b>가게가 진 빚 5천만 원도 네가 갚아야</b> 한대. 그럼 실제로 네가 내는 돈은 얼마야? <b>1억 5천만 원</b>이지.</p>
+      <p>반대로 <b>가게 금고에 현금 3천만 원</b>이 들어 있고 그것도 네 거라면? 실제 부담은 <b>7천만 원</b>이야.</p>
+      <p><b>진짜 가격 = 가게 값 + 빚 − 현금.</b> 이게 EV야. PER은 <b>가게 값만</b> 보지만, EV는 <b>빚까지 본다</b>는 게 핵심 차이야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SIMULATOR · 빚이 많으면 PER과 EV/EBITDA가 갈립니다</div>
+      <p class="labsub">시가총액 <b>1,000억</b>, 영업이익 <b>150억</b>, 감가상각비 <b>50억</b>, 현금 <b>100억</b>인 회사입니다. 차입금만 움직여보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="evDebt">차입금</label>
+        <input type="range" id="evDebt" min="0" max="1500" step="50" value="200">
+        <span class="val" id="evDebtV">200억</span>
+      </div>
+
+      <div class="stack">
+        <div class="srow">
+          <span class="sname">시가총액</span>
+          <div class="strack"><div class="sfill" style="background:#3A5A8E;width:40%;opacity:.6"></div></div>
+          <span class="sval">1,000억</span>
+        </div>
+        <div class="srow">
+          <span class="sname">＋ 순부채</span>
+          <div class="strack"><div class="sfill" id="evBarD" style="background:#8E4B3A;width:4%"></div></div>
+          <span class="sval" id="evNetDebt">100억</span>
+        </div>
+        <div class="srow">
+          <span class="sname">＝ 기업가치(EV)</span>
+          <div class="strack"><div class="sfill" id="evBarEV" style="background:#7A5C9E;width:44%"></div></div>
+          <span class="sval" id="evEV">1,100억</span>
+        </div>
+      </div>
+
+      <div class="readout">
+        <div><span class="rk">PER (참고)</span><span class="rv" id="evPer" style="color:var(--per)">—</span></div>
+        <div><span class="rk">EV/EBITDA</span><span class="rv" id="evMult" style="color:var(--ev)">5.5배</span></div>
+        <div><span class="rk">이자보상배율</span><span class="rv" id="evIcr">—</span></div>
+      </div>
+
+      <div class="verdict" id="evVerdict" style="--vc:var(--ev)">
+        <div class="vh">해석</div>
+        <div class="vt">차입금을 늘려보세요</div>
+        <p>시가총액은 그대로인데 <b>EV만 커집니다.</b> 「주식만 사면 싸 보이는데 회사를 통째로 사면 비싼」 상황이 이렇게 만들어집니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>EV/EBITDA가 유용한 경우</h3>
+      <p><b>① 부채 구조가 크게 다른 회사를 비교할 때.</b> PER은 이자비용이 반영된 순이익 기준이라 <b>부채가 많은 회사가 불리하게 나옵니다.</b> EV/EBITDA는 자본구조와 무관하게 비교합니다.</p>
+      <p><b>② 감가상각이 큰 산업.</b> 통신·방송·항공·반도체처럼 <b>설비 투자가 거대한 업종</b>은 회계상 감가상각 때문에 순이익이 작게 나옵니다. EBITDA는 그걸 되돌려 <b>현금 창출력</b>을 봅니다.</p>
+      <p><b>③ 인수합병 관점.</b> 실제로 회사를 통째로 사는 사람의 시각과 가장 가깝습니다.</p>
+
+      <h3>EBITDA의 함정 — 감가상각은 진짜 비용입니다</h3>
+      <p>EBITDA는 감가상각을 <b>「현금이 안 나가니까」</b> 되돌려 더합니다. 그런데 <b>설비는 실제로 낡습니다.</b> 반도체 공장은 몇 년마다 수조 원을 다시 투입해야 하고, 그 돈은 <b>진짜로 나갑니다.</b></p>
+      <p>그래서 EBITDA가 커 보여도 <b>그 돈의 대부분이 설비 유지에 다시 들어가는</b> 회사가 있습니다. 워런 버핏이 EBITDA를 비판한 이유가 이것입니다. 확인하려면 <b>영업현금흐름에서 자본적지출(CAPEX)을 뺀 잉여현금흐름(FCF)</b>을 함께 보면 됩니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6. 나머지 지표들 ══════════ -->
+  <section id="others">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">06 · 나머지</span>
+      <h2>자주 마주치는 다른 지표들</h2>
+      <p class="one">언제 쓰는 자인지만 알아두면 충분합니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>지표</th><th>계산</th><th>무엇을 재나</th><th>언제 쓰나</th><th>주의</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>PSR</th>
+            <td>시가총액 ÷ 매출</td>
+            <td>매출 대비 가격</td>
+            <td><b>적자 성장기업</b>. 이익이 없어 PER을 못 쓸 때</td>
+            <td>매출은 있는데 <b>영원히 흑자가 안 될 수도</b> 있음</td>
+          </tr>
+          <tr>
+            <th>PCR</th>
+            <td>주가 ÷ 주당 영업현금흐름</td>
+            <td>실제 현금 대비 가격</td>
+            <td>회계 이익이 의심스러울 때</td>
+            <td>투자로 나가는 돈은 반영 안 됨</td>
+          </tr>
+          <tr>
+            <th>PEG</th>
+            <td>PER ÷ 이익성장률</td>
+            <td>성장 대비 PER이 적정한가</td>
+            <td>성장주끼리 비교할 때. <b>1 이하면 매력적</b>이라고들 함</td>
+            <td><b>성장률 전망이 틀리면 전부 무의미</b></td>
+          </tr>
+          <tr>
+            <th>배당수익률</th>
+            <td>주당배당금 ÷ 주가</td>
+            <td>보유만으로 받는 현금</td>
+            <td>배당주·은퇴 자금</td>
+            <td><b>주가가 떨어져서 높아진 것</b>일 수 있음</td>
+          </tr>
+          <tr>
+            <th>FCF 수익률</th>
+            <td>잉여현금흐름 ÷ 시가총액</td>
+            <td>진짜 남는 현금 대비 가격</td>
+            <td><b>가장 왜곡이 적은 지표</b> 중 하나</td>
+            <td>투자 확대기에는 일시적으로 나빠 보임</td>
+          </tr>
+          <tr>
+            <th>부채비율</th>
+            <td>부채 ÷ 자기자본</td>
+            <td>재무 안정성</td>
+            <td>모든 종목의 기본 확인</td>
+            <td>업종마다 정상 범위가 완전히 다름</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="scrollhint">← 표를 옆으로 밀어보세요 →</div>
+
+    <div class="note">
+      <p><b>지표를 늘린다고 정확해지지 않습니다.</b> PER·PBR·ROE는 앞서 봤듯 <b>하나의 식으로 묶여 있고</b>, 나머지도 대부분 같은 재무제표를 다르게 자른 것입니다. <b>다섯 개가 다 좋아 보인다</b>고 해서 근거가 다섯 배가 되지 않습니다.</p>
+      <p>차라리 <b>성격이 다른 정보</b>를 합치세요 — 밸류에이션(가격) + 사업의 질(경쟁력·산업 구조) + 재무 안정성(빚) + 지배구조(주주를 대하는 태도).</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7. 나라마다 다른 이유 ══════════ -->
+  <section id="country">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">07 · 국가별 차이</span>
+      <h2>왜 나라마다 인정받는 배수가 다른가</h2>
+      <p class="one">같은 이익을 내는 회사인데 <b>어느 나라에 상장했느냐에 따라</b> 값이 달라집니다. 이유가 분명히 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>똑같이 <b>1년에 1천만 원 버는 떡볶이 가게</b>가 두 동네에 있어. 그런데 A동네 가게는 <b>2억</b>에 팔리고 B동네 가게는 <b>8천만 원</b>에 팔려. 왜 그럴까?</p>
+      <p>A동네는 <b>사장님이 번 돈을 주인들에게 잘 나눠줘.</b> B동네는 <b>사장님이 돈을 쌓아두고 안 나눠주고</b>, 심지어 <b>잘되는 메뉴만 떼어 새 가게를 차려서</b> 원래 주인들을 서운하게 한 적이 있어. 게다가 B동네는 <b>옆 동네와 사이가 안 좋아서</b> 언제 무슨 일이 생길지 몰라.</p>
+      <p>그러니까 같은 돈을 벌어도 <b>"내가 그 몫을 실제로 받을 수 있나"</b>가 다르면 값이 달라져. 이게 나라마다 배수가 다른 진짜 이유야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COMPARE · 시장을 눌러 이유를 확인하세요</div>
+      <p class="labsub">아래 값은 <b>대체로 관찰되어 온 경향을 보여주기 위한 예시 수준</b>입니다. 정확한 수치는 시점에 따라 계속 바뀝니다.</p>
+
+      <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주요 시장의 대략적인 PER·PBR 수준 비교">
+        <line class="axis" x1="70" y1="190" x2="610" y2="190"/>
+        <text class="axt" x="62" y="34" text-anchor="end">높음</text>
+        <text class="axt" x="62" y="194" text-anchor="end">0</text>
+        <g id="ctBars"></g>
+        <g transform="translate(430,20)">
+          <rect x="0" y="0" width="12" height="10" fill="#3A5A8E" fill-opacity=".55"/>
+          <text class="lbl" x="18" y="9">PER</text>
+          <rect x="70" y="0" width="12" height="10" fill="#4C7A6D" fill-opacity=".55"/>
+          <text class="lbl" x="88" y="9">PBR ×10</text>
+        </g>
+      </svg>
+
+      <div class="btnrow" id="ctBtns" style="margin-top:14px;">
+        <button data-v="0" class="on">🇺🇸 미국</button>
+        <button data-v="1">🇯🇵 일본</button>
+        <button data-v="2">🇰🇷 한국</button>
+        <button data-v="3">🇨🇳 중국</button>
+      </div>
+
+      <div class="verdict" id="ctVerdict" style="--vc:var(--per)">
+        <div class="vh">🇺🇸 미국</div>
+        <div class="vt">가장 높은 배수를 인정받는 시장</div>
+        <p>이유를 눌러서 확인하세요.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>배수를 결정하는 다섯 가지 요인</h3>
+      <p><b>① 주주환원.</b> 번 돈을 <b>배당과 자사주 매입으로 주주에게 돌려주는 비율</b>입니다. 같은 이익이라도 <b>내 손에 실제로 오는 몫</b>이 크면 더 비싸게 쳐줍니다. 미국 기업의 주주환원율이 높은 것이 높은 배수의 큰 부분을 설명합니다.</p>
+      <p><b>② 지배구조와 소액주주 보호.</b> 대주주가 <b>일반 주주와 이해를 같이하는가</b>입니다. 알짜 사업부를 떼어 따로 상장하거나(물적분할), 대주주에게 유리한 조건의 증자를 반복하면 <b>「내 몫이 안전하지 않다」</b>는 할인이 붙습니다.</p>
+      <p><b>③ 산업 구성.</b> 시장 전체의 배수는 <b>어떤 회사들이 모여 있느냐</b>로도 결정됩니다. 소프트웨어·플랫폼 비중이 큰 시장은 자연히 배수가 높고, <b>경기민감 제조업·조선·화학</b> 비중이 크면 낮습니다. 이건 「할인」이 아니라 <b>구성의 차이</b>입니다.</p>
+      <p><b>④ 성장률과 자본비용.</b> 성장이 빠르면 미래 이익이 크므로 지금 배수가 높아도 정당화됩니다. 반대로 <b>금리가 높고 위험이 크다고 평가되는 시장</b>은 요구수익률이 높아 배수가 낮아집니다.</p>
+      <p><b>⑤ 지정학·제도 리스크.</b> 안보 리스크, 갑작스러운 규제 변화, 회계 신뢰도 문제 등은 <b>모두 할인 요인</b>입니다.</p>
+
+      <h3>「코리아 디스카운트」를 어떻게 볼 것인가</h3>
+      <p>한국 증시가 다른 시장보다 낮은 배수에 거래되어 온 현상을 이렇게 부릅니다. 위 다섯 요인 중 <b>주주환원·지배구조·산업 구성·지정학</b>이 함께 거론됩니다.</p>
+      <p>중요한 건 <b>이게 「저평가라서 곧 오른다」는 뜻이 아니라는 점</b>입니다. 할인에 <b>이유가 있다면</b> 그 이유가 해소되기 전까지 할인은 유지됩니다. 실제로 이 논의는 수십 년째 이어져 왔습니다.</p>
+      <p>다만 변화도 있습니다. <b>일본 거래소가 PBR 1배 미만 기업에 개선 계획을 요구</b>하고, <b>한국에서도 기업 가치 제고를 유도하는 정책 논의</b>가 이어지는 등 <b>제도적으로 ②·①을 바꾸려는 시도</b>가 진행돼 왔습니다. 이런 변화가 실제 배수로 이어지는지는 <b>기업의 실제 행동이 바뀌는지</b>에 달려 있습니다.</p>
+
+      <div class="note">
+        <p><b>실전에서의 결론.</b> <b>다른 나라 기업과 PER을 직접 비교하지 마세요.</b> 「미국 동종업체는 PER 25배인데 이 한국 회사는 10배니까 싸다」는 논리는 <b>위 다섯 요인을 전부 무시한 것</b>입니다. 비교는 <b>같은 시장, 같은 업종 안에서</b> 하고, 그다음 <b>그 회사의 과거 자신</b>과 비교하세요.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 8. 업종별 ══════════ -->
+  <section id="sector">
+    <div class="prod-head" style="--edge:var(--roe)">
+      <span class="prod-tag">08 · 업종별 차이</span>
+      <h2>업종이 다르면 아예 다른 자를 써야 합니다</h2>
+      <p class="one">은행에 PER을 대고 소프트웨어에 PBR을 대는 것은 <b>고기를 부피로 재는 것</b>과 같습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SECTOR · 업종을 눌러보세요</div>
+      <p class="labsub">각 업종에서 <b>주로 보는 지표</b>와 <b>대략적인 통상 범위</b>, 그리고 <b>왜 그런지</b>를 정리했습니다.</p>
+
+      <div class="btnrow" id="scBtns">
+        <button data-v="0" class="on">은행·보험</button>
+        <button data-v="1">소프트웨어·플랫폼</button>
+        <button data-v="2">반도체·조선 등 경기민감</button>
+        <button data-v="3">통신·유틸리티</button>
+        <button data-v="4">바이오</button>
+      </div>
+
+      <div class="grid3" id="scCards">
+        <div class="minicard" style="--edge:var(--per)">
+          <div class="mt">주로 보는 지표</div>
+          <div class="mv" id="scV1" style="font-size:15px">PBR · ROE</div>
+          <div class="mn" id="scN1">장부가치가 실제에 가까움</div>
+        </div>
+        <div class="minicard" style="--edge:var(--pbr)">
+          <div class="mt">통상 범위 (대략)</div>
+          <div class="mv" id="scV2" style="font-size:15px">PBR 0.3~1.0배</div>
+          <div class="mn" id="scN2">ROE 수준에 연동</div>
+        </div>
+        <div class="minicard" style="--edge:var(--bad)">
+          <div class="mt">쓰면 안 되는 자</div>
+          <div class="mv" id="scV3" style="font-size:15px">EV/EBITDA</div>
+          <div class="mn" id="scN3">부채가 곧 영업 재료라 무의미</div>
+        </div>
+      </div>
+
+      <div class="verdict" id="scVerdict" style="--vc:var(--per)">
+        <div class="vh">은행·보험</div>
+        <div class="vt">PBR과 ROE로 봅니다</div>
+        <p>자산 대부분이 <b>대출·채권 같은 금융자산</b>이라 장부가치가 실제 가치에 가깝습니다. 그래서 PBR이 잘 작동합니다.</p>
+      </div>
+    </div>
+
+    <div class="plain">
+      <b>범위 숫자에 대하여.</b> 위 「통상 범위」는 <b>업종 간 차이가 얼마나 큰지를 감각적으로 보여주기 위한 대략적인 값</b>입니다. 실제 수치는 국가·시점·개별 기업에 따라 크게 다르므로, 판단할 때는 반드시 <b>그 시점의 동종업계 실제 데이터</b>와 비교하세요.
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 9. 가치 함정 ══════════ -->
+  <section id="trap">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">09 · 가치 함정</span>
+      <h2>저PER 종목을 사면 되는 것 아닌가</h2>
+      <p class="one">가장 중요한 질문입니다. 답은 <b>「그렇게 단순하지 않다」</b>이고, 그 이유가 이 문서의 결론입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>문방구에서 <b>지우개가 100원</b>에 팔려. 옆 가게에서는 500원인데! <b>싸다!</b> 그런데 사기 전에 물어볼 게 있어. <b>"왜 싸지?"</b></p>
+      <p>이유가 <b>"주인아저씨가 이사 가셔서 정리하는 중"</b>이면 진짜 싸게 사는 거야. 그런데 <b>"그 지우개는 잘 안 지워져서 아무도 안 사"</b>라면? 100원도 비싼 거지.</p>
+      <p>주식도 똑같아. <b>싼 데는 항상 이유가 있어.</b> 그 이유가 <b>곧 사라질 이유</b>인지 <b>계속될 이유</b>인지를 알아내는 게 전부야. 아래 네 회사를 진단해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DIAGNOSE · 네 회사 모두 PER 6배입니다</div>
+      <p class="labsub">숫자만 보면 다 싸 보입니다. 하지만 <b>싼 이유가 전부 다릅니다.</b></p>
+
+      <div class="btnrow" id="tpBtns">
+        <button data-v="0" class="on">A사</button>
+        <button data-v="1">B사</button>
+        <button data-v="2">C사</button>
+        <button data-v="3">D사</button>
+      </div>
+
+      <div class="stack">
+        <div class="srow">
+          <span class="sname">PER</span>
+          <div class="strack"><div class="sfill" id="tpBar1" style="background:#3A5A8E;width:20%"></div></div>
+          <span class="sval" id="tpV1">6배</span>
+        </div>
+        <div class="srow">
+          <span class="sname">ROE</span>
+          <div class="strack"><div class="sfill" id="tpBar2" style="background:#9E7A2E;width:60%"></div></div>
+          <span class="sval" id="tpV2">18%</span>
+        </div>
+        <div class="srow">
+          <span class="sname">부채비율</span>
+          <div class="strack"><div class="sfill" id="tpBar3" style="background:#8E4B3A;width:15%"></div></div>
+          <span class="sval" id="tpV3">45%</span>
+        </div>
+        <div class="srow">
+          <span class="sname">3년 이익 추세</span>
+          <div class="strack"><div class="sfill" id="tpBar4" style="background:#4C7A6D;width:70%"></div></div>
+          <span class="sval" id="tpV4">증가</span>
+        </div>
+      </div>
+
+      <div class="verdict" id="tpVerdict" style="--vc:var(--bad)">
+        <div class="vh">A사</div>
+        <div class="vt">진단 중…</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>저PER 전략은 실제로 통했나</h3>
+      <p>학계에서 <b>「밸류 팩터」</b>는 오랫동안 연구된 주제이고, <b>장기간에 걸쳐 저평가 종목군이 초과수익을 냈다는 연구가 다수 있습니다.</b> 동시에 <b>수년, 길게는 십 년 넘게 시장을 밑도는 구간이 반복적으로 존재</b>했다는 것도 함께 관찰됩니다.</p>
+      <p>중요한 건 이 전략이 <b>「개별 종목을 고르는 방법」이 아니라 「수백 종목을 기계적으로 담는 방법」으로 연구됐다</b>는 점입니다. 저PER 종목 <b>세 개를 골라 사는 것</b>과, 저PER 종목 <b>300개를 통째로 담는 것</b>은 전혀 다른 이야기입니다. 개별 종목에서는 <b>가치 함정 하나가 전체를 망칠 수</b> 있습니다.</p>
+
+      <h3>싼 이유를 가르는 질문 세 가지</h3>
+      <p><b>① 이익이 지속 가능한가.</b> 지금의 이익이 <b>일회성이거나 업황 정점</b>의 결과는 아닌지. 경기민감 업종은 <b>PER이 가장 낮을 때가 가장 위험한 시점</b>입니다.</p>
+      <p><b>② 사업이 구조적으로 쇠퇴 중인가.</b> 산업 자체가 줄어들고 있다면 싼 상태가 <b>영원히 유지될 수 있습니다.</b></p>
+      <p><b>③ 번 돈이 나에게 오는가.</b> 이익은 나는데 배당도 없고 자사주도 안 사고 대주주에게만 유리한 결정을 반복한다면, <b>그 이익은 내 것이 아닙니다.</b> 이 경우 낮은 PER은 시장의 <b>정당한 평가</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 10. 체크리스트 ══════════ -->
+  <section id="checklist">
+    <div class="prod-head" style="--edge:var(--warn-ink)">
+      <span class="prod-tag">10 · 정리</span>
+      <h2>지표를 볼 때의 순서</h2>
+      <p class="one">지표는 <b>답을 주는 게 아니라 질문을 만들어주는 도구</b>입니다.</p>
+    </div>
+
+    <ul class="check" id="vlCheck">
+      <li><b>같은 업종끼리 비교했는가?</b> 은행 PER과 소프트웨어 PER을 나란히 놓는 건 의미가 없습니다.</li>
+      <li><b>그 회사의 과거와 비교했는가?</b> 지금 PER이 이 회사의 5년 평균 대비 어디쯤인지.</li>
+      <li><b>후행인가 선행인가?</b> 같은 「PER 12배」도 기준이 다르면 완전히 다른 숫자입니다.</li>
+      <li><b>이익이 지속 가능한가?</b> 일회성 이익이나 업황 정점이 섞여 있지 않은지.</li>
+      <li><b>ROE가 어디서 왔는가?</b> 마진인지, 회전율인지, <b>빚</b>인지.</li>
+      <li><b>빚을 포함해도 싼가?</b> PER은 싼데 EV/EBITDA는 비싼 경우가 있습니다.</li>
+      <li><b>번 돈이 주주에게 오는가?</b> 배당·자사주 이력과 지배구조를 확인했는지.</li>
+      <li><b>왜 싼지 설명할 수 있는가?</b> 답을 못 하면 <b>모르는 위험을 사는 것</b>입니다.</li>
+    </ul>
+    <div class="checkcount" id="vlCheckCount">0 / 8 확인함</div>
+
+    <div class="pc" style="margin-top:26px;">
+      <div class="good">
+        <h5>◤ 지표가 잘하는 일</h5>
+        <ul>
+          <li><b>후보를 좁혀준다.</b> 수천 종목에서 살펴볼 대상을 추리는 데 유용합니다.</li>
+          <li><b>질문을 만들어준다.</b> "왜 이 회사만 유독 싼가?"</li>
+          <li><b>과열을 알려준다.</b> 역사적 범위를 크게 벗어난 배수는 그 자체로 정보입니다.</li>
+          <li><b>비교의 언어가 된다.</b> 같은 기준으로 이야기할 수 있게 해줍니다.</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h5>◤ 지표가 못하는 일</h5>
+        <ul>
+          <li><b>오를지 알려주지 않는다.</b> 싸다는 것과 오른다는 것은 다릅니다.</li>
+          <li><b>사업의 질을 담지 못한다.</b> 경쟁력·경영진·산업 구조는 숫자 밖에 있습니다.</li>
+          <li><b>미래를 담지 못한다.</b> 전부 <b>과거 재무제표</b>에서 나온 값입니다.</li>
+          <li><b>시점을 알려주지 않는다.</b> 싼 종목은 <b>더 싸질 수 있습니다.</b></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>마지막으로.</b> 지표를 배우면 <b>「싸다」는 판단을 내리기가 쉬워집니다.</b> 그런데 시장에는 <b>같은 숫자를 훨씬 빠르고 정교하게 보는 사람들이 이미 가득합니다.</b> 그들이 다 보고도 안 사서 그 가격인 것이라면, <b>내가 모르는 이유가 있을 가능성</b>부터 생각해야 합니다.</p>
+      <p>그리고 이 시리즈에서 반복되는 원칙은 여기서도 같습니다 — <b>이해하지 못한 것을, 남의 말을 듣고, 감당 못 할 금액으로 사지 않는 것.</b></p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 밸류에이션 지표<br>
+    <a href="index.html">← 문서 목록으로</a> · <a href="stock-company-basics-detailed.html">주식회사의 원리</a> · <a href="chart-guide.html">차트 읽는 법</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 모든 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.<br>
+    국가별·업종별 배수는 경향을 보여주기 위한 예시이며 특정 시점의 실제 수치가 아닙니다. 판단 전에는 반드시 최신 데이터를 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 1. 지표 개요 ══════════ */
+var OV = [
+  ['var(--per)', 'PER', '이익 대비 가격 — 「몇 년치 벌이로 회사를 살 수 있나」',
+   'PER 10배는 <b>지금 이익이 그대로 유지된다면 10년이면 원금을 회수</b>한다는 뜻입니다. 가장 널리 쓰이지만 <b>적자 기업에는 쓸 수 없고</b>, 이익이 일시적으로 튀면 숫자가 크게 왜곡됩니다.'],
+  ['var(--pbr)', 'PBR', '순자산 대비 가격 — 「지금 정리하면 남는 것 대비 몇 배인가」',
+   'PBR 1배는 <b>회사가 가진 순재산만큼의 값</b>이라는 뜻입니다. <b>적자 기업에도 쓸 수 있고</b>, 은행처럼 자산이 곧 실체인 업종에서 특히 잘 맞습니다. 반대로 <b>브랜드·기술이 자산인 회사</b>에는 거의 맞지 않습니다.'],
+  ['var(--roe)', 'ROE', '효율 — 「주주가 맡긴 돈으로 얼마나 잘 버나」',
+   'ROE 15%는 <b>주주 돈 100원으로 1년에 15원을 벌었다</b>는 뜻입니다. 앞의 둘이 <b>가격</b>을 재는 자라면 ROE는 <b>사업의 질</b>을 재는 자입니다. 그래서 <b>PER·PBR과 성격이 다르고, 함께 봐야 의미가 생깁니다.</b>']
+];
+document.querySelectorAll('#ovCards .minicard').forEach(function(card){
+  card.addEventListener('click', function(){
+    document.querySelectorAll('#ovCards .minicard').forEach(function(c){ c.classList.remove('on'); });
+    card.classList.add('on');
+    var d = OV[+card.getAttribute('data-v')];
+    document.getElementById('ovVerdict').querySelector('.vh').textContent = d[1];
+    verdict('ovVerdict', d[0], d[2], d[3]);
+  });
+});
+
+/* ══════════ 2. PER ══════════ */
+var PE = { x0:60, x1:610, y0:20, y1:205, pmin:5, pmax:55, ymax:20 };
+function peX(p){ return PE.x0 + (p - PE.pmin) / (PE.pmax - PE.pmin) * (PE.x1 - PE.x0); }
+function peY(y){ return PE.y1 - y / PE.ymax * (PE.y1 - PE.y0); }
+function peDraw(){
+  var per = +document.getElementById('peVal').value;
+  var rate = +document.getElementById('peRate').value;
+  document.getElementById('peValV').textContent = per + '배';
+  document.getElementById('peRateV').textContent = rate.toFixed(1) + '%';
+
+  var d = '';
+  for(var p = PE.pmin; p <= PE.pmax; p += 0.5){
+    d += (p === PE.pmin ? 'M' : ' L') + peX(p).toFixed(1) + ',' + peY(100 / p).toFixed(1);
+  }
+  document.getElementById('peCurve').setAttribute('d', d);
+
+  var by = peY(rate);
+  document.getElementById('peBond').setAttribute('y1', by.toFixed(1));
+  document.getElementById('peBond').setAttribute('y2', by.toFixed(1));
+  document.getElementById('peBondT').setAttribute('y', (by + 4).toFixed(1));
+
+  var ey = 100 / per;
+  var cur = document.getElementById('peCursor');
+  cur.setAttribute('x1', peX(per)); cur.setAttribute('x2', peX(per));
+  cur.setAttribute('y1', PE.y0); cur.setAttribute('y2', PE.y1);
+  document.getElementById('peDot').setAttribute('cx', peX(per));
+  document.getElementById('peDot').setAttribute('cy', peY(ey));
+
+  var sp = ey - rate;
+  document.getElementById('peYield').textContent = ey.toFixed(2) + '%';
+  var se = document.getElementById('peSpread');
+  se.textContent = (sp > 0 ? '+' : '') + sp.toFixed(2) + '%p';
+  signColor(se, sp);
+  document.getElementById('pePayback').textContent = per + '년';
+
+  var t, p, col;
+  if(sp < 0){
+    col = '#8E4B3A';
+    t = '국채보다 못 준다 — 위험을 지고 덜 받는 상태';
+    p = '이익수익률 <b>' + ey.toFixed(2) + '%</b>가 국채 <b>' + rate.toFixed(1) + '%</b>보다 낮습니다. 원금이 사실상 보장되는 국채가 더 주는데 <b>굳이 주식 위험을 질 이유</b>를 이익만으로는 설명할 수 없습니다.<br><br>그럼에도 사람들이 사는 이유는 <b>「이익이 앞으로 크게 늘 것」</b>이라고 보기 때문입니다. 즉 이 가격은 <b>성장에 대한 베팅</b>이며, 성장이 안 오면 되돌림이 큽니다. 금리가 오를 때 성장주가 크게 흔들리는 이유가 이것입니다.';
+  } else if(sp < 2){
+    col = '#9E7A2E';
+    t = '국채보다 조금 나은 정도 — 보상이 얇습니다';
+    p = '이익수익률 <b>' + ey.toFixed(2) + '%</b>, 국채 <b>' + rate.toFixed(1) + '%</b>로 차이는 <b>' + sp.toFixed(2) + '%p</b>뿐입니다. 주식의 위험(원금 손실 가능성, 변동성)을 감안하면 <b>보상이 얇은 구간</b>입니다. 금리가 조금만 더 올라도 <b>주식의 상대 매력이 사라집니다.</b>';
+  } else if(sp > 8){
+    col = '#4C7A6D';
+    t = '국채 대비 보상이 매우 큽니다 — 다만 이유를 따져야 합니다';
+    p = '이익수익률 <b>' + ey.toFixed(2) + '%</b>로 국채보다 <b>' + sp.toFixed(2) + '%p</b> 높습니다. 숫자로는 매력적입니다.<br><br>하지만 <b>왜 이렇게 싼지</b>를 물어야 합니다. 시장이 <b>이 이익이 곧 줄어들 것</b>이라고 보고 있을 수 있습니다. 이익수익률은 <b>「지금 이익이 유지된다면」</b>이라는 가정 위에 있습니다.';
+  } else {
+    col = 'var(--per)';
+    t = '이익 대비 보상이 국채보다 큽니다';
+    p = '이익수익률 <b>' + ey.toFixed(2) + '%</b>가 국채 <b>' + rate.toFixed(1) + '%</b>보다 <b>' + sp.toFixed(2) + '%p</b> 높습니다. 주식은 위험자산이므로 <b>국채보다 더 줘야</b> 살 이유가 생기고, 그 차이를 <b>주식 위험 프리미엄</b>이라고 부릅니다.<br><br>이 비교가 유용한 이유 — <b>금리가 오르면 같은 PER도 상대적으로 비싸집니다.</b> 주가가 그대로여도 매력이 줄어드는 것입니다.';
+  }
+  verdict('peVerdict', col, t, p);
+}
+document.getElementById('peVal').addEventListener('input', peDraw);
+document.getElementById('peRate').addEventListener('input', peDraw);
+
+/* ══════════ 3. PBR = PER × ROE ══════════ */
+function pbDraw(){
+  var per = +document.getElementById('pbPer').value;
+  var roe = +document.getElementById('pbRoe').value;
+  document.getElementById('pbPerV').textContent = per + '배';
+  document.getElementById('pbRoeV').textContent = roe + '%';
+
+  var pbr = per * roe / 100;
+  document.getElementById('pbV1').textContent = per + '배';
+  document.getElementById('pbV2').textContent = roe + '%';
+  document.getElementById('pbV3').textContent = pbr.toFixed(2) + '배';
+  document.getElementById('pbBar1').style.width = (per / 40 * 100) + '%';
+  document.getElementById('pbBar2').style.width = (roe / 30 * 100) + '%';
+  document.getElementById('pbBar3').style.width = Math.min(100, pbr / 5 * 100) + '%';
+
+  var t, p, col;
+  if(pbr < 1){
+    col = '#8E4B3A';
+    t = 'PBR ' + pbr.toFixed(2) + '배 — 시장이 「청산가치보다 못하다」고 보는 상태';
+    p = 'ROE <b>' + roe + '%</b>가 낮아서 PER이 <b>' + per + '배</b>인데도 PBR이 <b>1 아래</b>입니다.<br><br>이게 <b>PBR 1배 미만의 정체</b>입니다. 회사가 재산을 갖고 있어도 <b>그 재산으로 충분히 벌지 못하면</b> 시장은 할인합니다. 「자산이 많으니 싸다」가 아니라 <b>「자산을 놀리고 있으니 깎는다」</b>가 시장의 논리입니다.<br><br>ROE 손잡이만 올려보세요 — PER은 그대로인데 PBR이 1을 넘어갑니다.';
+  } else if(pbr > 4){
+    col = '#7A5C9E';
+    t = 'PBR ' + pbr.toFixed(2) + '배 — 장부가치로는 설명이 안 되는 영역';
+    p = 'ROE <b>' + roe + '%</b>와 PER <b>' + per + '배</b>가 만나 PBR이 <b>' + pbr.toFixed(2) + '배</b>가 됐습니다. 회사가 가진 <b>장부상 재산의 ' + pbr.toFixed(1) + '배</b>에 거래되고 있다는 뜻입니다.<br><br>이런 회사의 진짜 자산은 <b>브랜드·기술·사람처럼 장부에 안 잡히는 것</b>인 경우가 많습니다. 그래서 <b>PBR로 「비싸다」고 판단하면 안 되는 회사</b>입니다 — 애초에 이 자가 맞지 않습니다.';
+  } else {
+    col = 'var(--pbr)';
+    t = 'PBR은 「ROE가 얼마나 좋은가」의 결과입니다';
+    p = 'PER <b>' + per + '배</b> × ROE <b>' + roe + '%</b> = PBR <b>' + pbr.toFixed(2) + '배</b>. 세 지표는 <b>독립적인 정보가 아닙니다.</b><br><br>그래서 「PER도 낮고 PBR도 낮으니 이중으로 싸다」는 말은 <b>같은 사실을 두 번 센 것</b>일 수 있습니다. ROE를 낮춰보세요 — PER이 그대로여도 PBR이 1 아래로 내려갑니다.';
+  }
+  verdict('pbVerdict', col, t, p);
+}
+document.getElementById('pbPer').addEventListener('input', pbDraw);
+document.getElementById('pbRoe').addEventListener('input', pbDraw);
+
+/* ══════════ 4. 듀폰 분해 ══════════ */
+var DU = [
+  { m:20.0, tu:0.77, lev:1.30, h:'A · 고마진형', color:'#4C7A6D',
+    t:'파는 것마다 많이 남기는 회사',
+    p:'순이익률 <b>20%</b>가 ROE를 만들었습니다. 브랜드나 기술로 <b>가격 결정력</b>을 가진 회사입니다. 부채도 적어 <b>가장 튼튼한 형태</b>입니다.<br><br>다만 이런 마진은 <b>경쟁자가 들어오면 깎이므로</b> 그 방어막(브랜드·특허·전환비용)이 얼마나 오래갈지가 관건입니다.' },
+  { m:3.0, tu:5.13, lev:1.30, h:'B · 박리다매형', color:'#3A5A8E',
+    t:'하나당 조금 남기지만 엄청나게 많이 파는 회사',
+    p:'순이익률은 <b>3%</b>에 불과하지만 <b>자산회전율 5.13회</b>가 ROE를 만들었습니다. 유통·편의점·저가 항공 같은 업태입니다.<br><br><b>강점</b>은 규모가 커질수록 효율이 오른다는 것. <b>약점</b>은 마진이 얇아서 <b>비용이 조금만 올라도 이익이 사라진다</b>는 것입니다. 인건비·임대료·물류비 상승에 특히 취약합니다.' },
+  { m:6.0, tu:0.85, lev:3.92, h:'C · 레버리지형', color:'#8E4B3A',
+    t:'남의 돈을 많이 써서 만든 ROE',
+    p:'순이익률 <b>6%</b>, 회전율 <b>0.85회</b>는 평범합니다. ROE 20%를 만든 건 <b>재무레버리지 3.92배</b> — 즉 <b>빚</b>입니다. 부채비율로는 <b>292%</b>입니다.<br><br>ROE 숫자만 보면 A·B와 똑같이 훌륭해 보입니다. 하지만 <b>불황이 오면 가장 먼저 무너지는 형태</b>입니다. 이자는 장사가 안돼도 나가기 때문입니다.<br><br><b>ROE를 볼 때 반드시 듀폰으로 뜯어봐야 하는 이유</b>가 이것입니다.' }
+];
+bindBtnRow('#duBtns', function(v){
+  var c = DU[+v];
+  var vals = [c.m.toFixed(1) + '%', c.tu.toFixed(2) + '회', c.lev.toFixed(2) + '배'];
+  var w = [c.m / 25 * 100, c.tu / 6 * 100, c.lev / 5 * 100];
+  for(var i = 0; i < 3; i++){
+    document.getElementById('duV' + (i + 1)).textContent = vals[i];
+    document.getElementById('duBar' + (i + 1)).style.width = Math.min(100, w[i]) + '%';
+  }
+  var roe = c.m * c.tu * c.lev;
+  document.getElementById('duRoe').textContent = roe.toFixed(1) + '%';
+  document.getElementById('duDebt').textContent = Math.round((c.lev - 1) * 100) + '%';
+  document.getElementById('duVerdict').querySelector('.vh').textContent = c.h;
+  verdict('duVerdict', c.color, c.t, c.p);
+});
+
+/* ══════════ 5. EV/EBITDA ══════════ */
+function evDraw(){
+  var debt = +document.getElementById('evDebt').value;
+  document.getElementById('evDebtV').textContent = debt + '억';
+
+  var cap = 1000, cash = 100, ebit = 150, da = 50, ebitda = ebit + da;
+  var net = debt - cash;
+  var ev = cap + net;
+  var interest = debt * 0.05;
+  var pretax = ebit - interest;
+  var netIncome = pretax * 0.78;                      // 법인세 22% 가정
+
+  document.getElementById('evNetDebt').textContent = (net >= 0 ? '' : '−') + Math.abs(net) + '억';
+  document.getElementById('evEV').textContent = ev + '억';
+  document.getElementById('evBarD').style.width = Math.max(0, net / 2500 * 100) + '%';
+  document.getElementById('evBarEV').style.width = (ev / 2500 * 100) + '%';
+
+  var pe = document.getElementById('evPer');
+  pe.textContent = netIncome > 0 ? (cap / netIncome).toFixed(1) + '배' : '적자';
+  var me = document.getElementById('evMult');
+  me.textContent = (ev / ebitda).toFixed(1) + '배';
+  var ie = document.getElementById('evIcr');
+  ie.textContent = interest > 0 ? (ebit / interest).toFixed(1) + '배' : '무차입';
+  ie.style.color = (interest > 0 && ebit / interest < 3) ? 'var(--bad)' : 'var(--ink)';
+
+  var t, p, col;
+  if(debt === 0){
+    col = '#4C7A6D';
+    t = '무차입 — EV가 시가총액보다 오히려 작습니다';
+    p = '빚이 없고 현금이 <b>100억</b> 있으니 순부채가 <b>−100억</b>입니다. 회사를 통째로 사면 <b>금고의 현금을 돌려받는 셈</b>이라 실제 부담은 시가총액보다 적습니다.<br><br>EV/EBITDA <b>' + (ev / ebitda).toFixed(1) + '배</b>. 이런 회사는 <b>PER보다 EV/EBITDA가 더 낮게</b> 나옵니다.';
+  } else if(ebit / interest < 2.5){
+    col = '#8E4B3A';
+    t = '빚이 너무 많아 PER 자체가 무의미해졌습니다';
+    p = '차입금 <b>' + debt + '억</b>에 연 5% 이자면 <b>' + interest.toFixed(0) + '억</b>이 나갑니다. 영업이익 150억 중 대부분이 이자로 사라져 <b>이자보상배율이 ' + (ebit / interest).toFixed(1) + '배</b>에 불과합니다.<br><br>순이익이 쪼그라들어 <b>PER은 ' + (netIncome > 0 ? (cap / netIncome).toFixed(1) + '배로 치솟았지만' : '적자가 됐지만') + '</b>, EV/EBITDA는 <b>' + (ev / ebitda).toFixed(1) + '배</b>입니다. 두 지표가 <b>정반대 이야기</b>를 하고 있습니다.<br><br><b>어느 쪽이 맞을까요?</b> 둘 다 맞습니다. EV/EBITDA는 「사업 자체의 가격」을, PER은 「주주에게 남는 몫의 가격」을 말합니다. <b>빚이 많으면 사업이 멀쩡해도 주주 몫은 얇아집니다.</b>';
+  } else {
+    col = 'var(--ev)';
+    t = '시가총액은 그대로인데 EV만 커집니다';
+    p = '차입금 <b>' + debt + '억</b>, 현금 100억이므로 순부채는 <b>' + net + '억</b>. 기업가치는 <b>' + ev + '억</b>이 됩니다.<br><br>회사를 통째로 사려면 <b>주식값 1,000억 + 빚 ' + net + '억</b>을 감당해야 한다는 뜻입니다. <b>「주식만 보면 싼데 회사를 통째로 사면 비싼」</b> 상황이 이렇게 만들어집니다.<br><br>차입금 손잡이를 더 오른쪽으로 밀어보세요 — 어느 지점부터 <b>PER과 EV/EBITDA가 정반대를 가리키기</b> 시작합니다.';
+  }
+  verdict('evVerdict', col, t, p);
+}
+document.getElementById('evDebt').addEventListener('input', evDraw);
+
+/* ══════════ 7. 국가별 ══════════ */
+var CT = [
+  { per:22, pbr:4.3, h:'🇺🇸 미국', color:'#3A5A8E',
+    t:'가장 높은 배수를 인정받는 시장',
+    p:'배경으로 흔히 꼽히는 것들 — <b>① 높은 주주환원</b>(배당 + 대규모 자사주 매입·소각) <b>② 소프트웨어·플랫폼 비중이 큰 산업 구성</b> <b>③ 소액주주 보호가 강한 제도와 소송 문화</b> <b>④ 달러 기축통화와 세계 최대 자본시장이라는 지위.</b><br><br>다만 <b>「미국이라서 비싸다」가 아니라 「비쌀 만한 이유가 누적된 것」</b>으로 보는 편이 정확합니다. 그리고 <b>비싼 만큼 기대가 이미 가격에 들어 있어</b>, 기대에 못 미치면 되돌림도 큽니다.' },
+  { per:16, pbr:1.5, h:'🇯🇵 일본', color:'#4C7A6D',
+    t:'제도적 압박으로 배수가 움직인 사례',
+    p:'오랫동안 <b>PBR 1배 미만 기업이 대단히 많은</b> 시장이었습니다. 현금을 쌓아두고 <b>주주환원에 소극적</b>이라는 지적이 오래 이어졌습니다.<br><br>그러다 <b>도쿄증권거래소가 PBR 1배 미만 기업에 개선 계획 공시를 요구</b>하면서 상황이 달라졌습니다. 자사주 매입과 배당이 늘고 배수가 재평가되는 흐름이 나타났습니다.<br><br><b>여기서 배울 점</b> — 배수는 <b>기업이 주주를 대하는 태도가 바뀌면 실제로 바뀝니다.</b> 「원래 그런 시장」이 아니라는 뜻입니다.' },
+  { per:11, pbr:1.0, h:'🇰🇷 한국', color:'#9E7A2E',
+    t:'「코리아 디스카운트」라 불려온 상태',
+    p:'주요 시장 대비 낮은 배수에 거래되어 온 현상입니다. 흔히 함께 거론되는 요인들 —<br><br><b>① 낮은 주주환원율.</b> 배당성향과 자사주 소각이 상대적으로 적었습니다.<br><b>② 지배구조.</b> 물적분할 후 자회사 상장, 대주주에게 유리한 구조 등이 소액주주 가치를 훼손한 사례들이 누적됐습니다.<br><b>③ 산업 구성.</b> 반도체·자동차·화학 등 <b>경기민감 제조업 비중</b>이 커서 본래 배수가 낮게 형성되는 구조입니다.<br><b>④ 지정학적 리스크.</b><br><br><b>주의할 점</b> — 「싸니까 오른다」로 읽으면 안 됩니다. <b>할인에 이유가 있다면 그 이유가 해소되기 전까지 할인은 유지됩니다.</b> 실제로 이 논의는 수십 년째 이어져 왔습니다. 최근에는 <b>기업가치 제고를 유도하는 정책 논의</b>가 진행돼 왔고, 실제 배수 변화는 <b>기업의 행동이 바뀌는지</b>에 달려 있습니다.' },
+  { per:12, pbr:1.3, h:'🇨🇳 중국', color:'#8E4B3A',
+    t:'성장률은 높은데 배수는 낮은 시장',
+    p:'경제 성장률만 보면 배수가 높아야 할 것 같지만 실제로는 낮게 거래되어 왔습니다. 이유로 꼽히는 것들 — <b>① 정책·규제의 예측 불가능성</b>(특정 산업에 대한 갑작스러운 규제) <b>② 회계 투명성에 대한 의구심</b> <b>③ 국유기업 비중과 지배구조</b> <b>④ 외국인 투자자의 자금 이동 제약.</b><br><br><b>여기서 얻는 교훈이 중요합니다</b> — <b>경제 성장률과 주식 수익률은 같은 것이 아닙니다.</b> 나라가 성장해도 <b>그 몫이 주주에게 오지 않으면</b> 주가는 오르지 않습니다.' }
+];
+(function(){
+  var g = '', xs = [140, 280, 420, 545];
+  CT.forEach(function(c, i){
+    var hp = c.per / 25 * 150, hb = (c.pbr * 10) / 50 * 150;
+    g += '<rect x="' + (xs[i] - 34) + '" y="' + (190 - hp).toFixed(1) + '" width="30" height="' + hp.toFixed(1) +
+         '" fill="#3A5A8E" fill-opacity=".55" rx="2"/>' +
+         '<text class="axt" x="' + (xs[i] - 19) + '" y="' + (190 - hp - 6).toFixed(1) + '" text-anchor="middle">' + c.per + '</text>' +
+         '<rect x="' + (xs[i] + 2) + '" y="' + (190 - hb).toFixed(1) + '" width="30" height="' + hb.toFixed(1) +
+         '" fill="#4C7A6D" fill-opacity=".55" rx="2"/>' +
+         '<text class="axt" x="' + (xs[i] + 17) + '" y="' + (190 - hb - 6).toFixed(1) + '" text-anchor="middle">' + c.pbr.toFixed(1) + '</text>' +
+         '<text class="lbl" x="' + xs[i] + '" y="210" text-anchor="middle">' + c.h + '</text>';
+  });
+  document.getElementById('ctBars').innerHTML = g;
+})();
+bindBtnRow('#ctBtns', function(v){
+  var c = CT[+v];
+  document.getElementById('ctVerdict').querySelector('.vh').textContent = c.h;
+  verdict('ctVerdict', c.color, c.t, c.p);
+});
+
+/* ══════════ 8. 업종별 ══════════ */
+var SC = [
+  { v:['PBR · ROE', 'PBR 0.3~1.0배', 'EV/EBITDA'],
+    n:['장부가치가 실제에 가까움', 'ROE 수준에 연동', '부채가 곧 영업 재료라 무의미'],
+    h:'은행·보험', color:'#3A5A8E',
+    t:'PBR과 ROE로 봅니다',
+    p:'자산 대부분이 <b>대출·채권 같은 금융자산</b>이라 장부가치가 실제 가치에 가깝습니다. 그래서 PBR이 잘 작동합니다.<br><br><b>EV/EBITDA를 쓰면 안 되는 이유</b> — 은행에게 예금과 차입은 「빚」이 아니라 <b>영업의 원재료</b>입니다. 순부채를 더하는 EV 개념 자체가 성립하지 않습니다.<br><br>추가로 봐야 할 것 — <b>연체율·대손충당금·자기자본비율(BIS)</b>. 이익이 좋아 보여도 <b>충당금을 덜 쌓아서</b>일 수 있습니다.' },
+  { v:['PER · PSR · FCF', 'PER 25~60배', 'PBR'],
+    n:['이익 성장 속도가 핵심', '성장률에 따라 크게 다름', '진짜 자산이 장부에 없음'],
+    h:'소프트웨어·플랫폼', color:'#7A5C9E',
+    t:'PBR은 아예 의미가 없습니다',
+    p:'이 회사들의 진짜 자산은 <b>개발자·코드·사용자 기반·브랜드</b>인데 <b>장부에는 거의 잡히지 않습니다.</b> 그래서 PBR이 10배, 20배로 나오지만 그건 「비싸다」는 뜻이 아니라 <b>자가 안 맞는다</b>는 뜻입니다.<br><br>대신 <b>매출 성장률, 영업이익률의 개선 추세, 잉여현금흐름</b>을 봅니다. 적자 성장기업이면 <b>PSR</b>을 쓰지만, <b>「매출은 느는데 영원히 흑자가 안 되는」</b> 위험을 항상 함께 봐야 합니다.' },
+  { v:['PBR · EV/EBITDA', 'PER은 신뢰 어려움', 'PER 단독'],
+    n:['이익 변동이 극심', '정점에서 가장 낮게 보임', '가장 흔한 함정'],
+    h:'반도체·조선 등 경기민감', color:'#8E4B3A',
+    t:'PER이 가장 낮을 때가 가장 위험합니다',
+    p:'이 업종은 <b>이익이 몇 배씩 출렁입니다.</b> 호황 정점에서 이익이 최대일 때 <b>PER은 가장 낮게 나옵니다.</b> 그걸 「싸다」고 읽고 사면, 이후 업황이 꺾이며 <b>이익이 급감해 PER이 치솟는</b> 것을 보게 됩니다.<br><br>이걸 <b>「PER의 역설」</b>이라고 부릅니다. 그래서 이 업종에서는 <b>PER이 높을 때가 오히려 바닥권</b>인 경우가 있습니다.<br><br>대안으로 <b>PBR</b>(자본은 이익만큼 출렁이지 않음)과 <b>업황 지표</b>(반도체 현물가, 신조선가, 운임지수 등)를 함께 봅니다.' },
+  { v:['EV/EBITDA · 배당수익률', 'EV/EBITDA 5~9배', 'PER 단독'],
+    n:['감가상각이 매우 큼', '규제로 수익이 제한됨', '설비 투자를 못 봄'],
+    h:'통신·유틸리티', color:'#4C7A6D',
+    t:'감가상각이 커서 EBITDA로 봅니다',
+    p:'기지국·발전소·배관 같은 <b>거대한 설비</b>가 필요합니다. 회계상 감가상각이 커서 <b>순이익이 실제 현금 창출력보다 작게</b> 나옵니다. 그래서 EV/EBITDA를 씁니다.<br><br>다만 <b>EBITDA의 함정</b>도 이 업종에서 가장 큽니다 — 설비는 실제로 낡고 <b>주기적으로 막대한 재투자</b>가 필요합니다. 반드시 <b>CAPEX와 잉여현금흐름</b>을 같이 봐야 합니다.<br><br>또한 <b>규제 산업</b>이라 요금을 마음대로 못 올립니다. 성장보다 <b>안정적 배당</b>이 투자 이유인 경우가 많습니다.' },
+  { v:['파이프라인 · 현금소진율', '지표로 평가 거의 불가', 'PER · PBR 전부'],
+    n:['신약 성공 확률이 전부', '이익이 없어 계산 불가', '재무제표로 안 보임'],
+    h:'바이오', color:'#9E7A2E',
+    t:'기존 지표가 거의 작동하지 않습니다',
+    p:'대부분 <b>이익이 없어 PER을 쓸 수 없고</b>, 자산이 적어 PBR도 의미가 없습니다. 기업 가치의 거의 전부가 <b>「개발 중인 후보물질이 성공할 확률」</b>에 달려 있습니다.<br><br>그래서 보는 것이 다릅니다 — <b>파이프라인의 임상 단계</b>, <b>보유 현금과 소진 속도(런웨이)</b>, <b>기술수출 계약 조건</b>, <b>경영진의 과거 이력.</b><br><br><b>개인에게 가장 어려운 업종</b>입니다. 임상 결과는 전문가도 예측이 어렵고, <b>한 번의 실패로 주가가 반토막 나는</b> 일이 흔합니다. 이 시리즈의 포지션 사이징 원칙이 특히 중요한 영역입니다.' }
+];
+bindBtnRow('#scBtns', function(v){
+  var s = SC[+v];
+  for(var i = 0; i < 3; i++){
+    document.getElementById('scV' + (i + 1)).textContent = s.v[i];
+    document.getElementById('scN' + (i + 1)).textContent = s.n[i];
+  }
+  document.getElementById('scVerdict').querySelector('.vh').textContent = s.h;
+  verdict('scVerdict', s.color, s.t, s.p);
+});
+
+/* ══════════ 9. 가치 함정 진단 ══════════ */
+var TP = [
+  { per:6, roe:18, debt:45, trend:'증가', tw:70, h:'A사', color:'#4C7A6D',
+    t:'진짜로 싼 경우 — 다만 이유를 찾아야 합니다',
+    p:'ROE <b>18%</b>로 사업의 질이 좋고, 부채도 <b>45%</b>로 안정적이며, 이익은 <b>3년째 증가</b> 중입니다. 그런데 PER이 <b>6배</b>입니다.<br><br>이런 조합이라면 <b>「왜 싼가」에 대한 답이 재무제표 밖에 있다</b>는 뜻입니다. 후보 — 소외된 업종이라 관심이 없거나, 시가총액이 작아 기관이 못 사거나, 대주주 이슈로 할인받고 있거나.<br><br><b>답을 찾을 수 있으면</b> 기회일 수 있습니다. <b>못 찾으면 모르는 위험을 사는 것</b>입니다.' },
+  { per:6, roe:22, debt:38, trend:'정점 후 감소 전환', tw:35, h:'B사', color:'#8E4B3A',
+    t:'경기민감 함정 — PER이 낮은 게 위험 신호입니다',
+    p:'ROE <b>22%</b>, 부채 <b>38%</b>로 숫자는 훌륭합니다. 그런데 <b>이익이 정점을 찍고 꺾이기 시작</b>했습니다.<br><br>이게 <b>반도체·해운·화학 같은 경기민감 업종의 전형적 함정</b>입니다. 호황 정점에서 이익이 최대일 때 PER이 가장 낮게 보입니다. 이후 이익이 <b>반토막 나면 같은 주가에서도 PER은 12배</b>가 되고, 주가는 그보다 먼저 떨어집니다.<br><br><b>이 업종에서는 PER이 낮을 때 사는 것이 아니라 높을 때(=이익 바닥일 때) 봐야 합니다.</b>' },
+  { per:6, roe:4, debt:210, trend:'감소', tw:25, h:'C사', color:'#8E4B3A',
+    t:'구조적 쇠퇴 — 싼 게 아니라 제값입니다',
+    p:'ROE <b>4%</b>는 자본비용에도 못 미치고, 부채비율 <b>210%</b>에 이익은 <b>계속 감소</b> 중입니다.<br><br>PER 6배는 <b>「싸다」가 아니라 「시장의 정당한 평가」</b>입니다. 산업 자체가 줄어들고 있다면 이 상태는 <b>영원히 유지될 수 있고</b>, 실제로는 더 나빠질 수도 있습니다.<br><br>PBR로 봐도 <b>PER 6 × ROE 4% = 0.24배</b>. 시장은 이 회사를 <b>「청산가치의 4분의 1」</b>로 보고 있습니다. 이런 종목을 「자산주」라 부르며 사는 경우가 있는데, <b>그 자산이 현금화되어 주주에게 오는 경로가 있는지</b>를 먼저 확인해야 합니다.' },
+  { per:6, roe:15, debt:60, trend:'증가', tw:65, h:'D사', color:'#9E7A2E',
+    t:'번 돈이 주주에게 오지 않는 경우',
+    p:'ROE <b>15%</b>, 부채 <b>60%</b>, 이익 <b>증가</b> — 재무만 보면 A사와 비슷합니다. 그런데 이 회사는 <b>배당을 거의 하지 않고, 자사주도 사지 않으며, 과거에 알짜 사업부를 분할해 따로 상장한 이력</b>이 있습니다.<br><br>회사는 돈을 잘 법니다. <b>다만 그 돈이 소액주주에게 오지 않습니다.</b> 이 경우 낮은 PER은 함정이 아니라 <b>시장이 그 사실을 정확히 반영한 결과</b>입니다.<br><br><b>이게 「코리아 디스카운트」 논의의 개별 종목 버전</b>입니다. 재무제표만으로는 절대 보이지 않고, <b>배당 이력·자사주 이력·지배구조 공시</b>를 따로 봐야 합니다.' }
+];
+bindBtnRow('#tpBtns', function(v){
+  var c = TP[+v];
+  document.getElementById('tpV1').textContent = c.per + '배';
+  document.getElementById('tpV2').textContent = c.roe + '%';
+  document.getElementById('tpV3').textContent = c.debt + '%';
+  document.getElementById('tpV4').textContent = c.trend;
+  document.getElementById('tpBar1').style.width = (c.per / 30 * 100) + '%';
+  document.getElementById('tpBar2').style.width = (c.roe / 30 * 100) + '%';
+  document.getElementById('tpBar3').style.width = Math.min(100, c.debt / 300 * 100) + '%';
+  document.getElementById('tpBar4').style.width = c.tw + '%';
+  document.getElementById('tpBar2').style.background = c.roe < 8 ? '#8E4B3A' : '#9E7A2E';
+  document.getElementById('tpBar4').style.background = c.tw < 50 ? '#8E4B3A' : '#4C7A6D';
+  document.getElementById('tpVerdict').querySelector('.vh').textContent = c.h;
+  verdict('tpVerdict', c.color, c.t, c.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#vlCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#vlCheck li.done').length;
+      document.getElementById('vlCheckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 여덟 번째 질문에 답할 수 있으면, 나머지 일곱은 이미 확인한 셈입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+peDraw(); pbDraw(); evDraw();
+document.querySelector('#duBtns button[data-v="0"]').click();
+document.querySelector('#scBtns button[data-v="0"]').click();
+document.querySelector('#tpBtns button[data-v="0"]').click();
+document.querySelector('#ctBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
