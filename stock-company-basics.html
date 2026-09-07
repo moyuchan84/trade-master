@@ -6,6 +6,7 @@
 <title>주식회사는 어떻게 움직이는가 — 주린이 로드맵</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
 <style>
   :root{
     --paper:#F3F1EC;
@@ -117,7 +118,7 @@
   footer p{max-width:60ch;}
 </style>
 </head>
-<body>
+<body class="simple">
 <div class="wrap">
 
   <header class="top">
@@ -125,6 +126,15 @@
     <h1>회사는 어떻게 '주식'이 되고, 주가는 왜 움직이는가</h1>
     <p class="lede">읽으시던 책은 회사가 창업되는 순간부터 상장, 투자자 분석까지를 순서대로 다루는 구성으로 알려져 있어요. 그 흐름을 그대로 따라가며, 각 단계에서 꼭 이해해야 할 개념만 짚었습니다. 책을 다시 펼 때 지금 어느 지점을 읽고 있는지 감을 잡는 용도로 써보세요.</p>
     <div class="note">이 문서는 책의 문장을 요약·발췌한 것이 아니라, 책이 다루는 주제 순서를 참고해 개념을 새로 설명한 자료입니다. 책의 사례와 디테일은 원문으로 직접 확인하시는 걸 권해요.</div>
+
+    <div class="toolbar">
+      <span class="tl">읽기 모드</span>
+      <div class="seg">
+        <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+        <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+      </div>
+      <span class="hint" id="modeHint">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+    </div>
   </header>
 
   <nav class="flow">
@@ -143,8 +153,13 @@
     <div class="body">
       <h2>창업과 지분 — 주식은 '내 회사 조각'이다</h2>
       <p>누군가 회사를 시작하면, 회사의 소유권을 여러 조각(주식)으로 나눌 수 있습니다. 주식 1주를 산다는 건 그 회사의 소유권 일부를 갖는 것이고, 회사가 벌어들이는 이익과 성장의 몫도 그만큼 나눠 받을 권리가 생긴다는 뜻이에요. 반대로 회사가 잘못되면 그 손실도 지분만큼 떠안습니다.</p>
-      <p>초기에는 창업자와 소수 투자자(엔젤, VC)가 지분을 나눠 갖다가, 회사가 커지면서 더 많은 자본이 필요해지고, 그 자본을 조달하는 방법이 이후 단계에서 갈립니다.</p>
-      <div class="kw"><span>지분(equity)</span><span>보통주</span><span>액면가</span><span>발행주식수</span></div>
+      <div class="analogy">
+        <div class="al">🧒 아이 눈높이</div>
+        <p>동네에 떡볶이 가게가 있어. 사장님이 가게를 <b>100조각으로 쪼개서</b> "한 조각 사실 분?" 하고 팔아. 네가 한 조각을 사면 <b>너도 그 가게 주인 중 한 명</b>이 되는 거야. 가게가 돈을 많이 벌면 네 조각 값도 오르고, 손님이 끊기면 네 조각 값도 떨어져.</p>
+        <p>여기서 헷갈리기 쉬운 게 하나 있어. <b>가게에 돈을 빌려주는 것</b>과 <b>가게 조각을 사는 것</b>은 완전히 달라. 빌려준 돈은 가게가 잘되든 안되든 정해진 만큼 돌려받아. 하지만 조각을 산 사람은 가게가 대박 나면 같이 대박이고, 망하면 같이 망해.</p>
+      </div>
+      <p class="deep">초기에는 창업자와 소수 투자자(엔젤, VC)가 지분을 나눠 갖다가, 회사가 커지면서 더 많은 자본이 필요해지고, 그 자본을 조달하는 방법이 이후 단계에서 갈립니다.</p>
+      <div class="kw deep"><span>지분(equity)</span><span>보통주</span><span>액면가</span><span>발행주식수</span></div>
     </div>
   </section>
 
@@ -153,8 +168,64 @@
     <div class="body">
       <h2>기업의 성장과 차입 — 빚으로 크는 회사</h2>
       <p>회사가 성장하려면 공장을 짓거나 사람을 뽑는 데 돈이 필요합니다. 이 돈을 마련하는 방법은 크게 두 가지예요: <b>주식을 더 발행해서 파는 것</b>(지분 조달)과 <b>은행이나 채권시장에서 빌리는 것</b>(부채 조달). 빚을 내면 지분을 나누지 않아도 되지만, 이자를 반드시 갚아야 하고 회사가 어려워지면 부채 상환 부담이 지분 투자자보다 훨씬 앞선 순위로 걸립니다.</p>
-      <p>이 균형(부채와 자기자본의 비율)을 흔히 <b>레버리지</b>라고 부르고, 이 비율이 높을수록 회사의 성장 속도도 커지지만 위기 때 무너질 위험도 커집니다.</p>
-      <div class="kw"><span>부채비율</span><span>레버리지</span><span>이자보상배율</span><span>신용등급</span></div>
+      <div class="analogy">
+        <div class="al">🧒 아이 눈높이</div>
+        <p>떡볶이 가게에 손님이 너무 많아서 더 큰 솥이 필요해졌어. 방법은 두 가지야. <b>①</b> 가게 조각을 더 만들어서 팔기. <b>②</b> 은행에서 돈을 빌리기.</p>
+        <p>②를 고르면 조각을 나눠주지 않아도 되니까 좋아 보이지? 그런데 <b>빌린 돈은 장사가 안 돼도 이자를 꼬박꼬박 갚아야 해.</b> 잘될 때는 빌린 돈 덕분에 훨씬 크게 벌지만, 안될 때는 훨씬 크게 무너져. 아래 손잡이를 움직여서 그게 얼마나 무서운 일인지 직접 봐.</p>
+      </div>
+
+      <div class="lab">
+        <div class="labtitle">SIMULATOR · 빚은 양쪽으로 커집니다</div>
+        <p class="labsub">내 돈은 <b>1억</b>으로 고정하고, 거기에 빌린 돈을 얹어 장사를 합니다. 이자율은 연 5%로 가정했습니다. 빌린 돈을 늘릴수록 <b>같은 장사 성적에서 내 수익률이 얼마나 벌어지는지</b> 보세요.</p>
+
+        <svg viewBox="0 0 640 252" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="빌린 돈의 크기에 따라 내 돈 기준 수익률이 증폭되는 정도를 보여주는 그래프">
+          <line class="axis" x1="60" y1="215" x2="612" y2="215"/>
+          <line class="axis" x1="60" y1="20" x2="60" y2="215"/>
+          <line class="gridl" id="lvZero" x1="60" y1="118" x2="612" y2="118"/>
+          <text class="axt" x="60" y="233" text-anchor="middle">-20%</text>
+          <text class="axt" x="336" y="233" text-anchor="middle">0%</text>
+          <text class="axt" x="612" y="233" text-anchor="middle">+20%</text>
+          <text class="axt" x="336" y="249" text-anchor="middle">장사가 이만큼 잘됐다면 (전체 자산 기준) →</text>
+          <text class="axt" id="lvYtop" x="52" y="24" text-anchor="end">+45</text>
+          <text class="axt" id="lvYbot" x="52" y="219" text-anchor="end">-45</text>
+          <path id="lvNoDebt" fill="none" stroke="#5B5F6B" stroke-width="1.8" stroke-dasharray="4 3"/>
+          <path id="lvWithDebt" fill="none" stroke="#33506B" stroke-width="2.6"/>
+          <line id="lvCursor" stroke="#20232B" stroke-width="1" stroke-dasharray="2 3" opacity=".4"/>
+          <circle id="lvDot" r="5.5" fill="#33506B"/>
+          <g transform="translate(76,32)">
+            <line x1="0" y1="0" x2="18" y2="0" stroke="#5B5F6B" stroke-width="1.8" stroke-dasharray="4 3"/>
+            <text class="lbl" x="24" y="4">빚 없이 내 돈만으로</text>
+            <line x1="0" y1="18" x2="18" y2="18" stroke="#33506B" stroke-width="2.6"/>
+            <text class="lbl" x="24" y="22" fill="#33506B">빚을 얹었을 때 — 내 돈 기준 수익률</text>
+          </g>
+        </svg>
+
+        <div class="ctrl-row">
+          <label for="lvDebt">빌린 돈</label>
+          <input type="range" id="lvDebt" min="0" max="4" step="0.5" value="2">
+          <span class="val" id="lvDebtV">2억</span>
+        </div>
+        <div class="ctrl-row">
+          <label for="lvRet">장사 성적</label>
+          <input type="range" id="lvRet" min="-20" max="20" step="1" value="10">
+          <span class="val" id="lvRetV">+10%</span>
+        </div>
+
+        <div class="readout">
+          <div><span class="rk">빚 없이 했다면</span><span class="rv" id="lvOutPlain">+10.0%</span></div>
+          <div><span class="rk">빚을 얹으면</span><span class="rv" id="lvOutLev">+20.0%</span></div>
+          <div><span class="rk">1억이 이렇게 됩니다</span><span class="rv" id="lvOutMoney">1.20억</span><span class="rn" id="lvOutMoneyNote"></span></div>
+        </div>
+
+        <div class="verdict" id="lvVerdict" style="--vc:#33506B">
+          <div class="vh">읽는 법</div>
+          <div class="vt">같은 장사 성적인데 결과가 두 배로 벌어집니다</div>
+          <p>파란 선이 회색 선보다 <b>가파른 것</b>이 레버리지입니다. 오른쪽에서 더 많이 벌게 해주는 그 기울기가, 왼쪽에서는 똑같이 더 많이 잃게 만듭니다.</p>
+        </div>
+      </div>
+
+      <p class="deep">이 균형(부채와 자기자본의 비율)을 흔히 <b>레버리지</b>라고 부르고, 이 비율이 높을수록 회사의 성장 속도도 커지지만 위기 때 무너질 위험도 커집니다.</p>
+      <div class="kw deep"><span>부채비율</span><span>레버리지</span><span>이자보상배율</span><span>신용등급</span></div>
     </div>
   </section>
 
@@ -168,6 +239,46 @@
         <tr><th>재무상태표</th><td>특정 시점에 회사가 가진 것(자산)과 갚아야 할 것(부채), 그 차이인 순자산(자본)을 보여주는 표. "회사가 지금 얼마나 튼튼한가"에 대한 답.</td></tr>
         <tr><th>현금흐름표</th><td>장부상 이익과 별개로, 실제 현금이 얼마나 들어오고 나갔는지 보여주는 표. 이익은 나는데 현금이 마르는 회사(흑자도산)를 걸러내는 용도.</td></tr>
       </table>
+      <div class="analogy">
+        <div class="al">🧒 아이 눈높이</div>
+        <p>학교에서 너를 알려면 세 가지를 봐야 해. <b>① 성적표</b> — 이번 학기에 얼마나 잘했나(손익계산서). <b>② 내 방 물건 목록</b> — 지금 가진 게 얼마고 친구한테 빌린 게 얼마인가(재무상태표). <b>③ 용돈기입장</b> — 실제로 지갑에 돈이 들어오고 나갔나(현금흐름표).</p>
+        <p>왜 세 개를 다 봐야 하냐면, <b>성적표만 좋은 경우가 있거든.</b> 떡볶이를 100그릇 팔았다고 적혀 있는데 알고 보니 다들 "다음에 줄게" 하고 외상으로 가져간 거야. 장부에는 돈을 번 걸로 적히지만 <b>지갑은 텅 비어 있어.</b> 아래 버튼을 눌러서 그런 회사를 직접 봐.</p>
+      </div>
+
+      <div class="lab">
+        <div class="labtitle">INTERACTIVE · 두 회사를 비교해보세요</div>
+        <p class="labsub">매출도 순이익도 똑같은 두 회사입니다. 그런데 세 번째 표를 보면 완전히 다른 회사라는 게 드러납니다.</p>
+
+        <div class="btnrow" id="fsBtns">
+          <button data-v="0" class="on">① 건강한 회사</button>
+          <button data-v="1">② 장부만 좋은 회사</button>
+        </div>
+
+        <div class="grid3">
+          <div class="minicard" style="--edge:#33506B">
+            <div class="mt">손익계산서 · 잘 벌었나</div>
+            <div class="mv" id="fsA">순이익 15억</div>
+            <div class="mn" id="fsAn">매출 100억 − 비용 85억</div>
+          </div>
+          <div class="minicard" style="--edge:#5C7A4A">
+            <div class="mt">재무상태표 · 튼튼한가</div>
+            <div class="mv" id="fsB">자본 80억</div>
+            <div class="mn" id="fsBn">자산 200억 − 부채 120억</div>
+          </div>
+          <div class="minicard" style="--edge:#8E6B3A">
+            <div class="mt">현금흐름표 · 진짜 돈은</div>
+            <div class="mv" id="fsC">+18억</div>
+            <div class="mn" id="fsCn">실제로 통장에 들어온 돈</div>
+          </div>
+        </div>
+
+        <div class="verdict" id="fsVerdict" style="--vc:#5C7A4A">
+          <div class="vh">진단</div>
+          <div class="vt">세 표가 서로를 뒷받침합니다</div>
+          <p>번 돈(15억)과 실제로 들어온 현금(18억)이 비슷합니다. 장사도 잘하고 <b>대금도 제대로 받고 있다</b>는 뜻입니다. 이럴 때 손익계산서의 숫자를 믿을 수 있습니다.</p>
+        </div>
+      </div>
+
       <div class="why-box"><b>왜 세 개를 다 봐야 하나:</b> 손익계산서만 보면 회사가 좋아 보여도, 현금흐름표를 보면 실제로는 돈을 못 걷고 있는 경우가 있습니다. 세 표는 서로의 빈틈을 메워줍니다.</div>
     </div>
   </section>
@@ -183,6 +294,52 @@
         <tr><th>PBR</th><td>주가를 주당 순자산으로 나눈 값. 회사를 지금 청산했을 때 남는 몫 대비 주가 수준.</td></tr>
         <tr><th>ROE</th><td>자기자본 대비 순이익 비율. 회사가 주주 돈으로 얼마나 효율적으로 이익을 내는지.</td></tr>
       </table>
+      <div class="analogy">
+        <div class="al">🧒 아이 눈높이</div>
+        <p>형이랑 너 중에 누가 더 크게 자랐는지 어떻게 알아? 키만 재면 당연히 형이 크지. 그래서 <b>"나이에 비해 얼마나 큰가"</b>로 바꿔서 비교하는 거야. 회사도 똑같아. 매출 1조 원 회사랑 100억 원 회사를 그냥 비교하면 의미가 없으니까 <b>비율로 바꿔서</b> 봐.</p>
+        <p>그중에 제일 중요한 게 두 개야. <b>EPS</b>는 "주식 한 조각이 1년에 얼마를 벌어다 줬나". <b>PER</b>은 "그 조각을 사려면 몇 년치 벌이를 내야 하나". 아래에서 직접 계산해봐. 재밌는 걸 알게 될 거야 — <b>회사가 번 돈이 하나도 안 변해도 주가는 세 배가 될 수 있어.</b></p>
+      </div>
+
+      <div class="lab">
+        <div class="labtitle">CALCULATOR · 주가는 두 개가 곱해진 값입니다</div>
+        <p class="labsub">발행주식수는 <b>100만 주</b>로 고정했습니다. 두 손잡이를 움직여보세요.</p>
+
+        <div class="ctrl-row">
+          <label for="pvProfit">회사 연간 순이익</label>
+          <input type="range" id="pvProfit" min="5" max="30" step="1" value="10">
+          <span class="val" id="pvProfitV">10억</span>
+        </div>
+        <div class="ctrl-row">
+          <label for="pvPer">시장이 매기는 PER</label>
+          <input type="range" id="pvPer" min="5" max="40" step="1" value="15">
+          <span class="val" id="pvPerV">15배</span>
+        </div>
+
+        <div class="stack">
+          <div class="srow">
+            <span class="sname">EPS</span>
+            <div class="strack"><div class="sfill" id="pvBarEps" style="background:#33506B;width:25%"></div></div>
+            <span class="sval" id="pvEps">1,000원</span>
+          </div>
+          <div class="srow">
+            <span class="sname">주가</span>
+            <div class="strack"><div class="sfill" id="pvBarPrice" style="background:#8E6B3A;width:37%"></div></div>
+            <span class="sval" id="pvPrice">15,000원</span>
+          </div>
+        </div>
+
+        <div class="readout two">
+          <div><span class="rk">계산식</span><span class="rv" id="pvFormula" style="font-size:15px">1,000 × 15</span><span class="rn">EPS × PER = 주가</span></div>
+          <div><span class="rk">회사 전체 값</span><span class="rv" id="pvCap">150억</span><span class="rn">시가총액</span></div>
+        </div>
+
+        <div class="verdict" id="pvVerdict" style="--vc:#8E6B3A">
+          <div class="vh">읽는 법</div>
+          <div class="vt">주가가 움직이는 이유는 딱 두 갈래입니다</div>
+          <p>회사가 <b>실제로 더 벌었거나(EPS)</b>, 회사는 그대로인데 <b>시장이 더 후하게 쳐주거나(PER)</b>. 순이익 손잡이를 고정한 채 PER만 15에서 40으로 밀어보세요. 회사는 아무것도 변하지 않았는데 주가만 오릅니다 — <b>이게 나중에 거품이라고 불리는 것의 정체입니다.</b></p>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -191,7 +348,43 @@
     <div class="body">
       <h2>상장(IPO) — 회사가 일반 투자자에게 문을 여는 순간</h2>
       <p>회사가 더 큰 자본이 필요하거나, 초기 투자자(창업자, VC)가 지분을 현금화하고 싶을 때 증권거래소에 상장합니다. 이때 두 가지 방식이 섞여 있을 수 있어요: <b>신주모집</b>(회사가 새 주식을 찍어서 팔아 회사로 돈이 들어감)과 <b>구주매출</b>(기존 주주가 자기 지분을 파는 것 — 회사가 아니라 그 주주에게 돈이 감). 뉴스에서 "공모가"라고 부르는 게 이때 정해지는 최초 판매 가격입니다.</p>
-      <div class="kw"><span>공모가</span><span>신주모집</span><span>구주매출</span><span>락업(보호예수)</span></div>
+      <div class="analogy">
+        <div class="al">🧒 아이 눈높이</div>
+        <p>지금까지 떡볶이 가게 조각은 사장님이랑 친척들만 갖고 있었어. 그런데 이걸 <b>전교생 누구나 살 수 있게 학교 게시판에 내걸면</b> 그게 상장이야.</p>
+        <p>여기서 꼭 봐야 할 게 있어. 게시판에 나온 조각이 <b>새로 만든 조각인지</b>, 아니면 <b>사장님이 원래 갖고 있던 걸 파는 건지.</b> 새로 만든 거면 그 돈이 <b>가게로</b> 들어가서 솥을 더 살 수 있어. 사장님 것을 파는 거면 그 돈은 <b>사장님 주머니로</b> 들어가고 가게에는 한 푼도 안 들어와. 아래에서 비율을 움직여봐.</p>
+      </div>
+
+      <div class="lab">
+        <div class="labtitle">SIMULATOR · 공모 자금 1,000억은 어디로 가나</div>
+        <p class="labsub">손잡이를 오른쪽으로 밀수록 <b>기존 주주가 자기 지분을 파는 비중(구주매출)</b>이 커집니다.</p>
+
+        <div class="ctrl-row">
+          <label for="ipoOld">구주매출 비중</label>
+          <input type="range" id="ipoOld" min="0" max="100" step="5" value="20">
+          <span class="val" id="ipoOldV">20%</span>
+        </div>
+
+        <div class="stack">
+          <div class="srow">
+            <span class="sname">회사로</span>
+            <div class="strack"><div class="sfill" id="ipoBarNew" style="background:#5C7A4A;width:80%"></div></div>
+            <span class="sval" id="ipoNew">800억</span>
+          </div>
+          <div class="srow">
+            <span class="sname">기존 주주로</span>
+            <div class="strack"><div class="sfill" id="ipoBarOld" style="background:#8E4B3A;width:20%"></div></div>
+            <span class="sval" id="ipoOldAmt">200억</span>
+          </div>
+        </div>
+
+        <div class="verdict" id="ipoVerdict" style="--vc:#5C7A4A">
+          <div class="vh">해석</div>
+          <div class="vt">대부분이 회사로 들어갑니다 — 성장 자금형 IPO</div>
+          <p>공모금의 <b>80%</b>가 회사 통장으로 들어가 공장·연구·인력에 쓰입니다. 투자자 입장에서는 "내가 낸 돈이 회사를 키우는 데 쓰인다"는 뜻이라 자연스러운 구조입니다.</p>
+        </div>
+      </div>
+
+      <div class="kw deep"><span>공모가</span><span>신주모집</span><span>구주매출</span><span>락업(보호예수)</span></div>
     </div>
   </section>
 
@@ -200,7 +393,65 @@
     <div class="body">
       <h2>희석 — 파이가 커져도 내 조각은 작아질 수 있다</h2>
       <p>회사가 새 주식을 발행할 때마다 전체 주식 수가 늘어납니다. 회사 전체 이익이 그대로여도 발행주식수가 늘면 1주당 몫(EPS)은 줄어들 수 있어요. 이걸 <b>희석</b>이라고 부릅니다. 그래서 유상증자 뉴스가 나오면 주가가 단기적으로 하락하는 경우가 많은데, 회사가 조달한 돈으로 그 이상의 가치를 만들어내는지가 관건입니다.</p>
-      <div class="kw"><span>유상증자</span><span>희석</span><span>주주배정 vs 제3자배정</span></div>
+      <div class="analogy">
+        <div class="al">🧒 아이 눈높이</div>
+        <p>피자 한 판을 <b>8조각</b>으로 잘라서 너랑 친구들이 한 조각씩 갖고 있었어. 그런데 친구가 더 와서 <b>같은 피자를 12조각으로 다시 잘랐어.</b> 피자는 그대로인데 네 조각은 더 작아졌지? 이게 희석이야.</p>
+        <p>그런데 여기서 중요한 게 있어. 만약 조각을 더 만들어서 받은 돈으로 <b>피자를 한 판 더 사 왔다면?</b> 조각 수는 늘었지만 피자도 늘었으니까 네 몫은 그대로거나 오히려 커질 수도 있어. <b>그래서 "새 주식을 발행했다"는 소식만으로는 좋은지 나쁜지 알 수 없어.</b> 받은 돈을 어디에 썼는지를 봐야 해.</p>
+      </div>
+
+      <div class="lab">
+        <div class="labtitle">SIMULATOR · 좋은 증자와 나쁜 증자</div>
+        <p class="labsub">지금은 <b>순이익 10억 원 · 발행주식 100만 주 · EPS 1,000원</b>인 회사입니다. 새 주식을 얼마나 발행할지, 그 돈으로 이익이 얼마나 늘어날지를 각각 움직여보세요.</p>
+
+        <div class="ctrl-row">
+          <label for="dilShares">새로 발행할 주식</label>
+          <input type="range" id="dilShares" min="0" max="50" step="5" value="20">
+          <span class="val" id="dilSharesV">+20%</span>
+        </div>
+        <div class="ctrl-row">
+          <label for="dilProfit">그 돈으로 늘어난 이익</label>
+          <input type="range" id="dilProfit" min="0" max="50" step="5" value="20">
+          <span class="val" id="dilProfitV">+20%</span>
+        </div>
+
+        <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="증자 전후 주당순이익 변화 비교">
+          <text class="axt" x="150" y="18" text-anchor="middle">증자 전</text>
+          <text class="axt" x="470" y="18" text-anchor="middle">증자 후</text>
+
+          <rect x="90" y="30" width="120" height="120" rx="4" fill="#33506B" fill-opacity=".12" stroke="#33506B"/>
+          <text class="lblb" x="150" y="78" text-anchor="middle" fill="#33506B">EPS</text>
+          <text class="lblb" x="150" y="106" text-anchor="middle" fill="#33506B" style="font-size:19px">1,000원</text>
+          <text class="axt" x="150" y="168" text-anchor="middle">10억 ÷ 100만주</text>
+
+          <path d="M240,90 L390,90" stroke="#5B5F6B" stroke-width="1.5" marker-end="url(#dArrow)"/>
+          <text class="axt" x="315" y="80" text-anchor="middle" id="dilArrowLbl">주식 +20% · 이익 +20%</text>
+
+          <rect id="dilBox" x="410" y="30" width="120" height="120" rx="4" fill="#5C7A4A" fill-opacity=".12" stroke="#5C7A4A"/>
+          <text class="lblb" x="470" y="78" text-anchor="middle" id="dilLbl1" fill="#5C7A4A">EPS</text>
+          <text class="lblb" x="470" y="106" text-anchor="middle" id="dilLbl2" fill="#5C7A4A" style="font-size:19px">1,000원</text>
+          <text class="axt" x="470" y="168" text-anchor="middle" id="dilSub">12억 ÷ 120만주</text>
+
+          <defs>
+            <marker id="dArrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <path d="M0,0 L6,3 L0,6 Z" fill="#5B5F6B"/>
+            </marker>
+          </defs>
+        </svg>
+
+        <div class="readout">
+          <div><span class="rk">내 지분율</span><span class="rv" id="dilStake">0.83%</span><span class="rn">원래 1%였다면</span></div>
+          <div><span class="rk">주당순이익</span><span class="rv" id="dilEps">1,000원</span></div>
+          <div><span class="rk">변화</span><span class="rv" id="dilDelta">0.0%</span><span class="rn">EPS 기준</span></div>
+        </div>
+
+        <div class="verdict" id="dilVerdict" style="--vc:#5C7A4A">
+          <div class="vh">판정</div>
+          <div class="vt">희석을 딱 상쇄한 증자</div>
+          <p>주식이 20% 늘었지만 이익도 20% 늘어서 EPS가 그대로입니다. 내 지분율은 1%에서 0.83%로 줄었지만 <b>1주가 벌어다 주는 돈은 변하지 않았습니다.</b> 여기서 이익이 조금이라도 더 늘면 증자는 오히려 이득이 됩니다.</p>
+        </div>
+      </div>
+
+      <div class="kw deep"><span>유상증자</span><span>희석</span><span>주주배정 vs 제3자배정</span></div>
     </div>
   </section>
 
@@ -209,13 +460,60 @@
     <div class="body">
       <h2>보통주 외의 증권 — 채권과 우선주</h2>
       <p>회사가 돈을 조달하는 수단은 보통주만 있는 게 아닙니다. <b>채권</b>은 정해진 이자를 받는 대신 회사 성장의 몫은 없는 대출에 가깝고, 회사가 망할 때 보통주 주주보다 먼저 돈을 돌려받습니다. <b>우선주</b>는 그 중간쯤 — 보통주보다 배당을 우선적으로 받지만 대개 의결권이 없습니다. 회사가 신주(보통주)를 팔지, 채권을 발행할지 선택하는 건 결국 2단계에서 본 부채와 지분 조달 사이의 저울질과 같은 문제입니다.</p>
-      <div class="kw"><span>채권</span><span>우선주</span><span>의결권</span><span>청산 순위</span></div>
+      <div class="analogy">
+        <div class="al">🧒 아이 눈높이</div>
+        <p>떡볶이 가게가 문을 닫게 됐어. 가게를 정리해서 돈이 좀 남았는데, 이 돈을 누가 먼저 가져갈까? <b>줄을 서야 해.</b></p>
+        <p>맨 앞은 <b>돈을 빌려준 사람(채권자)</b>. 그다음이 <b>우선주를 가진 사람</b>. 그리고 <b>맨 마지막이 보통 주식을 가진 사람</b>이야. 앞사람들이 다 가져가고 남는 게 있어야 받을 수 있어. 없으면? 한 푼도 못 받아. <b>주식이 제일 위험한 이유가 바로 이거야</b> — 잘될 때는 제일 많이 벌지만, 망할 때는 제일 늦게 줄을 서.</p>
+      </div>
+
+      <div class="lab">
+        <div class="labtitle">SIMULATOR · 회사가 문을 닫으면 누가 먼저 받나</div>
+        <p class="labsub">이 회사는 <b>빌린 돈 100억 · 우선주 50억</b>이 걸려 있습니다. 손잡이로 「정리하고 남은 재산」을 조절해보세요.</p>
+
+        <div class="ctrl-row">
+          <label for="liqAsset">정리하고 남은 재산</label>
+          <input type="range" id="liqAsset" min="0" max="300" step="10" value="200">
+          <span class="val" id="liqAssetV">200억</span>
+        </div>
+
+        <div class="stack">
+          <div class="srow">
+            <span class="sname">① 채권자</span>
+            <div class="strack"><div class="sfill" id="liqBar1" style="background:#5C7A4A;width:100%"></div></div>
+            <span class="sval" id="liqV1">100억</span>
+          </div>
+          <div class="srow">
+            <span class="sname">② 우선주</span>
+            <div class="strack"><div class="sfill" id="liqBar2" style="background:#8E6B3A;width:100%"></div></div>
+            <span class="sval" id="liqV2">50억</span>
+          </div>
+          <div class="srow">
+            <span class="sname">③ 보통주</span>
+            <div class="strack"><div class="sfill" id="liqBar3" style="background:#8E4B3A;width:50%"></div></div>
+            <span class="sval" id="liqV3">50억</span>
+          </div>
+        </div>
+
+        <div class="verdict" id="liqVerdict" style="--vc:#8E6B3A">
+          <div class="vh">결과</div>
+          <div class="vt">앞의 두 줄을 다 채우고 남은 것만 보통주 몫입니다</div>
+          <p>남은 재산 200억 중 채권자가 100억, 우선주가 50억을 먼저 가져가고 <b>보통주에게는 50억</b>이 돌아갑니다. 손잡이를 <b>150억 아래로</b> 내려보세요 — 보통주 몫이 순식간에 0이 됩니다.</p>
+        </div>
+      </div>
+
+      <div class="kw deep"><span>채권</span><span>우선주</span><span>의결권</span><span>청산 순위</span></div>
     </div>
   </section>
 
   <section class="finale" id="s8">
     <h2>결국, 주가는 왜 오르내리는가</h2>
     <p style="font-size:15px;color:var(--ink-soft);max-width:60ch;">여기까지의 개념을 합치면 주가 변동은 크게 네 갈래로 정리됩니다. 어느 하나만으로 움직이는 경우는 드물고, 대개 겹쳐서 작용합니다.</p>
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>떡볶이 가게 조각의 가격표가 왜 매일 바뀔까? 이유는 네 가지야. <b>①</b> 가게가 진짜로 더 잘 팔았거나 못 팔았을 때. <b>②</b> 은행 이자가 올라서 "굳이 위험한 가게 조각을 살 필요가 있나?" 싶어질 때. <b>③</b> 그냥 사려는 사람이 파는 사람보다 많을 때. <b>④</b> 다들 기분이 좋거나 무서울 때.</p>
+      <p>재밌는 건 <b>①번만 진짜 가게에 대한 이야기</b>라는 거야. 나머지 셋은 가게가 아니라 <b>사람들 사정</b>이야. 그래서 가게는 그대로인데 가격표만 출렁이는 일이 자주 생겨.</p>
+    </div>
+
     <div class="cause-grid">
       <div class="cause-item"><h4>실적 변화</h4><p>손익계산서상 이익이 예상보다 좋거나 나쁘면, EPS가 바뀌고 같은 PER이라도 적정 주가가 달라집니다.</p></div>
       <div class="cause-item"><h4>금리·할인율</h4><p>미래 이익의 현재가치를 계산할 때 쓰는 할인율이 금리에 연동됩니다. 금리가 오르면 같은 미래 이익도 지금 가치가 낮게 평가됩니다.</p></div>
@@ -239,5 +537,240 @@
   </footer>
 
 </div>
+
+<script src="interactive.js"></script>
+<script>
+/* ── 레버리지 ── */
+var LV = { x0:60, x1:612, y0:20, y1:215, vmin:-20, vmax:20, rmin:-45, rmax:45 };
+function lvX(v){ return LV.x0 + (v - LV.vmin) / (LV.vmax - LV.vmin) * (LV.x1 - LV.x0); }
+function lvY(r){ return LV.y1 - (r - LV.rmin) / (LV.rmax - LV.rmin) * (LV.y1 - LV.y0); }
+function lvRet(r, debt){
+  var total = 1 + debt;                       // 억
+  var profit = total * r / 100 - debt * 0.05; // 사업이익 − 이자
+  return profit / 1 * 100;                    // 내 돈 1억 대비 %
+}
+function lvDraw(){
+  var debt = parseFloat(document.getElementById('lvDebt').value);
+  var r = parseFloat(document.getElementById('lvRet').value);
+  document.getElementById('lvDebtV').textContent = debt === 0 ? '없음' : debt + '억';
+  document.getElementById('lvRetV').textContent = pct(r, 0);
+
+  // 빚 크기에 따라 세로 범위를 넓혀, 선의 기울기가 잘리지 않게 합니다.
+  var lo = lvRet(-20, debt), hi = lvRet(20, debt);
+  LV.rmax = Math.ceil(Math.max(25, hi + 5) / 5) * 5;
+  LV.rmin = Math.floor(Math.min(-25, lo - 5) / 5) * 5;
+  document.getElementById('lvYtop').textContent = pct(LV.rmax, 0);
+  document.getElementById('lvYbot').textContent = pct(LV.rmin, 0);
+
+  document.getElementById('lvZero').setAttribute('y1', lvY(0));
+  document.getElementById('lvZero').setAttribute('y2', lvY(0));
+  document.getElementById('lvNoDebt').setAttribute('d',
+    'M' + lvX(-20) + ',' + lvY(-20) + ' L' + lvX(20) + ',' + lvY(20));
+  document.getElementById('lvWithDebt').setAttribute('d',
+    'M' + lvX(-20) + ',' + lvY(lo) + ' L' + lvX(20) + ',' + lvY(hi));
+
+  var mine = lvRet(r, debt);
+  var cur = document.getElementById('lvCursor');
+  cur.setAttribute('x1', lvX(r)); cur.setAttribute('x2', lvX(r));
+  cur.setAttribute('y1', LV.y0); cur.setAttribute('y2', LV.y1);
+  var dot = document.getElementById('lvDot');
+  dot.setAttribute('cx', lvX(r));
+  dot.setAttribute('cy', lvY(mine));
+
+  var pe = document.getElementById('lvOutPlain'), le = document.getElementById('lvOutLev');
+  pe.textContent = pct(r); signColor(pe, r);
+  le.textContent = pct(mine); signColor(le, mine);
+
+  var left = 1 + mine / 100;                     // 내 돈 1억이 얼마가 되었나 (억)
+  var money = document.getElementById('lvOutMoney');
+  var moneyNote = money.nextElementSibling;
+  if(left < 0){
+    money.textContent = '0억';
+    moneyNote.textContent = '빚 ' + Math.abs(left).toFixed(2) + '억이 더 남습니다';
+  } else {
+    money.textContent = left.toFixed(2) + '억';
+    moneyNote.textContent = '';
+  }
+  signColor(money, mine);
+
+  var gap = mine - r;
+  if(debt === 0){
+    verdict('lvVerdict', '#5B5F6B', '빚이 없으면 장사 성적이 그대로 내 수익률입니다',
+      '이게 기준선입니다. 이제 빌린 돈 손잡이를 오른쪽으로 밀면서 파란 선이 <b>어떻게 기울어지는지</b> 보세요.');
+  } else if(left < 0){
+    verdict('lvVerdict', '#8E4B3A', '내 돈이 다 사라지고 빚만 남았습니다',
+      '장사가 <b>' + pct(r, 0) + '</b>인데 내 손실은 <b>' + pct(mine) + '</b>입니다. 원금 1억이 사라지는 걸로 끝나지 않고 <b>' + Math.abs(left).toFixed(2) + '억을 더 갚아야</b> 합니다. 빌린 ' + debt + '억의 손실까지 내가 떠안는 데다 <b>이자 ' + (debt * 0.05).toFixed(2) + '억은 장사와 무관하게 나가기</b> 때문입니다. 부채비율이 높은 회사가 불황에 순식간에 무너지는 이유가 이것입니다.');
+  } else if(mine <= -50){
+    verdict('lvVerdict', '#8E4B3A', '내 돈이 거의 다 사라졌습니다',
+      '장사가 <b>' + pct(r, 0) + '</b>인데 내 손실은 <b>' + pct(mine) + '</b>입니다. 빌린 ' + debt + '억의 손실까지 내가 떠안고, 그 와중에 <b>이자 ' + (debt * 0.05).toFixed(2) + '억은 그대로 갚아야</b> 하기 때문입니다. 부채비율이 높은 회사가 불황에 순식간에 무너지는 이유가 이것입니다.');
+  } else if(r < 0){
+    verdict('lvVerdict', '#8E4B3A', '손실도 똑같이 증폭됩니다',
+      '장사는 <b>' + pct(r, 0) + '</b>인데 내 손실은 <b>' + pct(mine) + '</b>. 차이 <b>' + Math.abs(gap).toFixed(1) + '%p</b>가 빚의 대가입니다. 좋을 때 이익을 키워준 그 구조가 <b>똑같은 배율로</b> 손실을 키웁니다.');
+  } else if(r < 5){
+    verdict('lvVerdict', '#8E6B3A', '이자율(5%)을 못 넘으면 빚은 짐이 됩니다',
+      '장사 성적 <b>' + pct(r, 0) + '</b>이 이자율 5%보다 낮아서, 빌린 돈이 <b>수익을 갉아먹고</b> 있습니다. 빚이 도움이 되는 건 <b>버는 속도가 이자보다 빠를 때뿐</b>입니다.');
+  } else {
+    verdict('lvVerdict', '#33506B', '빚이 수익을 밀어 올리고 있습니다',
+      '장사 성적 <b>' + pct(r, 0) + '</b>이 이자율 5%보다 높아서, 남의 돈으로 번 차액이 전부 내 몫이 됩니다. 내 수익률은 <b>' + pct(mine) + '</b>. 다만 손잡이를 왼쪽으로 넘겨보면 <b>같은 크기로 반대 방향</b>이 된다는 걸 알 수 있습니다.');
+  }
+}
+document.getElementById('lvDebt').addEventListener('input', lvDraw);
+document.getElementById('lvRet').addEventListener('input', lvDraw);
+
+/* ── 재무제표 3표 ── */
+var FS = [
+  { a:'순이익 15억', an:'매출 100억 − 비용 85억', b:'자본 80억', bn:'자산 200억 − 부채 120억',
+    c:'+18억', cn:'실제로 통장에 들어온 돈', color:'#5C7A4A',
+    t:'세 표가 서로를 뒷받침합니다',
+    p:'번 돈(15억)과 실제로 들어온 현금(18억)이 비슷합니다. 장사도 잘하고 <b>대금도 제대로 받고 있다</b>는 뜻입니다. 이럴 때 손익계산서의 숫자를 믿을 수 있습니다.' },
+  { a:'순이익 15억', an:'매출 100억 − 비용 85억 (동일)', b:'자본 80억', bn:'자산 200억 − 부채 120억 (동일)',
+    c:'−5억', cn:'외상값이 안 걷히고 있음', color:'#8E4B3A',
+    t:'앞의 두 표는 똑같은데, 세 번째에서 갈립니다',
+    p:'순이익은 <b>똑같이 15억</b>인데 실제 현금은 <b>5억이 빠져나갔습니다.</b> 물건은 팔았지만 <b>돈을 못 받고 있다</b>는 뜻입니다. 이 상태가 계속되면 장부에는 흑자인데 직원 월급을 못 주는 <b>흑자도산</b>이 됩니다. 손익계산서만 봤다면 절대 몰랐을 위험입니다.' }
+];
+bindBtnRow('#fsBtns', function(v){
+  var f = FS[+v];
+  document.getElementById('fsA').textContent = f.a;
+  document.getElementById('fsAn').textContent = f.an;
+  document.getElementById('fsB').textContent = f.b;
+  document.getElementById('fsBn').textContent = f.bn;
+  var c = document.getElementById('fsC');
+  c.textContent = f.c; c.style.color = f.color;
+  document.getElementById('fsCn').textContent = f.cn;
+  verdict('fsVerdict', f.color, f.t, f.p);
+});
+
+/* ── EPS · PER ── */
+function pvDraw(){
+  var profit = parseFloat(document.getElementById('pvProfit').value); // 억
+  var per = parseFloat(document.getElementById('pvPer').value);
+  document.getElementById('pvProfitV').textContent = profit + '억';
+  document.getElementById('pvPerV').textContent = per + '배';
+
+  var eps = profit * 100000000 / 1000000;   // 원
+  var price = eps * per;
+  var cap = price * 1000000 / 100000000;    // 억
+
+  document.getElementById('pvEps').textContent = Math.round(eps).toLocaleString('ko-KR') + '원';
+  document.getElementById('pvPrice').textContent = Math.round(price).toLocaleString('ko-KR') + '원';
+  document.getElementById('pvFormula').textContent = Math.round(eps).toLocaleString('ko-KR') + ' × ' + per;
+  document.getElementById('pvCap').textContent = Math.round(cap).toLocaleString('ko-KR') + '억';
+  document.getElementById('pvBarEps').style.width = (eps / 3000 * 100) + '%';
+  document.getElementById('pvBarPrice').style.width = Math.min(100, price / 120000 * 100) + '%';
+
+  if(per >= 32){
+    verdict('pvVerdict', '#8E4B3A', 'PER이 매우 높습니다 — 기대가 값에 이미 들어가 있습니다',
+      '지금 이 주식을 사면 <b>회사가 버는 속도로 ' + per + '년</b>을 모아야 본전입니다. 시장이 "앞으로 훨씬 더 벌 것"이라고 믿고 있다는 뜻인데, <b>그 기대가 빗나가면 실적이 그대로여도 주가만 무너집니다.</b>');
+  } else if(per <= 8){
+    verdict('pvVerdict', '#5C7A4A', 'PER이 낮습니다 — 다만 싼 데는 이유가 있을 수 있습니다',
+      '<b>' + per + '년치 벌이</b>면 회사 값을 다 치르는 셈이라 싸 보입니다. 하지만 시장이 이 회사의 <b>성장 둔화나 위험을 이미 반영한 결과</b>일 수도 있습니다. PER이 낮다는 건 "싸다"의 근거이지 "오른다"의 보장이 아닙니다.');
+  } else {
+    verdict('pvVerdict', '#8E6B3A', '주가가 움직이는 이유는 딱 두 갈래입니다',
+      '회사가 <b>실제로 더 벌었거나(EPS)</b>, 회사는 그대로인데 <b>시장이 더 후하게 쳐주거나(PER)</b>. 순이익 손잡이를 고정한 채 PER만 밀어보세요. 회사는 아무것도 변하지 않았는데 주가만 오릅니다 — <b>이게 나중에 거품이라고 불리는 것의 정체입니다.</b>');
+  }
+}
+document.getElementById('pvProfit').addEventListener('input', pvDraw);
+document.getElementById('pvPer').addEventListener('input', pvDraw);
+
+/* ── IPO 자금 흐름 ── */
+function ipoDraw(){
+  var old = parseFloat(document.getElementById('ipoOld').value);
+  document.getElementById('ipoOldV').textContent = old + '%';
+  document.getElementById('ipoBarNew').style.width = (100 - old) + '%';
+  document.getElementById('ipoBarOld').style.width = old + '%';
+  document.getElementById('ipoNew').textContent = (1000 - old * 10) + '억';
+  document.getElementById('ipoOldAmt').textContent = (old * 10) + '억';
+
+  if(old >= 70){
+    verdict('ipoVerdict', '#8E4B3A', '회사에는 거의 안 들어갑니다 — 내부자 현금화형',
+      '공모금 1,000억 중 <b>' + (old * 10) + '억이 기존 주주 주머니로</b> 갑니다. 회사가 성장 자금이 필요해서라기보다 <b>창업자·VC가 상장 시점에 지분을 정리하고 있다</b>는 신호로 읽힙니다. 락업(보호예수)이 풀리는 시점도 함께 확인해야 합니다.');
+  } else if(old >= 40){
+    verdict('ipoVerdict', '#8E6B3A', '절반쯤은 기존 주주에게 갑니다',
+      '회사로 <b>' + (1000 - old * 10) + '억</b>, 기존 주주에게 <b>' + (old * 10) + '억</b>. 초기 투자자가 일부 회수하는 건 자연스럽지만, 비중이 커질수록 <b>"왜 지금 파는가"</b>를 따져볼 이유가 생깁니다.');
+  } else {
+    verdict('ipoVerdict', '#5C7A4A', '대부분이 회사로 들어갑니다 — 성장 자금형 IPO',
+      '공모금의 <b>' + (100 - old) + '%</b>가 회사 통장으로 들어가 공장·연구·인력에 쓰입니다. 투자자 입장에서는 "내가 낸 돈이 회사를 키우는 데 쓰인다"는 뜻이라 자연스러운 구조입니다.');
+  }
+}
+document.getElementById('ipoOld').addEventListener('input', ipoDraw);
+
+/* ── 희석 ── */
+function dilDraw(){
+  var ds = parseFloat(document.getElementById('dilShares').value);
+  var dp = parseFloat(document.getElementById('dilProfit').value);
+  document.getElementById('dilSharesV').textContent = pct(ds, 0);
+  document.getElementById('dilProfitV').textContent = pct(dp, 0);
+
+  var shares = 100 * (1 + ds / 100);     // 만주
+  var profit = 10 * (1 + dp / 100);      // 억
+  var eps = profit * 100000000 / (shares * 10000);
+  var delta = (eps - 1000) / 1000 * 100;
+  var stake = 1 / (1 + ds / 100);
+
+  document.getElementById('dilArrowLbl').textContent = '주식 ' + pct(ds, 0) + ' · 이익 ' + pct(dp, 0);
+  document.getElementById('dilLbl2').textContent = Math.round(eps).toLocaleString('ko-KR') + '원';
+  document.getElementById('dilSub').textContent =
+    (Math.round(profit * 10) / 10) + '억 ÷ ' + Math.round(shares) + '만주';
+  document.getElementById('dilStake').textContent = stake.toFixed(2) + '%';
+  document.getElementById('dilEps').textContent = Math.round(eps).toLocaleString('ko-KR') + '원';
+  var de = document.getElementById('dilDelta');
+  de.textContent = pct(delta); signColor(de, delta);
+
+  var col = delta > 0.5 ? '#5C7A4A' : (delta < -0.5 ? '#8E4B3A' : '#8E6B3A');
+  document.getElementById('dilBox').setAttribute('stroke', col);
+  document.getElementById('dilBox').setAttribute('fill', col);
+  document.getElementById('dilLbl1').setAttribute('fill', col);
+  document.getElementById('dilLbl2').setAttribute('fill', col);
+
+  if(ds === 0){
+    verdict('dilVerdict', '#5B5F6B', '아직 증자를 하지 않은 상태입니다',
+      '주식 손잡이를 오른쪽으로 밀어보세요. 그다음 <b>이익 손잡이</b>를 같이 움직이면서, 어느 지점에서 희석이 상쇄되는지 확인해보세요.');
+  } else if(delta < -0.5){
+    verdict('dilVerdict', '#8E4B3A', '나쁜 증자 — 지분만 줄고 이익은 못 따라왔습니다',
+      '주식은 <b>' + pct(ds, 0) + '</b> 늘었는데 이익은 <b>' + pct(dp, 0) + '</b>에 그쳐서, 1주가 벌어다 주는 돈이 <b>' + pct(delta) + '</b> 줄었습니다. 내 지분율도 1%에서 <b>' + stake.toFixed(2) + '%</b>로 내려갔습니다. 유상증자 공시에 주가가 흔들리는 건 시장이 <b>이 시나리오를 먼저 걱정하기 때문</b>입니다.');
+  } else if(delta > 0.5){
+    verdict('dilVerdict', '#5C7A4A', '좋은 증자 — 지분은 줄었지만 내 몫은 커졌습니다',
+      '주식이 <b>' + pct(ds, 0) + '</b> 늘어 지분율은 <b>' + stake.toFixed(2) + '%</b>로 줄었지만, 조달한 돈이 이익을 <b>' + pct(dp, 0) + '</b> 늘려서 EPS가 오히려 <b>' + pct(delta) + '</b> 좋아졌습니다. <b>희석 자체는 나쁜 게 아닙니다</b> — 조달한 돈을 어디에 썼느냐가 전부입니다.');
+  } else {
+    verdict('dilVerdict', '#8E6B3A', '희석을 딱 상쇄한 증자',
+      '주식이 늘어난 만큼 이익도 늘어서 EPS가 그대로입니다. 내 지분율은 <b>' + stake.toFixed(2) + '%</b>로 줄었지만 <b>1주가 벌어다 주는 돈은 변하지 않았습니다.</b> 여기서 이익이 조금이라도 더 늘면 증자는 이득이 됩니다.');
+  }
+}
+document.getElementById('dilShares').addEventListener('input', dilDraw);
+document.getElementById('dilProfit').addEventListener('input', dilDraw);
+
+/* ── 청산 순위 ── */
+function liqDraw(){
+  var total = parseFloat(document.getElementById('liqAsset').value);
+  document.getElementById('liqAssetV').textContent = total + '억';
+
+  var toBond = Math.min(total, 100);
+  var toPref = Math.min(Math.max(total - 100, 0), 50);
+  var toComm = Math.max(total - 150, 0);
+
+  document.getElementById('liqBar1').style.width = (toBond / 100 * 100) + '%';
+  document.getElementById('liqBar2').style.width = (toPref / 50 * 100) + '%';
+  document.getElementById('liqBar3').style.width = Math.min(100, toComm / 150 * 100) + '%';
+  document.getElementById('liqV1').textContent = toBond + '억';
+  document.getElementById('liqV2').textContent = toPref + '억';
+  document.getElementById('liqV3').textContent = toComm + '억';
+  document.getElementById('liqV3').style.color = toComm === 0 ? 'var(--neg)' : 'var(--ink)';
+
+  if(toComm === 0 && toPref === 0){
+    verdict('liqVerdict', '#8E4B3A', '보통주도 우선주도 한 푼 못 받습니다',
+      '남은 재산 <b>' + total + '억</b>으로는 빌린 돈 100억조차 다 갚지 못합니다. 채권자가 <b>' + toBond + '억</b>을 가져가고 줄은 거기서 끝납니다. <b>주식 투자에서 "0이 된다"는 말은 비유가 아닙니다.</b>');
+  } else if(toComm === 0){
+    verdict('liqVerdict', '#8E4B3A', '보통주 몫은 0원입니다',
+      '채권자 100억과 우선주 <b>' + toPref + '억</b>을 채우고 나니 <b>남는 게 없습니다.</b> 회사에 자산이 ' + total + '억이나 있었는데도 보통주 주주는 한 푼도 못 받습니다. 이게 <b>청산 순위 맨 뒤</b>에 서 있다는 것의 의미입니다.');
+  } else {
+    verdict('liqVerdict', '#8E6B3A', '앞의 두 줄을 다 채우고 남은 것만 보통주 몫입니다',
+      '남은 재산 ' + total + '억 중 채권자가 100억, 우선주가 50억을 먼저 가져가고 <b>보통주에게는 ' + toComm + '억</b>이 돌아갑니다. 손잡이를 <b>150억 아래로</b> 내려보세요 — 보통주 몫이 순식간에 0이 됩니다.');
+  }
+}
+document.getElementById('liqAsset').addEventListener('input', liqDraw);
+
+/* ── 초기화 ── */
+lvDraw(); pvDraw(); ipoDraw(); dilDraw(); liqDraw();
+</script>
 </body>
 </html>
