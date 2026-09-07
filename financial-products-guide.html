@@ -1,0 +1,1519 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>금융상품 도감 — ETF·ETN·커버드콜·ELS, 그리고 개별주식</title>
+<meta name="description" content="ETF, ETN, 커버드콜, ELS, 개별주식이 각각 무엇이고 어떻게 다른지 그림과 시뮬레이터로 비교합니다. 초보자와 아이가 함께 볼 수 있는 투자 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --ink-faint:#8A8474;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --stock:#8E4B3A;
+    --etf:#3A5A8E;
+    --etn:#7A5C9E;
+    --cc:#4C7A6D;
+    --els:#9E7A2E;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+    --kid-bg:#EDF0E8;
+    --kid-ink:#3F5233;
+    --kid-rule:#D5DCCB;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  /* 읽기 모드 토글 */
+  .toolbar{
+    margin:40px 0 0;
+    padding:16px 18px;
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:wrap;
+  }
+  .toolbar .tl{font-family:'IBM Plex Mono', monospace;font-size:12px;color:var(--ink-soft);}
+  .seg{display:flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden;}
+  .seg button{
+    font-family:'IBM Plex Sans KR',sans-serif;
+    font-size:13.5px;
+    padding:8px 16px;
+    border:0;
+    background:transparent;
+    color:var(--ink-soft);
+    cursor:pointer;
+    transition:background .15s ease,color .15s ease;
+  }
+  .seg button + button{border-left:1px solid var(--rule);}
+  .seg button.on{background:var(--ink);color:var(--paper);}
+  .toolbar .hint{font-size:13px;color:var(--ink-faint);}
+
+  body.simple .deep{display:none;}
+
+  /* 목차 */
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  /* 섹션 */
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  /* 아이 눈높이 */
+  .analogy{
+    background:var(--kid-bg);
+    border:1px solid var(--kid-rule);
+    border-radius:3px;
+    padding:18px 20px;
+    margin:20px 0 24px;
+  }
+  .analogy .al{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--kid-ink);
+    letter-spacing:.04em;
+    margin-bottom:8px;
+  }
+  .analogy p{margin:0;font-size:14.8px;color:var(--kid-ink);line-height:1.75;max-width:none;}
+  .analogy p + p{margin-top:10px;}
+
+  /* 장단점 */
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0 8px;}
+  .pc > div{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 18px;
+  }
+  .pc h5{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:500;
+    margin:0 0 10px;
+    letter-spacing:.04em;
+  }
+  .pc .good h5{color:#3F6B52;}
+  .pc .bad h5{color:#8E4B3A;}
+  .pc ul{margin:0;padding-left:16px;}
+  .pc li{font-size:14px;color:var(--ink-soft);margin-bottom:8px;line-height:1.62;}
+  .pc li:last-child{margin-bottom:0;}
+  .pc li b{color:var(--ink);font-weight:600;}
+
+  /* 인터랙티브 */
+  .lab{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:22px 22px 24px;
+    margin:26px 0;
+  }
+  .lab .labtitle{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    color:var(--ink-soft);
+    letter-spacing:.05em;
+    margin-bottom:5px;
+  }
+  .lab .labsub{font-size:14px;color:var(--ink-soft);margin:0 0 18px;max-width:60ch;}
+  .lab svg{display:block;width:100%;height:auto;overflow:visible;}
+
+  .axis{stroke:var(--rule);stroke-width:1;}
+  .gridl{stroke:var(--rule);stroke-width:.7;stroke-dasharray:2 4;}
+  .axt{font-family:'IBM Plex Mono',monospace;font-size:10.5px;fill:var(--ink-faint);}
+  .lbl{font-family:'IBM Plex Sans KR',sans-serif;font-size:12px;fill:var(--ink-soft);}
+  .lblb{font-family:'IBM Plex Sans KR',sans-serif;font-size:12.5px;font-weight:600;}
+
+  .ctrl-row{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
+  .ctrl-row label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    min-width:132px;
+  }
+  .ctrl-row input[type=range]{flex:1;min-width:150px;accent-color:var(--cc);height:22px;}
+  .ctrl-row .val{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:var(--ink);
+    min-width:66px;
+    text-align:right;
+    font-weight:500;
+  }
+
+  .readout{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin-top:18px;
+    padding-top:18px;
+    border-top:1px solid var(--rule);
+  }
+  .readout > div{text-align:center;}
+  .readout .rk{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    color:var(--ink-faint);
+    display:block;
+    margin-bottom:5px;
+  }
+  .readout .rv{font-family:'IBM Plex Mono', monospace;font-size:21px;font-weight:500;}
+  .readout .rn{font-size:12px;color:var(--ink-soft);display:block;margin-top:3px;}
+
+  .btnrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;}
+  .btnrow button{
+    font-family:'IBM Plex Sans KR',sans-serif;
+    font-size:13.5px;
+    padding:9px 15px;
+    border:1px solid var(--rule);
+    background:var(--paper);
+    color:var(--ink-soft);
+    border-radius:3px;
+    cursor:pointer;
+    transition:all .16s ease;
+    text-align:left;
+  }
+  .btnrow button:hover{border-color:#B9AF97;color:var(--ink);}
+  .btnrow button.on{background:var(--ink);border-color:var(--ink);color:var(--paper);}
+
+  .verdict{
+    margin-top:16px;
+    padding:16px 18px;
+    border-radius:3px;
+    border-left:3px solid var(--vc,var(--rule));
+    background:var(--paper);
+  }
+  .verdict .vh{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--vc,var(--ink-soft));margin-bottom:6px;}
+  .verdict .vt{font-size:16px;font-weight:600;margin-bottom:7px;font-family:'Newsreader',serif;}
+  .verdict p{font-size:14px;color:var(--ink-soft);margin:0;max-width:none;}
+  .verdict p + p{margin-top:8px;}
+
+  /* 지도 */
+  .mapdetail{
+    margin-top:14px;
+    padding:16px 18px;
+    background:var(--paper);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    min-height:92px;
+  }
+  .mapdetail .mh{font-family:'Newsreader',serif;font-size:17px;font-weight:600;margin-bottom:6px;}
+  .mapdetail p{font-size:14px;color:var(--ink-soft);margin:0;max-width:none;}
+  .mapnode{cursor:pointer;}
+  .mapnode circle.hit{fill:transparent;}
+  .mapnode circle.dot{transition:r .18s ease,fill-opacity .18s ease;}
+  .mapnode:hover circle.dot, .mapnode.on circle.dot{r:13;}
+  .mapnode text{transition:fill .18s ease;}
+
+  /* 비교표 */
+  .tablewrap{overflow-x:auto;margin:24px 0;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+    width:100px;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .dot-i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:-14px;margin-bottom:24px;}
+
+  /* 체크리스트 */
+  ul.check{list-style:none;margin:20px 0 0;padding:0;}
+  ul.check li{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:14px 16px 14px 46px;
+    margin-bottom:9px;
+    position:relative;
+    cursor:pointer;
+    font-size:14.3px;
+    color:var(--ink-soft);
+    transition:all .16s ease;
+    line-height:1.62;
+  }
+  ul.check li::before{
+    content:"";
+    position:absolute;
+    left:16px;
+    top:16px;
+    width:16px;
+    height:16px;
+    border:1.5px solid var(--rule);
+    border-radius:2px;
+    transition:all .16s ease;
+  }
+  ul.check li.done{background:var(--kid-bg);border-color:#C5D0B8;color:var(--kid-ink);}
+  ul.check li.done::before{background:var(--kid-ink);border-color:var(--kid-ink);}
+  ul.check li.done::after{
+    content:"";
+    position:absolute;
+    left:21.5px;
+    top:19px;
+    width:5px;
+    height:9px;
+    border:solid var(--kid-bg);
+    border-width:0 2px 2px 0;
+    transform:rotate(45deg);
+  }
+  ul.check li b{color:var(--ink);font-weight:600;}
+  ul.check li.done b{color:var(--kid-ink);}
+  .checkcount{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);margin-top:14px;}
+
+  /* 어디서 사나 */
+  .buy{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0;}
+  .buy > div{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-top:3px solid var(--edge,var(--rule));
+    border-radius:3px;
+    padding:18px 20px;
+  }
+  .buy h4{margin:0 0 10px;font-size:16px;}
+  .buy p{font-size:14px;color:var(--ink-soft);margin:0 0 10px;max-width:none;}
+  .buy ul{margin:0;padding-left:17px;}
+  .buy li{font-size:13.6px;color:var(--ink-soft);margin-bottom:6px;line-height:1.62;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  .qgroup{margin-bottom:20px;}
+  .qgroup .q{font-size:14.6px;font-weight:600;margin-bottom:10px;color:var(--ink);}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .pc{grid-template-columns:1fr;}
+    .buy{grid-template-columns:1fr;}
+    .readout{grid-template-columns:1fr;gap:14px;}
+    .readout .rv{font-size:19px;}
+    .lab{padding:18px 15px 20px;}
+    .ctrl-row label{min-width:100%;}
+    .btnrow button{width:100%;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">금융상품 도감 · 투자 공부 노트</div>
+    <h1>주식 말고도 살 수 있는 것들<br>— ETF·ETN·커버드콜·ELS</h1>
+    <p class="lede">증권사 앱을 열면 이름이 비슷비슷한 상품이 잔뜩 나옵니다. 그런데 이것들은 <b>겉모습만 비슷하고 속은 완전히 다른 물건</b>입니다. 어떤 건 진짜 회사 조각이고, 어떤 건 회사 조각을 담은 바구니이고, 어떤 건 그냥 <em>증권사가 써준 약속 쪽지</em>입니다. 그 차이를 그림과 시뮬레이터로 하나씩 확인해봅니다.</p>
+    <div class="callout">
+      <b>먼저 알아둘 것.</b> 아래 상품 중 <b>원금을 보장하는 것은 하나도 없습니다.</b> 예금자보호(5천만 원)도 적용되지 않습니다. 이 문서는 각 상품이 어떻게 만들어졌는지 이해하기 위한 학습 자료이며, 특정 상품을 사라는 권유가 아닙니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#map">지도</a>
+    <a href="#stock">1. 개별주식</a>
+    <a href="#etf">2. ETF</a>
+    <a href="#etn">3. ETN</a>
+    <a href="#cc">4. 커버드콜</a>
+    <a href="#els">5. ELS</a>
+    <a href="#table">한 장 비교</a>
+    <a href="#pick">뭐가 맞을까</a>
+    <a href="#where">어디서 사나</a>
+    <a href="#checklist">체크리스트</a>
+  </nav>
+
+  <!-- ══════════ 지도 ══════════ -->
+  <section id="map">
+    <div class="prod-head" style="--edge:var(--ink-soft)">
+      <span class="prod-tag">MAP · 한눈에 보기</span>
+      <h2>다섯 가지를 한 장의 지도에 놓으면</h2>
+      <p class="one">오른쪽으로 갈수록 잃을 수 있는 폭이 크고, 위로 갈수록 벌 수 있는 한도가 열려 있습니다. 점을 눌러보세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">INTERACTIVE · 점을 클릭</div>
+      <svg viewBox="0 0 640 400" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="다섯 가지 금융상품의 위험과 수익 상단 비교 지도">
+        <line class="axis" x1="70" y1="330" x2="610" y2="330"/>
+        <line class="axis" x1="70" y1="40" x2="70" y2="330"/>
+        <line class="gridl" x1="70" y1="185" x2="610" y2="185"/>
+        <line class="gridl" x1="340" y1="40" x2="340" y2="330"/>
+
+        <text class="axt" x="610" y="352" text-anchor="end">잃을 수 있는 폭이 크다 →</text>
+        <text class="axt" x="70" y="30" text-anchor="start">↑ 벌 수 있는 한도가 열려 있다</text>
+
+        <g class="mapnode" data-k="etf" tabindex="0" role="button" aria-label="ETF 설명 보기">
+          <circle class="hit" cx="160" cy="215" r="34"/>
+          <circle class="dot" cx="160" cy="215" r="10" fill="#3A5A8E" fill-opacity=".82"/>
+          <text class="lblb" x="160" y="248" text-anchor="middle" fill="#3A5A8E">ETF</text>
+          <text class="lbl" x="160" y="265" text-anchor="middle">시장 전체를 한 봉지에</text>
+        </g>
+
+        <g class="mapnode" data-k="cc" tabindex="0" role="button" aria-label="커버드콜 설명 보기">
+          <circle class="hit" cx="268" cy="268" r="34"/>
+          <circle class="dot" cx="268" cy="268" r="10" fill="#4C7A6D" fill-opacity=".82"/>
+          <text class="lblb" x="268" y="301" text-anchor="middle" fill="#4C7A6D">커버드콜</text>
+          <text class="lbl" x="268" y="318" text-anchor="middle">매달 받고 상단은 포기</text>
+        </g>
+
+        <g class="mapnode" data-k="etn" tabindex="0" role="button" aria-label="ETN 설명 보기">
+          <circle class="hit" cx="330" cy="150" r="34"/>
+          <circle class="dot" cx="330" cy="150" r="10" fill="#7A5C9E" fill-opacity=".82"/>
+          <text class="lblb" x="330" y="130" text-anchor="middle" fill="#7A5C9E">ETN</text>
+          <text class="lbl" x="330" y="113" text-anchor="middle">증권사의 약속 쪽지</text>
+        </g>
+
+        <g class="mapnode" data-k="els" tabindex="0" role="button" aria-label="ELS 설명 보기">
+          <circle class="hit" cx="462" cy="272" r="34"/>
+          <circle class="dot" cx="462" cy="272" r="10" fill="#9E7A2E" fill-opacity=".82"/>
+          <text class="lblb" x="462" y="305" text-anchor="middle" fill="#9E7A2E">ELS</text>
+          <text class="lbl" x="462" y="322" text-anchor="middle">평소 조금, 사고 나면 크게</text>
+        </g>
+
+        <g class="mapnode" data-k="stock" tabindex="0" role="button" aria-label="개별주식 설명 보기">
+          <circle class="hit" cx="536" cy="90" r="34"/>
+          <circle class="dot" cx="536" cy="90" r="10" fill="#8E4B3A" fill-opacity=".82"/>
+          <text class="lblb" x="536" y="70" text-anchor="middle" fill="#8E4B3A">개별주식</text>
+          <text class="lbl" x="536" y="53" text-anchor="middle">천장도 바닥도 없음</text>
+        </g>
+      </svg>
+
+      <div class="mapdetail" id="mapDetail">
+        <div class="mh">점을 눌러보세요</div>
+        <p>다섯 상품의 성격이 어떻게 다른지 한 줄로 보여드립니다. ELS가 오른쪽 아래에 있는 이유가 특히 중요합니다 — <b>평소에는 조금 벌고, 사고가 나면 크게 잃는</b> 모양이기 때문입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 1. 개별주식 ══════════ -->
+  <section id="stock">
+    <div class="prod-head" style="--edge:var(--stock)">
+      <span class="prod-tag">01 · 기준점</span>
+      <h2>개별주식 — 회사 한 곳의 진짜 조각</h2>
+      <p class="one">나머지 넷을 이해하려면 이것부터. 다른 상품들은 전부 "주식을 어떻게 포장했느냐"의 이야기입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>동네에 떡볶이 가게가 있어. 사장님이 가게를 100조각으로 쪼개서 "한 조각 사실 분?" 하고 파는 거야. 네가 한 조각을 사면 <b>너도 이제 그 가게의 주인 중 한 명</b>이야. 가게에 손님이 바글바글해서 돈을 많이 벌면 네 조각 값도 올라가. 대신 옆에 더 맛있는 가게가 생겨서 손님이 뚝 끊기면? 네 조각 값도 뚝 떨어져.</p>
+      <p>중요한 건 이거야. <b>가게가 망하면 네 조각은 휴지가 돼.</b> 하지만 그 가게가 전국에 100호점을 내면 네 조각 값은 열 배, 백 배가 될 수도 있어. 위로도 아래로도 끝이 없는 게 주식이야.</p>
+    </div>
+
+    <div class="deep">
+      <h3>무엇으로 구성되어 있나</h3>
+      <p>구성이랄 게 없습니다. 주식은 <b>회사에 대한 소유권 그 자체</b>이고, 다른 무언가로 포장되어 있지 않습니다. 이 문서에 나오는 상품 중 유일하게 "중간에 낀 사람"이 없는 상품이기도 합니다. 삼성전자 주식을 사면 삼성전자 지분을 직접 갖는 것이지, 누가 대신 보관해주거나 수익률을 약속해주는 구조가 아닙니다.</p>
+      <p>수익은 두 군데서 나옵니다. 회사 가치가 올라 <b>주가가 오르는 것(자본이득)</b>, 그리고 회사가 번 돈 일부를 나눠주는 <b>배당</b>입니다. 상단에 제한이 없다는 게 결정적인 특징입니다. 이 점이 뒤에 나올 커버드콜·ELS와 정확히 반대입니다.</p>
+    </div>
+
+    <div class="pc">
+      <div class="good">
+        <h5>◤ 좋은 점</h5>
+        <ul>
+          <li><b>상단이 열려 있다.</b> 회사가 크게 성장하면 수익률에 한도가 없습니다.</li>
+          <li><b>중간 비용이 없다.</b> 운용보수·발행사 마진 같은 게 붙지 않습니다. 매매수수료와 세금뿐입니다.</li>
+          <li><b>내가 아는 회사를 산다.</b> 무엇을 샀는지 100% 명확합니다.</li>
+          <li><b>내 마음대로 팔 수 있다.</b> 만기도, 조기상환 조건도 없습니다.</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h5>◤ 나쁜 점</h5>
+        <ul>
+          <li><b>한 곳에 몰빵.</b> 그 회사에 사고가 나면 피할 방법이 없습니다.</li>
+          <li><b>0이 될 수 있다.</b> 상장폐지되면 사실상 전액 손실입니다.</li>
+          <li><b>공부가 많이 필요하다.</b> 재무제표, 업황, 경쟁사까지 봐야 합니다.</li>
+          <li><b>감정에 휘둘리기 쉽다.</b> 매일 가격이 보이면 오래 들고 있기가 어렵습니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>이럴 때 좋습니다.</b> 그 회사·그 산업을 남들보다 잘 알고, 최소 3~5년은 묻어둘 수 있고, 반토막이 나도 생활에 지장이 없는 돈일 때. <b>이럴 땐 피하세요.</b> "누가 좋다더라"로 사는 경우, 그리고 이 돈을 2년 안에 써야 하는 경우.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 2. ETF ══════════ -->
+  <section id="etf">
+    <div class="prod-head" style="--edge:var(--etf)">
+      <span class="prod-tag">02 · 상장지수펀드</span>
+      <h2>ETF — 여러 회사를 한 봉지에 담아 주식처럼 파는 것</h2>
+      <p class="one">Exchange Traded Fund. 펀드인데, 증권사 앱에서 주식처럼 사고팔 수 있게 거래소에 상장시킨 것입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>떡볶이 가게 한 곳만 사면 그 가게가 망할 때 큰일이지? 그래서 누가 이런 걸 만들었어. <b>동네에서 제일 잘되는 가게 200곳의 조각을 조금씩 다 모아서 한 봉지에 담은 종합선물세트</b>야. 이 봉지 하나만 사면 200곳의 주인이 조금씩 되는 거야.</p>
+      <p>이러면 한 가게가 망해도 봉지 전체는 별로 안 흔들려. 대신 한 가게가 대박이 나도 봉지 전체는 조금만 올라. <b>덜 무섭고, 덜 짜릿한</b> 방법이야. 봉지를 관리해주는 아저씨한테 아주 조금 수고비를 내야 하지만 (1년에 1만 원당 20~70원 정도), 200곳을 직접 사는 것보단 훨씬 싸.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DIAGRAM · 한 개 vs 한 봉지</div>
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="개별주식은 원 한 개, ETF는 여러 원을 담은 봉지로 표현한 비교 그림">
+        <text class="lblb" x="115" y="24" text-anchor="middle" fill="#8E4B3A">개별주식 1종목</text>
+        <circle cx="115" cy="105" r="40" fill="#8E4B3A" fill-opacity=".16" stroke="#8E4B3A" stroke-width="1.5"/>
+        <text class="lbl" x="115" y="110" text-anchor="middle" fill="#8E4B3A">A회사</text>
+        <text class="axt" x="115" y="178" text-anchor="middle">이 회사가 -50%면 내 돈도 -50%</text>
+
+        <line class="gridl" x1="240" y1="20" x2="240" y2="190"/>
+
+        <text class="lblb" x="440" y="24" text-anchor="middle" fill="#3A5A8E">ETF 한 주</text>
+        <rect x="300" y="42" width="280" height="122" rx="8" fill="#3A5A8E" fill-opacity=".07" stroke="#3A5A8E" stroke-width="1.5"/>
+        <g fill="#3A5A8E" fill-opacity=".55">
+          <circle cx="330" cy="74" r="13"/><circle cx="368" cy="74" r="13"/><circle cx="406" cy="74" r="13"/>
+          <circle cx="444" cy="74" r="13"/><circle cx="482" cy="74" r="13"/><circle cx="520" cy="74" r="13"/>
+          <circle cx="550" cy="74" r="13"/>
+          <circle cx="330" cy="108" r="13"/><circle cx="368" cy="108" r="13"/><circle cx="406" cy="108" r="13"/>
+          <circle cx="444" cy="108" r="13"/><circle cx="482" cy="108" r="13"/><circle cx="520" cy="108" r="13"/>
+          <circle cx="550" cy="108" r="13"/>
+        </g>
+        <text class="lbl" x="440" y="150" text-anchor="middle" fill="#3A5A8E">… 이렇게 200곳</text>
+        <text class="axt" x="440" y="178" text-anchor="middle">한 회사가 -50%여도 봉지는 -0.3%쯤</text>
+      </svg>
+    </div>
+
+    <div class="deep">
+      <h3>어떻게 구성되어 있나</h3>
+      <p>ETF는 <b>실제로 그 주식들을 사서 보관하고 있습니다.</b> 이 점이 다음에 나올 ETN과의 결정적 차이입니다. 구조는 이렇습니다.</p>
+      <p>① 자산운용사(삼성자산운용, 미래에셋 등)가 "KOSPI200을 그대로 따라가겠다"는 ETF를 만듭니다. → ② 투자자 돈을 모아 <b>실제로 200개 종목을 그 비중대로 사서</b> 수탁은행에 맡깁니다. → ③ 그 바구니의 가치를 주식 수로 나눈 값이 <b>순자산가치(NAV)</b>입니다. → ④ 거래소에 상장되어 우리는 그 지분을 주식처럼 사고팝니다.</p>
+      <p>운용사가 망해도 자산은 수탁은행에 분리 보관되어 있으므로 투자자 자산은 보호됩니다. <b>운용사의 신용을 믿는 상품이 아니라는 뜻</b>입니다.</p>
+
+      <h3>종류가 아주 많습니다</h3>
+      <p>지수형(KOSPI200, S&amp;P500, 나스닥100), 섹터형(2차전지, 반도체, 헬스케어), 채권형, 원자재형, 배당형, 그리고 뒤에 나올 커버드콜형까지. <b>레버리지(2배)·인버스(반대)</b> ETF도 있는데, 이건 매일 수익률을 2배로 맞추는 구조라 오래 들고 있으면 지수가 제자리로 와도 내 돈은 줄어듭니다. 장기 보유용이 아닙니다.</p>
+
+      <h3>비용</h3>
+      <p>총보수(연 0.02%~0.7% 수준)가 매일 조금씩 자동으로 빠져나갑니다. 따로 청구서가 오지 않아 눈에 안 보이지만, 장기 투자에서는 이 차이가 꽤 커집니다. 같은 지수를 따라가는 ETF라면 <b>총보수가 낮은 쪽</b>이 대체로 유리합니다.</p>
+    </div>
+
+    <div class="pc">
+      <div class="good">
+        <h5>◤ 좋은 점</h5>
+        <ul>
+          <li><b>한 번에 분산.</b> 몇만 원으로 수백 개 회사에 나눠 담습니다.</li>
+          <li><b>실물을 보유한다.</b> 운용사가 망해도 자산은 남습니다.</li>
+          <li><b>싸고 투명하다.</b> 보수가 낮고, 무엇이 담겼는지 매일 공개됩니다.</li>
+          <li><b>주식처럼 즉시 매매.</b> 장중에 아무 때나 팔 수 있습니다.</li>
+          <li><b>공부 부담이 적다.</b> 개별 회사를 분석하지 않아도 됩니다.</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h5>◤ 나쁜 점</h5>
+        <ul>
+          <li><b>시장이 빠지면 같이 빠진다.</b> 분산은 개별 위험만 줄여줍니다.</li>
+          <li><b>대박은 없다.</b> 한 종목이 10배가 돼도 봉지 전체는 조금 오릅니다.</li>
+          <li><b>보수가 매일 빠진다.</b> 작지만 계속 나갑니다.</li>
+          <li><b>거래량 적은 ETF는 위험.</b> 팔고 싶을 때 제값에 못 팔 수 있습니다.</li>
+          <li><b>레버리지·인버스는 별개 물건.</b> 장기 보유 시 지수와 크게 어긋납니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>이럴 때 좋습니다.</b> 투자를 이제 시작할 때, 매달 조금씩 오래 넣을 때, 개별 회사를 분석할 시간이 없을 때. 대부분의 사람에게 <b>가장 먼저 고려할 기본 도구</b>입니다. <b>주의.</b> "ETF"라는 이름만 보고 다 안전하다고 생각하면 안 됩니다. 레버리지·인버스·특정 테마 ETF는 개별주식만큼, 때로는 더 위험합니다.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 3. ETN ══════════ -->
+  <section id="etn">
+    <div class="prod-head" style="--edge:var(--etn)">
+      <span class="prod-tag">03 · 상장지수증권</span>
+      <h2>ETN — 겉모습은 ETF, 속은 증권사의 약속 쪽지</h2>
+      <p class="one">Exchange Traded Note. 증권사가 "이 지수 수익률만큼 나중에 드릴게요"라고 써서 발행한 증서입니다. 실물을 보유하지 않습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>아까 봉지(ETF)는 <b>진짜 가게 조각들이 안에 들어 있었어.</b> 그런데 ETN은 달라. 봉지 안이 비어 있어. 대신 <b>동네에서 제일 큰 문구점 사장님이 써준 쪽지</b>가 한 장 들어 있어. "떡볶이 가게 200곳 값이 오른 만큼, 나중에 내가 네게 돈으로 줄게. — 문구점 사장 도장 꽝."</p>
+      <p>사장님이 약속을 잘 지키면 아무 문제 없어. 그런데 <b>만약 문구점이 망하면?</b> 그 쪽지는 아무 힘이 없어. 가게 조각이 안에 없으니까 건질 것도 없어. 그래서 ETN은 "무엇을 따라가는가"보다 <b>"누가 써준 쪽지인가"</b>가 더 중요해.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DIAGRAM · 내 돈이 어디로 가는가</div>
+      <p class="labsub">겉보기엔 둘 다 "앱에서 사는 종목"이지만, 돈이 흘러가는 길이 완전히 다릅니다.</p>
+      <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ETF와 ETN의 자금 흐름 구조 비교 다이어그램">
+        <!-- ETF 열 -->
+        <text class="lblb" x="160" y="20" text-anchor="middle" fill="#3A5A8E">ETF</text>
+        <rect x="70" y="34" width="180" height="40" rx="4" fill="#FCFBF7" stroke="#D9D2C0"/>
+        <text class="lbl" x="160" y="59" text-anchor="middle">내 돈</text>
+        <path d="M160,74 L160,104" stroke="#3A5A8E" stroke-width="1.5" marker-end="url(#ab)"/>
+        <rect x="70" y="110" width="180" height="44" rx="4" fill="#3A5A8E" fill-opacity=".08" stroke="#3A5A8E"/>
+        <text class="lbl" x="160" y="130" text-anchor="middle" fill="#3A5A8E">자산운용사</text>
+        <text class="axt" x="160" y="146" text-anchor="middle">지수대로 주식을 사서</text>
+        <path d="M160,154 L160,184" stroke="#3A5A8E" stroke-width="1.5" marker-end="url(#ab)"/>
+        <rect x="70" y="190" width="180" height="52" rx="4" fill="#3A5A8E" fill-opacity=".16" stroke="#3A5A8E"/>
+        <text class="lbl" x="160" y="212" text-anchor="middle" fill="#3A5A8E">수탁은행에 보관된</text>
+        <text class="lblb" x="160" y="230" text-anchor="middle" fill="#3A5A8E">진짜 주식 200종목</text>
+        <text class="axt" x="160" y="266" text-anchor="middle">운용사가 망해도</text>
+        <text class="axt" x="160" y="282" text-anchor="middle">이 주식은 내 몫으로 남는다</text>
+
+        <line class="gridl" x1="320" y1="10" x2="320" y2="290"/>
+
+        <!-- ETN 열 -->
+        <text class="lblb" x="480" y="20" text-anchor="middle" fill="#7A5C9E">ETN</text>
+        <rect x="390" y="34" width="180" height="40" rx="4" fill="#FCFBF7" stroke="#D9D2C0"/>
+        <text class="lbl" x="480" y="59" text-anchor="middle">내 돈</text>
+        <path d="M480,74 L480,104" stroke="#7A5C9E" stroke-width="1.5" marker-end="url(#ap)"/>
+        <rect x="390" y="110" width="180" height="44" rx="4" fill="#7A5C9E" fill-opacity=".08" stroke="#7A5C9E"/>
+        <text class="lbl" x="480" y="130" text-anchor="middle" fill="#7A5C9E">증권사 (발행사)</text>
+        <text class="axt" x="480" y="146" text-anchor="middle">자기 회사 돈으로 굴리고</text>
+        <path d="M480,154 L480,184" stroke="#7A5C9E" stroke-width="1.5" marker-end="url(#ap)"/>
+        <rect x="390" y="190" width="180" height="52" rx="4" fill="#7A5C9E" fill-opacity=".16" stroke="#7A5C9E" stroke-dasharray="4 3"/>
+        <text class="lbl" x="480" y="212" text-anchor="middle" fill="#7A5C9E">내 손에 남는 것은</text>
+        <text class="lblb" x="480" y="230" text-anchor="middle" fill="#7A5C9E">「주겠다」는 약속 1장</text>
+        <text class="axt" x="480" y="266" text-anchor="middle">증권사가 망하면</text>
+        <text class="axt" x="480" y="282" text-anchor="middle">약속을 받을 곳이 없다</text>
+
+        <defs>
+          <marker id="ab" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#3A5A8E"/>
+          </marker>
+          <marker id="ap" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#7A5C9E"/>
+          </marker>
+        </defs>
+      </svg>
+    </div>
+
+    <div class="deep">
+      <h3>그럼 왜 ETN을 만들까</h3>
+      <p>ETF로는 담기 어려운 것들이 있기 때문입니다. 원유·천연가스·구리 같은 원자재, 변동성지수(VIX), 아주 좁은 테마, 해외 소수 종목 묶음 등은 실물을 사서 보관하기가 어렵거나 비쌉니다. ETN은 실물을 안 사도 되니 <b>이런 것들을 빠르고 유연하게 상품화</b>할 수 있습니다.</p>
+      <p>또 하나의 장점은 <b>추적오차가 거의 없다</b>는 것입니다. ETF는 실제로 주식을 사고팔며 지수를 따라가려다 보니 미세하게 어긋나지만, ETN은 애초에 "지수 수익률을 주겠다"고 약속한 것이라 계약대로 지급됩니다 — <b>발행사가 멀쩡하다는 전제하에서</b>.</p>
+
+      <h3>반드시 확인할 것</h3>
+      <p><b>① 발행사가 누구인가.</b> 신용등급을 확인하세요. 이 상품의 본질은 그 증권사에 대한 신용 노출입니다. <b>② 만기가 있다.</b> ETF와 달리 ETN은 만기(보통 1~20년)가 있습니다. 만기가 다가오면 청산됩니다. <b>③ 괴리율.</b> 시장 가격이 지표가치(IV)에서 얼마나 벗어나 있는지 봐야 합니다. 괴리율이 크게 벌어진 상태에서 사면 그 차이만큼 손해를 안고 시작합니다. 2020년 원유 폭락 때 원유 ETN 괴리율이 100%를 넘긴 사례가 있었습니다.</p>
+    </div>
+
+    <div class="pc">
+      <div class="good">
+        <h5>◤ 좋은 점</h5>
+        <ul>
+          <li><b>추적오차가 거의 없다.</b> 약속된 지수 수익률을 그대로 받습니다.</li>
+          <li><b>ETF로 못 만드는 것을 담는다.</b> 원자재, 변동성, 틈새 테마.</li>
+          <li><b>주식처럼 매매.</b> 증권사 앱에서 바로 사고팝니다.</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h5>◤ 나쁜 점</h5>
+        <ul>
+          <li><b>발행사 신용위험.</b> 증권사가 부실해지면 전액을 못 받을 수 있습니다.</li>
+          <li><b>실물이 없다.</b> 건질 자산 자체가 존재하지 않습니다.</li>
+          <li><b>만기가 있다.</b> 무기한 보유가 불가능합니다.</li>
+          <li><b>괴리율 함정.</b> 거래량이 적으면 제값보다 비싸게 사기 쉽습니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>초보자에게는 우선순위가 낮습니다.</b> ETF로 같은 것을 살 수 있다면 대체로 ETF가 낫습니다. ETN은 "ETF로는 도저히 못 담는 걸 사야 하는 명확한 이유"가 있을 때 꺼내는 도구입니다.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 4. 커버드콜 ══════════ -->
+  <section id="cc">
+    <div class="prod-head" style="--edge:var(--cc)">
+      <span class="prod-tag">04 · 커버드콜</span>
+      <h2>커버드콜 — 매달 용돈을 받는 대신, 크게 오를 권리를 파는 것</h2>
+      <p class="one">주식을 갖고 있으면서, 그 주식이 크게 오르면 정해진 값에 팔겠다는 약속(콜옵션)을 남에게 팔고 그 대가를 매달 받습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>네가 아끼는 레고 세트가 있어. 지금 값은 10만 원. 친구가 와서 이런 제안을 해. <b>"한 달 뒤에 그 레고가 얼마가 되든, 나한테 13만 원에 팔 수 있는 권리를 살게. 대신 지금 너한테 1만 원 줄게."</b></p>
+      <p>네가 받아들이면 어떻게 될까? 한 달 뒤에 레고 값이 11만 원이면 친구는 안 사겠지(13만 원보다 싸니까). 넌 레고도 그대로, <b>1만 원도 벌었어.</b> 값이 그대로여도 1만 원은 네 거야. 값이 떨어져서 8만 원이 돼도, 1만 원 받았으니 손해가 조금은 줄어.</p>
+      <p>그런데 <b>레고가 갑자기 20만 원이 되면?</b> 친구는 약속대로 13만 원에 사 가. 넌 1만 원 받은 게 있어도 14만 원까지만 챙긴 셈이야. 20만 원짜리가 됐는데도 말이야. <b>매달 용돈을 받는 대신, 대박은 포기하는 거래</b>야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SIMULATOR · 손잡이를 움직여보세요</div>
+      <p class="labsub">주가가 어떻게 움직였을 때 커버드콜이 유리하고 불리한지 직접 확인해봅니다. 프리미엄(매달 받는 돈)을 많이 받으려면 더 낮은 가격에 팔기로 약속해야 하므로, <b>프리미엄을 올리면 상단 한도가 같이 내려갑니다.</b></p>
+
+      <svg viewBox="0 0 640 340" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주가 변동률에 따른 일반 주식 보유와 커버드콜 전략의 수익률 비교 그래프">
+        <line class="gridl" id="ccZeroY" x1="60" y1="0" x2="612" y2="0"/>
+        <line class="gridl" id="ccZeroX" x1="0" y1="30" x2="0" y2="292"/>
+        <line class="axis" x1="60" y1="292" x2="612" y2="292"/>
+        <line class="axis" x1="60" y1="30" x2="60" y2="292"/>
+
+        <text class="axt" x="60" y="310" text-anchor="middle">-30%</text>
+        <text class="axt" x="336" y="310" text-anchor="middle">0%</text>
+        <text class="axt" x="612" y="310" text-anchor="middle">+30%</text>
+        <text class="axt" x="336" y="330" text-anchor="middle">한 달 동안 주가가 이만큼 움직였다면 →</text>
+        <text class="axt" x="52" y="34" text-anchor="end">+30</text>
+        <text class="axt" x="52" y="296" text-anchor="end">-35</text>
+        <text class="axt" x="14" y="165" text-anchor="middle" transform="rotate(-90 14 165)">내 수익률(%)</text>
+
+        <path id="ccStockLine" fill="none" stroke="#8E4B3A" stroke-width="2.2"/>
+        <path id="ccCcLine" fill="none" stroke="#4C7A6D" stroke-width="2.6"/>
+        <line id="ccCapMark" stroke="#4C7A6D" stroke-width="1" stroke-dasharray="3 3" opacity=".55"/>
+        <text id="ccCapLbl" class="axt" fill="#4C7A6D" text-anchor="middle"></text>
+
+        <line id="ccCursor" stroke="#232019" stroke-width="1" stroke-dasharray="2 3" opacity=".45"/>
+        <circle id="ccDotStock" r="5.5" fill="#8E4B3A"/>
+        <circle id="ccDotCc" r="5.5" fill="#4C7A6D"/>
+
+        <g transform="translate(78,42)">
+          <line x1="0" y1="0" x2="20" y2="0" stroke="#8E4B3A" stroke-width="2.2"/>
+          <text class="lbl" x="26" y="4" fill="#8E4B3A">그냥 주식만 들고 있었다면</text>
+          <line x1="0" y1="19" x2="20" y2="19" stroke="#4C7A6D" stroke-width="2.6"/>
+          <text class="lbl" x="26" y="23" fill="#4C7A6D">커버드콜</text>
+        </g>
+      </svg>
+
+      <div class="ctrl-row">
+        <label for="ccMove">주가 변동률</label>
+        <input type="range" id="ccMove" min="-30" max="30" step="1" value="2">
+        <span class="val" id="ccMoveV">+2%</span>
+      </div>
+      <div class="ctrl-row">
+        <label for="ccPrem">매달 받는 프리미엄</label>
+        <input type="range" id="ccPrem" min="0.5" max="3" step="0.5" value="1">
+        <span class="val" id="ccPremV">1.0%</span>
+      </div>
+
+      <div class="readout">
+        <div>
+          <span class="rk">그냥 주식</span>
+          <span class="rv" id="ccOutStock" style="color:#8E4B3A">+2.0%</span>
+        </div>
+        <div>
+          <span class="rk">커버드콜</span>
+          <span class="rv" id="ccOutCc" style="color:#4C7A6D">+3.0%</span>
+        </div>
+        <div>
+          <span class="rk">차이</span>
+          <span class="rv" id="ccOutDiff">+1.0%p</span>
+          <span class="rn" id="ccOutNote">커버드콜이 유리</span>
+        </div>
+      </div>
+
+      <div class="verdict" id="ccVerdict" style="--vc:var(--cc)">
+        <div class="vh">읽는 법</div>
+        <div class="vt">완만하게 오르거나 제자리일 때가 커버드콜의 시간</div>
+        <p>초록 선이 오른쪽에서 <b>납작하게 눕는 지점</b>을 보세요. 그 위로는 주가가 아무리 올라도 내 수익은 더 늘지 않습니다. 반대로 왼쪽 하락 구간에서는 두 선의 간격이 프리미엄만큼 일정합니다 — <b>커버드콜은 하락을 막아주지 않고, 딱 받은 만큼만 덜 아프게 해줍니다.</b></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>어떻게 구성되어 있나</h3>
+      <p>이름 그대로입니다. <b>커버드(covered) = 실제 주식을 갖고 있다</b>, <b>콜(call) = 콜옵션을 팔았다</b>. 두 개를 합친 것입니다.</p>
+      <p>실제로 우리가 사는 건 대부분 <b>커버드콜 ETF</b> 형태입니다. 운용사가 ① S&amp;P500이나 나스닥100 같은 기초 자산을 사서 보유하고, ② 그 지수의 콜옵션을 정기적으로(월 1회, 혹은 매일) 매도해서, ③ 받은 프리미엄을 <b>월분배금</b>으로 나눠줍니다. 그래서 "월배당 ETF"라는 이름으로 많이 팔립니다.</p>
+
+      <h3>가장 많이 오해하는 지점</h3>
+      <p><b>"분배율 연 15%"는 수익률 15%가 아닙니다.</b> 분배금은 프리미엄에서 나오는데, 그 프리미엄을 받는 대가로 상단을 포기했습니다. 그리고 기초자산 가격이 떨어지면 <b>ETF 가격 자체가 내려갑니다.</b> 매달 분배금은 꼬박꼬박 들어오는데 계좌 잔고는 계속 줄어드는 상황이 충분히 가능합니다.</p>
+      <p>그래서 커버드콜은 반드시 <b>총수익(가격 변동 + 분배금)</b>으로 봐야 합니다. 분배율만 보고 고르면, 사실상 내 원금을 매달 조금씩 돌려받으면서 "배당이 나온다"고 착각하게 됩니다.</p>
+
+      <h3>어떤 장에서 유리한가</h3>
+      <p><b>횡보장·완만한 상승장</b>에서 가장 강합니다. 주가가 제자리인데도 프리미엄이 쌓이기 때문입니다. <b>급등장에서는 가장 불리합니다.</b> 남들이 +30% 벌 때 나는 +4%에 묶입니다. <b>급락장에서는 프리미엄만큼만 덜 잃습니다</b> — 방어 수단이 아닙니다.</p>
+    </div>
+
+    <div class="pc">
+      <div class="good">
+        <h5>◤ 좋은 점</h5>
+        <ul>
+          <li><b>매달 현금이 들어온다.</b> 생활비·용돈 흐름을 만들기 좋습니다.</li>
+          <li><b>횡보장에서 강하다.</b> 주가가 안 올라도 수익이 쌓입니다.</li>
+          <li><b>변동성이 낮다.</b> 그냥 주식보다 가격 출렁임이 작습니다.</li>
+          <li><b>ETF로 간편하게.</b> 옵션을 몰라도 한 종목처럼 살 수 있습니다.</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h5>◤ 나쁜 점</h5>
+        <ul>
+          <li><b>상단이 잘린다.</b> 큰 상승장에서 시장을 크게 밑돕니다.</li>
+          <li><b>하락은 거의 그대로 맞는다.</b> 프리미엄만큼만 완충됩니다.</li>
+          <li><b>분배금이 원금 잠식일 수 있다.</b> 높은 분배율 = 좋은 상품이 아닙니다.</li>
+          <li><b>보수가 비싸다.</b> 일반 지수 ETF보다 총보수가 높습니다.</li>
+          <li><b>장기 복리에 불리.</b> 상단을 계속 잘라내면 오래 굴릴수록 격차가 벌어집니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>이럴 때 좋습니다.</b> 이미 목돈이 있고 <b>매달 나오는 현금이 실제로 필요한</b> 은퇴기·준은퇴기, 또는 시장이 몇 년째 지지부진할 거라고 판단할 때. <b>이럴 땐 맞지 않습니다.</b> 20~40대가 자산을 <b>불려야 하는</b> 국면에서 주력으로 쓰는 것. 매달 들어오는 돈이 심리적으로 좋아 보이지만, 그 대가로 장기 성장의 상단을 계속 팔고 있는 것입니다.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 5. ELS ══════════ -->
+  <section id="els">
+    <div class="prod-head" style="--edge:var(--els)">
+      <span class="prod-tag">05 · 주가연계증권</span>
+      <h2>ELS — "크게만 안 빠지면 이자 드릴게요"라는 조건부 내기</h2>
+      <p class="one">Equity-Linked Securities. 증권사가 발행하며, 기초자산(주로 지수)이 정해진 선 아래로 떨어지지 않으면 약속한 수익을 주고, 떨어지면 하락분을 그대로 떠안습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>친구가 이런 내기를 제안해. <b>"네 저금통 10만 원을 나한테 맡겨. 3년 동안 우리 반 평균 키가 지금의 반토막만 안 되면, 매년 8천 원씩 얹어서 돌려줄게. 아주 안전하지?"</b></p>
+      <p>반 평균 키가 반토막이 날 리가 없잖아. 그래서 대부분은 진짜로 돈을 더 받아. 열 번 하면 아홉 번은 성공해. 그래서 다들 <b>"이건 거의 확실한 이자"</b>라고 생각하게 돼.</p>
+      <p>그런데 열 번 중 한 번, <b>진짜로 반토막이 나는 날</b>이 와. 그러면 어떻게 될까? 8천 원을 못 받는 정도가 아니야. <b>맡긴 10만 원이 5만 원, 4만 원이 되어서 돌아와.</b> 아홉 번 동안 모은 이자를 한 번에 다 잃고도 한참 모자라. 이게 ELS의 진짜 모양이야. <b>작은 이익을 여러 번, 큰 손실을 가끔.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SIMULATOR · 세 가지 결말</div>
+      <p class="labsub">똑같은 상품, 똑같은 조건인데 기초자산이 어떻게 움직였느냐에 따라 결과가 이렇게 달라집니다. 조건은 <b>3년 만기 · 6개월마다 조기상환 평가 · 연 8% 쿠폰 · 낙인(Knock-In) 50%</b>입니다.</p>
+
+      <div class="btnrow">
+        <button id="elsB1" class="on" onclick="runEls(0)">① 6개월 만에 끝났다</button>
+        <button id="elsB2" onclick="runEls(1)">② 3년을 아슬아슬 버텼다</button>
+        <button id="elsB3" onclick="runEls(2)">③ 반토막이 났다</button>
+      </div>
+
+      <svg viewBox="0 0 640 350" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="ELS 기초자산 가격 경로와 조기상환 배리어, 낙인 배리어를 보여주는 시나리오 그래프">
+        <line class="axis" x1="60" y1="300" x2="612" y2="300"/>
+        <line class="axis" x1="60" y1="30" x2="60" y2="300"/>
+
+        <!-- 100 기준선 -->
+        <line class="gridl" x1="60" y1="97" x2="612" y2="97"/>
+        <text class="axt" x="52" y="101" text-anchor="end">100</text>
+
+        <!-- 낙인 배리어 -->
+        <line x1="60" y1="253" x2="612" y2="253" stroke="#8E4B3A" stroke-width="1.4" stroke-dasharray="6 4"/>
+        <text class="axt" x="52" y="257" text-anchor="end" fill="#8E4B3A">50</text>
+        <text class="lbl" x="70" y="245" fill="#8E4B3A">낙인(Knock-In) 50% — 이 선을 건드리면 성격이 바뀝니다</text>
+
+        <!-- 조기상환 배리어 계단 -->
+        <g id="elsBarriers"></g>
+
+        <!-- x축 라벨 -->
+        <g id="elsXlabels"></g>
+        <text class="axt" x="336" y="342" text-anchor="middle">시간 (개월)</text>
+
+        <path id="elsPath" fill="none" stroke="#9E7A2E" stroke-width="2.4" stroke-linejoin="round"/>
+        <circle id="elsEnd" r="6" fill="#9E7A2E" opacity="0"/>
+        <text id="elsEndLbl" class="lblb" text-anchor="middle" opacity="0"></text>
+      </svg>
+
+      <div class="readout">
+        <div>
+          <span class="rk">최종 결과</span>
+          <span class="rv" id="elsOut">+4.0%</span>
+          <span class="rn" id="elsOutNote">원금 대비</span>
+        </div>
+        <div>
+          <span class="rk">보유 기간</span>
+          <span class="rv" id="elsDur">6개월</span>
+        </div>
+        <div>
+          <span class="rk">낙인 터치</span>
+          <span class="rv" id="elsKi">없음</span>
+        </div>
+      </div>
+
+      <div class="verdict" id="elsVerdict" style="--vc:var(--els)">
+        <div class="vh">시나리오 ①</div>
+        <div class="vt">가장 흔한 결말 — 6개월 만에 조용히 끝납니다</div>
+        <p>6개월째 평가일에 기초자산이 95(배리어 90 이상)라서 조기상환됐습니다. 원금에 6개월치 쿠폰 4%를 더해 돌려받고 계약 종료. <b>ELS의 대부분은 이렇게 끝나고, 그래서 사람들은 이 상품을 안전하다고 기억하게 됩니다.</b></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>어떻게 구성되어 있나</h3>
+      <p>ELS는 증권사가 발행하는 <b>파생결합증권</b>입니다. 우리가 낸 돈으로 증권사는 ① 대부분을 안전자산(채권 등)에 넣고 ② 일부로 옵션을 조합해 "이런 조건이면 이만큼 지급"이라는 손익 구조를 만듭니다. 우리가 사는 건 주식도, 지수도 아니고 <b>이 손익 구조가 적힌 계약</b>입니다.</p>
+      <p>기초자산은 보통 <b>지수 2~3개</b>입니다(S&amp;P500, KOSPI200, EuroStoxx50, HSCEI 등). 여기서 중요한 함정: 여러 개를 묶으면 안전해 보이지만 <b>정반대입니다.</b> 조건 판정은 언제나 <b>가장 많이 떨어진 지수 하나</b>를 기준으로 합니다. 지수를 하나 추가할 때마다 사고 확률은 올라갑니다.</p>
+
+      <h3>스텝다운 구조</h3>
+      <p>가장 흔한 형태입니다. 6개월마다 평가해서 기준선 위에 있으면 조기상환하고 끝냅니다. 기준선은 시간이 갈수록 낮아집니다 — 예: <b>90 → 90 → 85 → 85 → 80 → 75</b>. 그래서 "스텝다운(계단식 하강)"입니다. 위 시뮬레이터의 짧은 가로선들이 이 계단입니다.</p>
+      <p>만기까지 한 번도 조기상환되지 않았다면, 마지막에 두 가지를 따집니다. <b>① 3년 동안 낙인(50%)을 건드린 적이 있는가?</b> <b>② 만기 시점에 마지막 기준선(75) 위에 있는가?</b> 낙인을 건드린 적이 없다면 대체로 약속된 쿠폰을 받습니다. 낙인을 건드렸고 만기에도 회복하지 못했다면 — <b>기초자산이 떨어진 만큼 그대로 손실</b>입니다. -40%면 원금의 60%만 돌아옵니다.</p>
+
+      <h3>실제로 있었던 일</h3>
+      <p>2021년에 홍콩H지수(HSCEI)를 기초자산으로 한 ELS가 대량 판매됐습니다. 그 후 지수가 반토막 아래로 떨어졌고, 2024년 만기가 돌아오면서 <b>수조 원 규모의 원금 손실</b>이 확정됐습니다. 많은 가입자가 은행 창구에서 "예금보다 조금 나은 상품"으로 이해하고 가입한 상태였습니다. 이 상품의 위험은 이론이 아니라 실제로 실현된 적이 있습니다.</p>
+
+      <h3>비슷한 이름들</h3>
+      <p><b>ELB</b>는 원금보장형(원금지급형)으로 설계된 것이라 성격이 다릅니다(대신 수익도 작습니다). <b>DLS</b>는 기초자산이 주식·지수가 아니라 금리·환율·원자재인 것. <b>ELT·ELF</b>는 같은 ELS를 은행 신탁이나 펀드로 한 번 포장해서 파는 것입니다 — 포장만 다르고 <b>안에 든 위험은 동일합니다.</b></p>
+    </div>
+
+    <div class="pc">
+      <div class="good">
+        <h5>◤ 좋은 점</h5>
+        <ul>
+          <li><b>횡보·완만한 하락장에서도 수익.</b> 안 오르기만 해도 쿠폰이 나옵니다.</li>
+          <li><b>수익 조건이 명확하다.</b> 언제 얼마를 받는지 계약서에 다 적혀 있습니다.</li>
+          <li><b>대부분 조기상환된다.</b> 통계적으로 6개월~1년 내 종료 비중이 높습니다.</li>
+        </ul>
+      </div>
+      <div class="bad">
+        <h5>◤ 나쁜 점</h5>
+        <ul>
+          <li><b>손익이 완전히 비대칭.</b> 이익은 쿠폰까지, 손실은 -100%까지 열려 있습니다.</li>
+          <li><b>발행사 신용위험.</b> 증권사가 부실해지면 조건을 충족해도 못 받습니다.</li>
+          <li><b>중도 환매 시 손실.</b> 급하게 돈이 필요하면 원금보다 적게 받습니다.</li>
+          <li><b>기초자산이 많을수록 위험.</b> 가장 나쁜 지수 하나로 판정합니다.</li>
+          <li><b>구조가 어렵다.</b> 파는 사람도 다 이해 못 하는 경우가 있습니다.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>솔직하게.</b> ELS는 초보자에게 권할 수 있는 상품이 아닙니다. 승률이 높기 때문에 <b>안전하다는 잘못된 경험이 먼저 쌓이고</b>, 그 경험을 믿고 금액을 키운 뒤에 사고를 만나는 패턴이 반복돼 왔습니다. 굳이 한다면 ① 낙인이 없거나 아주 낮은 구조로, ② 기초자산 개수를 최소로, ③ <b>전액을 잃어도 되는 금액만</b>, ④ 반드시 만기까지 묻어둘 수 있는 돈으로.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 비교표 ══════════ -->
+  <section id="table">
+    <div class="prod-head" style="--edge:var(--ink-soft)">
+      <span class="prod-tag">SUMMARY · 한 장 비교</span>
+      <h2>다섯 가지를 나란히 놓고</h2>
+      <p class="one">가로로 스크롤하면 전부 보입니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr>
+            <th></th>
+            <th><span class="dot-i" style="background:#8E4B3A"></span>개별주식</th>
+            <th><span class="dot-i" style="background:#3A5A8E"></span>ETF</th>
+            <th><span class="dot-i" style="background:#7A5C9E"></span>ETN</th>
+            <th><span class="dot-i" style="background:#4C7A6D"></span>커버드콜</th>
+            <th><span class="dot-i" style="background:#9E7A2E"></span>ELS</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th>정체</th>
+            <td>회사 소유권</td>
+            <td>주식 바구니 (펀드)</td>
+            <td>증권사 발행 증서</td>
+            <td>주식 + 콜옵션 매도</td>
+            <td>증권사 발행 계약</td>
+          </tr>
+          <tr>
+            <th>실물 보유</th>
+            <td>O — 직접</td>
+            <td>O — 수탁은행 보관</td>
+            <td>X — 약속만</td>
+            <td>O — 기초자산 보유</td>
+            <td>X — 손익구조만</td>
+          </tr>
+          <tr>
+            <th>수익 상단</th>
+            <td>무제한</td>
+            <td>시장만큼</td>
+            <td>지수만큼</td>
+            <td><b>제한됨</b> (캡)</td>
+            <td><b>쿠폰까지</b> 고정</td>
+          </tr>
+          <tr>
+            <th>손실 하단</th>
+            <td>-100%</td>
+            <td>시장만큼</td>
+            <td>지수만큼 + 발행사 파산</td>
+            <td>시장만큼 − 프리미엄</td>
+            <td><b>-100%</b> 가능</td>
+          </tr>
+          <tr>
+            <th>신용위험</th>
+            <td>없음</td>
+            <td>없음</td>
+            <td><b>있음</b></td>
+            <td>없음 (ETF형)</td>
+            <td><b>있음</b></td>
+          </tr>
+          <tr>
+            <th>만기</th>
+            <td>없음</td>
+            <td>없음</td>
+            <td>있음 (1~20년)</td>
+            <td>없음 (ETF형)</td>
+            <td>있음 (보통 3년)</td>
+          </tr>
+          <tr>
+            <th>현금흐름</th>
+            <td>배당 (회사마다)</td>
+            <td>분배금 (연 1~4회)</td>
+            <td>대체로 없음</td>
+            <td><b>월분배</b></td>
+            <td>상환 시 일괄</td>
+          </tr>
+          <tr>
+            <th>중도 매도</th>
+            <td>자유</td>
+            <td>자유</td>
+            <td>자유 (괴리율 주의)</td>
+            <td>자유</td>
+            <td><b>불리</b> (손실 감수)</td>
+          </tr>
+          <tr>
+            <th>유리한 장</th>
+            <td>그 회사가 성장할 때</td>
+            <td>장기 상승장</td>
+            <td>특정 자산이 오를 때</td>
+            <td>횡보·완만한 상승</td>
+            <td>횡보·완만한 하락</td>
+          </tr>
+          <tr>
+            <th>최악의 장</th>
+            <td>회사에 사고</td>
+            <td>장기 하락장</td>
+            <td>발행사 부실</td>
+            <td><b>급등장</b></td>
+            <td><b>급락장</b></td>
+          </tr>
+          <tr>
+            <th>난이도</th>
+            <td>높음</td>
+            <td><b>낮음</b></td>
+            <td>중간</td>
+            <td>중간</td>
+            <td><b>높음</b></td>
+          </tr>
+          <tr>
+            <th>초보 적합도</th>
+            <td>소액부터</td>
+            <td><b>가장 먼저</b></td>
+            <td>나중에</td>
+            <td>목적이 있다면</td>
+            <td><b>권하지 않음</b></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="scrollhint">← 표를 옆으로 밀어보세요 →</div>
+
+    <div class="note">
+      <p><b>표를 한 문장으로.</b> 아래로 내려갈수록 "누군가에게 무언가를 맡기는" 정도가 커집니다. 개별주식은 아무도 안 끼고, ETF는 운용사가 대신 사주고, 커버드콜은 거기에 옵션 거래가 얹히고, ETN과 ELS는 <b>증권사가 안 망한다는 것 자체가 투자의 전제</b>가 됩니다.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 뭐가 맞을까 ══════════ -->
+  <section id="pick">
+    <div class="prod-head" style="--edge:var(--ink-soft)">
+      <span class="prod-tag">CHOOSE · 우리 집엔 뭐가 맞을까</span>
+      <h2>세 가지만 답해보세요</h2>
+      <p class="one">정답을 주는 도구가 아니라, <b>지금 내가 무엇을 원하는지 스스로 확인하는</b> 도구입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="qgroup">
+        <div class="q">1. 이 돈은 언제 쓸 돈인가요?</div>
+        <div class="btnrow" data-q="horizon">
+          <button data-v="1">3년 안에 쓸 돈이에요</button>
+          <button data-v="2">5~10년쯤 뒤에요</button>
+          <button data-v="3">아주 나중에, 노후에요</button>
+        </div>
+      </div>
+
+      <div class="qgroup">
+        <div class="q">2. 어느 날 계좌가 -30%가 되어 있다면?</div>
+        <div class="btnrow" data-q="risk">
+          <button data-v="1">잠이 안 올 것 같아요</button>
+          <button data-v="2">속상하지만 버틸 수 있어요</button>
+          <button data-v="3">오히려 더 사고 싶어요</button>
+        </div>
+      </div>
+
+      <div class="qgroup">
+        <div class="q">3. 이 투자로 무엇을 바라나요?</div>
+        <div class="btnrow" data-q="goal">
+          <button data-v="cash">매달 들어오는 현금</button>
+          <button data-v="growth">시간이 걸려도 큰 성장</button>
+          <button data-v="safe">일단 원금을 지키는 것</button>
+        </div>
+      </div>
+
+      <div class="verdict" id="pickResult" style="--vc:var(--ink-soft)">
+        <div class="vh">RESULT</div>
+        <div class="vt">세 가지를 모두 골라주세요</div>
+        <p>고르는 순간 바로 아래에 결과가 나타납니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ══════════ 어디서 사나 ══════════ -->
+  <section id="where">
+    <div class="prod-head" style="--edge:var(--ink-soft)">
+      <span class="prod-tag">WHERE · 어디서 사고 파나</span>
+      <h2>사는 곳이 두 종류로 갈립니다</h2>
+      <p class="one">거래소에 상장돼서 <b>주식처럼 사는 것</b>과, 정해진 기간에 <b>청약해서 가입하는 것</b>.</p>
+    </div>
+
+    <div class="buy">
+      <div style="--edge:var(--etf)">
+        <h4>① 증권사 앱에서 종목처럼</h4>
+        <p><b>개별주식 · ETF · ETN · 커버드콜 ETF</b></p>
+        <ul>
+          <li>증권사 계좌(MTS/HTS)를 만들고 검색창에 이름이나 종목코드를 넣어 매수</li>
+          <li>평일 09:00~15:30 장중에 아무 때나 사고팔 수 있음</li>
+          <li>1주 단위, 몇천 원~몇만 원부터 가능</li>
+          <li>해외 상장 ETF는 <b>해외주식 거래</b> 신청 후 환전하거나 통합증거금 이용</li>
+          <li><b>ISA·연금저축·IRP 계좌</b>로 사면 세제 혜택 — 다만 계좌마다 담을 수 있는 상품에 제한이 있음</li>
+        </ul>
+      </div>
+      <div style="--edge:var(--els)">
+        <h4>② 청약 기간에 가입 신청</h4>
+        <p><b>ELS · DLS · ELB (그리고 ELT·ELF)</b></p>
+        <ul>
+          <li>증권사 홈페이지·앱의 <b>「ELS/DLS 청약」</b> 메뉴 또는 지점 창구</li>
+          <li>상품마다 <b>모집 기간이 정해져 있음</b> — 보통 며칠간만 열림</li>
+          <li>최소 가입금액이 있는 경우가 많음 (100만 원 단위 등)</li>
+          <li>은행 창구에서 파는 <b>ELT(신탁)·ELF(펀드)</b>는 같은 ELS를 포장만 바꾼 것</li>
+          <li>가입 전 <b>투자자 성향 진단</b>과 녹취·설명 절차를 반드시 거침</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>세금은 상품마다 다릅니다</h3>
+      <p>크게 나누면 이렇습니다. <b>국내 상장 주식</b>의 매매차익은 대주주가 아닌 한 과세되지 않고, 배당에는 15.4%가 붙습니다. <b>국내주식형 ETF</b>도 매매차익은 비과세, 분배금은 15.4%. 반면 <b>해외·채권·파생형 ETF, ETN, ELS</b>는 대체로 이익에 <b>배당소득세 15.4%</b>가 붙고, 금융소득이 연 2천만 원을 넘으면 <b>금융소득종합과세</b> 대상이 됩니다. <b>해외 상장 ETF</b>는 또 별도로 양도소득세 22%(연 250만 원 공제) 체계입니다.</p>
+      <p class="note" style="margin-top:16px;"><b>확인이 필요합니다.</b> 세법은 자주 바뀌고 계좌 종류(일반/ISA/연금)에 따라서도 달라집니다. 큰 금액을 넣기 전에는 반드시 <b>가입 시점의 상품 설명서와 증권사 안내</b>로 다시 확인하세요. 위 내용은 구조를 이해하기 위한 개괄입니다.</p>
+    </div>
+  </section>
+
+  <!-- ══════════ 체크리스트 ══════════ -->
+  <section id="checklist">
+    <div class="prod-head" style="--edge:var(--warn-ink)">
+      <span class="prod-tag">CHECKLIST · 사기 전에</span>
+      <h2>이 아홉 개에 다 답할 수 있을 때 사세요</h2>
+      <p class="one">하나라도 막히면, 아직 그 상품을 이해한 게 아닙니다. 눌러서 체크해보세요.</p>
+    </div>
+
+    <ul class="check" id="checkList">
+      <li><b>이걸 사면 나는 정확히 무엇의 주인이 되나?</b> 회사 조각인가, 주식 바구니인가, 아니면 누군가의 약속인가.</li>
+      <li><b>최악의 경우 얼마를 잃을 수 있나?</b> "-30%쯤"이 아니라 구조상 가능한 최대치를 숫자로.</li>
+      <li><b>내가 돈을 버는 조건이 무엇인가?</b> 올라야 버는지, 안 떨어지기만 하면 되는지, 횡보해야 유리한지.</li>
+      <li><b>중간에 팔아야 하면 어떻게 되나?</b> 자유롭게 팔리는지, 손실을 감수해야 하는지.</li>
+      <li><b>누가 망하면 내 돈이 위험해지나?</b> 아무도 없나, 운용사인가, 발행 증권사인가.</li>
+      <li><b>1년에 비용이 얼마나 나가나?</b> 총보수·수수료·세금을 합쳐서.</li>
+      <li><b>분배금(배당)이 어디서 나오는 돈인가?</b> 회사가 번 돈인지, 옵션 프리미엄인지, 내 원금인지.</li>
+      <li><b>이 돈을 언제 써야 하나?</b> 만기·상환 조건이 내 계획과 맞는지.</li>
+      <li><b>왜 하필 지금, 왜 하필 이걸 사려는가?</b> 누가 좋다고 해서라면 잠시 멈추세요.</li>
+    </ul>
+    <div class="checkcount" id="checkCount">0 / 9 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>마지막으로 한 가지만.</b> 이 다섯 상품 중 무엇이 좋고 나쁜지는 정해져 있지 않습니다. <b>내 상황과 맞느냐만 있을 뿐</b>입니다. 은퇴한 분에게 최적인 커버드콜이 30대에게는 성장을 갉아먹는 선택이 되고, 잘 아는 사람에게 좋은 개별주식이 모르는 사람에게는 도박이 됩니다.</p>
+      <p>그리고 반복해서 손실을 부르는 패턴은 상품 선택이 아니라 언제나 같은 곳에 있습니다 — <b>이해하지 못한 것을, 남의 말을 듣고, 감당 못 할 금액으로 사는 것.</b></p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 금융상품 도감<br>
+    <a href="index.html">← 문서 목록으로</a> · <a href="asset-strategy-guide.html">자산군별 접근법</a> · <a href="stock-company-basics.html">주식회사의 원리</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 모든 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.<br>
+    시뮬레이터의 숫자는 구조를 이해하기 위해 단순화한 예시이며 실제 상품의 수익률이 아닙니다.
+  </footer>
+
+</div>
+
+<script>
+/* ══════════ 읽기 모드 ══════════ */
+function setMode(m){
+  document.body.className = m;
+  document.getElementById('mSimple').classList.toggle('on', m === 'simple');
+  document.getElementById('mFull').classList.toggle('on', m === 'full');
+  document.getElementById('modeHint').textContent = (m === 'simple')
+    ? '비유와 그림 위주 — 아이와 함께 보기 좋아요'
+    : '구조·비용·세금까지 전부 표시합니다';
+}
+
+/* ══════════ 지도 ══════════ */
+var MAPTEXT = {
+  stock: ['개별주식 — 천장도 바닥도 없다',
+    '중간에 낀 사람이 아무도 없는 유일한 상품입니다. 회사가 크게 성장하면 수익에 한도가 없고, 회사에 사고가 나면 0이 될 수도 있습니다. <b>가장 단순하지만 가장 많은 공부를 요구합니다.</b>'],
+  etf: ['ETF — 덜 무섭고 덜 짜릿한 기본기',
+    '수백 개 회사를 한 번에 담아 개별 회사의 사고를 지워버립니다. 대신 대박도 함께 지워집니다. 실물 주식을 보관하고 있어 <b>운용사가 망해도 자산은 남는</b>, 이 목록에서 구조적으로 가장 튼튼한 상품입니다.'],
+  etn: ['ETN — 위치는 ETF 옆, 성격은 다른 물건',
+    '따라가는 대상은 ETF와 비슷하지만 <b>안에 실물이 없습니다.</b> 발행 증권사가 부실해지면 지수가 아무리 올라도 받을 곳이 없습니다. 그래서 위험 축이 오른쪽으로 밀려 있습니다.'],
+  cc: ['커버드콜 — 매달 받고 상단을 판다',
+    '주가가 크게 오를 권리를 팔아서 매달 현금을 받습니다. 그래서 <b>위쪽이 눌려 있습니다.</b> 횡보장에서 가장 강하고 급등장에서 가장 아쉽습니다. 하락은 받은 프리미엄만큼만 덜 아픕니다.'],
+  els: ['ELS — 오른쪽 아래, 가장 위험한 자리',
+    '수익은 쿠폰까지로 막혀 있는데(아래쪽) 손실은 원금 전체까지 열려 있습니다(오른쪽). <b>이익은 작게 여러 번, 손실은 크게 가끔</b>이라는 모양이라 성공 경험이 먼저 쌓이고 사고는 나중에 옵니다.']
+};
+document.querySelectorAll('.mapnode').forEach(function(n){
+  function open(){
+    document.querySelectorAll('.mapnode').forEach(function(x){ x.classList.remove('on'); });
+    n.classList.add('on');
+    var d = MAPTEXT[n.getAttribute('data-k')];
+    var box = document.getElementById('mapDetail');
+    box.querySelector('.mh').textContent = d[0];
+    box.querySelector('p').innerHTML = d[1];
+  }
+  n.addEventListener('click', open);
+  n.addEventListener('keydown', function(e){
+    if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
+  });
+});
+
+/* ══════════ 커버드콜 시뮬레이터 ══════════ */
+var CC = {
+  x0: 60, x1: 612, y0: 30, y1: 292,
+  vmin: -30, vmax: 30, rmin: -35, rmax: 30
+};
+function ccX(v){ return CC.x0 + (v - CC.vmin) / (CC.vmax - CC.vmin) * (CC.x1 - CC.x0); }
+function ccY(r){ return CC.y1 - (r - CC.rmin) / (CC.rmax - CC.rmin) * (CC.y1 - CC.y0); }
+
+function ccDraw(){
+  var move = parseFloat(document.getElementById('ccMove').value);
+  var prem = parseFloat(document.getElementById('ccPrem').value);
+  var cap  = 5 - prem;                      // 프리미엄을 더 받으면 상단 한도는 더 낮아진다
+
+  document.getElementById('ccMoveV').textContent = (move > 0 ? '+' : '') + move + '%';
+  document.getElementById('ccPremV').textContent = prem.toFixed(1) + '%';
+
+  // 기준선
+  document.getElementById('ccZeroY').setAttribute('y1', ccY(0));
+  document.getElementById('ccZeroY').setAttribute('y2', ccY(0));
+  document.getElementById('ccZeroX').setAttribute('x1', ccX(0));
+  document.getElementById('ccZeroX').setAttribute('x2', ccX(0));
+
+  // 주식 선
+  document.getElementById('ccStockLine').setAttribute('d',
+    'M' + ccX(CC.vmin) + ',' + ccY(CC.vmin) + ' L' + ccX(CC.vmax) + ',' + ccY(CC.vmax));
+
+  // 커버드콜 선: 캡까지는 프리미엄만큼 위, 그 뒤로는 수평
+  var flat = cap + prem;
+  document.getElementById('ccCcLine').setAttribute('d',
+    'M' + ccX(CC.vmin) + ',' + ccY(CC.vmin + prem) +
+    ' L' + ccX(cap) + ',' + ccY(flat) +
+    ' L' + ccX(CC.vmax) + ',' + ccY(flat));
+
+  // 캡 표시
+  var m = document.getElementById('ccCapMark');
+  m.setAttribute('x1', ccX(cap)); m.setAttribute('x2', ccX(cap));
+  m.setAttribute('y1', ccY(flat)); m.setAttribute('y2', CC.y1);
+  var cl = document.getElementById('ccCapLbl');
+  cl.setAttribute('x', ccX(cap) + 62);
+  cl.setAttribute('y', ccY(flat) - 10);
+  cl.textContent = '여기서부터 더 못 법니다';
+
+  // 값
+  var rStock = move;
+  var rCc = Math.min(move, cap) + prem;
+  var diff = rCc - rStock;
+
+  var cur = document.getElementById('ccCursor');
+  cur.setAttribute('x1', ccX(move)); cur.setAttribute('x2', ccX(move));
+  cur.setAttribute('y1', CC.y0); cur.setAttribute('y2', CC.y1);
+  var ds = document.getElementById('ccDotStock');
+  ds.setAttribute('cx', ccX(move)); ds.setAttribute('cy', ccY(rStock));
+  var dc = document.getElementById('ccDotCc');
+  dc.setAttribute('cx', ccX(move)); dc.setAttribute('cy', ccY(rCc));
+
+  function fmt(v){ return (v > 0 ? '+' : '') + v.toFixed(1) + '%'; }
+  document.getElementById('ccOutStock').textContent = fmt(rStock);
+  document.getElementById('ccOutCc').textContent = fmt(rCc);
+  document.getElementById('ccOutDiff').textContent = (diff > 0 ? '+' : '') + diff.toFixed(1) + '%p';
+  document.getElementById('ccOutDiff').style.color = diff >= 0 ? '#4C7A6D' : '#8E4B3A';
+  document.getElementById('ccOutNote').textContent = diff >= 0 ? '커버드콜이 유리' : '커버드콜이 불리';
+
+  // 해설
+  var v = document.getElementById('ccVerdict');
+  var t, p;
+  if(move > cap + 6){
+    t = '이럴 때 가장 아깝습니다 — 급등장';
+    p = '주가는 <b>' + fmt(move) + '</b> 올랐는데 내 수익은 <b>' + fmt(rCc) + '</b>에서 멈췄습니다. 차이 <b>' + Math.abs(diff).toFixed(1) + '%p</b>가 매달 받은 프리미엄의 대가입니다. 상승장이 몇 년 이어지면 이 차이가 복리로 벌어집니다.';
+  } else if(move > cap){
+    t = '상단 한도를 막 넘어섰습니다';
+    p = '주가가 상단 한도(<b>+' + cap.toFixed(1) + '%</b>)를 넘은 순간부터 초록 선은 눕습니다. 여기서부터는 주가가 올라도 내 수익은 <b>' + fmt(flat) + '</b>에 고정됩니다.';
+  } else if(move >= -1){
+    t = '커버드콜이 가장 빛나는 구간';
+    p = '주가가 제자리이거나 조금만 올랐습니다. 그냥 주식은 <b>' + fmt(rStock) + '</b>인데 커버드콜은 프리미엄 덕에 <b>' + fmt(rCc) + '</b>입니다. <b>시장이 몇 년째 지지부진할 때</b> 이 차이가 쌓입니다.';
+  } else if(move > -12){
+    t = '완충은 되지만, 딱 받은 만큼만';
+    p = '주가가 <b>' + fmt(move) + '</b> 빠졌는데 커버드콜은 <b>' + fmt(rCc) + '</b>입니다. 프리미엄 <b>' + prem.toFixed(1) + '%</b>만큼만 덜 아픕니다. <b>커버드콜은 하락 방어 상품이 아닙니다.</b>';
+  } else {
+    t = '급락장 — 커버드콜도 같이 무너집니다';
+    p = '주가가 <b>' + fmt(move) + '</b>인데 커버드콜은 <b>' + fmt(rCc) + '</b>. 거의 같이 빠집니다. 매달 분배금은 계속 들어오는데 <b>계좌 잔고는 줄어드는</b> 상황이 바로 이것입니다.';
+  }
+  v.querySelector('.vt').innerHTML = t;
+  v.querySelector('p').innerHTML = p;
+}
+document.getElementById('ccMove').addEventListener('input', ccDraw);
+document.getElementById('ccPrem').addEventListener('input', ccDraw);
+
+/* ══════════ ELS 시뮬레이터 ══════════ */
+var ELS = {
+  x0: 60, x1: 612, y0: 30, y1: 300,
+  pmin: 35, pmax: 115,
+  barriers: [
+    { m: 6,  lv: 90 }, { m: 12, lv: 90 }, { m: 18, lv: 85 },
+    { m: 24, lv: 85 }, { m: 30, lv: 80 }, { m: 36, lv: 75 }
+  ]
+};
+function elsX(m){ return ELS.x0 + m / 36 * (ELS.x1 - ELS.x0); }
+function elsY(p){ return ELS.y1 - (p - ELS.pmin) / (ELS.pmax - ELS.pmin) * (ELS.y1 - ELS.y0); }
+
+var ELS_SCEN = [
+  {
+    path: [100, 103, 99, 101, 97, 96, 95],
+    result: 4.0, dur: '6개월', ki: '없음',
+    vh: '시나리오 ①',
+    t: '가장 흔한 결말 — 6개월 만에 조용히 끝납니다',
+    p: '6개월째 평가일에 기초자산이 <b>95</b>(배리어 90 이상)라서 조기상환됐습니다. 원금에 6개월치 쿠폰 <b>4%</b>를 더해 돌려받고 계약 종료. <b>ELS의 대부분은 이렇게 끝나고, 그래서 사람들은 이 상품을 안전하다고 기억하게 됩니다.</b>'
+  },
+  {
+    path: [100,98,95,90,86,88,84,80,76,70,66,62,60,63,66,64,61,58,60,63,67,64,68,71,69,72,70,74,73,71,74,76,75,77,78,80,79],
+    result: 24.0, dur: '3년 (만기)', ki: '없음',
+    vh: '시나리오 ②',
+    t: '3년 내내 조마조마했지만 결국 다 받았습니다',
+    p: '한때 <b>58</b>까지 떨어졌지만 낙인선(50)은 건드리지 않았고, 만기에 <b>79</b>로 마지막 배리어(75)를 넘겨 <b>+24%</b> 전액 수령. 결과는 좋지만 짚어야 할 게 있습니다 — <b>3년 동안 돈이 묶인 채로 마음을 졸였고, 중간에 팔았다면 손해였습니다.</b>'
+  },
+  {
+    path: [100,96,92,88,80,74,70,66,60,55,52,48,44,46,43,47,50,52,55,53,57,56,58,55,59,57,60,58,61,59,62,60,63,61,64,63,62],
+    result: -38.0, dur: '3년 (만기)', ki: '터치 (최저 43)',
+    vh: '시나리오 ③',
+    t: '한 번의 사고가 아홉 번의 이익을 지웁니다',
+    p: '2년째에 <b>43</b>까지 떨어지며 낙인선(50)을 건드렸고, 만기에도 <b>62</b>로 배리어(75)를 회복하지 못했습니다. 결과는 쿠폰 0원에 <b>원금 -38%</b>. 1억이 <b>6,200만 원</b>이 되어 돌아옵니다. 시나리오 ①을 <b>아홉 번 성공해도(+36%) 이 한 번을 메우지 못합니다.</b>'
+  }
+];
+
+function elsSetup(){
+  var bg = document.getElementById('elsBarriers');
+  var xl = document.getElementById('elsXlabels');
+  var bs = '', xs = '';
+  ELS.barriers.forEach(function(b){
+    var x = elsX(b.m), y = elsY(b.lv);
+    bs += '<line x1="' + (x - 22) + '" y1="' + y + '" x2="' + (x + 22) + '" y2="' + y +
+          '" stroke="#5B5648" stroke-width="1.6" opacity=".55"/>';
+    bs += '<text class="axt" x="' + x + '" y="' + (y - 7) + '" text-anchor="middle">' + b.lv + '</text>';
+    xs += '<line class="gridl" x1="' + x + '" y1="' + ELS.y0 + '" x2="' + x + '" y2="' + ELS.y1 + '" opacity=".5"/>';
+    xs += '<text class="axt" x="' + x + '" y="' + (ELS.y1 + 18) + '" text-anchor="middle">' + b.m + '</text>';
+  });
+  bs += '<text class="lbl" x="' + (elsX(6) - 22) + '" y="' + (elsY(90) - 26) +
+        '" fill="#5B5648">조기상환 배리어 — 6개월마다 낮아집니다</text>';
+  bg.innerHTML = bs;
+  xl.innerHTML = xs;
+}
+
+function runEls(i){
+  ['elsB1','elsB2','elsB3'].forEach(function(id, n){
+    document.getElementById(id).classList.toggle('on', n === i);
+  });
+
+  var s = ELS_SCEN[i];
+  var d = '';
+  s.path.forEach(function(p, m){
+    d += (m === 0 ? 'M' : ' L') + elsX(m) + ',' + elsY(p);
+  });
+
+  var el = document.getElementById('elsPath');
+  el.setAttribute('d', d);
+  el.setAttribute('stroke', i === 2 ? '#8E4B3A' : '#9E7A2E');
+
+  var len = el.getTotalLength();
+  el.style.transition = 'none';
+  el.style.strokeDasharray = len + ' ' + len;
+  el.style.strokeDashoffset = len;
+  el.getBoundingClientRect();                       // 리플로우 강제
+  el.style.transition = 'stroke-dashoffset 1.1s ease-out';
+  el.style.strokeDashoffset = '0';
+
+  var last = s.path.length - 1;
+  var dot = document.getElementById('elsEnd');
+  var lbl = document.getElementById('elsEndLbl');
+  dot.setAttribute('cx', elsX(last)); dot.setAttribute('cy', elsY(s.path[last]));
+  dot.setAttribute('fill', i === 2 ? '#8E4B3A' : '#9E7A2E');
+  lbl.setAttribute('x', elsX(last) - (last > 30 ? 34 : 0));
+  lbl.setAttribute('y', elsY(s.path[last]) - 14);
+  lbl.setAttribute('fill', i === 2 ? '#8E4B3A' : '#9E7A2E');
+  lbl.textContent = i === 0 ? '조기상환' : (i === 1 ? '만기상환' : '원금 손실');
+  dot.style.transition = lbl.style.transition = 'opacity .3s ease .9s';
+  dot.style.opacity = '0'; lbl.style.opacity = '0';
+  setTimeout(function(){ dot.style.opacity = '1'; lbl.style.opacity = '1'; }, 20);
+
+  var out = document.getElementById('elsOut');
+  out.textContent = (s.result > 0 ? '+' : '') + s.result.toFixed(1) + '%';
+  out.style.color = s.result >= 0 ? '#4C7A6D' : '#8E4B3A';
+  document.getElementById('elsDur').textContent = s.dur;
+  var ki = document.getElementById('elsKi');
+  ki.textContent = s.ki;
+  ki.style.color = s.ki === '없음' ? '#5B5648' : '#8E4B3A';
+
+  var v = document.getElementById('elsVerdict');
+  v.querySelector('.vh').textContent = s.vh;
+  v.querySelector('.vt').innerHTML = s.t;
+  v.querySelector('p').innerHTML = s.p;
+  v.style.setProperty('--vc', i === 2 ? '#8E4B3A' : '#9E7A2E');
+}
+
+/* ══════════ 상황별 고르기 ══════════ */
+var PICK = { horizon: null, risk: null, goal: null };
+
+function decide(a, b, c){
+  if(c === 'safe' || a === 1){
+    return ['#8E4B3A', '지금 이 돈은 「투자할 자리」가 아닙니다',
+      '3년 안에 쓸 돈이거나 원금을 지키는 게 최우선이라면, 이 문서의 다섯 상품 중 맞는 것은 <b>없습니다.</b> 전부 원금 손실이 가능하고 예금자보호도 안 됩니다. 예금·적금·파킹통장·CMA가 맞는 자리입니다.',
+      '특히 <b>ELS를 조심하세요.</b> "원금 손실 확률이 낮다"는 설명 때문에 예금 대안처럼 팔리지만, 사고가 나면 원금의 절반 이상을 잃을 수 있는 상품입니다.'];
+  }
+  if(c === 'cash'){
+    if(b === 1){
+      return ['#4C7A6D', '현금흐름은 원하지만 흔들림에는 약한 경우',
+        '<b>배당 ETF나 커버드콜 ETF를 아주 작게 시작</b>해보고, 실제로 계좌가 빠질 때 내 마음이 어떤지부터 확인하세요. 매달 분배금이 들어와도 <b>원금이 줄어드는 국면</b>이 반드시 옵니다. 그때 견딜 수 있는지가 진짜 시험입니다.',
+        '피할 것 — 높은 분배율만 보고 고르는 것. 연 15% 분배율이 연 15% 수익률이 아닙니다.'];
+    }
+    return ['#4C7A6D', '커버드콜이 실제로 쓸모 있는 드문 경우',
+      '매달 들어오는 현금이 목적이고 큰 하락도 버틸 수 있다면, <b>커버드콜 ETF를 일부에 배치</b>하는 게 이치에 맞습니다. 다만 전부를 여기 넣지는 마세요. 상단이 잘리기 때문에 <b>지수 ETF를 함께</b> 들고 있어야 시장이 크게 오를 때 따라갈 수 있습니다.',
+      '반드시 볼 것 — 분배율이 아니라 <b>총수익(가격 + 분배금)</b>. 그리고 총보수.'];
+  }
+  if(b === 1){
+    return ['#3A5A8E', '성장은 원하지만 아직 흔들림이 무서운 경우',
+      '<b>지수 ETF를 매달 조금씩 자동으로 사는 것(적립식)</b>부터 시작하세요. 금액을 작게 두고 <b>가격을 자주 보지 않는 것</b>이 핵심입니다. 한 번에 목돈을 넣는 것보다, 떨어질 때도 계속 사는 습관을 만드는 게 먼저입니다.',
+      '아직 이르다 — 개별주식, ETN, ELS. 특히 ELS는 "안 떨어지기만 하면 된다"는 말이 편안하게 들려서 위험합니다.'];
+  }
+  if(a === 3 && b === 3){
+    return ['#3A5A8E', '가장 공격적으로 가도 되는 조건',
+      '기간도 길고 하락도 견딜 수 있다면 <b>지수 ETF를 중심(코어)에 두고, 잘 아는 개별주식을 위성으로</b> 붙이는 구성이 자연스럽습니다. 개별주식 비중은 <b>전부 잃어도 계획이 안 흔들리는 선</b>까지만.',
+      '이 조건에서 커버드콜은 오히려 손해입니다. 매달 현금이 필요하지 않은데 <b>장기 상승의 상단을 팔고 있는</b> 셈이기 때문입니다.'];
+  }
+  return ['#3A5A8E', '지수 ETF를 중심에 두는 게 무난합니다',
+    '기간이 어느 정도 있고 하락도 버틸 수 있다면, <b>지수 ETF를 기본으로 삼고</b> 여유가 생길 때 관심 있는 개별주식을 소액 얹는 순서가 좋습니다. 상품을 늘리는 것보다 <b>꾸준히 넣는 기간을 늘리는 것</b>이 훨씬 큰 차이를 만듭니다.',
+    '서두르지 않아도 되는 것 — ETN과 ELS. 둘 다 "증권사가 안 망한다"가 전제인 상품이고, 지금 단계에서 굳이 그 위험을 추가할 이유가 없습니다.'];
+}
+
+document.querySelectorAll('.btnrow[data-q]').forEach(function(row){
+  var q = row.getAttribute('data-q');
+  row.querySelectorAll('button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      row.querySelectorAll('button').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      var v = btn.getAttribute('data-v');
+      PICK[q] = (q === 'goal') ? v : parseInt(v, 10);
+      if(PICK.horizon && PICK.risk && PICK.goal){
+        var r = decide(PICK.horizon, PICK.risk, PICK.goal);
+        var box = document.getElementById('pickResult');
+        box.style.setProperty('--vc', r[0]);
+        box.querySelector('.vh').textContent = 'RESULT';
+        box.querySelector('.vt').innerHTML = r[1];
+        box.querySelector('p').innerHTML = r[2] + '<br><br>' + r[3];
+      }
+    });
+  });
+});
+
+/* ══════════ 체크리스트 ══════════ */
+var checkItems = document.querySelectorAll('#checkList li');
+checkItems.forEach(function(li){
+  li.addEventListener('click', function(){
+    li.classList.toggle('done');
+    var n = document.querySelectorAll('#checkList li.done').length;
+    var el = document.getElementById('checkCount');
+    el.textContent = n + ' / ' + checkItems.length + ' 확인함';
+    if(n === checkItems.length){
+      el.textContent = '9 / 9 — 이제 사도 됩니다. 금액만 조심하세요.';
+    }
+  });
+});
+
+/* ══════════ 초기화 ══════════ */
+ccDraw();
+elsSetup();
+runEls(0);
+</script>
+</body>
+</html>
