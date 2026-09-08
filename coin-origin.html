@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코인은 왜 태어났는가 — 2008년과 이중지불 문제</title>
+<meta name="description" content="비트코인이 나온 이유를 화폐의 역사와 2008년 금융위기, 그리고 「이중지불 문제」로 설명합니다. 중앙 장부와 분산 장부의 차이를 직접 움직여보는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --coin:#B8860B;
+    --bank:#3A5A8E;
+    --net:#4C7A6D;
+    --bad:#8E4B3A;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+    --neutral:#5B5648;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0 8px;}
+  .pc > div{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 18px;
+  }
+  .pc h5{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:500;
+    margin:0 0 10px;
+    letter-spacing:.04em;
+  }
+  .pc .good h5{color:#3F6B52;}
+  .pc .bad h5{color:var(--bad);}
+  .pc ul{margin:0;padding-left:16px;}
+  .pc li{font-size:14px;color:var(--ink-soft);margin-bottom:8px;line-height:1.62;}
+  .pc li:last-child{margin-bottom:0;}
+  .pc li b{color:var(--ink);font-weight:600;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:660px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:-14px;margin-bottom:24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  .quote{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--coin);
+    border-radius:3px;
+    padding:18px 20px;
+    margin:22px 0;
+  }
+  .quote .qt{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px;
+    color:var(--ink);
+    line-height:1.75;
+    margin:0 0 8px;
+    max-width:none;
+  }
+  .quote .qs{font-size:12.5px;color:var(--ink-faint);font-family:'IBM Plex Mono',monospace;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .pc{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">코인 01 · 기원 · 투자 공부 노트</div>
+    <h1>코인은 왜 태어났는가</h1>
+    <p class="lede">비트코인은 <b>돈을 벌려고 만들어진 게 아닙니다.</b> 「은행을 거치지 않고 인터넷으로 돈을 보낼 수 있을까」라는 <b>수십 년 묵은 기술 문제</b>에 대한 답으로 나왔습니다. 그 문제가 무엇이었고 왜 그렇게 어려웠는지를 알면, 지금 코인 시장에서 벌어지는 일들의 <b>절반은 저절로 이해됩니다.</b></p>
+    <div class="callout">
+      <b>이 트랙에 대해.</b> 이 문서는 <b>기술과 역사를 이해하기 위한 자료</b>이며 코인을 사라는 권유가 아닙니다. 기술은 진지하게 설명하되 <b>실패 사례를 성공 사례와 같은 무게로</b> 다룹니다. 투자에 관한 이야기는 <b>이 트랙의 마지막 편</b>에서 따로 합니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="기술적 배경과 역사까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#money">1. 돈이란 무엇인가</a>
+    <a href="#problem">2. 이중지불 문제</a>
+    <a href="#2008">3. 2008년</a>
+    <a href="#answer">4. 사토시의 답</a>
+    <a href="#genesis">5. 제네시스 블록</a>
+    <a href="#trust">6. 신뢰의 이동</a>
+    <a href="#isit">7. 그래서 돈인가</a>
+  </nav>
+
+  <!-- ══════════ 1. 돈이란 ══════════ -->
+  <section id="money">
+    <div class="prod-head" style="--edge:var(--coin)">
+      <span class="prod-tag">01 · 출발점</span>
+      <h2>돈은 원래 「모두가 믿기로 한 약속」입니다</h2>
+      <p class="one">지폐가 종잇조각인데도 물건과 바꿀 수 있는 이유부터 짚고 시작합니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>천 원짜리 지폐를 봐. 그냥 <b>종이 한 장</b>이야. 그런데 이걸 문방구에 내면 지우개를 줘. 왜 그럴까?</p>
+      <p>문방구 아저씨가 그 종이를 좋아해서가 아니야. <b>「다른 사람들도 이걸 받아줄 것」이라고 믿기</b> 때문이야. 그리고 그 믿음의 뒤에는 <b>나라</b>가 있어. 나라가 "이건 돈이야"라고 정해줬거든.</p>
+      <p>그러니까 돈은 <b>물건이 아니라 약속</b>이야. 옛날에는 조개껍데기가, 그다음엔 금이, 지금은 종이와 숫자가 그 약속을 맡고 있어. <b>중요한 건 재료가 아니라 「다 같이 믿느냐」야.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TIMELINE · 돈이 거쳐온 모습들</div>
+      <p class="labsub">눌러보세요. 매번 <b>「무엇을 믿었는가」</b>가 달라졌습니다.</p>
+
+      <svg viewBox="0 0 640 150" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="화폐의 형태 변화 연표">
+        <line class="axis" x1="60" y1="90" x2="600" y2="90"/>
+        <g id="mnNodes"></g>
+      </svg>
+
+      <div class="verdict" id="mnVerdict" style="--vc:var(--coin)">
+        <div class="vh">화폐의 역사</div>
+        <div class="vt">점을 눌러보세요</div>
+        <p>각 단계에서 <b>사람들이 무엇을 믿고 그것을 돈으로 받았는지</b>가 나옵니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「신용화폐」라는 이름</h3>
+      <p>지금 우리가 쓰는 돈은 <b>금과 바꿔주지 않습니다.</b> 1971년 미국이 달러를 금으로 바꿔주던 약속을 중단한 이후, 세계의 돈은 <b>정부와 중앙은행에 대한 신뢰</b>만으로 굴러갑니다. 이걸 <b>신용화폐(fiat money)</b>라고 부릅니다.</p>
+      <p>이 방식에는 큰 장점이 있습니다. 경제가 위기에 빠졌을 때 <b>돈을 더 찍어 대응할 수 있다</b>는 것입니다. 금에 묶여 있으면 그게 불가능합니다.</p>
+      <p>동시에 이것이 약점이기도 합니다. <b>얼마나 찍을지를 소수가 결정하고</b>, 그 결정이 잘못되면 <b>돈을 들고 있던 모든 사람이 대가를 치릅니다.</b> 이 긴장이 다음 장부터 이어지는 이야기의 배경입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2. 이중지불 ══════════ -->
+  <section id="problem">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">02 · 근본 난제</span>
+      <h2>이중지불 문제 — 디지털 돈이 30년간 막혀 있던 이유</h2>
+      <p class="one">이 문제 하나가 <b>왜 인터넷 시대에도 은행이 필요했는지</b>를 전부 설명합니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>친구에게 <b>사진 한 장</b>을 보내면 어떻게 될까? 내 폰에도 남고 친구 폰에도 생겨. <b>복사</b>가 되니까.</p>
+      <p>그럼 <b>돈을 그렇게 보내면</b>? 큰일 나지. 천 원을 친구에게 보냈는데 <b>내 폰에도 천 원이 그대로 남아 있으면</b>, 그 천 원으로 또 다른 친구한테 보낼 수 있잖아. <b>같은 돈을 두 번 쓰는 거야.</b> 이걸 <b>이중지불</b>이라고 해.</p>
+      <p>그래서 지금까지는 <b>은행이 필요했어.</b> 은행이 장부를 하나만 갖고 있으면서 "네 돈은 이제 천 원 줄었어"라고 <b>기록해주니까</b> 복사가 안 되는 거야. <b>은행이 없으면 디지털 돈은 성립하지 않았어.</b> 아래에서 직접 해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SIMULATOR · 같은 돈을 두 번 써보기</div>
+      <p class="labsub">아빠가 <b>1,000원</b>을 갖고 있습니다. 이걸 <b>동시에 두 사람</b>에게 보내려고 합니다. 각 방식에서 어떻게 되는지 보세요.</p>
+
+      <div class="btnrow" id="dsMode">
+        <button data-v="0" class="on">① 장부가 없다면</button>
+        <button data-v="1">② 은행이 있다면</button>
+        <button data-v="2">③ 모두가 장부를 갖는다면</button>
+      </div>
+
+      <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="이중지불 시도가 각 방식에서 어떻게 처리되는지 보여주는 그림">
+        <g id="dsScene"></g>
+        <defs>
+          <marker id="dsA" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+            <path d="M0,0 L6,3 L0,6 Z" fill="#8A8474"/>
+          </marker>
+        </defs>
+      </svg>
+
+      <div class="readout">
+        <div><span class="rk">보낸 돈</span><span class="rv" id="dsSent">2,000원</span><span class="rn">두 번 시도</span></div>
+        <div><span class="rk">실제로 있던 돈</span><span class="rv">1,000원</span></div>
+        <div><span class="rk">결과</span><span class="rv" id="dsResult" style="font-size:16px">—</span></div>
+      </div>
+
+      <div class="verdict" id="dsVerdict" style="--vc:var(--bad)">
+        <div class="vh">시나리오</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>비트코인 이전에도 시도는 많았습니다</h3>
+      <p>디지털 화폐를 만들려는 시도는 <b>1980~90년대부터</b> 있었습니다. 익명 전자화폐를 구현한 <b>디지캐시</b>, 작업증명의 원형이 된 <b>해시캐시</b>, 그리고 <b>비머니</b>와 <b>비트골드</b> 같은 설계안들이 있었습니다.</p>
+      <p>이들이 남긴 아이디어는 나중에 비트코인에 거의 그대로 들어갔습니다. 그런데 왜 그때는 성공하지 못했을까요? <b>「누가 장부를 관리할 것인가」에 대한 답이 없었기 때문</b>입니다. 결국 <b>중앙 서버가 필요했고</b>, 그 서버를 운영하던 회사가 망하면 화폐도 함께 사라졌습니다.</p>
+      <p>즉 비트코인이 새로 만든 것은 <b>암호 기술이 아니라 「관리자 없이 순서를 합의하는 방법」</b>이었습니다. 그게 다음 장의 주제입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3. 2008 ══════════ -->
+  <section id="2008">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">03 · 시대 배경</span>
+      <h2>하필 2008년이었던 이유</h2>
+      <p class="one">기술은 전부터 있었습니다. <b>필요하다는 감각</b>이 그때 생겼습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>2008년에 <b>아주 큰 은행들이 무너졌어.</b> 사람들이 "은행에 돈을 맡기면 안전하다"고 믿고 있었는데, 그 은행들이 위험한 일을 하다가 망한 거야.</p>
+      <p>그런데 더 화가 나는 일이 있었어. <b>망한 은행을 나라가 국민 세금으로 구해줬거든.</b> 잘못은 은행이 했는데 <b>돈은 모두가 나눠 낸</b> 셈이야.</p>
+      <p>그때 어떤 사람이 이런 생각을 했어. <b>"믿어야만 굴러가는 시스템 말고, 안 믿어도 되는 걸 만들 수는 없을까?"</b> 그게 비트코인의 시작이야.</p>
+    </div>
+
+    <div class="deep">
+      <h3>2008년 10월, 백서 한 편</h3>
+      <p><b>사토시 나카모토</b>라는 이름으로 <b>「비트코인: 개인 간 전자화폐 시스템」</b>이라는 아홉 쪽짜리 문서가 인터넷의 암호학 메일링 리스트에 올라왔습니다. 리먼브라더스가 파산한 <b>한 달 남짓 뒤</b>였습니다.</p>
+      <p>문서의 첫 문장이 문제의식을 그대로 담고 있습니다 — <b>「금융기관을 신뢰하는 제3자로 두지 않고 당사자끼리 직접 보내는 전자화폐」</b>를 만들겠다는 것이었습니다.</p>
+      <p><b>사토시 나카모토가 누구인지는 지금도 모릅니다.</b> 개인인지 집단인지도 확실하지 않고, 2010년 말 이후 자취를 감췄습니다. 초기에 채굴했을 것으로 추정되는 비트코인은 <b>지금까지 한 번도 움직이지 않았습니다.</b></p>
+
+      <h3>「탈중앙화」라는 말의 원래 뜻</h3>
+      <p>지금은 마케팅 용어처럼 쓰이지만, 원래는 <b>매우 구체적인 기술 목표</b>였습니다. <b>「특정 회사나 기관이 멈춰도 시스템은 계속 돌아가는가」</b>입니다.</p>
+      <p>디지캐시가 망했을 때 그 화폐도 함께 사라졌습니다. 비트코인은 <b>그런 일이 구조적으로 불가능하도록</b> 설계됐습니다 — 관리자가 없으니 망할 회사도 없습니다. 이게 장점이자, 동시에 <b>「문제가 생겨도 되돌려줄 사람이 없다」</b>는 단점이기도 합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4. 사토시의 답 ══════════ -->
+  <section id="answer">
+    <div class="prod-head" style="--edge:var(--net)">
+      <span class="prod-tag">04 · 해법</span>
+      <h2>답은 「장부를 모두가 갖는 것」이었습니다</h2>
+      <p class="one">그런데 여기서 <b>진짜 어려운 문제</b>가 시작됩니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>은행이 장부를 갖고 있는 게 문제라면, <b>반 아이들 전부가 똑같은 장부를 한 권씩 갖고 있으면</b> 어떨까? 누가 누구한테 얼마를 줬는지 <b>모두가 같이 적는</b> 거야.</p>
+      <p>그러면 아빠가 같은 천 원을 두 번 쓰려고 해도 <b>서른 명이 다 보고 있으니까</b> 안 통해. 은행이 없어도 되지!</p>
+      <p>그런데 새로운 문제가 생겨. <b>서른 명이 각자 적다 보면 순서가 달라져.</b> 누구는 A를 먼저 적고 누구는 B를 먼저 적었어. 그럼 <b>어느 장부가 진짜야?</b></p>
+      <p>더 나쁜 건 <b>거짓말하는 사람</b>이 있을 수 있다는 거야. 자기 장부에 "나는 백만 원 있음"이라고 적어버리면? <b>이 두 문제를 푸는 게 진짜 어려운 부분</b>이었어.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COMPARE · 장부를 누가 갖느냐의 차이</div>
+      <p class="labsub">카드를 눌러 각 방식의 장단점을 확인하세요.</p>
+
+      <div class="grid3" id="ldCards">
+        <div class="minicard on" data-v="0" style="--edge:var(--bank)">
+          <div class="mt">방식 ①</div>
+          <div class="mv" style="font-size:15px">중앙 장부</div>
+          <div class="mn">은행이 한 권을 관리</div>
+        </div>
+        <div class="minicard" data-v="1" style="--edge:var(--net)">
+          <div class="mt">방식 ②</div>
+          <div class="mv" style="font-size:15px">분산 장부</div>
+          <div class="mn">모두가 같은 장부를 보관</div>
+        </div>
+        <div class="minicard" data-v="2" style="--edge:var(--coin)">
+          <div class="mt">남은 문제</div>
+          <div class="mv" style="font-size:15px">순서와 거짓말</div>
+          <div class="mn">누구 장부가 진짜인가</div>
+        </div>
+      </div>
+
+      <div class="verdict" id="ldVerdict" style="--vc:var(--bank)">
+        <div class="vh">방식 ①</div>
+        <div class="vt">중앙 장부 — 지금 우리가 쓰는 방식</div>
+        <p>은행이 장부 한 권을 관리합니다. <b>빠르고 싸고 되돌릴 수 있습니다.</b></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>사토시가 푼 것은 「합의」 문제였습니다</h3>
+      <p>여러 참여자가 <b>관리자 없이 같은 결론에 도달하는 방법</b>은 컴퓨터과학에서 오래된 난제였습니다. 참여자 중 일부가 <b>고장 나거나 거짓말을 할 수 있는 상황</b>에서 어떻게 하나의 진실에 합의할 것인가 — 흔히 <b>비잔틴 장군 문제</b>라고 불립니다.</p>
+      <p>사토시의 답은 우아하면서 이상했습니다. <b>「장부에 새 페이지를 붙이려면 값비싼 계산을 먼저 해야 한다」</b>는 규칙을 두고, <b>「가장 많은 계산이 쌓인 장부를 진짜로 친다」</b>고 정한 것입니다.</p>
+      <p>이렇게 하면 거짓말을 하려는 사람은 <b>나머지 전부보다 더 많은 계산을 해야</b> 합니다. 그건 엄청나게 비쌉니다. <b>「정직한 게 이득이 되도록 경제적 유인을 설계한 것」</b>이 핵심이었습니다.</p>
+      <p class="plain">이 구조가 <b>작업증명(Proof of Work)</b>이고, 여기서 「채굴」이 나옵니다. 어떻게 굴러가는지는 <b>02편(블록체인)</b>과 <b>03편(채굴)</b>에서 자세히 봅니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5. 제네시스 ══════════ -->
+  <section id="genesis">
+    <div class="prod-head" style="--edge:var(--coin)">
+      <span class="prod-tag">05 · 첫 블록</span>
+      <h2>2009년 1월 3일, 첫 장부에 남긴 문장</h2>
+      <p class="one">비트코인의 <b>첫 번째 블록</b>에는 지울 수 없는 메시지가 하나 적혀 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>사토시는 <b>맨 첫 장</b>에 그날 신문 제목을 적어놨어. <b>"재무장관, 은행에 두 번째 구제금융을 줄지 결정 직전"</b>이라는 기사였지.</p>
+      <p>왜 그랬을까? 두 가지 이유가 있어. 하나는 <b>"이 장부는 이 날짜 이후에 만들어졌다"</b>는 걸 증명하려고. 신문 제목은 미리 알 수 없으니까 <b>날짜 도장</b>이 되는 거야.</p>
+      <p>다른 하나는 <b>메시지</b>야. "은행이 또 구제금융을 받는 이런 세상 때문에 내가 이걸 만들었다"고 <b>첫 장에 못 박아 둔</b> 거지. 그리고 이 문장은 <b>지금까지 단 한 번도 지워지지 않았어.</b></p>
+    </div>
+
+    <div class="quote">
+      <p class="qt">The Times 03/Jan/2009 Chancellor on brink of second bailout for banks</p>
+      <div class="qs">비트코인 제네시스 블록에 기록된 문장 — 2009년 1월 3일자 더 타임스 1면 기사 제목</div>
+    </div>
+
+    <div class="deep">
+      <h3>초기 몇 년의 풍경</h3>
+      <p>처음에는 <b>거의 아무도 관심이 없었습니다.</b> 몇몇 개발자들이 취미로 채굴하고 서로 보내보는 정도였습니다. 값도 없었습니다 — 애초에 사고파는 곳이 없었으니까요.</p>
+      <p>2010년에 한 개발자가 <b>비트코인 1만 개로 피자 두 판</b>을 주문한 일이 있었습니다. 지금은 「가장 비싼 피자」로 회자되지만, 당시로서는 <b>「이게 실제로 물건과 교환될 수 있다」는 것을 처음 증명한 사건</b>이었습니다.</p>
+
+      <h3>백서에 없던 것들</h3>
+      <p>지금 코인 시장에서 화제인 것들 중 상당수는 <b>백서에 전혀 없었습니다.</b> 거래소도, 시세도, ICO도, NFT도, 스테이블코인도, 레버리지 선물도 없었습니다.</p>
+      <p>백서에 있던 것은 <b>「관리자 없이 돈을 보내는 방법」</b> 하나뿐입니다. 나머지는 <b>이후 사람들이 그 위에 얹은 것</b>이고, 그중에는 원래 목적과 정반대인 것도 많습니다. <b>「사토시의 뜻」을 근거로 무언가를 주장하는 이야기를 만나면 이 점을 기억할 만합니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6. 신뢰의 이동 ══════════ -->
+  <section id="trust">
+    <div class="prod-head" style="--edge:var(--net)">
+      <span class="prod-tag">06 · 핵심</span>
+      <h2>신뢰가 사라진 게 아니라 옮겨간 것입니다</h2>
+      <p class="one">이 트랙에서 <b>가장 중요한 한 장</b>입니다. 여기를 이해하면 나머지는 응용입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>흔히 <b>"비트코인은 아무도 안 믿어도 되는 돈"</b>이라고 해. 반은 맞고 반은 틀려.</p>
+      <p><b>은행 아저씨를 안 믿어도 되는 건 맞아.</b> 대신 <b>다른 걸 믿어야 해.</b> 「이 컴퓨터 계산 규칙이 안 깨질 것」, 「프로그램에 몰래 넣어둔 함정이 없을 것」, 「내가 비밀번호를 안 잃어버릴 것」 같은 것들이야.</p>
+      <p>그러니까 <b>믿을 필요가 없어진 게 아니라, 믿어야 할 대상이 「사람」에서 「수학과 규칙」으로 바뀐</b> 거야. 어느 쪽이 나은지는 <b>상황에 따라 달라.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COMPARE · 무엇을 믿어야 하나</div>
+      <p class="labsub">같은 「돈을 보낸다」는 일을 두고, 두 방식이 각각 <b>무엇에 기대는지</b> 비교했습니다.</p>
+
+      <div class="tablewrap">
+        <table class="cmp">
+          <thead>
+            <tr><th></th><th>은행 송금</th><th>비트코인 송금</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th>누구를 믿나</th>
+              <td>은행, 감독기관, 예금자보호</td>
+              <td><b>암호 기술, 채굴자들의 경제적 유인, 오픈소스 코드</b></td>
+            </tr>
+            <tr>
+              <th>실수하면</th>
+              <td>대체로 <b>취소·정정 가능</b></td>
+              <td><b>되돌릴 수 없음.</b> 주소 하나 틀리면 끝</td>
+            </tr>
+            <tr>
+              <th>계좌를 막을 수 있나</th>
+              <td>가능 (법원·제재·사기 의심)</td>
+              <td>사실상 불가능</td>
+            </tr>
+            <tr>
+              <th>영업 시간</th>
+              <td>제한 있음, 국경 넘으면 며칠</td>
+              <td>24시간, 국경 무관</td>
+            </tr>
+            <tr>
+              <th>비용</th>
+              <td>소액엔 싸고, 국제송금은 비쌈</td>
+              <td>혼잡할수록 비쌈. 금액과 무관</td>
+            </tr>
+            <tr>
+              <th>비밀번호를 잃으면</th>
+              <td>신분 확인 후 재발급</td>
+              <td><b>영구히 접근 불가.</b> 복구 창구가 없음</td>
+            </tr>
+            <tr>
+              <th>가치가 흔들리나</th>
+              <td>물가만큼 천천히</td>
+              <td><b>하루에도 크게</b></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="scrollhint">← 표를 옆으로 밀어보세요 →</div>
+    </div>
+
+    <div class="note">
+      <p><b>여기서 얻어야 할 결론.</b> 어느 쪽이 「더 낫다」가 아닙니다. <b>서로 다른 것을 포기하고 서로 다른 것을 얻은 설계</b>입니다.</p>
+      <p>비트코인은 <b>「검열받지 않음」과 「되돌릴 수 없음」을 맞바꿨습니다.</b> 정부가 계좌를 동결할 수 없는 대신, <b>내가 실수해도 아무도 도와줄 수 없습니다.</b> 이 트레이드오프를 이해하지 못한 채 「더 발전한 돈」이라고 생각하면, <b>주소를 잘못 입력하거나 지갑 비밀구문을 잃는 순간</b> 그 의미를 알게 됩니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7. 돈인가 ══════════ -->
+  <section id="isit">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 솔직한 평가</span>
+      <h2>그래서 비트코인은 「돈」이 됐나</h2>
+      <p class="one">원래 목표였던 <b>「전자화폐」</b>라는 기준으로 보면, 답은 복잡합니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>돈이 되려면 세 가지를 할 수 있어야 해. <b>①</b> 물건을 살 수 있고, <b>②</b> 값을 매길 수 있고, <b>③</b> 모아두면 가치가 유지돼야 해.</p>
+      <p>비트코인은 어떨까? <b>①번은 아직 잘 안 돼.</b> 받아주는 가게가 별로 없고, 느리고, 수수료가 붙어. <b>②번도 어려워.</b> 값이 하루에도 크게 변해서 "이건 0.0003비트야"라고 값을 매기기가 곤란해.</p>
+      <p><b>③번은 논쟁 중이야.</b> 오래 갖고 있으면 값이 올랐다는 사람도 있고, 반대로 반토막이 여러 번 났다는 사람도 있어. <b>둘 다 사실이야.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CHECK · 돈의 세 가지 조건</div>
+      <p class="labsub">각 조건을 눌러, 비트코인이 그 조건을 얼마나 충족하는지 확인하세요.</p>
+
+      <div class="btnrow" id="mfBtns">
+        <button data-v="0" class="on">① 교환의 매개</button>
+        <button data-v="1">② 가치의 척도</button>
+        <button data-v="2">③ 가치의 저장</button>
+      </div>
+
+      <div class="stack">
+        <div class="srow">
+          <span class="sname">충족도</span>
+          <div class="strack"><div class="sfill" id="mfBar" style="background:#8E4B3A;width:20%"></div></div>
+          <span class="sval" id="mfVal">낮음</span>
+        </div>
+      </div>
+
+      <div class="verdict" id="mfVerdict" style="--vc:var(--bad)">
+        <div class="vh">조건 ①</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>목표가 바뀌었습니다</h3>
+      <p>백서의 제목은 <b>「전자화폐 시스템」</b>이었습니다. 그런데 지금 비트코인을 <b>결제 수단</b>으로 설명하는 사람은 많지 않습니다. 대신 <b>「디지털 금」</b>, 즉 <b>가치 저장 수단</b>이라는 서사가 자리를 잡았습니다.</p>
+      <p>이건 실패일까요, 진화일까요? <b>양쪽 주장이 다 있습니다.</b> 결제로 쓰기엔 느리고 비싸다는 건 사실이고, 그래서 가치 저장 쪽으로 용도가 옮겨간 것도 사실입니다. 다만 <b>「원래 목표를 못 이뤘으니 서사를 바꾼 것」</b>이라는 비판도 근거가 있습니다.</p>
+      <p><b>중요한 건 지금 무엇을 사려는지 스스로 아는 것</b>입니다. 「미래의 결제 수단」을 사는 것과 「희소한 디지털 자산」을 사는 것은 <b>완전히 다른 판단</b>이고, 근거도 다릅니다.</p>
+
+      <h3>이 트랙에서 앞으로 볼 것</h3>
+      <p>이 편에서는 <b>왜 태어났는지</b>만 다뤘습니다. 이어지는 편에서 <b>어떻게 굴러가는지</b>(02·03), <b>그 위에 무엇이 올라갔는지</b>(04·05), <b>국가와 어떻게 부딪치는지</b>(06·07), 그리고 <b>투자로서는 무엇을 알아야 하는지</b>(08)를 봅니다.</p>
+    </div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>마지막으로.</b> 이 기술을 이해하는 것과 <b>이 자산을 사는 것</b>은 완전히 별개의 결정입니다. 블록체인이 훌륭한 발명이라는 것과 지금 가격이 합리적이라는 것 사이에는 <b>아무 논리적 연결이 없습니다.</b></p>
+      <p>주식 트랙에서 본 것과 같습니다 — <b>인터넷이 세상을 바꿀 거라는 예측이 맞았어도, 2000년 가격에 산 사람은 십수 년을 기다려야 했습니다.</b> 기술의 성공과 그 자산의 성공은 다른 문제입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 코인 01 · 기원<br>
+    <a href="index.html#coin">← 코인 목록으로</a> · <a href="index.html">전체 목록</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 모든 투자 판단과 그 결과에 대한 책임은 투자자 본인에게 있습니다.<br>
+    역사적 사실과 인용은 널리 알려진 공개 자료를 바탕으로 정리했으며, 세부는 자료에 따라 다를 수 있습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 1. 화폐의 역사 ══════════ */
+var MN = [
+  { x:110, label:'물물교환', color:'#8A8474',
+    t:'물물교환 — 돈이 없던 시절',
+    p:'쌀과 생선을 직접 바꿉니다. 문제는 <b>「내가 원하는 걸 가진 사람이, 마침 내가 가진 걸 원해야 한다」</b>는 것입니다. 이 조건이 맞기가 아주 어려워서 거래가 잘 일어나지 않았습니다.<br><br><b>믿었던 것:</b> 눈앞의 물건 그 자체.' },
+  { x:230, label:'금·은', color:'#B8860B',
+    t:'금속 화폐 — 물건 자체에 값어치가 있던 돈',
+    p:'금은 <b>썩지 않고, 나누기 쉽고, 구하기 어렵습니다.</b> 그래서 오랫동안 돈 역할을 했습니다. 무엇보다 <b>누가 보증해주지 않아도 그 자체로 값어치가 있었습니다.</b><br><br>단점은 무겁고, 옮기기 위험하고, <b>경제가 커지는 속도만큼 캐낼 수 없다</b>는 것이었습니다.<br><br><b>믿었던 것:</b> 금속 자체의 희소성.' },
+  { x:350, label:'금 보관증', color:'#9E7A2E',
+    t:'태환지폐 — 금으로 바꿔주겠다는 종이',
+    p:'금을 맡기고 받은 <b>보관증</b>이 그대로 돌아다니기 시작했습니다. 가볍고 편하니까요. <b>「언제든 금으로 바꿔준다」</b>는 약속이 이 종이의 가치를 받쳐줬습니다.<br><br>여기서 결정적인 변화가 일어납니다 — <b>돈이 「물건」에서 「약속」으로 넘어갔습니다.</b><br><br><b>믿었던 것:</b> 보관증을 발행한 기관.' },
+  { x:470, label:'신용화폐', color:'#3A5A8E',
+    t:'신용화폐 — 금과의 약속마저 끊어진 돈',
+    p:'1971년 미국이 <b>달러를 금으로 바꿔주던 약속을 중단</b>하면서, 세계의 돈은 금과 완전히 분리됐습니다. 지금 우리가 쓰는 돈이 이것입니다.<br><br>이 돈의 가치는 <b>오직 「나라와 중앙은행에 대한 신뢰」</b>에서 나옵니다. 장점은 <b>위기 때 돈을 더 찍어 대응할 수 있다</b>는 것, 단점은 <b>얼마나 찍을지를 소수가 결정한다</b>는 것입니다.<br><br><b>믿었던 것:</b> 정부와 중앙은행.' },
+  { x:580, label:'비트코인', color:'#B8860B',
+    t:'비트코인 — 「믿을 사람」을 없애보려는 시도',
+    p:'2009년에 등장했습니다. <b>발행량이 코드로 정해져 있고, 관리하는 기관이 없습니다.</b><br><br>다만 여기서 흔한 오해가 생깁니다 — <b>「아무도 안 믿어도 되는 돈」이 아니라 「믿는 대상이 사람에서 규칙으로 바뀐 돈」</b>입니다. 6장에서 자세히 봅니다.<br><br><b>믿는 것:</b> 암호 기술과 참여자들의 경제적 유인.' }
+];
+(function(){
+  var g = '';
+  MN.forEach(function(m, i){
+    if(i > 0){
+      g += '<line x1="' + (MN[i-1].x + 14) + '" y1="90" x2="' + (m.x - 14) + '" y2="90" stroke="#D9D2C0" stroke-width="1.5"/>';
+    }
+    g += '<g class="mnNode" data-v="' + i + '" tabindex="0" role="button" style="cursor:pointer">' +
+         '<circle cx="' + m.x + '" cy="90" r="20" fill="transparent"/>' +
+         '<circle cx="' + m.x + '" cy="90" r="9" fill="' + m.color + '"/>' +
+         '<text class="lbl" x="' + m.x + '" y="122" text-anchor="middle" fill="' + m.color + '">' + m.label + '</text></g>';
+  });
+  document.getElementById('mnNodes').innerHTML = g;
+  document.querySelectorAll('.mnNode').forEach(function(el){
+    function open(){
+      var m = MN[+el.getAttribute('data-v')];
+      document.getElementById('mnVerdict').querySelector('.vh').textContent = m.label;
+      verdict('mnVerdict', m.color, m.t, m.p);
+    }
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
+    });
+  });
+})();
+
+/* ══════════ 2. 이중지불 ══════════ */
+function person(x, y, label, color){
+  return '<circle cx="' + x + '" cy="' + y + '" r="22" fill="' + color + '" fill-opacity=".15" stroke="' + color + '" stroke-width="1.5"/>' +
+         '<text class="lbl" x="' + x + '" y="' + (y + 5) + '" text-anchor="middle" fill="' + color + '">' + label + '</text>';
+}
+var DS = [
+  { result:'둘 다 성공 — 돈이 복사됨', color:'#8E4B3A',
+    t:'장부가 없으면 디지털 돈은 성립하지 않습니다',
+    p:'아빠가 <b>같은 1,000원을 두 사람에게 동시에</b> 보냈고, <b>둘 다 받았습니다.</b> 1,000원밖에 없었는데 2,000원이 지급된 것입니다.<br><br>디지털 데이터는 <b>복사가 되기 때문에</b> 벌어지는 일입니다. 사진을 보내도 내 폰에 남는 것과 똑같습니다.<br><br>그래서 <b>「누가 얼마를 갖고 있는지 기록하는 장부」가 반드시 필요합니다.</b> 이게 디지털 화폐가 30년간 풀지 못한 문제였습니다.' },
+  { result:'하나만 성공 — 은행이 막음', color:'#3A5A8E',
+    t:'은행이 장부를 하나만 갖고 있으면 해결됩니다',
+    p:'은행이 <b>「아빠 잔액 1,000원」</b>이라고 적어두고 있으니, 첫 번째 송금이 처리되는 순간 잔액이 0이 됩니다. 두 번째 시도는 <b>거절</b>됩니다.<br><br>지금 우리가 쓰는 모든 디지털 결제가 이 방식입니다. <b>간단하고 빠르고 확실합니다.</b><br><br>대신 <b>은행을 믿어야 합니다.</b> 은행이 장부를 잘못 적거나, 계좌를 막거나, 망하면 어떻게 될까요? 2008년에 사람들이 던진 질문이 이것이었습니다.' },
+  { result:'하나만 성공 — 네트워크가 막음', color:'#4C7A6D',
+    t:'모두가 장부를 가지면 은행 없이도 막을 수 있습니다',
+    p:'수많은 참여자가 <b>똑같은 장부를 각자 보관</b>합니다. 첫 번째 송금이 장부에 기록되면, 두 번째 시도는 <b>「이미 쓴 돈」으로 판정되어 거절</b>됩니다.<br><br>여기까지가 비트코인의 기본 아이디어입니다. <b>그런데 진짜 어려운 문제가 남아 있습니다</b> —<br><br><b>「두 송금이 거의 동시에 들어오면 어느 것을 먼저로 볼 것인가?」</b> 그리고 <b>「참여자 중 누가 거짓 장부를 퍼뜨리면 어떻게 하나?」</b><br><br>이 두 문제를 푼 방법이 <b>작업증명</b>이고, 다음 편의 주제입니다.' }
+];
+function dsShow(i){
+  var s = DS[i];
+  var g = '';
+  g += person(90, 125, '아빠', '#5B5648');
+  g += person(540, 60, '가게 A', '#5B5648');
+  g += person(540, 190, '가게 B', '#5B5648');
+
+  if(i === 1){
+    g += '<rect x="270" y="90" width="110" height="70" rx="5" fill="#3A5A8E" fill-opacity=".14" stroke="#3A5A8E" stroke-width="1.5"/>' +
+         '<text class="lbl" x="325" y="118" text-anchor="middle" fill="#3A5A8E">은행 장부</text>' +
+         '<text class="axt" x="325" y="138" text-anchor="middle">아빠: 1,000원</text>';
+  } else if(i === 2){
+    for(var k = 0; k < 5; k++){
+      var bx = 250 + (k % 3) * 52, by = 88 + Math.floor(k / 3) * 46;
+      g += '<rect x="' + bx + '" y="' + by + '" width="44" height="34" rx="3" fill="#4C7A6D" fill-opacity=".16" stroke="#4C7A6D" stroke-width="1.2"/>';
+    }
+    g += '<text class="axt" x="325" y="185" text-anchor="middle" fill="#4C7A6D">모두가 같은 장부를 보관</text>';
+  }
+
+  var okA = true, okB = (i === 0);
+  g += '<path d="M118,112 Q320,40 514,58" fill="none" stroke="' + (okA ? '#4C7A6D' : '#8E4B3A') +
+       '" stroke-width="2" marker-end="url(#dsA)"/>';
+  g += '<text class="lblb" x="316" y="40" text-anchor="middle" fill="#4C7A6D">1,000원 ✓</text>';
+  g += '<path d="M118,140 Q320,215 514,190" fill="none" stroke="' + (okB ? '#4C7A6D' : '#8E4B3A') +
+       '" stroke-width="2" stroke-dasharray="' + (okB ? '0' : '5 4') + '" marker-end="url(#dsA)"/>';
+  g += '<text class="lblb" x="316" y="232" text-anchor="middle" fill="' + (okB ? '#4C7A6D' : '#8E4B3A') + '">' +
+       (okB ? '1,000원 ✓ (복사됨!)' : '1,000원 ✗ 거절') + '</text>';
+
+  document.getElementById('dsScene').innerHTML = g;
+  var re = document.getElementById('dsResult');
+  re.textContent = s.result;
+  re.style.color = s.color;
+  document.getElementById('dsSent').textContent = (i === 0 ? '2,000원' : '1,000원');
+  document.getElementById('dsVerdict').querySelector('.vh').textContent = '시나리오 ' + ['①','②','③'][i];
+  verdict('dsVerdict', s.color, s.t, s.p);
+}
+bindBtnRow('#dsMode', function(v){ dsShow(+v); });
+
+/* ══════════ 4. 장부를 누가 갖나 ══════════ */
+var LD = [
+  ['var(--bank)', '방식 ①', '중앙 장부 — 지금 우리가 쓰는 방식',
+   '은행이 장부 한 권을 관리합니다. <b>빠르고 싸고, 실수하면 되돌릴 수 있습니다.</b> 예금자보호 같은 안전장치도 있습니다.<br><br>대가는 <b>「그 기관을 믿어야 한다」</b>는 것입니다. 장부를 가진 쪽이 계좌를 막을 수도, 기록을 바꿀 수도, 망할 수도 있습니다. 대부분의 상황에서 이건 <b>충분히 감수할 만한 대가</b>이고, 그래서 지금도 이 방식이 세상의 기본입니다.'],
+  ['var(--net)', '방식 ②', '분산 장부 — 모두가 같은 장부를 보관',
+   '참여자 전원이 <b>같은 장부의 복사본</b>을 갖고, 새 거래가 생기면 각자 자기 장부에 적습니다. 한 곳이 멈춰도 나머지가 계속 돌아갑니다.<br><br>이러면 <b>「믿어야 할 기관」이 사라집니다.</b> 대신 비용이 큽니다 — <b>같은 기록을 수만 번 중복 저장</b>하고, 합의에 시간이 걸리며, 되돌릴 방법이 없습니다.<br><br>은행 장부가 <b>수첩 한 권</b>이라면, 분산 장부는 <b>반 전체가 똑같은 수첩을 한 권씩</b> 들고 다니는 셈입니다. 훨씬 튼튼하지만 훨씬 무겁습니다.'],
+  ['var(--coin)', '남은 문제', '순서와 거짓말 — 진짜 어려운 부분',
+   '장부를 나눠 갖는 것까지는 쉽습니다. 문제는 그다음입니다.<br><br><b>① 순서 문제</b> — 두 거래가 거의 동시에 일어나면 사람마다 적는 순서가 다를 수 있습니다. 그러면 <b>어느 장부가 진짜인지</b> 정할 수 없습니다.<br><br><b>② 거짓말 문제</b> — 누군가 자기 장부에 「나는 100만 원 있음」이라고 적고 퍼뜨리면? 참여자들이 <b>서로를 믿을 수 없는 상황</b>에서 하나의 진실에 합의해야 합니다.<br><br>사토시의 답은 <b>「새 페이지를 붙이려면 값비싼 계산을 먼저 하게 하고, 계산이 가장 많이 쌓인 장부를 진짜로 친다」</b>였습니다. 거짓말이 <b>수학적으로 가능하지만 경제적으로 손해</b>가 되게 만든 것입니다.']
+];
+document.querySelectorAll('#ldCards .minicard').forEach(function(card){
+  card.addEventListener('click', function(){
+    document.querySelectorAll('#ldCards .minicard').forEach(function(c){ c.classList.remove('on'); });
+    card.classList.add('on');
+    var d = LD[+card.getAttribute('data-v')];
+    document.getElementById('ldVerdict').querySelector('.vh').textContent = d[1];
+    verdict('ldVerdict', d[0], d[2], d[3]);
+  });
+});
+
+/* ══════════ 7. 돈의 조건 ══════════ */
+var MF = [
+  { w:20, lab:'낮음', color:'#8E4B3A', h:'조건 ①',
+    t:'교환의 매개 — 물건을 살 수 있는가',
+    p:'솔직히 말하면 <b>잘 안 됩니다.</b> 받아주는 곳이 적고, 확정까지 시간이 걸리며, 네트워크가 붐비면 수수료가 <b>커피값보다 비싸질</b> 때도 있습니다.<br><br>이걸 개선하려는 시도(라이트닝 네트워크 같은 「레이어2」)가 있고 일부 성과도 있지만, <b>일상 결제에서 카드나 간편결제를 대체할 수준은 아닙니다.</b><br><br>재밌는 역설도 있습니다 — <b>값이 오를 거라 믿는 사람일수록 결제에 쓰지 않습니다.</b> 나중에 더 비싸질 걸 지금 써버릴 이유가 없으니까요.' },
+  { w:15, lab:'매우 낮음', color:'#8E4B3A', h:'조건 ②',
+    t:'가치의 척도 — 값을 매길 수 있는가',
+    p:'이게 <b>가장 약한 부분</b>입니다. 값이 하루에도 크게 움직이니 <b>「이 물건은 0.0004비트」</b>라고 정가를 붙일 수가 없습니다. 아침과 저녁의 값이 달라집니다.<br><br>실제로 비트코인을 받는 가게들도 대부분 <b>원화나 달러로 가격을 매기고, 결제 순간에 환산</b>합니다. 즉 <b>척도는 여전히 기존 화폐가 담당</b>하고 있습니다.<br><br>이 문제를 풀려고 나온 것이 <b>스테이블코인</b>입니다 — 이 트랙 06편의 주제입니다.' },
+  { w:55, lab:'논쟁 중', color:'#9E7A2E', h:'조건 ③',
+    t:'가치의 저장 — 모아두면 유지되는가',
+    p:'가장 논쟁이 뜨거운 부분이고, <b>양쪽 다 사실에 근거가 있습니다.</b><br><br><b>「그렇다」는 쪽</b> — 발행량이 코드로 제한돼 있어 임의로 찍어낼 수 없고, 긴 기간을 놓고 보면 값이 크게 올랐습니다.<br><br><b>「아니다」는 쪽</b> — <b>여러 차례 −70% 이상 하락</b>했습니다. 몇 달 만에 반토막이 나는 자산을 「가치 저장 수단」이라 부르기는 어렵습니다. 그리고 그 판단의 근거가 되는 역사가 <b>겨우 십몇 년</b>입니다.<br><br><b>이 문서의 입장:</b> 「디지털 금」이라는 표현은 <b>서사이지 검증된 사실이 아닙니다.</b> 실제로 위기 때 금처럼 움직였는지는 <b>08편(투자 실전)의 상관성 장</b>에서 따로 확인합니다.' }
+];
+bindBtnRow('#mfBtns', function(v){
+  var m = MF[+v];
+  document.getElementById('mfBar').style.width = m.w + '%';
+  document.getElementById('mfBar').style.background = m.color;
+  document.getElementById('mfVal').textContent = m.lab;
+  document.getElementById('mfVerdict').querySelector('.vh').textContent = m.h;
+  verdict('mfVerdict', m.color, m.t, m.p);
+});
+
+/* ══════════ 초기화 ══════════ */
+dsShow(0);
+document.querySelector('#ldCards .minicard').click();
+document.querySelector('#mfBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
