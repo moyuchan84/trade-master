@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 상황에서 무엇부터</title>
+<meta name="description" content="세금 트랙 01~06편을 효율이 높은 순서로 다시 세우고, 내 절세 총액과 남은 여지를 계산하고, 상황별 우선순위와 연중 일정으로 정리하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --a1:#5B6E8E;--a2:#6B7A52;--a3:#8E6B3A;--a4:#7A5C9E;--a5:#4C7A6D;--a6:#8E4B3A;
+    --neutral:#5B5648;--warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:660px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--a1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--a1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--a1));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  /* 진단 결과 목록 */
+  .todo{margin:18px 0 0;padding:0;list-style:none;}
+  .todo li{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px dotted var(--rule);font-size:14px;}
+  .todo li:last-child{border-bottom:0;}
+  .todo .rank{flex:0 0 auto;width:22px;height:22px;border-radius:11px;background:var(--tc,var(--a1));opacity:.9;color:#FCFBF7;
+              font-family:'IBM Plex Mono',monospace;font-size:11px;line-height:22px;text-align:center;margin-top:2px;}
+  .todo .body{flex:1 1 auto;}
+  .todo .body b{color:var(--ink);font-weight:600;}
+  .todo .body span.why{display:block;color:var(--ink-soft);font-size:13px;margin-top:2px;}
+  .todo .ref{flex:0 0 auto;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-soft);margin-top:4px;}
+  .todo .ref a{color:var(--ink-soft);}
+  .btnrow.multi button::before{content:'□ ';font-family:'IBM Plex Mono',monospace;}
+  .btnrow.multi button.on::before{content:'■ ';}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .todo .ref{display:none;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">세금 07 · 정리 · 투자 공부 노트</div>
+    <h1>내 상황에서<br>무엇부터</h1>
+    <p class="lede">01편부터 06편까지 배운 것을 <b>실제로 할 수 있는 순서</b>로 다시 세웁니다. 그리고 <b>내가 아직 안 쓰고 있는 여지</b>가 얼마인지 계산합니다.</p>
+    <div class="callout">
+      <p><b>세금 트랙 전체를 한 문장으로 줄이면 이렇습니다.</b></p>
+      <p><b>「이미 쓴 돈을 빠짐없이 챙기고, 문턱과 한도를 확인하고, 내 한계세율에 맞는 방식을 고른다.」</b></p>
+      <p>이 세 가지가 전부입니다. 나머지는 <b>세부 규칙</b>일 뿐이고, 그 규칙은 <b>거의 매년 바뀝니다.</b> 그래서 이 편에서는 <b>숫자보다 순서와 습관</b>에 무게를 둡니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#map">1. 트랙 요약</a>
+    <a href="#total">2. 내 절세 총액</a>
+    <a href="#diag">3. 상황 진단</a>
+    <a href="#cal">4. 연중 일정</a>
+    <a href="#risk">5. 위험한 절세</a>
+    <a href="#end">6. 마지막 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="map">
+    <div class="prod-head" style="--edge:var(--a1)">
+      <span class="prod-tag">01 · 지도</span>
+      <h2>여섯 편을 한 줄씩</h2>
+      <p class="one">각 편에서 <b>기억할 것 하나</b>씩입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MAP · 편을 눌러보세요</div>
+      <p class="labsub">잊었다면 <b>그 편으로 돌아가</b> 계산기를 다시 열어보세요.</p>
+
+      <div class="btnrow" id="mpBtns">
+        <button data-v="0" class="on">01 지도</button>
+        <button data-v="1">02 연말정산</button>
+        <button data-v="2">03 항목별</button>
+        <button data-v="3">04 배분</button>
+        <button data-v="4">05 임대·사업</button>
+        <button data-v="5">06 상속·증여</button>
+      </div>
+
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="세금 트랙 여섯 편의 흐름">
+        <g id="mpScene"></g>
+      </svg>
+
+      <div class="verdict" id="mpVerdict" style="--vc:var(--a1)">
+        <div class="vh">요약</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">여섯 편을 관통하는 것</div>
+      <div class="kb">모든 선택의 기준은 <b>내 한계세율</b>입니다.<br>그리고 모든 함정은 <b>문턱과 한도</b>에 있습니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="total">
+    <div class="prod-head" style="--edge:var(--a2)">
+      <span class="prod-tag">02 · 총액</span>
+      <h2>내가 지금 받고 있는 것과 남은 여지</h2>
+      <p class="one">이미 하고 있는 것을 넣으면 <b>아직 안 쓴 부분</b>이 보입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TOTAL · 우리 집 숫자를 넣어보세요</div>
+      <p class="labsub">연간 절세액과 <b>더 넣을 수 있는 여지</b>를 함께 계산합니다.</p>
+
+      <div class="ctrl-row">
+        <label for="ttPay">총급여</label>
+        <input type="range" id="ttPay" min="2000" max="15000" step="100" value="6000">
+        <output id="ttPayOut">6,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ttPen">연금계좌 연간 납입</label>
+        <input type="range" id="ttPen" min="0" max="1200" step="50" value="300">
+        <output id="ttPenOut">300만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ttCard">카드 사용액 (연간)</label>
+        <input type="range" id="ttCard" min="0" max="6000" step="100" value="2500">
+        <output id="ttCardOut">2,500만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ttCheck">그중 체크·현금영수증 비중</label>
+        <input type="range" id="ttCheck" min="0" max="100" step="5" value="40">
+        <output id="ttCheckOut">40%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ttMed">의료비 (연간)</label>
+        <input type="range" id="ttMed" min="0" max="800" step="10" value="200">
+        <output id="ttMedOut">200만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ttFuru">고향사랑기부 10만원</label>
+        <select id="ttFuru">
+          <option value="0" selected>아직 안 했음</option>
+          <option value="1">했음</option>
+        </select>
+      </div>
+
+      <div class="steps-out" id="ttSteps"></div>
+
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="항목별 절세액과 남은 여지">
+        <g id="ttScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">지금 받는 절세액</span><span class="rv" id="ttNow">—</span></div>
+        <div><span class="rk">아직 남은 여지</span><span class="rv" id="ttGap">—</span></div>
+      </div>
+
+      <div class="verdict" id="ttVerdict" style="--vc:var(--a2)">
+        <div class="vh">절세 총액</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 01~04편에서 쓴 값과 같습니다 — 연금계좌 한도 <b>900만원</b>, 공제율 <b>총급여 5,500만원 이하 15% / 초과 12%</b>. 카드 문턱 <b>총급여 25%</b>, 공제율 <b>신용 15% / 체크 30%</b>, 한도 <b>300만원(총급여 7,000만원 초과 250만원)</b>. 의료비 문턱 <b>총급여 3%</b>, 공제율 <b>15%</b>. 지방소득세 10%를 포함했습니다.<br><br>
+        <b>「남은 여지」</b>는 <b>연금계좌 한도까지 더 넣었을 때</b>와 <b>고향사랑기부 10만원을 했을 때</b> 추가로 돌아오는 금액입니다. <b>카드는 넣지 않았습니다</b> — 더 쓰는 것은 절세가 아니라 지출이기 때문입니다.<br><br>
+        <b>빠진 항목</b> — 교육비, 보험료, 기부금, 월세, 주택청약, 주담대 이자 등은 요건이 사람마다 달라 넣지 않았습니다. <b>해당된다면 실제 절세액은 더 큽니다.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>소득이 높을수록 절세할 「여지」는 오히려 작습니다</h3>
+      <p>계산기에서 <b>총급여 슬라이더만 올려보세요.</b> 3,000만원 부근부터는 같은 조건인데 <b>절세 총액이 대체로 줄어듭니다.</b> 기본값 기준으로 총급여 <b>3,000만원이면 약 117만원</b>인데 <b>1억 2,000만원이면 약 40만원</b>입니다.</p>
+      <p><b>다만 단순히 내려가기만 하는 것은 아닙니다.</b> <b>한계세율 구간이 바뀌는 지점</b>(예: 총급여 8,000만원 부근)에서는 <b>잠깐 올라갑니다.</b> 소득공제 항목은 <b>한계세율이 높을수록 값어치가 커지기</b> 때문입니다. <b>두 힘이 반대로 당기고 있고</b>, 전체 흐름은 아래로 향합니다.</p>
+      <p>내려가는 쪽의 이유는 셋입니다.</p>
+      <p><b>① 문턱이 소득에 비례합니다.</b> 카드 문턱은 총급여의 25%, 의료비는 3%입니다. 소득이 오르면 <b>문턱도 같이 올라</b> 넘기 어려워집니다. 총급여 1억 2,000만원이면 카드 문턱만 <b>3,000만원</b>입니다.</p>
+      <p><b>② 한도가 소득과 무관합니다.</b> 연금계좌 900만원, 카드 300만원은 <b>소득이 얼마든 같습니다.</b> 소득 대비 비중은 계속 작아집니다.</p>
+      <p><b>③ 공제율이 오히려 내려갑니다.</b> 연금계좌는 총급여 5,500만원을 넘으면 <b>15% → 12%</b>로 떨어집니다.</p>
+      <p class="plain"><b>여기서 나오는 결론.</b> 소득이 높아질수록 <b>연말정산으로 할 수 있는 일은 줄어듭니다.</b> 그때부터 의미가 커지는 것은 <b>소득의 종류를 바꾸는 것</b>(분리과세 대상 소득, 05편)과 <b>재산의 이전을 계획하는 것</b>(06편)입니다. <b>순서가 이렇게 넘어갑니다.</b></p>
+
+      <h3>세금은 수익률의 일부입니다 — 다른 트랙과 만나는 지점</h3>
+      <p>주식·코인·부동산 트랙에서 계속 <b>수익률</b>을 이야기했습니다. 그 수익률은 <b>세전</b>입니다.</p>
+      <p>이자·배당에 붙는 <b>15.4%</b>를 생각하면, 명목 <b>연 5%</b>는 세후 <b>4.23%</b>입니다. 1억원을 20년 굴리면 <b>2억 6,533만원 vs 2억 2,901만원</b> — 차이가 <b>3,632만원</b>입니다.</p>
+      <p>그래서 <b>과세를 미루는 것</b>만으로도 상당한 차이가 생깁니다. 연금계좌에 매년 900만원씩 20년(연 5% 가정) 넣으면, 매년 과세되는 경우 <b>2억 7,449만원</b>, 과세이연되는 경우 <b>2억 9,759만원</b>입니다. <b>2,310만원</b> 차이입니다.</p>
+      <p class="plain"><b>다만 착각하지 말 것.</b> 이 계산은 <b>수익률이 실제로 났을 때</b>의 이야기입니다. <b>세금 혜택 때문에 나쁜 상품을 고르는 것</b>이 가장 흔한 실수입니다. <b>순서는 언제나 「좋은 자산이 먼저, 세금 계정은 그다음」</b>입니다. 5장에서 다시 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="diag">
+    <div class="prod-head" style="--edge:var(--a4)">
+      <span class="prod-tag">03 · 진단</span>
+      <h2>내 상황에서의 우선순위</h2>
+      <p class="one">해당하는 것을 <b>모두</b> 눌러보세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DIAGNOSIS · 여러 개를 고를 수 있습니다</div>
+      <p class="labsub">고른 조건에 맞춰 <b>할 일이 순서대로</b> 정리됩니다.</p>
+
+      <div class="btnrow multi" id="dgBtns">
+        <button data-v="couple">맞벌이</button>
+        <button data-v="low">총급여 5,500만원 이하</button>
+        <button data-v="rent">무주택·월세</button>
+        <button data-v="landlord">임대소득 있음</button>
+        <button data-v="biz">사업자</button>
+        <button data-v="inherit">부모님 재산 10억 이상</button>
+      </div>
+
+      <ul class="todo" id="dgList"></ul>
+
+      <div class="verdict" id="dgVerdict" style="--vc:var(--a4)">
+        <div class="vh">진단</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="cal">
+    <div class="prod-head" style="--edge:var(--a3)">
+      <span class="prod-tag">04 · 일정</span>
+      <h2>1년을 언제 어떻게 쓰나</h2>
+      <p class="one">가장 아까운 실수는 <b>「12월에 알게 되는 것」</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CALENDAR · 시기를 눌러보세요</div>
+      <p class="labsub">각 시기에 <b>지금 아니면 안 되는 것</b>이 있습니다.</p>
+
+      <svg viewBox="0 0 640 130" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="연중 세금 일정">
+        <g id="clScene"></g>
+      </svg>
+
+      <div class="btnrow" id="clBtns">
+        <button data-v="0" class="on">1~2월</button>
+        <button data-v="1">연초</button>
+        <button data-v="2">5~6월</button>
+        <button data-v="3">10월</button>
+        <button data-v="4">11~12월</button>
+      </div>
+
+      <div class="verdict" id="clVerdict" style="--vc:var(--a3)">
+        <div class="vh">일정</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="risk">
+    <div class="prod-head" style="--edge:var(--a6)">
+      <span class="prod-tag">05 · 경계</span>
+      <h2>절세라는 이름의 위험한 방법들</h2>
+      <p class="one">여기서 <b>절세보다 큰 손해</b>가 납니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>세금을 줄이는 건 좋은 일이야. 그런데 <b>줄이려다 더 크게 잃는</b> 경우가 있어.</p>
+      <p>예를 들어볼게. <b>세금을 100만원 아끼려고 1,000만원짜리 나쁜 물건을 사는 것</b>. 아낀 것보다 <b>잃은 게 훨씬 크</b>지.</p>
+      <p>또 하나. <b>거짓말로 줄이는 것.</b> 당장은 넘어가도 <b>나중에 확인되면</b> 원래 세금에 <b>벌금까지</b> 더해서 내야 해.</p>
+      <p>그리고 제일 흔한 건 <b>돈을 다 묶어버리는 것</b>이야. 세금 아끼려고 <b>10년, 20년 못 찾는 곳</b>에 다 넣었다가, 급한 일이 생기면 <b>손해 보고 깨야</b> 해.</p>
+      <p>그래서 규칙은 하나야 — <b>「세금은 마지막에 생각한다.」</b> 좋은 결정을 먼저 하고, 그다음에 세금을 붙이는 거야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">RISKS · 눌러서 확인하세요</div>
+      <p class="labsub">전부 <b>실제로 자주 일어나는</b> 것들입니다.</p>
+
+      <div class="btnrow" id="rkBtns">
+        <button data-v="0" class="on">세금 때문에 상품 고르기</button>
+        <button data-v="1">유동성을 다 묶기</button>
+        <button data-v="2">사실과 다르게 신고하기</button>
+        <button data-v="3">오래된 정보로 판단하기</button>
+        <button data-v="4">절세가 목적이 되는 것</button>
+      </div>
+
+      <div class="verdict" id="rkVerdict" style="--vc:var(--a6)">
+        <div class="vh">경계</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 6 -->
+  <section id="end">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">06 · 마무리</span>
+      <h2>마지막 정리</h2>
+      <p class="one">이 표와 목록만 남겨두면 됩니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>순서</th><th>할 일</th><th>왜</th><th>언제</th><th>편</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>1</th><td><b>고향사랑기부 10만원</b></td><td>전액 공제 + 답례품 · 사실상 비용 없음</td><td>12월 31일까지</td><td>03</td></tr>
+          <tr><th>2</th><td><b>이미 쓴 것 빠짐없이 챙기기</b></td><td>추가 지출 0원 · 놓치는 항목이 가장 많음</td><td>1~2월</td><td>02·03</td></tr>
+          <tr><th>3</th><td><b>맞벌이면 항목별로 배분</b></td><td>문턱 있는 것은 낮은 쪽, 없는 것은 높은 쪽</td><td>카드는 연초, 나머지는 1~2월</td><td>04</td></tr>
+          <tr><th>4</th><td><b>연금계좌 한도까지</b></td><td>공제율 12~15% · 한도 900만원으로 가장 큼</td><td>12월 31일까지</td><td>03</td></tr>
+          <tr><th>5</th><td><b>카드 수단 조정</b></td><td>문턱 넘긴 뒤부터 체크·현금영수증</td><td>연중 · 10월 점검</td><td>03</td></tr>
+          <tr><th>6</th><td><b>임대·사업 소득의 과세 방식 선택</b></td><td>내 한계세율과 15.4%를 비교</td><td>5월 신고 전</td><td>05</td></tr>
+          <tr><th>7</th><td><b>건강보험료 함께 확인</b></td><td>세금보다 클 수 있음</td><td>소득이 생기기 전</td><td>05</td></tr>
+          <tr><th>8</th><td><b>상속세가 나오는 규모인지 계산</b></td><td>안 나오면 사전증여는 손해</td><td>지금 한 번</td><td>06</td></tr>
+          <tr><th>9</th><td><b>나온다면 10년 계획과 현금 마련</b></td><td>10년을 못 넘기면 본전</td><td>건강하실 때</td><td>06</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 요건과 한도는 매년 확인 필요</p>
+
+    <ul class="check" id="fnCheck">
+      <li><b>고향사랑기부 10만원을 올해 했나?</b> 가장 효율이 높습니다.</li>
+      <li><b>연금계좌 한도에 여유가 있나?</b> 비상금을 먼저 확보한 뒤에.</li>
+      <li><b>카드 문턱(총급여 25%)을 넘겼나?</b> 넘긴 뒤부터 체크카드로.</li>
+      <li><b>의료비를 빠짐없이 모았나?</b> 안경·렌즈·산후조리원도 포함될 수 있습니다.</li>
+      <li><b>맞벌이라면 항목별로 배분했나?</b> 카드는 연초에 정해야 합니다.</li>
+      <li><b>부양가족을 중복 공제하고 있지 않나?</b> 형제자매와 상의하세요.</li>
+      <li><b>10월에 연말정산 미리보기를 했나?</b> 남은 두 달에 조정할 수 있습니다.</li>
+      <li><b>임대소득이 있다면 주택 수를 부부 합산으로 세었나?</b></li>
+      <li><b>소득이 생길 때 건강보험료를 확인했나?</b> 피부양자 자격이 걸립니다.</li>
+      <li><b>사업자라면 계좌와 카드를 분리했나?</b> 경비 증빙의 대부분입니다.</li>
+      <li><b>부모님 재산이 상속공제를 넘는지 계산했나?</b> 안 넘으면 할 일이 없습니다.</li>
+      <li><b>세금 때문에 나쁜 상품을 고르고 있지 않나?</b> 순서를 바꾸지 마세요.</li>
+    </ul>
+    <div class="checkcount" id="fnCount">0 / 12 확인함</div>
+
+    <div class="deep">
+      <h3>이 트랙에서 다루지 않은 것들</h3>
+      <p>세금은 넓습니다. 이 트랙은 <b>대부분의 가정이 실제로 마주치는 것</b>에 집중했고, 그 밖에도 <b>알아두면 좋은 영역</b>이 있습니다. 어디를 더 봐야 하는지만 짚어둡니다.</p>
+      <p><b>① 금융소득종합과세</b> — 이자와 배당을 합쳐 연 <b>2,000만원을 넘으면</b> 다른 소득과 <b>합산</b>됩니다. 05편의 임대소득 2,000만원과 구조가 같습니다 — <b>넘으면 분리과세가 끝나고 누진세율이 붙습니다.</b> 배당주 비중이 큰 사람은 <b>한 사람에게 몰리지 않게</b> 나누는 것이 방법이 됩니다.</p>
+      <p><b>② 해외주식 양도소득세</b> — 연간 이익에서 <b>250만원</b>을 빼고 <b>22%</b>(지방소득세 포함)를 냅니다. <b>5월에 직접 신고</b>해야 하고, <b>손실과 이익을 같은 해에 합칠 수 있습니다.</b> 그래서 <b>연말에 손실 종목을 정리해 이익과 상계</b>하는 것이 실제로 쓰이는 방법입니다. 다만 <b>세금 때문에 팔 종목을 정하는 것</b>은 5장에서 경계한 바로 그 실수입니다.</p>
+      <p><b>③ ISA 계좌</b> — 일정 한도까지 <b>비과세</b>이고 초과분은 낮은 세율로 <b>분리과세</b>됩니다. 의무 보유 기간이 있습니다. <b>계정의 종류를 고르는 문제</b>라 5장의 원칙이 그대로 적용됩니다 — <b>좋은 자산이 먼저, 계정은 그다음.</b></p>
+      <p><b>④ 국내주식 양도세</b> — 상장주식은 <b>대주주 요건</b>에 해당하지 않으면 양도차익에 과세하지 않습니다. 다만 <b>증권거래세</b>는 팔 때마다 붙습니다. 그리고 <b>배당에는 15.4%</b>가 붙습니다.</p>
+      <p><b>⑤ 가상자산</b> — 과세 방식과 시행 시기가 <b>여러 차례 조정되어 왔습니다.</b> 코인 트랙 08편에서 다뤘듯 <b>지금 기준을 직접 확인</b>해야 하는 대표적인 영역입니다.</p>
+      <p><b>⑥ 퇴직소득세</b> — 근속 연수에 따라 크게 달라지고, <b>연금계좌로 옮기면 세금이 줄어듭니다.</b> 퇴직이 가까우면 별도로 확인할 값어치가 큽니다.</p>
+      <p class="plain"><b>공통점을 보세요.</b> ①②③은 전부 <b>「분리냐 합산이냐」</b>와 <b>「한도와 문턱」</b>의 문제입니다. 01편과 05편에서 본 구조가 그대로 반복됩니다. <b>영역이 달라도 구조는 같습니다.</b> 그것이 이 트랙에서 숫자보다 구조를 강조한 이유입니다.</p>
+    </div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>세금 트랙을 마치며.</b> 이 트랙에서 다룬 숫자들 — 세율 구간, 공제 한도, 문턱, 경비율 — 은 <b>거의 매년 바뀝니다.</b> 그래서 <b>숫자를 외우는 것은 의미가 적습니다.</b></p>
+      <p>대신 <b>구조</b>가 남습니다. <b>누진이라는 것</b>, <b>소득공제와 세액공제가 다르다는 것</b>, <b>문턱이 있는 공제와 없는 공제가 다르게 움직인다는 것</b>, <b>합산과 분리 중에 고를 수 있는 소득이 있다는 것</b>, <b>세율은 같아도 공제가 다르면 결과가 달라진다는 것</b>. 이 구조는 잘 바뀌지 않습니다.</p>
+      <p>그리고 이 트랙에서 반복해서 말한 <b>가장 중요한 한 가지</b>는 이것입니다 — <b>절세는 「덜 내는 것」이지 「버는 것」이 아닙니다.</b> 1만원을 더 써서 2,000원을 돌려받는 것은 <b>8,000원을 쓴 것</b>입니다. <b>이 계산을 잊는 순간</b> 절세는 오히려 손해가 됩니다.</p>
+      <p><b>가족과 함께 읽었다면</b> — 오늘 할 일은 딱 하나입니다. <b>고향사랑기부 10만원.</b> 그리고 <b>10월에 다시 만나 미리보기를 함께 보는 것</b>입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 세금 07 · 정리 · <b>세금 트랙 완결</b><br>
+    <a href="index.html#tax">← 세금 목록으로</a> · <a href="tax-inherit.html">06 · 상속·증여</a> · <a href="index.html">전체 목록</a><br>
+    <br>
+    개인 학습용 정리이며 <b>세무 조언이 아닙니다.</b><br>
+    세율·공제 한도·요건은 매년 개정됩니다. 계산기는 주요 항목만 반영한 단순 모형이며 실제 세액과 다릅니다. 실제 판단은 국세청 자료와 전문가 확인을 거치세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function won(man){ return Math.round(man).toLocaleString() + '만원'; }
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+var BRACKETS = [
+  { upto:1400, rate:0.06 }, { upto:5000, rate:0.15 }, { upto:8800, rate:0.24 },
+  { upto:15000, rate:0.35 }, { upto:30000, rate:0.38 }, { upto:50000, rate:0.40 },
+  { upto:100000, rate:0.42 }, { upto:Infinity, rate:0.45 }
+];
+function earnedDeduction(pay){
+  var d;
+  if(pay <= 500) d = pay * 0.7;
+  else if(pay <= 1500) d = 350 + (pay - 500) * 0.4;
+  else if(pay <= 4500) d = 750 + (pay - 1500) * 0.15;
+  else if(pay <= 10000) d = 1200 + (pay - 4500) * 0.05;
+  else d = 1475 + (pay - 10000) * 0.02;
+  return Math.min(d, 2000);
+}
+function baseOf(pay){ return Math.max(0, pay - earnedDeduction(pay) - pay * 0.094 - 150); }
+function margOf(pay){
+  var b = baseOf(pay);
+  for(var i = 0; i < BRACKETS.length; i++){ if(b <= BRACKETS[i].upto) return BRACKETS[i].rate; }
+  return 0.45;
+}
+function pensionRate(pay){ return pay <= 5500 ? 0.15 : 0.12; }
+function cardDeduction(pay, spend, checkRatio){
+  var threshold = pay * 0.25;
+  var cap = pay <= 7000 ? 300 : 250;
+  var check = spend * checkRatio;
+  var credit = spend - check;
+  var creditAfter = Math.max(0, credit - threshold);
+  var remain = Math.max(0, threshold - credit);
+  var checkAfter = Math.max(0, check - remain);
+  return Math.min(creditAfter * 0.15 + checkAfter * 0.30, cap);
+}
+
+/* ══════════ 1. 트랙 지도 ══════════ */
+var MP = [
+  { h:'01 · 세금의 전체 지도', color:'#5B6E8E', href:'tax-basics.html',
+    t:'절세를 계산할 때 쓰는 것은 한계세율입니다',
+    p:'세금은 <b>벌 때·쓸 때·가질 때·넘길 때</b> 네 갈래로 붙습니다. 그리고 소득세는 <b>층층이 쌓는 누진 구조</b>입니다.<br><br>' +
+      '<b>가장 중요한 것</b> — <b>실효세율</b>(전체 평균)과 <b>한계세율</b>(지금 서 있는 층)은 다르고, <b>절세를 계산할 때 쓰는 것은 한계세율</b>입니다.<br><br>' +
+      '같은 100만원 공제가 과세표준 3,000만원인 사람에게는 <b>16.5만원</b>, 2억원인 사람에게는 <b>41.8만원</b>입니다.<br><br>' +
+      '<b>여기서 이후의 모든 판단이 나옵니다</b> — 05편의 분리·종합 선택도, 04편의 배분도, 03편의 효율 순서도 전부 <b>한계세율과 비교</b>하는 계산입니다.' },
+  { h:'02 · 연말정산의 구조', color:'#6B7A52', href:'tax-yearend.html',
+    t:'소득공제와 세액공제는 다르게 작동합니다',
+    p:'연말정산은 <b>1년 동안 미리 뗀 세금과 실제 세금을 맞추는 것</b>입니다. 환급은 <b>보너스가 아니라 더 낸 것을 돌려받는 것</b>입니다.<br><br>' +
+      '<b>기억할 구분</b><br>· <b>소득공제</b> — 과세표준을 줄입니다. 그래서 <b>한계세율만큼</b> 돌아옵니다. <b>소득이 높을수록 유리</b>합니다.<br>' +
+      '· <b>세액공제</b> — 세금을 직접 깎습니다. <b>정해진 비율만큼</b> 돌아옵니다. <b>소득과 무관</b>합니다.<br><br>' +
+      '총급여 5,000만원이면 <b>과세표준이 3,155만원</b>까지 줄고(63%), 실제 세금은 <b>약 309만원</b>, 실효세율 <b>6.2%</b> 수준입니다. <b>생각보다 낮습니다.</b><br><br>' +
+      '<b>그래서 「환급을 많이 받는 것」이 목표가 아닙니다.</b> 애초에 덜 떼였으면 환급도 적습니다. 목표는 <b>연간 총 세금</b>입니다.' },
+  { h:'03 · 항목별 공략', color:'#8E6B3A', href:'tax-deduction.html',
+    t:'효율이 높은 순서가 분명히 있습니다',
+    p:'<b>1만원을 더 넣을 때 돌아오는 금액</b>으로 줄을 세우면 순서가 나옵니다.<br><br>' +
+      '· <b>고향사랑기부</b> 11,000원 — 10만원까지 <b>전액 공제 + 답례품</b>. 사실상 <b>비용이 들지 않습니다.</b><br>' +
+      '· <b>연금계좌</b> 1,650원(또는 1,320원) — <b>한도가 900만원으로 커서 총액이 가장 큽니다.</b><br>' +
+      '· <b>의료비</b> 1,650원 — 다만 <b>총급여 3% 문턱</b>을 넘어야 합니다.<br>' +
+      '· <b>체크카드</b> 약 495원 · <b>신용카드</b> 약 248원 — <b>생각보다 훨씬 낮습니다.</b><br><br>' +
+      '<b>여기서 나오는 결론</b> — <b>카드를 더 쓰는 것은 절세가 아닙니다.</b> 1만원을 써서 248원을 돌려받는 것은 <b>9,752원을 쓴 것</b>입니다.<br><br>' +
+      '<b>실전 순서</b> — 고향사랑기부 → 이미 쓴 것 챙기기 → 연금계좌 → 카드 수단 조정.' },
+  { h:'04 · 맞벌이 배분', color:'#7A5C9E', href:'tax-couple.html',
+    t:'문턱이 있으면 소득이 낮은 쪽입니다',
+    p:'같은 지출인데 <b>누구 앞으로 하느냐</b>로 결과가 달라집니다. 그리고 <b>「무조건 소득 높은 쪽」이 아닙니다.</b><br><br>' +
+      '· <b>문턱 없는 공제</b>(인적공제·기부금) → <b>소득 높은 쪽</b>. 한계세율만큼 돌아오기 때문입니다.<br>' +
+      '· <b>문턱 있는 공제</b>(의료비 3%·카드 25%) → <b>소득 낮은 쪽</b>. <b>문턱 자체가 낮기</b> 때문입니다.<br>' +
+      '· <b>한도에 걸리면</b> → <b>나눠야</b> 합니다.<br><br>' +
+      '<b>가장 중요한 실무 제약</b> — <b>카드는 연중에 그 사람 명의로 써야</b> 잡힙니다. 의료비와 부양가족은 <b>연말에 정할 수 있지만</b>, <b>카드 명의와 월세 계약자</b>는 이미 정해져 있습니다.<br><br>' +
+      '<b>그리고 절대 하지 말 것</b> — <b>같은 부양가족을 두 사람이 각각 공제</b>하는 것. 나중에 <b>가산세와 함께 추징</b>됩니다.' },
+  { h:'05 · 임대·사업', color:'#4C7A6D', href:'tax-rental.html',
+    t:'고를 수 있는 것이 둘 있습니다 — 그리고 건강보험료',
+    p:'월급 밖의 소득에는 <b>선택지</b>가 생깁니다.<br><br>' +
+      '· <b>분리과세 vs 종합과세</b> — 임대 수입 <b>2,000만원 이하</b>면 고를 수 있습니다. 기준은 <b>내 한계세율과 15.4%의 비교</b>입니다.<br>' +
+      '· <b>일반과세 vs 간이과세</b> — 세금만 보면 간이가 적지만, <b>세금계산서 발급</b>과 <b>환급</b> 때문에 일반을 고르는 경우가 많습니다.<br><br>' +
+      '<b>주택 수는 부부 합산</b>입니다. 2주택부터 월세가, <b>3주택부터 보증금(간주임대료)</b>이 과세됩니다. <b>월세만 보고 2,000만원을 판정하면 틀립니다.</b><br><br>' +
+      '<b>그리고 이 편에서 가장 자주 놓치는 것</b> — <b>건강보험료</b>입니다. 특히 <b>피부양자 자격을 잃는 경우</b>, <b>세금 몇십만원에 보험료 몇백만원</b>이 되기도 합니다. <b>소득이 생기기 전에</b> 확인하세요.' },
+  { h:'06 · 상속·증여', color:'#8E4B3A', href:'tax-inherit.html',
+    t:'대부분의 가정은 상속세를 내지 않습니다',
+    p:'<b>세율은 같고 공제가 다릅니다.</b> 상속은 <b>한 번에 크게</b>(배우자 있으면 10억원), 증여는 <b>10년마다 조금씩</b>(성년 자녀 5,000만원)입니다.<br><br>' +
+      '<b>그래서 순서는 이렇습니다</b> — ① 재산을 세어본다 → ② 상속공제를 넘는지 본다 → ③ <b>안 넘으면 여기서 끝</b>입니다. 사전증여 계획이 필요 없습니다.<br><br>' +
+      '<b>재산이 상속공제 아래인데 미리 증여하면 손해</b>입니다. 어차피 0원인 세금을 <b>증여세로 미리 내는 셈</b>이고, 부동산이면 <b>취득세까지</b> 냅니다.<br><br>' +
+      '<b>넘는다면</b> — <b>10년</b>이 핵심입니다. 사망 전 10년 이내의 증여는 <b>상속재산에 합산</b>되어 <b>정확히 본전</b>이 됩니다. <b>건강하실 때 일찍</b> 시작해야 하는 이유입니다.<br><br>' +
+      '<b>그리고 실제로 가장 많이 생기는 문제는 세금이 아니라 다툼</b>, 그다음이 <b>세금 낼 현금이 없는 것</b>입니다.' }
+];
+function mpScene(idx){
+  var g = '';
+  var X0 = 40, BW = 88, GAP = 6;
+  var labels = ['01\n지도', '02\n연말정산', '03\n항목', '04\n배분', '05\n임대·사업', '06\n상속·증여'];
+  g += '<text class="axt" x="' + X0 + '" y="22">세금 트랙의 흐름 — 왼쪽부터 순서대로</text>';
+  MP.forEach(function(m, i){
+    var x = X0 + i * (BW + GAP);
+    var on = (i === idx);
+    g += '<rect x="' + x + '" y="36" width="' + BW + '" height="48" rx="4" fill="' + m.color +
+         '" fill-opacity="' + (on ? '.44' : '.12') + '" stroke="' + m.color + '" stroke-width="' + (on ? '1.9' : '1') + '"/>';
+    var parts = labels[i].split('\n');
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (x + BW / 2) + '" y="56" text-anchor="middle"' +
+         (on ? ' fill="' + m.color + '"' : '') + '>' + parts[0] + '</text>';
+    g += '<text class="axt" x="' + (x + BW / 2) + '" y="72" text-anchor="middle">' + parts[1] + '</text>';
+    if(i < MP.length - 1){
+      g += '<line x1="' + (x + BW) + '" y1="60" x2="' + (x + BW + GAP) + '" y2="60" stroke="#D9D2C0" stroke-width="1.2"/>';
+    }
+  });
+  var groups = [
+    { s:0, e:1, n:'월급에 붙는 세금', c:'#5B6E8E' },
+    { s:2, e:3, n:'돌려받는 방법', c:'#8E6B3A' },
+    { s:4, e:5, n:'월급 밖의 세금', c:'#4C7A6D' }
+  ];
+  groups.forEach(function(gr){
+    var x1 = X0 + gr.s * (BW + GAP), x2 = X0 + gr.e * (BW + GAP) + BW;
+    g += '<line x1="' + x1 + '" y1="96" x2="' + x2 + '" y2="96" stroke="' + gr.c + '" stroke-width="1.4"/>';
+    g += '<text class="axt" x="' + ((x1 + x2) / 2) + '" y="112" text-anchor="middle">' + gr.n + '</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="142">01~04편은 근로소득자, 05~06편은 그 밖의 소득과 재산 이전입니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="162">모든 편의 판단 기준은 하나입니다 — 내 한계세율.</text>';
+  document.getElementById('mpScene').innerHTML = g;
+}
+bindBtnRow('#mpBtns', function(v){
+  mpScene(+v);
+  document.getElementById('mpVerdict').querySelector('.vh').textContent = MP[+v].h;
+  verdict('mpVerdict', MP[+v].color, MP[+v].t,
+    MP[+v].p + '<br><br><b>→ <a href="' + MP[+v].href + '">' + MP[+v].h + ' 다시 읽기</a></b>');
+});
+
+/* ══════════ 2. 절세 총액 ══════════ */
+function ttDraw(){
+  var pay = +document.getElementById('ttPay').value;
+  var pen = +document.getElementById('ttPen').value;
+  var card = +document.getElementById('ttCard').value;
+  var cr = +document.getElementById('ttCheck').value / 100;
+  var med = +document.getElementById('ttMed').value;
+  var furu = document.getElementById('ttFuru').value === '1';
+  document.getElementById('ttPayOut').textContent = pay.toLocaleString() + '만원';
+  document.getElementById('ttPenOut').textContent = pen.toLocaleString() + '만원';
+  document.getElementById('ttCardOut').textContent = card.toLocaleString() + '만원';
+  document.getElementById('ttCheckOut').textContent = (cr * 100).toFixed(0) + '%';
+  document.getElementById('ttMedOut').textContent = med.toLocaleString() + '만원';
+
+  var marg = margOf(pay), prate = pensionRate(pay);
+  var penEff = Math.min(pen, 900);
+  var vPen = penEff * prate * 1.1;
+  var cardDed = cardDeduction(pay, card, cr);
+  var vCard = cardDed * marg * 1.1;
+  var vMed = Math.max(0, med - pay * 0.03) * 0.15 * 1.1;
+  var vFuru = furu ? 11 : 0;
+  var now = vPen + vCard + vMed + vFuru;
+
+  var gapPen = (900 - penEff) * prate * 1.1;
+  var gapFuru = furu ? 0 : 11;
+  var gap = gapPen + gapFuru;
+
+  steps('ttSteps', [
+    { k:'한계세율 (지방세 포함)', v:(marg * 110).toFixed(1) + '%' },
+    { k:'연금계좌 ' + won(penEff) + ' × ' + (prate * 100).toFixed(0) + '%', v:won(vPen) },
+    { k:'카드 공제 ' + won(cardDed) + ' × ' + (marg * 110).toFixed(1) + '%', v:won(vCard) },
+    { k:'의료비 (문턱 ' + won(pay * 0.03) + ' 초과분)', v:won(vMed) },
+    { k:'고향사랑기부', v:furu ? won(vFuru) : '아직 안 함' },
+    { k:'지금 받는 절세액', v:won(now), total:true }
+  ]);
+
+  document.getElementById('ttNow').textContent = won(now);
+  document.getElementById('ttGap').textContent = gap > 0.5 ? '+' + won(gap) : '없음 (한도 다 씀)';
+  document.getElementById('ttGap').style.color = gap > 0.5 ? 'var(--neg)' : 'var(--pos)';
+
+  // 스택 막대 + 남은 여지
+  var X0 = 60, W = 520;
+  var maxV = Math.max(now + gap, 1);
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="22">연간 절세액 구성 (만원)</text>';
+  var parts = [
+    { n:'연금계좌', v:vPen, c:'#5B6E8E' },
+    { n:'카드', v:vCard, c:'#8E6B3A' },
+    { n:'의료비', v:vMed, c:'#6B7A52' },
+    { n:'고향사랑', v:vFuru, c:'#7A5C9E' }
+  ];
+  var cx = X0;
+  parts.forEach(function(p){
+    if(p.v <= 0.01) return;
+    var w = p.v / maxV * W;
+    g += '<rect x="' + cx.toFixed(1) + '" y="38" width="' + w.toFixed(1) + '" height="30" fill="' + p.c +
+         '" fill-opacity=".42" stroke="' + p.c + '" stroke-width="1.1"/>';
+    cx += w;
+  });
+  if(gap > 0.5){
+    var gw = gap / maxV * W;
+    g += '<rect x="' + cx.toFixed(1) + '" y="38" width="' + gw.toFixed(1) +
+         '" height="30" fill="#8E4B3A" fill-opacity=".10" stroke="#8E4B3A" stroke-width="1.1" stroke-dasharray="4 3"/>';
+    g += '<text class="lblb" x="' + Math.min(cx + gw / 2, X0 + W - 40).toFixed(1) + '" y="' + 58 +
+         '" text-anchor="middle" fill="#8E4B3A">남은 여지</text>';
+  }
+  g += '<text class="lblb" x="' + X0 + '" y="88" fill="#5B5648">지금 ' + won(now) +
+       (gap > 0.5 ? '  ·  다 채우면 ' + won(now + gap) : '  ·  한도를 다 썼습니다') + '</text>';
+  // 범례
+  var lx = X0;
+  parts.forEach(function(p){
+    if(p.v <= 0.01) return;
+    g += '<rect x="' + lx + '" y="104" width="10" height="10" rx="2" fill="' + p.c + '" fill-opacity=".55" stroke="' + p.c + '" stroke-width="1"/>';
+    g += '<text class="axt" x="' + (lx + 15) + '" y="113">' + p.n + ' ' + Math.round(p.v) + '</text>';
+    lx += 26 + p.n.length * 12;
+  });
+  g += '<text class="axt" x="' + X0 + '" y="140">총급여 대비 ' + (now / pay * 100).toFixed(2) + '% — 소득이 높을수록 이 비율은 내려갑니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="162">문턱과 한도는 소득에 비례하거나 고정되어 있기 때문입니다.</text>';
+  document.getElementById('ttScene').innerHTML = g;
+
+  var lines = [];
+  if(gapFuru > 0) lines.push('· <b>고향사랑기부 10만원</b> — <b>+' + won(gapFuru) + '</b>. 답례품까지 생각하면 <b>낸 것보다 많이</b> 돌아옵니다. <b>가장 먼저</b> 하세요.');
+  if(gapPen > 0.5) lines.push('· <b>연금계좌 ' + won(900 - penEff) + ' 더 납입</b> — <b>+' + won(gapPen) +
+    '</b>. 다만 <b>55세까지 묶입니다.</b> 비상금과 가까운 목돈을 먼저 확보한 뒤에 하세요.');
+  if(pen > 900) lines.push('· <b>연금계좌 납입이 한도를 넘었습니다.</b> ' + won(pen - 900) + '은 <b>공제받지 못합니다.</b> 900만원까지만 넣으세요.');
+  if(cardDed <= 0.01 && card > 0) lines.push('· <b>카드가 문턱(' + won(pay * 0.25) + ')을 못 넘었습니다.</b> 다만 <b>넘기려고 더 쓰지는 마세요</b> — 돌아오는 것은 쓴 돈의 1~2%입니다.');
+  if(vMed <= 0.01 && med > 0) lines.push('· <b>의료비가 문턱(' + won(pay * 0.03) + ')을 못 넘었습니다.</b> 가족 의료비를 <b>빠짐없이 모아</b> 한 사람에게 몰아보세요(04편).');
+
+  if(now <= 0.5){
+    verdict('ttVerdict', '#8E4B3A',
+      '지금 받고 있는 절세액이 거의 없습니다',
+      '입력하신 조건으로는 <b>돌아오는 것이 사실상 없습니다.</b> 문턱을 못 넘었거나 <b>아직 아무것도 하지 않은 상태</b>입니다.<br><br>' +
+      '<b>지금 할 수 있는 것</b><br>' + (lines.length ? lines.join('<br>') : '· 슬라이더를 움직여 조건을 넣어보세요.') + '<br><br>' +
+      '<b>순서는 하나뿐입니다</b> — <b>고향사랑기부 → 이미 쓴 것 챙기기 → 연금계좌 → 카드 수단 조정.</b> 03편의 순서 그대로입니다.');
+  } else if(gap <= 0.5){
+    verdict('ttVerdict', pen > 900 ? '#8E6B3A' : '#4C7A6D',
+      pen > 900
+        ? '한도를 넘겼습니다 — ' + won(pen - 900) + '은 공제받지 못합니다'
+        : '한도를 다 썼습니다 — 연간 ' + won(now),
+      (pen > 900
+        ? '<b>연금계좌 납입이 ' + won(pen) + '으로 한도 900만원을 넘었습니다.</b> 초과분 <b>' + won(pen - 900) +
+          '</b>은 <b>공제 대상이 아닙니다.</b> 세액공제만 생각한다면 <b>900만원까지만</b> 넣으세요.<br><br>' +
+          '<b>다만 초과 납입이 완전히 무의미하지는 않습니다.</b> 계좌 안에서는 <b>운용 수익에 대한 과세가 미뤄지고</b>, 나중에 <b>연금으로 받을 때 세율이 낮습니다.</b> 그리고 초과분은 <b>다음 해 공제로 넘겨 신청할 수 있는 제도</b>가 있으니 확인해보세요. <b>그래도 55세까지 묶인다는 점은 같습니다.</b><br><br>'
+        : '') +
+      '연금계좌 <b>900만원</b>과 고향사랑기부 <b>10만원</b>을 모두 채웠습니다. <b>연말정산으로 할 수 있는 큰 항목은 거의 끝났습니다.</b><br><br>' +
+      '<b>남은 것은 「빠뜨린 것 찾기」</b>입니다 — 교육비, 보장성보험료, 월세, 주택청약저축, 기부금, 그리고 <b>부모님 의료비</b>. 이 계산기에는 넣지 않았지만 <b>해당되면 실제 절세액은 더 큽니다.</b><br><br>' +
+      '<b>그다음 단계</b> — 소득이 커질수록 연말정산의 여지는 줄어듭니다(「자세히 보기」). 그때부터는 <b>05편(소득의 종류)</b>과 <b>06편(재산의 이전)</b>이 더 큰 항목이 됩니다.<br><br>' +
+      '<b>그리고 잊지 말 것</b> — 연금계좌는 <b>세금을 없애는 것이 아니라 미루는 것</b>이고 <b>55세까지 묶입니다.</b> 유동성을 다 묶지 않았는지 확인하세요(5장).');
+  } else {
+    verdict('ttVerdict', '#6B7A52',
+      '지금 ' + won(now) + ' — 더 받을 수 있는 여지가 ' + won(gap) + ' 남았습니다',
+      '지금 조건에서 돌아오는 것은 <b>연간 ' + won(now) + '</b>입니다. 총급여의 <b>' + (now / pay * 100).toFixed(2) + '%</b>입니다.<br><br>' +
+      '<b>아직 안 쓴 여지</b><br>' + lines.join('<br>') + '<br><br>' +
+      '<b>다 채우면 ' + won(now + gap) + '</b>이 됩니다.<br><br>' +
+      '<b>여기서 조심할 것</b> — <b>「여지가 남았다」가 「지금 당장 채워야 한다」는 뜻은 아닙니다.</b> 연금계좌는 <b>55세까지 묶이는 돈</b>입니다. <b>비상금과 가까운 목돈(전세금·결혼·이사)을 먼저</b> 확보한 뒤에 채우는 것이 순서입니다.<br><br>' +
+      '<b>다만 고향사랑기부만은 예외</b>입니다. 묶이는 것도 없고 <b>사실상 비용이 들지 않습니다.</b> 아직 안 했다면 <b>오늘 하세요.</b>');
+  }
+}
+['ttPay', 'ttPen', 'ttCard', 'ttCheck', 'ttMed'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', ttDraw);
+});
+document.getElementById('ttFuru').addEventListener('change', ttDraw);
+
+/* ══════════ 3. 상황 진단 ══════════ */
+var ACTIONS = [
+  { k:'base', pri:1, c:'#7A5C9E', ref:'03편',
+    t:'고향사랑기부 10만원',
+    w:'10만원까지 전액 세액공제 + 답례품 30%. 사실상 비용이 들지 않는 유일한 항목입니다.' },
+  { k:'base', pri:2, c:'#6B7A52', ref:'02·03편',
+    t:'이미 쓴 것 빠짐없이 챙기기',
+    w:'의료비·교육비·보험료·기부금. 추가 지출이 0원이라 효율이 가장 높습니다. 안경·렌즈·산후조리원도 확인하세요.' },
+  { k:'couple', pri:3, c:'#5B6E8E', ref:'04편',
+    t:'항목별로 배우자와 나누기',
+    w:'문턱 있는 공제(의료비 3%·카드 25%)는 소득 낮은 쪽, 없는 공제(인적공제)는 높은 쪽. 그리고 중복 공제를 반드시 확인하세요.' },
+  { k:'couple', pri:4, c:'#5B6E8E', ref:'04편',
+    t:'카드를 누구 명의로 쓸지 연초에 정하기',
+    w:'카드 사용액은 명의자 것으로 고정됩니다. 연말에는 나눌 수 없습니다.' },
+  { k:'low', pri:5, c:'#4C7A6D', ref:'03편',
+    t:'연금계좌를 먼저 채우기 (공제율 15%)',
+    w:'총급여 5,500만원 이하면 공제율이 15%입니다. 초과하면 12%로 떨어지므로 지금이 유리합니다.' },
+  { k:'base', pri:6, c:'#4C7A6D', ref:'03편',
+    t:'연금계좌 한도(900만원) 검토',
+    w:'절세액이 가장 큰 항목입니다. 다만 55세까지 묶이므로 비상금과 가까운 목돈을 먼저 확보하세요.' },
+  { k:'rent', pri:7, c:'#8E6B3A', ref:'03편',
+    t:'월세 세액공제와 주택청약저축 확인',
+    w:'총급여 상한 요건이 있고, 월세는 계약자 기준입니다. 계약할 때 정해지므로 미리 확인하세요.' },
+  { k:'base', pri:8, c:'#8E6B3A', ref:'03편',
+    t:'문턱을 넘긴 뒤 체크·현금영수증으로',
+    w:'총급여 25%를 넘긴 시점부터 공제율이 두 배(30% vs 15%)가 됩니다. 넘기려고 더 쓰지는 마세요.' },
+  { k:'landlord', pri:9, c:'#8E4B3A', ref:'05편',
+    t:'건강보험료부터 확인하기',
+    w:'세금보다 클 수 있습니다. 특히 피부양자 자격을 잃으면 부담이 크게 늘어납니다. 소득이 잡히기 전에 공단에 문의하세요.' },
+  { k:'landlord', pri:10, c:'#4C7A6D', ref:'05편',
+    t:'주택 수를 부부 합산으로 세고 2,000만원 판정',
+    w:'3주택 이상이면 보증금이 간주임대료로 환산되어 더해집니다. 월세만 보면 판정이 틀립니다.' },
+  { k:'landlord', pri:11, c:'#5B6E8E', ref:'05편',
+    t:'분리과세와 종합과세 중 고르기',
+    w:'2,000만원 이하면 선택할 수 있습니다. 기준은 내 한계세율과 15.4%의 비교입니다.' },
+  { k:'biz', pri:12, c:'#7A5C9E', ref:'05편',
+    t:'일반과세와 간이과세 판단',
+    w:'거래처가 사업자이거나 초기 투자가 크면 일반. 손님이 개인이고 매입이 적으면 간이. 세금 차이만으로 정하지 마세요.' },
+  { k:'biz', pri:13, c:'#7A5C9E', ref:'05편',
+    t:'사업용 계좌와 카드 분리하기',
+    w:'경비 증빙의 대부분이 이것만으로 정리됩니다. 부가세보다 종합소득세가 크다는 점도 기억하세요.' },
+  { k:'inherit', pri:14, c:'#8E4B3A', ref:'06편',
+    t:'상속세가 나오는 규모인지 먼저 계산',
+    w:'배우자가 있으면 10억원, 없으면 5억원까지 0원입니다. 안 나오면 사전증여는 오히려 손해입니다.' },
+  { k:'inherit', pri:15, c:'#8E4B3A', ref:'06편',
+    t:'나온다면 10년 계획과 현금 마련',
+    w:'사망 전 10년 이내의 증여는 상속재산에 합산되어 정확히 본전입니다. 그리고 세금 낼 현금이 없어 급매하는 경우가 가장 흔합니다.' },
+  { k:'base', pri:16, c:'#5B5648', ref:'02·04편',
+    t:'10월에 연말정산 미리보기로 점검',
+    w:'남은 두 달에 조정할 수 있는 마지막 시점입니다. 맞벌이라면 두 사람 것을 함께 보세요.' }
+];
+var dgSel = {};
+function dgDraw(){
+  var keys = Object.keys(dgSel).filter(function(k){ return dgSel[k]; });
+  var list = ACTIONS.filter(function(a){ return a.k === 'base' || dgSel[a.k]; });
+  list.sort(function(a, b){ return a.pri - b.pri; });
+
+  var html = '';
+  list.forEach(function(a, i){
+    html += '<li style="--tc:' + a.c + '">' +
+            '<span class="rank">' + (i + 1) + '</span>' +
+            '<span class="body"><b>' + a.t + '</b><span class="why">' + a.w + '</span></span>' +
+            '<span class="ref">' + a.ref + '</span></li>';
+  });
+  document.getElementById('dgList').innerHTML = html;
+
+  var names = { couple:'맞벌이', low:'총급여 5,500만원 이하', rent:'무주택·월세', landlord:'임대소득', biz:'사업자', inherit:'상속 준비' };
+  var picked = keys.map(function(k){ return names[k]; });
+
+  if(keys.length === 0){
+    verdict('dgVerdict', '#5B5648',
+      '누구에게나 해당하는 기본 항목입니다',
+      '위 <b>' + list.length + '가지</b>는 <b>조건과 무관하게 대부분의 근로소득자에게</b> 해당합니다.<br><br>' +
+      '<b>위쪽 두 개만 해도 대부분이 끝납니다.</b> <b>고향사랑기부 10만원</b>과 <b>이미 쓴 것 챙기기</b>입니다. 이 둘은 <b>추가 지출이 거의 없습니다.</b><br><br>' +
+      '<b>해당하는 조건을 눌러보세요.</b> 여러 개를 고를 수 있고, 고를수록 <b>목록이 길어지고 순서가 바뀝니다.</b>');
+  } else if(dgSel.inherit && dgSel.landlord){
+    verdict('dgVerdict', '#8E4B3A',
+      '임대소득과 상속이 함께 걸려 있습니다 — 순서가 중요합니다',
+      '고른 조건: <b>' + picked.join(' · ') + '</b> — 할 일이 <b>' + list.length + '가지</b>입니다.<br><br>' +
+      '<b>이 조합에서 가장 자주 나는 사고</b> — 부모님이 <b>임대소득을 신고하기 시작하면서 피부양자에서 빠지고</b>, 동시에 <b>자녀의 부양가족 공제도 사라지는</b> 것입니다. 세금·건강보험료·연말정산이 <b>한꺼번에</b> 움직입니다.<br><br>' +
+      '<b>그래서 순서는</b> ① 건강보험료 영향 확인 → ② 주택 수와 2,000만원 판정 → ③ 분리·종합 선택 → ④ 그다음에 상속 계획입니다.<br><br>' +
+      '<b>상속 쪽은 서두르지 마세요.</b> <b>먼저 상속세가 나오는 규모인지</b>부터 계산하는 것이 순서입니다. 안 나오면 <b>할 일이 없습니다.</b>');
+  } else if(dgSel.couple && dgSel.low){
+    verdict('dgVerdict', '#5B6E8E',
+      '맞벌이면서 공제율이 높은 구간입니다 — 유리한 조합입니다',
+      '고른 조건: <b>' + picked.join(' · ') + '</b> — 할 일이 <b>' + list.length + '가지</b>입니다.<br><br>' +
+      '<b>이 조합의 장점</b> — 총급여 5,500만원 이하면 <b>연금계좌 공제율이 15%</b>입니다. 그리고 맞벌이라 <b>한도를 두 사람 몫으로</b> 쓸 수 있습니다.<br><br>' +
+      '<b>그래서 이렇게 하세요</b> — <b>고향사랑기부는 각자 10만원씩</b>(각자 전액 공제), <b>연금계좌도 각자</b>, 그리고 <b>의료비는 소득이 낮은 쪽으로 몰기</b>.<br><br>' +
+      '<b>다만 확인할 것</b> — 소득이 낮은 쪽의 <b>결정세액이 0이 되지 않는지</b> 보세요. 0이면 공제를 몰아줘도 <b>돌아올 것이 없습니다.</b>');
+  } else {
+    verdict('dgVerdict', '#7A5C9E',
+      picked.join(' · ') + ' — 할 일이 ' + list.length + '가지입니다',
+      '고른 조건에 맞춰 <b>순서대로</b> 정리했습니다. 위에서부터 하나씩 확인하세요.<br><br>' +
+      '<b>순서를 이렇게 정한 기준</b> — <b>「추가 지출 없이 돌아오는 것」이 먼저</b>이고, <b>「돈이 묶이거나 위험이 생기는 것」이 나중</b>입니다. 그래서 고향사랑기부와 「이미 쓴 것 챙기기」가 항상 위에 있고, 연금계좌는 그다음입니다.<br><br>' +
+      (dgSel.landlord || dgSel.biz
+        ? '<b>월급 밖의 소득이 있으므로</b> — <b>건강보험료</b>를 반드시 함께 확인하세요. 세금보다 큰 경우가 흔합니다.<br><br>'
+        : '') +
+      (dgSel.inherit
+        ? '<b>상속 쪽은 순서가 특히 중요합니다</b> — <b>재산을 세어보고 상속세가 나오는지</b>부터 확인하세요. <b>안 나오면 사전증여는 손해</b>입니다.<br><br>'
+        : '') +
+      '<b>그리고 마지막 항목(10월 미리보기)을 달력에 적어두세요.</b> 연중에 조정할 수 있는 <b>마지막 기회</b>입니다.');
+  }
+}
+(function(){
+  var btns = document.querySelectorAll('#dgBtns button');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var k = b.getAttribute('data-v');
+      dgSel[k] = !dgSel[k];
+      b.classList.toggle('on', !!dgSel[k]);
+      dgDraw();
+    });
+  });
+})();
+
+/* ══════════ 4. 연중 일정 ══════════ */
+var CL = [
+  { h:'1~2월', color:'#5B6E8E', months:[0, 1],
+    t:'연말정산 — 작년을 마무리합니다',
+    p:'<b>회사에 자료를 내는 시기</b>입니다. 국세청 <b>간소화 서비스</b>에서 대부분 자동으로 모이지만, <b>안 잡히는 것</b>이 있습니다.<br><br>' +
+      '<b>직접 챙겨야 하는 것</b> — 안경·콘택트렌즈 구입비, 일부 의료기관 비용, 교복·체육복, 취학 전 아동 학원비, 기부금 영수증, 월세(계약서·이체 내역), 그리고 <b>부모님이 따로 사시는 경우의 의료비</b>.<br><br>' +
+      '<b>맞벌이라면 여기서 정합니다</b> — <b>부양가족을 누가</b>, <b>의료비를 누구 앞으로</b>. 04편의 계산을 이 시점에 적용합니다.<br><br>' +
+      '<b>그리고 반드시</b> — <b>중복 공제 확인</b>입니다. 배우자와, 그리고 <b>형제자매와</b> 부모님 공제가 겹치지 않는지 <b>미리 이야기</b>하세요.<br><br>' +
+      '<b>놓쳤다면</b> — <b>5월 종합소득세 신고 때</b> 바로잡을 수 있고, 지난 것도 <b>경정청구</b>로 되돌릴 수 있습니다.' },
+  { h:'연초', color:'#4C7A6D', months:[0, 1, 2],
+    t:'올해를 설계합니다 — 지금 아니면 못 정하는 것',
+    p:'<b>가장 중요한 시기인데 가장 많이 놓칩니다.</b> 여기서 정해야 <b>연말에 후회하지 않습니다.</b><br><br>' +
+      '<b>지금 정해야 하는 것</b><br>· <b>카드를 누구 명의로 쓸지</b> — 맞벌이의 핵심입니다. 카드 사용액은 <b>명의자 것으로 고정</b>되어 <b>연말에 나눌 수 없습니다.</b><br>' +
+      '· <b>연금계좌 자동이체 금액</b> — 12월에 몰아넣는 것보다 <b>나눠 넣는 편</b>이 관리가 쉽습니다.<br>' +
+      '· <b>월세 계약을 한다면 계약자를 누구로</b> — 공제는 <b>계약자</b>가 받습니다.<br><br>' +
+      '<b>작년 자료로 미리 계산해보세요</b> — 작년 카드 사용액과 의료비를 04편 계산기에 넣으면 <b>올해 누구 앞으로 해야 하는지</b>가 나옵니다.<br><br>' +
+      '<b>한 줄로</b> — <b>「연초에 정하고, 10월에 점검한다.」</b> 이것만 해도 대부분이 정리됩니다.' },
+  { h:'5~6월', color:'#8E6B3A', months:[4, 5],
+    t:'종합소득세 신고 · 그리고 6월 1일',
+    p:'<b>5월은 종합소득세 신고</b>입니다. 근로소득만 있고 연말정산을 했다면 <b>따로 할 일이 없습니다.</b><br><br>' +
+      '<b>5월에 신고해야 하는 사람</b><br>· <b>임대소득</b>이 있는 사람 — 분리과세와 종합과세 중 <b>여기서 고릅니다</b>(05편)<br>· <b>사업소득</b>이 있는 사람<br>· <b>연말정산에서 빠뜨린 것</b>이 있는 근로자 — <b>여기서 바로잡을 수 있습니다</b><br>· 여러 회사에서 받은 소득을 합쳐야 하는 사람<br><br>' +
+      '<b>그리고 6월 1일</b> — <b>재산세와 종합부동산세의 과세 기준일</b>입니다. <b>그날 소유한 사람</b>이 1년치를 냅니다.<br><br>' +
+      '<b>그래서 집을 사고팔 때</b> — <b>파는 쪽은 6월 1일 전에 넘기는 것</b>이, <b>사는 쪽은 6월 2일 이후에 받는 것</b>이 유리합니다. 잔금일 하루 차이로 <b>1년치가 갈립니다.</b> 부동산 06편에서 다룬 내용입니다.' },
+  { h:'10월', color:'#7A5C9E', months:[9],
+    t:'미리보기 — 조정할 수 있는 마지막 시점',
+    p:'국세청 <b>연말정산 미리보기</b>가 열립니다. <b>9월까지의 카드 사용액</b>이 이미 반영되어 있어, <b>남은 기간을 어떻게 쓸지</b> 계산할 수 있습니다.<br><br>' +
+      '<b>여기서 확인할 것</b><br>· <b>카드 문턱(총급여 25%)을 넘겼는가</b> — 넘겼다면 남은 기간은 <b>체크·현금영수증</b>으로<br>· <b>카드 한도(300만원)에 가까운가</b> — 가까우면 <b>더 써도 소용없습니다</b><br>· <b>연금계좌 한도가 얼마 남았는가</b> — 12월 31일까지 채울 수 있습니다<br>· <b>예상 결정세액이 얼마인가</b> — <b>0에 가까우면 더 넣어도 돌아오지 않습니다</b><br><br>' +
+      '<b>맞벌이라면 두 사람 것을 함께 보세요.</b> 한쪽의 결정세액이 0에 가까우면 <b>남은 지출을 다른 쪽으로</b> 돌려야 합니다(04편 6장).<br><br>' +
+      '<b>이 한 번의 점검이 연말정산 전체를 좌우합니다.</b> 달력에 적어두세요.' },
+  { h:'11~12월', color:'#6B7A52', months:[10, 11],
+    t:'마감 — 12월 31일까지만 되는 것들',
+    p:'<b>연중에 할 수 있는 것들의 마감</b>입니다. <b>1월 1일이면 늦습니다.</b><br><br>' +
+      '<b>12월 31일까지 해야 하는 것</b><br>· <b>고향사랑기부 10만원</b> — 아직 안 했다면 <b>지금</b><br>· <b>연금계좌 납입</b> — 한도 900만원까지<br>· <b>기부금</b> — 납부 시점 기준<br>· <b>중소기업 취업자 감면 등</b> 신청이 필요한 항목<br><br>' +
+      '<b>그리고 확인할 것</b> — <b>결정세액이 0인 사람은 지금 넣어도 돌아오지 않습니다.</b> 10월 미리보기 결과를 먼저 보세요.<br><br>' +
+      '<b>가장 흔한 후회</b> — <b>「카드를 배우자 것으로 쓸걸」</b>입니다. 이건 <b>12월에는 되돌릴 수 없습니다.</b> 내년 연초에 정하세요.<br><br>' +
+      '<b>그리고 12월에 하지 말아야 할 것</b> — <b>공제를 받으려고 안 사도 될 것을 사는 것</b>입니다. 돌아오는 것은 <b>쓴 돈의 일부</b>일 뿐입니다.' }
+];
+function clScene(idx){
+  var g = '';
+  var X0 = 40, W = 560, mw = W / 12;
+  var months = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12'];
+  g += '<text class="axt" x="' + X0 + '" y="22">연중 일정 (월)</text>';
+  var act = CL[idx].months, c = CL[idx].color;
+  months.forEach(function(m, i){
+    var on = act.indexOf(i) >= 0;
+    g += '<rect x="' + (X0 + i * mw).toFixed(1) + '" y="34" width="' + (mw - 2).toFixed(1) +
+         '" height="34" rx="3" fill="' + (on ? c : '#8A8474') + '" fill-opacity="' + (on ? '.44' : '.09') +
+         '" stroke="' + (on ? c : '#D9D2C0') + '" stroke-width="' + (on ? '1.6' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 + i * mw + mw / 2 - 1).toFixed(1) +
+         '" y="55" text-anchor="middle"' + (on ? ' fill="' + c + '"' : '') + '>' + m + '</text>';
+  });
+  var marks = [
+    { m:1, n:'연말정산' }, { m:4, n:'종소세' }, { m:5, n:'6/1 기준일' },
+    { m:9, n:'미리보기' }, { m:11, n:'12/31 마감' }
+  ];
+  marks.forEach(function(k){
+    var x = X0 + k.m * mw + mw / 2 - 1;
+    g += '<line x1="' + x.toFixed(1) + '" y1="70" x2="' + x.toFixed(1) + '" y2="80" stroke="#D9D2C0" stroke-width="1"/>';
+    g += '<text class="axt" x="' + x.toFixed(1) + '" y="93" text-anchor="middle">' + k.n + '</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="118">' + CL[idx].t + '</text>';
+  document.getElementById('clScene').innerHTML = g;
+}
+bindBtnRow('#clBtns', function(v){
+  clScene(+v);
+  document.getElementById('clVerdict').querySelector('.vh').textContent = CL[+v].h;
+  verdict('clVerdict', CL[+v].color, CL[+v].t, CL[+v].p);
+});
+
+/* ══════════ 5. 위험한 절세 ══════════ */
+var RK = [
+  { h:'세금 때문에 상품 고르기', color:'#8E4B3A',
+    t:'가장 흔하고 가장 비싼 실수입니다',
+    p:'<b>「절세되는 상품」</b>이라는 말로 팔리는 것이 많습니다. 그런데 <b>절세 효과는 대체로 한 자릿수 퍼센트</b>이고, <b>상품이 나쁘면 손실은 두 자릿수</b>가 될 수 있습니다.<br><br>' +
+      '<b>구체적으로 비교해보면</b> — 연금계좌 공제율은 <b>13.2~16.5%</b>입니다. 한 번 돌아오는 금액입니다. 그런데 그 안에 담은 상품이 <b>연 2%씩 뒤처지면</b> 20년 뒤에는 <b>훨씬 큰 차이</b>가 납니다.<br><br>' +
+      '<b>그래서 순서가 있습니다</b> — <b>① 좋은 자산을 고른다 → ② 그것을 담을 계정을 고른다.</b> 반대로 하면 안 됩니다.<br><br>' +
+      '<b>연금계좌는 「그릇」입니다.</b> 그 안에 무엇을 담을지는 <b>내가 고릅니다.</b> 계좌를 만드는 것과 <b>거기서 파는 상품을 사는 것</b>은 다른 일입니다.<br><br>' +
+      '<b>확인하는 질문 하나</b> — <b>「세금 혜택이 전혀 없어도 이 상품을 살 것인가?」</b> 답이 「아니오」라면 사지 마세요.' },
+  { h:'유동성을 다 묶기', color:'#8E6B3A',
+    t:'절세액보다 중도해지 손실이 큽니다',
+    p:'<b>연금계좌는 55세까지 묶입니다.</b> 그전에 찾으면 <b>기타소득세(대체로 16.5%)</b>가 붙어 <b>받았던 공제를 사실상 토해냅니다.</b><br><br>' +
+      '<b>계산해보면</b> — 총급여 6,000만원인 사람이 900만원을 넣으면 <b>약 119만원</b>이 돌아옵니다. 그런데 <b>중간에 찾으면</b> 그만큼(또는 그 이상)을 다시 냅니다. <b>결국 남는 게 없습니다.</b><br><br>' +
+      '<b>그리고 실제 손해는 세금이 아닙니다</b> — <b>급한 돈이 필요할 때 다른 자산을 나쁜 가격에 팔아야 하는 것</b>입니다. 부동산 트랙에서 반복한 <b>「버티는 힘」</b>과 같은 이야기입니다.<br><br>' +
+      '<b>순서</b> — ① <b>비상금</b>(생활비 6~12개월치) → ② <b>가까운 시일의 목돈</b>(전세금·결혼·이사·학자금) → ③ <b>그다음에 연금계좌</b>.<br><br>' +
+      '<b>2장 계산기가 「남은 여지」를 보여주더라도</b>, 그것이 <b>「지금 당장 채우라」는 뜻은 아닙니다.</b> 순서를 지키세요.' },
+  { h:'사실과 다르게 신고하기', color:'#8E4B3A',
+    t:'당장 넘어가도 나중에 대조됩니다',
+    p:'<b>흔한 형태</b><br>· 부양가족을 <b>두 사람이 각각</b> 공제 (04편)<br>· 실제로 부양하지 않는 가족을 <b>공제 대상에 넣기</b><br>· 사업자가 <b>사적 지출을 경비로</b> 넣기<br>· 소득을 <b>신고하지 않기</b><br><br>' +
+      '<b>왜 위험한가</b> — 연말정산 때는 <b>회사가 걸러내지 못합니다.</b> 다른 회사에 다니는 형제의 신고를 알 수 없으니까요. 그런데 국세청은 <b>전체를 대조</b>합니다.<br><br>' +
+      '<b>확인되면</b> — 원래 세금에 <b>가산세</b>가 더해집니다. 시간이 지날수록 커집니다. 그리고 <b>상속·증여세는 부과제척기간이 매우 깁니다</b>(06편).<br><br>' +
+      '<b>「몰랐다」가 통하지 않습니다.</b> 특히 <b>부양가족 소득 요건</b>은 본인이 확인해야 하는 것입니다.<br><br>' +
+      '<b>이미 했다면</b> — <b>수정신고나 기한 후 신고</b>로 스스로 바로잡을 수 있습니다. <b>자진하면 가산세가 감면</b>됩니다. 확인될 때까지 기다리는 것보다 낫습니다.' },
+  { h:'오래된 정보로 판단하기', color:'#5B6E8E',
+    t:'이 분야는 매년 바뀝니다',
+    p:'이 트랙에서 다룬 숫자들 — <b>세율 구간, 공제 한도, 문턱, 경비율, 기준 금액</b> — 은 <b>거의 매년 개정</b>됩니다.<br><br>' +
+      '<b>실제로 크게 바뀐 예</b><br>· <b>이월과세 기간</b> — 5년에서 <b>10년</b>으로 늘었습니다(06편). 예전 정보로 배우자 증여를 하면 <b>크게 틀립니다.</b><br>' +
+      '· <b>등록임대사업자 제도</b> — 대상 유형과 혜택이 여러 차례 바뀌었습니다(05편).<br>' +
+      '· <b>간이과세 기준 금액</b>과 <b>부가가치율</b>도 개정되어 왔습니다.<br><br>' +
+      '<b>그래서 위험한 것은</b> — <b>블로그·유튜브·지인의 「몇 년 전 경험담」</b>입니다. 그때는 맞았을 수 있습니다.<br><br>' +
+      '<b>확인하는 습관</b> — 큰 결정 전에 <b>국세청 홈택스</b>나 <b>국세상담센터(126)</b>에서 확인하세요. <b>무료</b>이고 <b>가장 정확합니다.</b><br><br>' +
+      '<b>이 트랙의 숫자도 마찬가지입니다.</b> 여기서 가져갈 것은 <b>숫자가 아니라 구조</b>입니다.' },
+  { h:'절세가 목적이 되는 것', color:'#7A5C9E',
+    t:'절세는 「덜 내는 것」이지 「버는 것」이 아닙니다',
+    p:'이 트랙 전체에서 <b>가장 하고 싶은 말</b>입니다.<br><br>' +
+      '<b>1만원을 더 써서 2,000원을 돌려받으면</b>, 그것은 <b>8,000원을 쓴 것</b>입니다. 절세액만 보면 <b>이득처럼 보이지만</b> 전체로는 <b>지출</b>입니다.<br><br>' +
+      '<b>그래서 이런 판단이 나옵니다</b><br>· <b>카드를 더 쓰는 것</b>은 절세가 아닙니다 — 돌아오는 것은 <b>1~2%</b>입니다.<br>' +
+      '· <b>필요 없는 기부</b>도 마찬가지입니다 — 고향사랑기부 <b>10만원까지만</b>이 예외입니다.<br>' +
+      '· <b>사업자가 경비를 늘리는 것</b>도 그렇습니다 — 100만원을 쓰면 <b>세금은 26만원 줄고 74만원은 나간 돈</b>입니다.<br><br>' +
+      '<b>진짜 효율이 높은 것은</b> — <b>이미 쓴 돈을 빠짐없이 챙기는 것</b>입니다. <b>추가 지출이 0원</b>이기 때문입니다. 그래서 이 트랙의 순서에서 <b>항상 위쪽</b>에 있습니다.<br><br>' +
+      '<b>그리고 마지막으로</b> — <b>세금 때문에 가족과 다투지 마세요.</b> 06편에서 말했듯, 상속에서 실제로 가장 많이 생기는 문제는 <b>세금이 아니라 다툼</b>입니다. <b>절세는 그 아래에 두세요.</b>' }
+];
+bindBtnRow('#rkBtns', function(v){
+  document.getElementById('rkVerdict').querySelector('.vh').textContent = RK[+v].h;
+  verdict('rkVerdict', RK[+v].color, RK[+v].t, RK[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#fnCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#fnCheck li.done').length;
+      document.getElementById('fnCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 세금 트랙 완주. 마지막 항목이 가장 중요합니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#mpBtns button[data-v="0"]').click();
+ttDraw();
+dgDraw();
+document.querySelector('#clBtns button[data-v="0"]').click();
+document.querySelector('#rkBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
