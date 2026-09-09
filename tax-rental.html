@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>임대소득과 사업자의 세금</title>
+<meta name="description" content="1주택 비과세는 어디까지인가, 2천만원 이하 분리과세는 언제 유리한가, 일반과세와 간이과세의 갈림길을 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --rent:#4C7A6D;--sep:#5B6E8E;--comp:#8E6B3A;--biz:#7A5C9E;--bad:#8E4B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:660px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--rent));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--rent));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--rent));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 0;}
+  .pair > div{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--pc);border-radius:3px;padding:15px 17px;}
+  .pair h4{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--pc);margin:0 0 8px;}
+  .pair p{font-size:13.8px;color:var(--ink-soft);margin:0 0 7px;max-width:none;}
+  .pair p:last-child{margin-bottom:0;}
+  .pair p b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .pair{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">세금 05 · 임대·사업 · 투자 공부 노트</div>
+    <h1>임대소득과<br>사업자의 세금</h1>
+    <p class="lede">월급 밖에서 소득이 생기면 <b>세금의 규칙이 달라집니다.</b> 그런데 여기에는 <b>내가 고를 수 있는 것</b>이 있습니다 — 분리과세냐 종합과세냐, 일반이냐 간이냐. 고르는 법을 계산해봅니다.</p>
+    <div class="callout">
+      <p><b>이 편에서 반복할 두 문장.</b></p>
+      <p><b>① 「내 한계세율이 얼마인가」가 모든 선택의 기준입니다.</b> 분리과세는 <b>14%(지방세 포함 15.4%) 고정</b>입니다. 내 한계세율이 그보다 높으면 분리과세, 낮으면 종합과세가 유리합니다. 01편의 누진 구조가 여기서 쓰입니다.</p>
+      <p><b>② 세금이 싸다고 좋은 선택은 아닙니다.</b> 등록임대는 세제 혜택 대신 <b>장기간의 의무</b>가 따르고, 간이과세는 세금이 적은 대신 <b>세금계산서를 못 내주는 제약</b>이 있습니다. <b>세금만 보고 정하면 사업이 불편해집니다.</b></p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#map">1. 주택 수별 지도</a>
+    <a href="#choose">2. 분리 vs 종합</a>
+    <a href="#deemed">3. 간주임대료</a>
+    <a href="#biz">4. 일반 vs 간이</a>
+    <a href="#miss">5. 놓치기 쉬운 것</a>
+    <a href="#sum">6. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="map">
+    <div class="prod-head" style="--edge:var(--rent)">
+      <span class="prod-tag">01 · 지도</span>
+      <h2>몇 채냐에 따라 규칙이 바뀝니다</h2>
+      <p class="one">주택임대소득은 <b>주택 수로 과세 여부가 먼저 갈립니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>집을 빌려주고 받는 돈에도 세금이 붙어. 그런데 <b>몇 채를 가졌느냐</b>에 따라 규칙이 달라.</p>
+      <p><b>한 채만 있으면</b> — 대체로 세금을 안 내. 내가 사는 집 한 채를 빌려준 정도는 <b>「장사」로 보지 않는</b> 거야. <b>단, 아주 비싼 집이면 예외</b>야.</p>
+      <p><b>두 채부터는</b> — 월세로 받는 돈에 세금이 붙어.</p>
+      <p><b>세 채부터는</b> — <b>보증금에도</b> 세금이 붙어. 보증금은 돌려줄 돈인데 왜 그럴까? <b>그 큰돈을 맡아서 굴리는 이익</b>이 있다고 보는 거야. 그걸 「간주임대료」라고 해.</p>
+      <p>그리고 중요한 것 하나 — <b>주택 수는 부부 것을 합쳐서</b> 세. 남편 한 채, 아내 한 채면 <b>2주택</b>이야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MAP · 주택 수를 눌러보세요</div>
+      <p class="labsub">각 구간에서 <b>무엇에 세금이 붙는지</b>입니다.</p>
+
+      <div class="btnrow" id="mpBtns">
+        <button data-v="0" class="on">1주택</button>
+        <button data-v="1">2주택</button>
+        <button data-v="2">3주택 이상</button>
+        <button data-v="3">주택 수 세는 법</button>
+      </div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주택 수별 과세 대상">
+        <g id="mpScene"></g>
+      </svg>
+
+      <div class="verdict" id="mpVerdict" style="--vc:var(--rent)">
+        <div class="vh">주택 수</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">두 개의 문턱</div>
+      <div class="kb"><b>2주택</b>부터 월세에,<br><b>3주택</b>부터 보증금에 붙습니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="choose">
+    <div class="prod-head" style="--edge:var(--sep)">
+      <span class="prod-tag">02 · 선택</span>
+      <h2>분리과세와 종합과세, 무엇을 고를까</h2>
+      <p class="one">수입 <b>2,000만원 이하</b>면 <b>내가 고를 수 있습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>임대로 번 돈에 세금을 매기는 방법이 <b>두 가지</b>야.</p>
+      <p><b>① 따로 계산하기(분리과세)</b> — 월급이랑 상관없이 <b>임대 돈만 떼어서 14%</b>를 매겨. 얼마를 벌든 <b>항상 14%</b>야.</p>
+      <p><b>② 합쳐서 계산하기(종합과세)</b> — 월급이랑 <b>합친 다음</b> 01편에서 배운 <b>층층이 세율</b>을 매겨.</p>
+      <p>그럼 어느 게 나을까? <b>내가 서 있는 층의 세율</b>에 달렸어. 낮은 층에 있으면 <b>합치는 게</b> 싸고, 높은 층에 있으면 <b>따로 떼는 게</b> 싸.</p>
+      <p>그래서 <b>월급이 적거나 없는 사람은 합치는 쪽</b>, <b>월급이 많은 사람은 떼는 쪽</b>이 대체로 유리해. 아래에서 확인해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CHOICE · 우리 집 숫자를 넣어보세요</div>
+      <p class="labsub">임대 수입이 <b>2,000만원 이하</b>일 때만 고를 수 있습니다.</p>
+
+      <div class="ctrl-row">
+        <label for="chPay">다른 소득 (근로 총급여 기준)</label>
+        <input type="range" id="chPay" min="0" max="15000" step="100" value="8000">
+        <output id="chPayOut">8,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="chRent">연간 임대 수입 (월세 + 간주임대료)</label>
+        <input type="range" id="chRent" min="0" max="3000" step="50" value="1200">
+        <output id="chRentOut">1,200만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="chReg">임대사업자 등록</label>
+        <select id="chReg">
+          <option value="0" selected>미등록 (경비율 50% · 기본공제 200만원)</option>
+          <option value="1">등록 (경비율 60% · 기본공제 400만원)</option>
+        </select>
+      </div>
+
+      <div class="steps-out" id="chSteps"></div>
+
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="분리과세와 종합과세 세금 비교">
+        <g id="chScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">분리과세 (15.4% 고정)</span><span class="rv" id="chSep">—</span></div>
+        <div><span class="rk">종합과세 (합산 누진)</span><span class="rv" id="chComp">—</span></div>
+      </div>
+
+      <div class="verdict" id="chVerdict" style="--vc:var(--sep)">
+        <div class="vh">선택</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 분리과세는 <b>수입 × (1−경비율) − 기본공제</b>에 <b>14%</b>(지방소득세 포함 15.4%)를 매깁니다. 종합과세는 같은 <b>임대소득금액</b>을 다른 소득에 <b>합산</b>해 누진세율로 계산한 <b>증가분</b>입니다.<br><br>
+        <b>단순화한 부분</b> — 종합과세의 필요경비는 실제로 <b>장부나 업종별 추계 경비율</b>로 정해져 분리과세의 법정 경비율과 다릅니다. 여기서는 <b>세율 구조의 차이만 보이도록</b> 같은 경비율을 적용했습니다. 그리고 <b>종합과세를 선택했을 때의 추가 종합소득공제·표준세액공제</b>는 반영하지 않았습니다. 실제 금액은 다를 수 있습니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>기본공제 200 / 400만원은 아무나 받는 것이 아닙니다</h3>
+      <p>분리과세의 <b>기본공제</b>에는 조건이 있습니다 — <b>주택임대소득을 뺀 종합소득금액이 2,000만원 이하</b>여야 합니다.</p>
+      <p>여기서 말하는 <b>「종합소득금액」</b>은 총급여가 아닙니다. 근로소득이라면 <b>총급여에서 근로소득공제를 뺀 금액</b>입니다.</p>
+      <p>계산해보면 <b>총급여가 대략 2,970만원</b>을 넘는 순간 근로소득금액이 2,000만원을 넘습니다. 즉 <b>웬만한 직장인은 이 기본공제를 받지 못합니다.</b></p>
+      <p class="plain"><b>왜 중요한가.</b> 인터넷에서 <b>「임대소득 1,000만원까지는 세금이 없다」</b>는 말을 자주 봅니다. <b>미등록 기준 경비율 50% + 기본공제 200만원</b>이면 수입 400만원까지 과세표준이 0이 되고, 등록이면 1,000만원까지 0이 됩니다. <b>맞는 말이지만 다른 소득이 거의 없는 사람에게만</b> 그렇습니다. <b>계산기의 「다른 소득」 슬라이더를 0으로 내려보면</b> 그 상황이 보입니다.</p>
+
+      <h3>등록임대사업자 — 혜택과 그 대가</h3>
+      <p>세제 혜택은 분명합니다. <b>경비율 50% → 60%</b>, <b>기본공제 200 → 400만원</b>. 계산기에서 등록을 선택해보면 차이가 보입니다.</p>
+      <p>그런데 <b>대가</b>가 있습니다.</p>
+      <p><b>① 장기간의 의무임대</b> — 등록하면 정해진 기간 동안 <b>계속 임대해야</b> 합니다. 중간에 팔거나 직접 들어가 살면 <b>과태료와 함께 받았던 혜택을 토해냅니다.</b></p>
+      <p><b>② 임대료 인상률 제한</b> — 재계약 시 <b>일정 비율(대체로 5%)</b>을 넘겨 올릴 수 없습니다.</p>
+      <p><b>③ 보증금 보증 가입 의무</b> — 비용이 듭니다.</p>
+      <p><b>④ 제도가 자주 바뀝니다</b> — 등록 대상 주택 유형과 혜택 범위가 여러 차례 바뀌었습니다. <b>지금 등록 가능한 유형인지부터</b> 확인해야 합니다.</p>
+      <p class="plain"><b>판단 기준.</b> 부동산 트랙에서 반복한 이야기와 같습니다 — <b>「10년 동안 팔지 않을 자신이 있는가」</b>입니다. 세금 몇십만원 때문에 <b>10년을 묶는 것</b>이 맞는 선택인지 먼저 보세요. <b>팔 가능성이 있다면 등록하지 않는 편</b>이 낫습니다.</p>
+      <p><b>그리고 등록은 두 군데에 합니다</b> — <b>지자체(민간임대주택 등록)</b>와 <b>세무서(사업자등록)</b>입니다. 분리과세 혜택을 받으려면 <b>둘 다</b> 필요합니다. 하나만 한 채로 혜택을 기대하면 안 됩니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="deemed">
+    <div class="prod-head" style="--edge:var(--comp)">
+      <span class="prod-tag">03 · 간주임대료</span>
+      <h2>보증금에도 세금이 붙습니다</h2>
+      <p class="one">3주택 이상일 때 <b>전세 보증금</b>이 수입으로 잡힙니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DEEMED RENT · 보증금을 넣어보세요</div>
+      <p class="labsub">보증금 합계에서 <b>3억원을 뺀 금액의 60%</b>에 이자율을 곱합니다.</p>
+
+      <div class="ctrl-row">
+        <label for="dmDep">전세·보증금 합계</label>
+        <input type="range" id="dmDep" min="0" max="200000" step="1000" value="60000">
+        <output id="dmDepOut">6억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dmRate">정기예금이자율 (국세청 고시 · 근사)</label>
+        <input type="range" id="dmRate" min="10" max="60" step="1" value="35">
+        <output id="dmRateOut">3.5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dmMonthly">별도로 받는 월세 (연간)</label>
+        <input type="range" id="dmMonthly" min="0" max="2400" step="50" value="600">
+        <output id="dmMonthlyOut">600만원</output>
+      </div>
+
+      <div class="steps-out" id="dmSteps"></div>
+
+      <div class="verdict" id="dmVerdict" style="--vc:var(--comp)">
+        <div class="vh">간주임대료</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>(보증금 합계 − 3억원) × 60% × 정기예금이자율</b>입니다. 이자율은 <b>국세청이 매년 고시</b>하며 여기서는 슬라이더로 두었습니다 — <b>실제 값은 신고 시점에 확인</b>해야 합니다.<br><br>
+        <b>빠지는 것</b> — <b>소형주택</b>(전용면적과 기준시가가 모두 일정 기준 이하)은 주택 수 계산과 간주임대료에서 <b>제외</b>되는 특례가 있습니다. 기준과 적용 기한이 바뀌므로 <b>반드시 확인</b>하세요.<br><br>
+        <b>그리고 이 금액이 수입금액에 더해져</b> 2,000만원 판정에 들어갑니다. 월세만 보고 <b>「2,000만원 이하니까 분리과세」</b>라고 판단하면 틀릴 수 있습니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="biz">
+    <div class="prod-head" style="--edge:var(--biz)">
+      <span class="prod-tag">04 · 사업자</span>
+      <h2>일반과세와 간이과세</h2>
+      <p class="one">세금만 보면 답이 뻔한데, <b>세금만 볼 수가 없습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>가게를 열면 <b>부가가치세</b>라는 걸 내. 물건값의 <b>10%</b>인데, 사실 이건 <b>손님이 낸 돈</b>이야. 가게는 <b>대신 받아서 나라에 전달</b>하는 거지.</p>
+      <p>그래서 계산이 이래 — <b>손님한테 받은 10%</b>에서 <b>내가 물건 살 때 낸 10%</b>를 빼고 나머지를 내. 이게 <b>일반과세</b>야.</p>
+      <p><b>간이과세</b>는 작은 가게를 위한 <b>간단 버전</b>이야. 받은 돈의 <b>10%가 아니라 훨씬 적게</b> 내. 대신 <b>돌려받지도 못하고</b>, <b>영수증(세금계산서)을 못 끊어주는</b> 경우가 있어.</p>
+      <p>그럼 왜 간이를 안 고를까? <b>거래처가 회사면</b> 세금계산서를 달라고 하거든. 못 주면 <b>거래를 안 해줘.</b> 그리고 <b>처음에 인테리어로 큰돈을 썼다면</b> 일반과세는 그 10%를 <b>돌려받을 수</b> 있어.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">VAT · 일반과 간이 비교</div>
+      <p class="labsub">1년치 <b>매출과 매입</b>을 넣어보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="vtSale">연간 매출 (부가세 포함 기준)</label>
+        <input type="range" id="vtSale" min="500" max="15000" step="100" value="6000">
+        <output id="vtSaleOut">6,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="vtBuy">연간 매입 (세금계산서 받은 것)</label>
+        <input type="range" id="vtBuy" min="0" max="8000" step="100" value="1500">
+        <output id="vtBuyOut">1,500만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="vtKind">업종</label>
+        <select id="vtKind">
+          <option value="15" selected>소매·음식 (부가가치율 15%)</option>
+          <option value="20">제조 (20%)</option>
+          <option value="30">건설·운수·기타 서비스 (30%)</option>
+          <option value="40">부동산임대·전문 서비스 (40%)</option>
+        </select>
+      </div>
+
+      <div class="steps-out" id="vtSteps"></div>
+
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="일반과세와 간이과세 부가세 비교">
+        <g id="vtScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">일반과세</span><span class="rv" id="vtGen">—</span></div>
+        <div><span class="rk">간이과세</span><span class="rv" id="vtSim">—</span></div>
+      </div>
+
+      <div class="verdict" id="vtVerdict" style="--vc:var(--biz)">
+        <div class="vh">부가가치세</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 일반과세는 <b>매출세액(매출×10%) − 매입세액(매입×10%)</b>, 간이과세는 <b>매출 × 업종별 부가가치율 × 10% − 매입×0.5%</b>입니다.<br><br>
+        <b>기준 금액</b> — 간이과세는 직전 연도 매출이 <b>8,000만원 미만</b>일 때 적용되며, <b>부동산임대업과 과세유흥장소는 4,800만원 미만</b>입니다. 매출 <b>4,800만원 미만</b>이면 <b>납부의무가 면제</b>됩니다.<br><br>
+        <b>⚠️ 업종별 부가가치율과 기준 금액은 개정이 잦습니다.</b> 여기 값은 <b>구조를 보기 위한 근사</b>이며, 실제 신고 전에 반드시 확인하세요.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>세금이 적은 쪽이 항상 답이 아닌 이유</h3>
+      <p>계산기만 보면 대체로 <b>간이과세가 압도적으로 적습니다.</b> 그런데도 일반과세를 고르는 사람이 많습니다. 이유는 셋입니다.</p>
+      <p><b>① 세금계산서를 못 내줍니다.</b> 간이과세자 중 <b>직전 연도 매출 4,800만원 미만</b>이면 세금계산서를 발급할 수 없습니다. 그러면 <b>거래처가 매입세액공제를 못 받습니다.</b> 법인이나 사업자를 상대로 하는 업종이라면 <b>거래 자체가 끊깁니다.</b> B2B라면 간이과세는 사실상 선택지가 아닙니다.</p>
+      <p><b>② 환급을 못 받습니다.</b> 개업 첫해에 <b>인테리어·설비·권리금</b>으로 큰돈을 쓰면 매입세액이 매출세액보다 큽니다. 일반과세라면 그 차액을 <b>돌려받습니다.</b> 간이과세는 <b>아무리 많이 써도 환급이 없습니다.</b> 계산기에서 <b>매입 슬라이더를 매출보다 크게</b> 올려보면 이 상황이 보입니다.</p>
+      <p><b>③ 자동으로 바뀝니다.</b> 매출이 기준을 넘으면 <b>다음 해부터 일반과세자로 전환</b>됩니다. 반대도 마찬가지입니다. <b>내가 계속 고르는 것이 아닙니다.</b></p>
+      <p class="plain"><b>실전 판단.</b> <b>손님이 개인이고(B2C), 매입이 적고, 매출이 작다</b> → 간이. <b>거래처가 사업자이거나(B2B), 초기 투자가 크다</b> → 일반. 중간이라면 <b>첫해는 일반으로 시작해 환급을 받고</b>, 이후 기준에 따라 전환되게 두는 방식도 흔합니다.</p>
+
+      <h3>주택임대는 부가세가 없습니다 — 상가임대는 있습니다</h3>
+      <p><b>주택임대용역은 부가가치세 면세</b>입니다. 그래서 주택만 임대한다면 <b>부가세 신고 자체가 없습니다.</b> 대신 <b>사업장현황신고</b>를 합니다.</p>
+      <p><b>상가임대는 과세</b>입니다. 임차인에게 <b>임대료의 10%</b>를 부가세로 받아 납부합니다. 그리고 상가는 <b>간이과세 기준이 4,800만원 미만</b>으로 더 낮습니다.</p>
+      <p class="plain"><b>「면세」와 「비과세」는 다릅니다.</b> <b>면세</b>는 부가가치세를 안 낸다는 뜻이고, <b>소득세는 그대로 냅니다.</b> 주택임대는 <b>부가세 면세 + 소득세 과세</b>입니다. 1주택 비과세는 <b>소득세 쪽</b> 이야기입니다. 두 세금을 섞어 생각하면 헷갈립니다.</p>
+
+      <h3>그리고 사업자에게는 부가세보다 종합소득세가 큽니다</h3>
+      <p>부가세는 <b>사실상 손님 돈을 전달하는 것</b>이라, 제대로 관리하면 내 부담이 아닙니다. 실제로 부담이 되는 것은 <b>종합소득세</b>입니다.</p>
+      <p>그래서 사업자에게 가장 중요한 습관은 <b>「경비를 증빙과 함께 남기는 것」</b>입니다. 사업용 계좌와 사업용 카드를 <b>따로 쓰는 것</b>만으로도 상당 부분이 정리됩니다.</p>
+      <p><b>다만 착각하지 말 것</b> — <b>경비를 쓰면 세금이 줄어드는 것은 맞지만, 쓴 돈이 돌아오는 것은 아닙니다.</b> 100만원을 경비로 쓰면 세금이 <b>내 한계세율만큼(예: 26만원)</b> 줄어들 뿐, <b>74만원은 그냥 나간 돈</b>입니다. 03편의 카드 공제와 같은 이야기입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="miss">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">05 · 함정</span>
+      <h2>놓치기 쉬운 것들</h2>
+      <p class="one">임대·사업 소득이 생기면 <b>다른 곳이 함께 움직입니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MISSES · 자주 걸리는 지점</div>
+      <p class="labsub">각각 <b>왜 문제가 되고 어떻게 확인하는지</b>입니다.</p>
+
+      <div class="btnrow" id="msBtns">
+        <button data-v="0" class="on">건강보험료</button>
+        <button data-v="1">부양가족에서 빠짐</button>
+        <button data-v="2">2,000만원 판정</button>
+        <button data-v="3">사업자등록 안 하면</button>
+        <button data-v="4">주택 수 판정</button>
+      </div>
+
+      <div class="verdict" id="msVerdict" style="--vc:var(--bad)">
+        <div class="vh">함정</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 6 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">06 · 정리</span>
+      <h2>한 장 요약</h2>
+      <p class="one">숫자는 바뀌어도 <b>구조는 그대로</b>입니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>상황</th><th>과세 여부</th><th>선택할 수 있는 것</th><th>확인할 것</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>1주택 · 월세</th><td>원칙적으로 <b>비과세</b></td><td>—</td><td>고가주택·국외주택은 <b>예외</b></td></tr>
+          <tr><th>1주택 · 전세</th><td><b>비과세</b></td><td>—</td><td>보증금은 3주택부터</td></tr>
+          <tr><th>2주택 · 월세</th><td><b>과세</b></td><td>2,000만원 이하면 <b>분리/종합 선택</b></td><td>부부 합산 주택 수</td></tr>
+          <tr><th>2주택 · 전세만</th><td>보증금은 <b>과세 안 함</b></td><td>—</td><td>월세가 있으면 그 부분은 과세</td></tr>
+          <tr><th>3주택 이상 · 전세</th><td><b>간주임대료 과세</b></td><td>2,000만원 이하면 선택</td><td>소형주택 제외 특례</td></tr>
+          <tr><th>수입 2,000만원 초과</th><td><b>종합과세</b></td><td>선택 불가</td><td>간주임대료 포함해 판정</td></tr>
+          <tr><th>상가임대</th><td>소득세 + <b>부가세 과세</b></td><td>일반/간이 (4,800만원 미만)</td><td>세금계산서 발급 여부</td></tr>
+          <tr><th>일반 사업</th><td>소득세 + <b>부가세 과세</b></td><td>일반/간이 (8,000만원 미만)</td><td>B2B면 일반, 초기투자 크면 일반</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 기준 금액과 요건은 매년 확인 필요</p>
+
+    <ul class="check" id="rtCheck">
+      <li><b>주택 수를 부부 합산으로 세어봤나?</b> 각자 한 채면 2주택입니다.</li>
+      <li><b>간주임대료를 포함해 2,000만원을 넘는지 확인했나?</b> 월세만 보면 틀립니다.</li>
+      <li><b>내 한계세율이 15.4%보다 높은가 낮은가?</b> 이게 분리/종합의 기준입니다.</li>
+      <li><b>기본공제 200/400만원을 받을 수 있는 소득인가?</b> 대부분의 직장인은 못 받습니다.</li>
+      <li><b>등록임대의 의무 기간을 지킬 수 있나?</b> 중간에 팔면 토해냅니다.</li>
+      <li><b>건강보험료가 얼마나 오르는지 확인했나?</b> 세금보다 클 수 있습니다.</li>
+      <li><b>내가 누군가의 부양가족이라면 빠지지 않는지 확인했나?</b> 04편과 연결됩니다.</li>
+      <li><b>사업자등록을 제때 했나?</b> 늦으면 가산세가 붙습니다.</li>
+      <li><b>거래처가 세금계산서를 요구하는 업종인가?</b> 그러면 간이는 어렵습니다.</li>
+      <li><b>초기 투자가 크다면 일반과세 환급을 계산해봤나?</b> 첫해에 큰 차이가 납니다.</li>
+      <li><b>사업용 계좌·카드를 따로 쓰고 있나?</b> 경비 증빙의 대부분이 여기서 정리됩니다.</li>
+      <li><b>「경비를 쓰면 이득」이라고 착각하고 있지 않나?</b> 줄어드는 것은 세율만큼입니다.</li>
+    </ul>
+    <div class="checkcount" id="rtCount">0 / 12 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 임대·사업 소득에서 내가 고를 수 있는 것은 <b>두 개</b>입니다 — <b>분리과세냐 종합과세냐</b>, <b>일반이냐 간이냐</b>. 두 선택 모두 기준은 같습니다. <b>「내 상황에서 어느 쪽 세율이 낮은가」</b>, 그리고 <b>「세금 말고 딸려오는 제약은 무엇인가」</b>입니다.</p>
+      <p>그리고 이 편에서 가장 자주 놓치는 것은 <b>세금이 아니라 건강보험료</b>입니다. 소득이 생기면 <b>세금보다 건강보험료가 더 크게 늘어나는 경우</b>가 흔합니다. 계산할 때 <b>반드시 함께</b> 보세요.</p>
+      <p>다음 편은 <b>상속과 증여</b>입니다. <b>세율은 같은데 공제가 다릅니다.</b> 그리고 <b>「무조건 미리 증여」가 답이 아닌 이유</b>를 계산으로 확인합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 세금 05 · 임대·사업<br>
+    <a href="index.html#tax">← 세금 목록으로</a> · <a href="tax-couple.html">04 · 맞벌이 배분</a> · <a href="tax-inherit.html">06 · 상속·증여</a><br>
+    <br>
+    개인 학습용 정리이며 <b>세무 조언이 아닙니다.</b><br>
+    세율·경비율·기준 금액·특례는 매년 개정됩니다. 계산기는 구조를 보기 위한 단순 모형이며 실제 신고 금액과 다릅니다. 주택 수 판정과 소형주택 특례는 사안마다 달라 반드시 확인이 필요합니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function won(man){
+  var v = Math.round(man);
+  return v.toLocaleString() + '만원';
+}
+function eok(man){
+  if(man >= 10000) return (man / 10000).toFixed(man % 10000 === 0 ? 0 : 1) + '억원';
+  return Math.round(man).toLocaleString() + '만원';
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+var BRACKETS = [
+  { upto:1400, rate:0.06 }, { upto:5000, rate:0.15 }, { upto:8800, rate:0.24 },
+  { upto:15000, rate:0.35 }, { upto:30000, rate:0.38 }, { upto:50000, rate:0.40 },
+  { upto:100000, rate:0.42 }, { upto:Infinity, rate:0.45 }
+];
+function taxOf(base){
+  var t = 0, prev = 0;
+  for(var i = 0; i < BRACKETS.length; i++){
+    if(base <= BRACKETS[i].upto) return t + (base - prev) * BRACKETS[i].rate;
+    t += (BRACKETS[i].upto - prev) * BRACKETS[i].rate;
+    prev = BRACKETS[i].upto;
+  }
+  return t;
+}
+function earnedDeduction(pay){
+  if(pay <= 0) return 0;
+  var d;
+  if(pay <= 500) d = pay * 0.7;
+  else if(pay <= 1500) d = 350 + (pay - 500) * 0.4;
+  else if(pay <= 4500) d = 750 + (pay - 1500) * 0.15;
+  else if(pay <= 10000) d = 1200 + (pay - 4500) * 0.05;
+  else d = 1475 + (pay - 10000) * 0.02;
+  return Math.min(d, 2000);
+}
+function otherIncome(pay){ return Math.max(0, pay - earnedDeduction(pay)); }
+function baseOf(pay, add){ return Math.max(0, otherIncome(pay) + (add || 0) - pay * 0.094 - 150); }
+function margOf(pay, add){
+  var b = baseOf(pay, add);
+  for(var i = 0; i < BRACKETS.length; i++){ if(b <= BRACKETS[i].upto) return BRACKETS[i].rate; }
+  return 0.45;
+}
+
+/* ══════════ 1. 주택 수 지도 ══════════ */
+var MP = [
+  { h:'1주택', color:'#4C7A6D', taxed:[false, false],
+    t:'원칙적으로 비과세 — 다만 예외가 둘 있습니다',
+    p:'<b>1주택자의 주택임대소득은 원칙적으로 비과세</b>입니다. 월세를 받아도, 전세를 놓아도 소득세를 내지 않습니다.<br><br>' +
+      '<b>예외 ①  고가주택</b> — <b>기준시가가 일정 금액을 넘는 주택</b>의 월세는 <b>1주택이라도 과세</b>됩니다. 기준 금액은 개정되어 왔으므로 <b>지금 기준을 확인</b>해야 합니다. 여기서 말하는 것은 <b>시세가 아니라 기준시가</b>입니다.<br><br>' +
+      '<b>예외 ②  국외주택</b> — 해외에 있는 집의 월세는 <b>1주택이라도 과세</b>됩니다. 10편(해외 부동산)과 연결됩니다.<br><br>' +
+      '<b>전세는 어떤가</b> — 1주택자의 <b>보증금은 과세 대상이 아닙니다.</b> 간주임대료는 <b>3주택부터</b>입니다.<br><br>' +
+      '<b>⚠️ 가장 흔한 착각</b> — <b>「나는 1주택이니까 상관없다」</b>는 판단입니다. 주택 수는 <b>부부 합산</b>입니다. 네 번째 버튼에서 확인하세요.' },
+  { h:'2주택', color:'#5B6E8E', taxed:[true, false],
+    t:'월세는 과세, 보증금은 아직 아닙니다',
+    p:'<b>2주택부터 월세가 과세</b>됩니다. 한 채에 살고 한 채를 월세로 놓았다면 <b>그 월세가 과세 대상</b>입니다.<br><br>' +
+      '<b>보증금은 어떤가</b> — <b>2주택까지는 간주임대료를 계산하지 않습니다.</b> 그래서 <b>전세만 놓으면 과세 대상 수입이 0</b>이 될 수 있습니다. 월세 없이 전세만 놓은 2주택자는 <b>낼 소득세가 없습니다.</b><br><br>' +
+      '<b>월세 + 보증금을 함께 받는다면</b> — 2주택이면 <b>월세 부분만</b> 수입으로 잡힙니다.<br><br>' +
+      '<b>여기서 선택지가 생깁니다</b> — 수입이 <b>연 2,000만원 이하</b>면 <b>분리과세와 종합과세 중에서 고를 수</b> 있습니다. 2장의 계산기가 그 선택을 위한 것입니다.<br><br>' +
+      '<b>확인할 것</b> — 내가 <b>누군가의 부양가족</b>으로 등록되어 있다면, 이 소득 때문에 <b>빠질 수</b> 있습니다. 5장에서 다룹니다.' },
+  { h:'3주택 이상', color:'#8E6B3A', taxed:[true, true],
+    t:'월세와 보증금 모두 과세됩니다',
+    p:'<b>3주택부터는 보증금에도</b> 세금이 붙습니다. 이것이 <b>간주임대료</b>입니다.<br><br>' +
+      '<b>왜 보증금에 세금을 매기나</b> — 보증금은 <b>돌려줄 돈</b>이지만, 그동안 <b>맡아서 운용하는 이익</b>이 있다고 봅니다. 월세로 받았다면 냈을 세금을 <b>전세로 돌려 피하는 것</b>을 막는 장치이기도 합니다.<br><br>' +
+      '<b>계산 방법</b> — <b>(보증금 합계 − 3억원) × 60% × 정기예금이자율</b>입니다. <b>3억원까지는 빼주고</b>, 남은 금액의 <b>60%</b>만 봅니다. 3장에서 계산합니다.<br><br>' +
+      '<b>소형주택은 빠집니다</b> — 전용면적과 기준시가가 <b>모두 일정 기준 이하</b>인 주택은 주택 수와 간주임대료 계산에서 제외되는 특례가 있습니다. <b>기준과 적용 기한이 자주 바뀌므로 확인이 필요</b>합니다.<br><br>' +
+      '<b>여기서 2,000만원을 넘기 쉽습니다</b> — 간주임대료가 더해지면 <b>월세만 볼 때와 판정이 달라집니다.</b> 넘으면 <b>분리과세를 고를 수 없습니다.</b>' },
+  { h:'주택 수 세는 법', color:'#8E4B3A', taxed:[true, true],
+    t:'부부 합산입니다 — 여기서 가장 많이 틀립니다',
+    p:'<b>주택임대소득의 주택 수는 부부의 것을 합쳐서</b> 셉니다. <b>남편 한 채 + 아내 한 채 = 2주택</b>입니다.<br><br>' +
+      '<b>왜 헷갈리나</b> — <b>양도소득세나 종합부동산세의 주택 수 판정과 기준이 다릅니다.</b> 세목마다 세는 방법이 달라서, 한 곳에서 <b>「나는 1주택」</b>이라고 들은 것이 다른 곳에서는 틀릴 수 있습니다.<br><br>' +
+      '<b>그 밖에 확인할 것</b><br>· <b>공동명의 주택</b> — 지분 보유자를 어떻게 볼지에 대한 별도 규정이 있습니다.<br>· <b>분양권·입주권</b> — 세목마다 포함 여부가 다릅니다.<br>· <b>상속받은 주택</b> — 일정 기간 주택 수에서 빼주는 특례가 있는 경우가 있습니다.<br>· <b>오피스텔</b> — <b>실제 주거용으로 쓰이면 주택</b>으로 봅니다. 등기부상 용도가 아니라 <b>실질</b>로 판단합니다. 부동산 02편과 같은 이야기입니다.<br><br>' +
+      '<b>실전 조언</b> — 임대소득 신고 전에 <b>「우리 부부가 합쳐서 몇 채인가」</b>부터 종이에 적어보세요. 그 숫자가 <b>이 편 전체의 출발점</b>입니다.' }
+];
+function mpScene(idx){
+  var g = '';
+  var X0 = 60, BW = 230, GAP = 40;
+  var taxed = MP[idx].taxed, c = MP[idx].color;
+  var titles = ['1주택', '2주택', '3주택 이상', '부부 합산'];
+  g += '<text class="axt" x="' + X0 + '" y="24">' + titles[idx] + ' — 무엇에 세금이 붙나</text>';
+
+  function panel(x, name, on, sub){
+    g += '<rect x="' + x + '" y="36" width="' + BW + '" height="58" rx="4" fill="' + (on ? c : '#8A8474') +
+         '" fill-opacity="' + (on ? '.40' : '.10') + '" stroke="' + (on ? c : '#8A8474') +
+         '" stroke-width="' + (on ? '1.9' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (x + BW / 2) + '" y="60" text-anchor="middle"' +
+         (on ? ' fill="' + c + '"' : '') + '>' + name + '</text>';
+    g += '<text class="axt" x="' + (x + BW / 2) + '" y="80" text-anchor="middle">' + sub + '</text>';
+  }
+  panel(X0, '월세', taxed[0], taxed[0] ? '수입금액에 포함' : '과세하지 않음');
+  panel(X0 + BW + GAP, '보증금', taxed[1], taxed[1] ? '간주임대료로 환산' : '과세하지 않음');
+
+  if(idx === 3){
+    // 부부 합산 도식
+    g += '<rect x="' + X0 + '" y="112" width="' + (BW * 0.45) + '" height="30" rx="3" fill="#8E4B3A" fill-opacity=".22" stroke="#8E4B3A" stroke-width="1.2"/>';
+    g += '<text class="axt" x="' + (X0 + BW * 0.225) + '" y="131" text-anchor="middle">본인 1채</text>';
+    g += '<text class="lblb" x="' + (X0 + BW * 0.52) + '" y="131" fill="#8E4B3A">+</text>';
+    g += '<rect x="' + (X0 + BW * 0.58) + '" y="112" width="' + (BW * 0.45) + '" height="30" rx="3" fill="#8E4B3A" fill-opacity=".22" stroke="#8E4B3A" stroke-width="1.2"/>';
+    g += '<text class="axt" x="' + (X0 + BW * 0.805) + '" y="131" text-anchor="middle">배우자 1채</text>';
+    g += '<text class="lblb" x="' + (X0 + BW + 14) + '" y="131" fill="#8E4B3A">=</text>';
+    g += '<rect x="' + (X0 + BW + GAP) + '" y="112" width="' + BW + '" height="30" rx="3" fill="#8E4B3A" fill-opacity=".42" stroke="#8E4B3A" stroke-width="1.8"/>';
+    g += '<text class="lblb" x="' + (X0 + BW + GAP + BW / 2) + '" y="131" text-anchor="middle" fill="#8E4B3A">2주택 — 월세 과세</text>';
+    g += '<text class="axt" x="' + X0 + '" y="168">세목마다 주택 수를 세는 방법이 다릅니다. 임대소득은 부부 합산입니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="188">오피스텔은 등기부상 용도가 아니라 실제 주거용인지로 판단합니다.</text>';
+  } else {
+    var caps = [
+      ['1주택이면 월세도 보증금도 원칙적으로 과세하지 않습니다.',
+       '다만 기준시가가 높은 고가주택과 국외주택의 월세는 예외입니다.',
+       '전세 보증금은 3주택부터 계산합니다.'],
+      ['2주택부터 월세가 수입금액으로 잡힙니다.',
+       '보증금은 아직 계산하지 않습니다 — 전세만 놓으면 과세 수입이 0일 수 있습니다.',
+       '수입 2,000만원 이하면 분리과세와 종합과세 중에서 고를 수 있습니다.'],
+      ['3주택부터 보증금이 간주임대료로 환산되어 수입에 더해집니다.',
+       '(보증금 합계 − 3억원) × 60% × 정기예금이자율로 계산합니다.',
+       '간주임대료 때문에 2,000만원을 넘으면 분리과세를 고를 수 없습니다.']
+    ][idx];
+    caps.forEach(function(s, i){ g += '<text class="axt" x="' + X0 + '" y="' + (126 + i * 22) + '">' + s + '</text>'; });
+  }
+  document.getElementById('mpScene').innerHTML = g;
+}
+bindBtnRow('#mpBtns', function(v){
+  mpScene(+v);
+  document.getElementById('mpVerdict').querySelector('.vh').textContent = MP[+v].h;
+  verdict('mpVerdict', MP[+v].color, MP[+v].t, MP[+v].p);
+});
+
+/* ══════════ 2. 분리 vs 종합 ══════════ */
+function chDraw(){
+  var pay = +document.getElementById('chPay').value;
+  var R = +document.getElementById('chRent').value;
+  var reg = document.getElementById('chReg').value === '1';
+  document.getElementById('chPayOut').textContent = pay === 0 ? '없음' : pay.toLocaleString() + '만원';
+  document.getElementById('chRentOut').textContent = R.toLocaleString() + '만원';
+
+  var e = reg ? 0.6 : 0.5;
+  var rentInc = R * (1 - e);
+  var oi = otherIncome(pay);
+  var basicOK = oi <= 2000;
+  var basic = basicOK ? (reg ? 400 : 200) : 0;
+  var sepBase = Math.max(0, rentInc - basic);
+  var sepTax = sepBase * 0.14 * 1.1;
+  var b0 = baseOf(pay, 0);
+  var b1 = baseOf(pay, rentInc);
+  var compTax = (taxOf(b1) - taxOf(b0)) * 1.1;
+  var over = R > 2000;
+  // 임대소득금액에 실제로 붙는 세율 (구간을 걸쳐도 정확하다)
+  var compRate = rentInc > 0 ? compTax / rentInc * 100 : 0;
+  var sepRate = rentInc > 0 ? sepTax / rentInc * 100 : 0;
+
+  steps('chSteps', [
+    { k:'임대 수입금액', v:won(R) },
+    { k:'필요경비 (' + (e * 100) + '%)', v:'− ' + won(R * e) },
+    { k:'임대소득금액', v:won(rentInc) },
+    { k:'다른 종합소득금액 (근로)', v:won(oi) + (basicOK ? ' · 2천 이하' : ' · 2천 초과') },
+    { k:'분리과세 기본공제', v:basic === 0 ? '0만원 (요건 미충족)' : '− ' + won(basic) },
+    { k:'분리과세 과세표준', v:won(sepBase) },
+    { k:'종합과세 시 임대소득에 붙는 세율', v:(rentInc > 0 ? (taxOf(b1) - taxOf(b0)) * 1.1 / rentInc * 100 : 0).toFixed(1) + '%' },
+    { k:'분리과세 실질 부담률 (기본공제 반영)', v:(rentInc > 0 ? Math.max(0, rentInc - basic) * 0.154 / rentInc * 100 : 0).toFixed(1) + '%' }
+  ]);
+
+  document.getElementById('chSep').textContent = over ? '선택 불가' : won(sepTax);
+  document.getElementById('chSep').style.color = (!over && sepTax <= compTax) ? 'var(--pos)' : '';
+  document.getElementById('chComp').textContent = won(compTax);
+  document.getElementById('chComp').style.color = (over || compTax < sepTax) ? 'var(--pos)' : '';
+
+  var X0 = 150, W = 380, maxV = Math.max(sepTax, compTax, 1);
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">임대 수입 ' + won(R) + '에 대한 세금 (만원)</text>';
+  function bar(y, v, c, label, sub, win, dim){
+    var w = Math.max(1, v / maxV * W);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="28" rx="2" fill="' + c +
+         '" fill-opacity="' + (win ? '.5' : (dim ? '.08' : '.2')) + '" stroke="' + c +
+         '" stroke-width="' + (win ? '1.8' : '1') + '"' + (dim ? ' stroke-dasharray="4 3"' : '') + '/>';
+    g += '<text class="' + (win ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 12) + '" text-anchor="end"' +
+         (win ? ' fill="' + c + '"' : '') + '>' + label + '</text>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 26) + '" text-anchor="end">' + sub + '</text>';
+    g += '<text class="' + (win ? 'lblb' : 'axt') + '" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 19) + '"' +
+         (win ? ' fill="' + c + '"' : '') + '>' + (dim ? '선택 불가' : Math.round(v).toLocaleString()) + '</text>';
+  }
+  bar(34, sepTax, '#5B6E8E', '분리과세', basic > 0 ? '15.4% · 공제 후 ' + sepRate.toFixed(1) + '%' : '15.4% 고정', !over && sepTax <= compTax, over);
+  bar(86, compTax, '#8E6B3A', '종합과세', '실효 ' + compRate.toFixed(1) + '%', over || compTax < sepTax, false);
+  g += '<text class="axt" x="' + X0 + '" y="146">' +
+       (over ? '수입이 2,000만원을 넘어 종합과세로 확정됩니다.'
+             : '차이: ' + won(Math.abs(sepTax - compTax))) + '</text>';
+  document.getElementById('chScene').innerHTML = g;
+
+  if(R === 0){
+    verdict('chVerdict', '#5B5648',
+      '임대 수입을 넣어보세요',
+      '슬라이더를 올리면 <b>두 방식의 세금이 갈라지는 지점</b>이 보입니다.<br><br>' +
+      '<b>먼저 「다른 소득」을 0으로 내려보세요.</b> 은퇴했거나 다른 소득이 없는 상황입니다. 그러면 <b>종합과세가 유리</b>합니다.<br><br>' +
+      '<b>그다음 다른 소득을 올려보세요.</b> 어느 지점에서 <b>분리과세로 뒤집힙니다.</b> 그 지점이 <b>내 한계세율이 15.4%를 넘는 곳</b>입니다.');
+  } else if(over){
+    verdict('chVerdict', '#8E4B3A',
+      '2,000만원을 넘어 종합과세로 확정됩니다 — ' + won(compTax),
+      '주택임대 수입이 <b>연 2,000만원을 넘으면 선택권이 없습니다.</b> <b>종합과세</b>로 다른 소득과 합산됩니다.<br><br>' +
+      '이때 세금은 <b>' + won(compTax) + '</b>이고, 임대소득금액 <b>' + won(rentInc) + '</b>에 실제로 붙는 세율은 <b>' +
+      compRate.toFixed(1) + '%</b>입니다(한계세율 ' + (margOf(pay, rentInc) * 110).toFixed(1) + '% 구간).<br><br>' +
+      '<b>⚠️ 판정에 포함되는 것</b> — 이 2,000만원은 <b>월세만이 아니라 간주임대료를 포함한 수입금액</b> 기준입니다. 3주택 이상이라면 <b>보증금이 환산되어 더해집니다.</b> 3장에서 계산하세요.<br><br>' +
+      '<b>넘었을 때 할 수 있는 것</b> — 선택은 못 하지만 <b>필요경비를 제대로 인정받는 것</b>은 할 수 있습니다. <b>장부를 쓰면</b> 추계보다 경비가 크게 잡히는 경우가 많습니다. 이자·수선비·재산세·중개보수가 대표적입니다.');
+  } else if(Math.abs(sepTax - compTax) < 0.5){
+    verdict('chVerdict', '#5B5648',
+      '두 방식의 세금이 거의 같습니다',
+      '지금 조건에서는 <b>어느 쪽을 골라도 비슷</b>합니다. 내 한계세율이 <b>분리과세의 15.4%와 거의 같은 지점</b>에 있다는 뜻입니다.<br><br>' +
+      '<b>이럴 때 판단 기준</b><br>· <b>종합과세를 선택하면</b> 그 소득이 <b>다른 공제의 한도·문턱 계산</b>에도 영향을 줍니다(03·04편의 총급여 기준 항목들).<br>' +
+      '· <b>내년에 소득이 늘 것 같으면</b> 분리과세 쪽이 안정적입니다.<br>' +
+      '· <b>세금이 비슷하다면 건강보험료를 보세요.</b> 5장에서 다룹니다.<br><br>' +
+      '<b>슬라이더를 조금만 움직여보면</b> 어느 쪽으로 기우는지 바로 보입니다.');
+  } else if(sepTax < compTax){
+    var byRate = compRate > 15.4;
+    var reason = byRate
+      ? '종합과세로 합치면 이 임대소득에 <b>' + compRate.toFixed(1) + '%</b>가 붙는데, <b>분리과세는 15.4%</b>이기 때문입니다. 임대소득을 <b>월급 위에 얹으면</b> 그만큼 높은 층에서 세금이 붙습니다.'
+      : '<b>세율 때문이 아니라 기본공제 때문</b>입니다. 종합과세로 합쳐도 이 소득에 붙는 세율은 <b>' + compRate.toFixed(1) +
+        '%</b>로 15.4%보다 낮습니다. 그런데 분리과세에서는 <b>기본공제 ' + won(basic) + '</b>을 빼고 계산하므로 실질 부담률이 <b>' +
+        sepRate.toFixed(1) + '%</b>까지 내려갑니다. <b>공제가 세율 차이를 뒤집은 경우</b>입니다.';
+    verdict('chVerdict', '#5B6E8E',
+      '분리과세가 ' + won(compTax - sepTax) + ' 유리합니다',
+      reason + '<br><br>' +
+      '<b>분리과세 ' + won(sepTax) + ' vs 종합과세 ' + won(compTax) + '</b>입니다.<br><br>' +
+      (basic === 0
+        ? '<b>참고 — 기본공제를 받지 못했습니다.</b> 다른 종합소득금액이 <b>' + won(oi) + '</b>으로 2,000만원을 넘기 때문입니다. 「자세히 보기」에서 이 조건을 설명합니다.'
+        : '<b>기본공제 ' + won(basic) + '</b>이 적용되어 과세표준이 <b>' + won(sepBase) + '</b>으로 줄었습니다.') + '<br><br>' +
+      '<b>다만 분리과세를 고를 때 확인할 것</b> — 분리과세는 <b>필요경비를 법정 비율로 고정</b>합니다. <b>실제 경비가 그보다 훨씬 크다면</b>(예: 대출 이자가 많은 경우) 장부를 쓰고 종합과세를 택하는 편이 나을 수 있습니다. 계산기는 <b>양쪽에 같은 경비율</b>을 적용한 단순 비교입니다.');
+  } else {
+    var marg2 = margOf(pay, rentInc) * 110;
+    var straddle = marg2 > 15.4 && compRate <= 15.4;
+    var reason2 = straddle
+      ? '한계세율은 <b>' + marg2.toFixed(1) + '%</b>이지만, 이 임대소득이 <b>낮은 구간에 걸쳐 있어</b> 실제로 붙는 세율은 <b>' +
+        compRate.toFixed(1) + '%</b>뿐입니다. <b>한계세율만 보면 판단을 틀립니다</b> — 소득이 구간 경계에 걸치면 <b>일부는 아래층 세율</b>로 계산됩니다.'
+      : '이 임대소득에 실제로 붙는 세율이 <b>' + compRate.toFixed(1) + '%</b>로 <b>분리과세의 15.4%보다 낮기</b> 때문입니다.';
+    verdict('chVerdict', '#8E6B3A',
+      '종합과세가 ' + won(sepTax - compTax) + ' 유리합니다',
+      reason2 + '<br><br>' +
+      '<b>분리과세 ' + won(sepTax) + ' vs 종합과세 ' + won(compTax) + '</b>입니다.<br><br>' +
+      '<b>어떤 사람이 여기에 해당하나</b> — <b>다른 소득이 적거나 없는 사람</b>입니다. 은퇴자, 전업으로 임대만 하는 사람, 소득이 적은 배우자 명의로 임대하는 경우입니다.<br><br>' +
+      '<b>이유는 01편의 누진 구조</b>입니다. 낮은 층에 있으면 <b>세율 자체가 14%보다 낮습니다.</b> 그리고 종합과세를 선택하면 <b>인적공제 같은 종합소득공제</b>를 적용받아 과세표준이 더 줄어듭니다.<br><br>' +
+      '<b>여기서 나오는 실전 아이디어</b> — <b>임대용 주택을 소득이 낮은 배우자 명의로</b> 두면 이 구조를 쓸 수 있습니다. 다만 <b>명의를 옮기는 것 자체가 증여</b>이고 취득세가 붙습니다. <b>06편</b>에서 그 비용을 계산합니다.');
+  }
+}
+['chPay', 'chRent'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', chDraw);
+});
+document.getElementById('chReg').addEventListener('change', chDraw);
+
+/* ══════════ 3. 간주임대료 ══════════ */
+function dmDraw(){
+  var dep = +document.getElementById('dmDep').value;
+  var rate = +document.getElementById('dmRate').value / 10;
+  var monthly = +document.getElementById('dmMonthly').value;
+  document.getElementById('dmDepOut').textContent = eok(dep);
+  document.getElementById('dmRateOut').textContent = rate.toFixed(1) + '%';
+  document.getElementById('dmMonthlyOut').textContent = won(monthly);
+
+  var excess = Math.max(0, dep - 30000);
+  var deemed = excess * 0.6 * (rate / 100);
+  var total = deemed + monthly;
+
+  steps('dmSteps', [
+    { k:'보증금 합계', v:eok(dep) },
+    { k:'공제 (3억원)', v:'− ' + eok(Math.min(dep, 30000)) },
+    { k:'초과분', v:eok(excess) },
+    { k:'× 60%', v:eok(excess * 0.6) },
+    { k:'× 이자율 ' + rate.toFixed(1) + '%', v:won(deemed) },
+    { k:'별도 월세 (연간)', v:'+ ' + won(monthly) },
+    { k:'수입금액 합계', v:won(total), total:true }
+  ]);
+
+  if(dep <= 30000){
+    verdict('dmVerdict', '#4C7A6D',
+      '보증금이 3억원 이하라 간주임대료가 없습니다',
+      '보증금 합계가 <b>3억원 이하</b>이면 <b>공제 후 남는 금액이 없어</b> 간주임대료가 0원입니다.<br><br>' +
+      '그래서 수입금액은 <b>월세 ' + won(monthly) + '</b>뿐입니다.<br><br>' +
+      '<b>이 3억원 공제가 생각보다 큽니다.</b> 3주택이라도 보증금 합계가 3억원을 넘지 않으면 <b>보증금 때문에 세금이 늘지는 않습니다.</b><br><br>' +
+      '<b>슬라이더를 올려보세요.</b> 3억원을 넘는 순간부터 수입금액이 붙기 시작합니다.');
+  } else if(total > 2000){
+    verdict('dmVerdict', '#8E4B3A',
+      '수입금액이 ' + won(total) + ' — 2,000만원을 넘습니다',
+      '간주임대료 <b>' + won(deemed) + '</b>에 월세 <b>' + won(monthly) + '</b>을 더하면 <b>' + won(total) + '</b>입니다.<br><br>' +
+      '<b>2,000만원을 넘었으므로 분리과세를 고를 수 없습니다.</b> 전액이 <b>종합과세</b>로 다른 소득과 합산됩니다.<br><br>' +
+      '<b>여기가 이 장의 핵심입니다</b> — 월세만 보면 <b>' + won(monthly) + '</b>이라 2,000만원에 한참 못 미칩니다. 그런데 <b>보증금이 환산되어 더해지면</b> 판정이 뒤집힙니다. <b>「나는 전세만 놓으니 괜찮다」는 판단이 틀리는 지점</b>입니다.<br><br>' +
+      '<b>확인할 것</b> — <b>소형주택 특례</b>에 해당하는 주택이 있다면 그만큼 빠집니다. 그리고 <b>이자율은 매년 고시</b>되므로, 이자율이 내려간 해에는 같은 보증금이라도 간주임대료가 작아집니다. 슬라이더로 확인해보세요.');
+  } else {
+    verdict('dmVerdict', '#8E6B3A',
+      '간주임대료 ' + won(deemed) + ' — 수입금액 합계 ' + won(total),
+      '보증금 <b>' + eok(dep) + '</b>에서 <b>3억원</b>을 빼면 <b>' + eok(excess) + '</b>이고, 그중 <b>60%</b>인 <b>' + eok(excess * 0.6) +
+      '</b>에 이자율 <b>' + rate.toFixed(1) + '%</b>를 곱해 <b>' + won(deemed) + '</b>이 됩니다.<br><br>' +
+      '여기에 월세 <b>' + won(monthly) + '</b>을 더한 <b>' + won(total) + '</b>이 <b>수입금액</b>입니다. 2,000만원 이하이므로 <b>분리과세와 종합과세 중에서 고를 수</b> 있습니다 — 2장으로 돌아가 <b>이 금액을 넣어보세요.</b><br><br>' +
+      '<b>이자율의 영향을 보세요.</b> 슬라이더를 <b>1.0%로 내리면</b> 간주임대료가 <b>' + won(excess * 0.6 * 0.01) +
+      '</b>, <b>6.0%로 올리면 ' + won(excess * 0.6 * 0.06) + '</b>이 됩니다. <b>같은 보증금인데 해마다 달라집니다.</b><br><br>' +
+      '<b>3주택 미만이라면</b> 이 계산 자체가 없습니다. 1장의 주택 수 판정부터 확인하세요.');
+  }
+}
+['dmDep', 'dmRate', 'dmMonthly'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', dmDraw);
+});
+
+/* ══════════ 4. 일반 vs 간이 ══════════ */
+function vtDraw(){
+  var sale = +document.getElementById('vtSale').value;
+  var buy = +document.getElementById('vtBuy').value;
+  var vr = +document.getElementById('vtKind').value / 100;
+  var isRent = vr === 0.4;
+  document.getElementById('vtSaleOut').textContent = won(sale);
+  document.getElementById('vtBuyOut').textContent = won(buy);
+
+  var gen = sale * 0.1 - buy * 0.1;
+  var simRaw = sale * vr * 0.1 - buy * 0.005;
+  var limit = isRent ? 4800 : 8000;
+  var canSim = sale < limit;
+  var exempt = sale < 4800;
+  var sim = exempt ? 0 : Math.max(0, simRaw);
+
+  steps('vtSteps', [
+    { k:'매출세액 (매출 × 10%)', v:won(sale * 0.1) },
+    { k:'매입세액 (매입 × 10%)', v:'− ' + won(buy * 0.1) },
+    { k:'일반과세 납부세액', v:(gen < 0 ? '환급 ' + won(-gen) : won(gen)) },
+    { k:'간이 납부세액 (매출 × ' + (vr * 100) + '% × 10%)', v:won(sale * vr * 0.1) },
+    { k:'간이 공제세액 (매입 × 0.5%)', v:'− ' + won(buy * 0.005) },
+    { k:'간이과세 적용 기준', v:canSim ? won(limit) + ' 미만 · 가능' : won(limit) + ' 미만 · 불가' },
+    { k:'납부의무 면제 (4,800만원 미만)', v:exempt ? '해당 · 0원' : '해당 없음' }
+  ]);
+
+  document.getElementById('vtGen').textContent = gen < 0 ? '환급 ' + won(-gen) : won(gen);
+  document.getElementById('vtGen').style.color = gen < 0 ? 'var(--pos)' : '';
+  document.getElementById('vtSim').textContent = canSim ? won(sim) : '적용 불가';
+  document.getElementById('vtSim').style.color = (canSim && sim < gen) ? 'var(--pos)' : '';
+
+  var X0 = 150, W = 360, maxV = Math.max(Math.abs(gen), canSim ? sim : 0, 1);
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">연간 부가가치세 (만원) · 매출 ' + won(sale) + ' · 매입 ' + won(buy) + '</text>';
+  function bar(y, v, c, label, sub, win, dim, txt){
+    var w = Math.max(1, Math.abs(v) / maxV * W);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="28" rx="2" fill="' + c +
+         '" fill-opacity="' + (win ? '.5' : (dim ? '.08' : '.2')) + '" stroke="' + c +
+         '" stroke-width="' + (win ? '1.8' : '1') + '"' + (dim ? ' stroke-dasharray="4 3"' : '') + '/>';
+    g += '<text class="' + (win ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 12) + '" text-anchor="end"' +
+         (win ? ' fill="' + c + '"' : '') + '>' + label + '</text>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 26) + '" text-anchor="end">' + sub + '</text>';
+    g += '<text class="' + (win ? 'lblb' : 'axt') + '" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 19) + '"' +
+         (win ? ' fill="' + c + '"' : '') + '>' + txt + '</text>';
+  }
+  var genWin = gen < 0 || (canSim && gen < sim) || !canSim;
+  bar(34, gen, gen < 0 ? '#4C7A6D' : '#7A5C9E', '일반과세', '매출 10% − 매입 10%', genWin,
+      false, gen < 0 ? '환급 ' + Math.round(-gen).toLocaleString() : Math.round(gen).toLocaleString());
+  bar(86, canSim ? sim : 0, '#8E6B3A', '간이과세', canSim ? ((vr * 100) + '% × 10%' + (exempt ? ' · 납부면제' : '')) : (won(limit) + ' 이상이라 불가'),
+      canSim && !genWin, !canSim, canSim ? Math.round(sim).toLocaleString() : '적용 불가');
+  g += '<text class="axt" x="' + X0 + '" y="148">' +
+       (!canSim ? '매출이 기준을 넘어 일반과세만 가능합니다.'
+                : (gen < 0 ? '매입이 매출보다 커서 일반과세라면 환급을 받습니다 — 간이과세는 환급이 없습니다.'
+                           : '차이: ' + won(Math.abs(gen - sim)))) + '</text>';
+  document.getElementById('vtScene').innerHTML = g;
+
+  if(!canSim){
+    verdict('vtVerdict', '#7A5C9E',
+      '매출이 ' + won(limit) + '을 넘어 일반과세만 가능합니다',
+      (isRent ? '<b>부동산임대업</b>은 간이과세 기준이 <b>4,800만원 미만</b>으로 다른 업종보다 낮습니다. '
+              : '<b>간이과세는 직전 연도 매출 8,000만원 미만</b>일 때 적용됩니다. ') +
+      '지금 매출 <b>' + won(sale) + '</b>은 기준을 넘습니다.<br><br>' +
+      '일반과세 납부세액은 <b>' + (gen < 0 ? '환급 ' + won(-gen) : won(gen)) + '</b>입니다.<br><br>' +
+      '<b>선택할 수 없다는 것이 나쁜 일만은 아닙니다.</b> 일반과세는 <b>세금계산서를 발급할 수 있고</b>, <b>매입세액을 온전히 공제·환급</b>받습니다. 거래처가 사업자라면 <b>오히려 유리</b>합니다.<br><br>' +
+      '<b>여기서 할 수 있는 것</b> — <b>매입 증빙을 빠짐없이 모으는 것</b>입니다. 매입세액공제를 못 받는 가장 흔한 이유는 세율이 아니라 <b>「세금계산서를 안 받아서」</b>입니다. 슬라이더에서 <b>매입을 올려보면</b> 그 값어치가 보입니다.');
+  } else if(gen < 0){
+    verdict('vtVerdict', '#4C7A6D',
+      '일반과세라면 ' + won(-gen) + '을 환급받습니다',
+      '매입 <b>' + won(buy) + '</b>이 매출 <b>' + won(sale) + '</b>보다 커서, 매입세액이 매출세액을 넘습니다. 일반과세라면 그 차액 <b>' + won(-gen) + '</b>을 <b>돌려받습니다.</b><br><br>' +
+      '<b>간이과세에는 환급이 없습니다.</b> 아무리 많이 써도 <b>0원 아래로는 내려가지 않습니다.</b> 지금 조건에서 간이과세는 <b>' + (exempt ? '납부면제로 0원' : won(sim)) + '</b>입니다.<br><br>' +
+      '<b>이것이 개업 첫해에 일반과세를 고르는 이유</b>입니다. 인테리어·설비·권리금에 큰돈이 들어가는 해에는 <b>환급액이 몇 년치 세금 차이를 덮습니다.</b><br><br>' +
+      '<b>다만 조건이 있습니다</b> — <b>세금계산서를 제대로 받아야</b> 합니다. 현금으로 깎아 받고 증빙을 안 남기면 <b>환급도 없습니다.</b> 공사비는 특히 확인하세요.');
+  } else if(exempt){
+    verdict('vtVerdict', '#8E6B3A',
+      '간이과세면 납부의무가 면제됩니다 — 0원',
+      '매출이 <b>' + won(sale) + '</b>으로 <b>4,800만원 미만</b>이라, 간이과세자라면 <b>부가가치세 납부의무가 면제</b>됩니다. 계산상 <b>' +
+      won(Math.max(0, simRaw)) + '</b>이지만 <b>실제로는 0원</b>입니다.<br><br>' +
+      '같은 조건에서 일반과세라면 <b>' + won(gen) + '</b>을 냅니다. 차이가 <b>' + won(gen) + '</b>입니다.<br><br>' +
+      '<b>그런데도 일반과세를 골라야 하는 경우</b><br>' +
+      '· <b>거래처가 세금계산서를 요구</b>합니다. 매출 4,800만원 미만 간이과세자는 <b>세금계산서를 발급할 수 없습니다.</b> B2B라면 <b>거래가 끊깁니다.</b><br>' +
+      '· <b>초기 투자가 큽니다.</b> 매입 슬라이더를 매출보다 크게 올려보면 <b>환급</b>이 나옵니다. 간이는 환급이 없습니다.<br><br>' +
+      '<b>그리고 자동으로 바뀝니다</b> — 매출이 기준을 넘으면 <b>다음 해부터 일반과세자로 전환</b>됩니다. <b>지금 유리하다고 계속 유리한 것이 아닙니다.</b>');
+  } else {
+    verdict('vtVerdict', '#8E6B3A',
+      '간이과세가 ' + won(gen - sim) + ' 적습니다 — 그래도 확인할 것이 있습니다',
+      '일반과세 <b>' + won(gen) + '</b> vs 간이과세 <b>' + won(sim) + '</b>입니다. 간이과세는 매출의 <b>' + (vr * 100) +
+      '%만 부가가치로 보고</b> 거기에 10%를 매기므로, 실질 세율이 <b>' + (vr * 10).toFixed(1) + '%</b>에 그칩니다.<br><br>' +
+      '<b>그래도 일반과세를 골라야 할 수 있습니다</b><br>' +
+      '· <b>세금계산서</b> — 간이과세자 중 직전 연도 매출 4,800만원 미만이면 <b>발급이 불가</b>합니다. 거래처가 <b>매입세액공제를 못 받으므로</b> 사업자 상대 업종에서는 치명적입니다.<br>' +
+      '· <b>환급</b> — 간이는 환급이 없습니다. <b>매입 슬라이더를 매출보다 크게</b> 올려보세요.<br>' +
+      '· <b>전환</b> — 매출이 기준을 넘으면 <b>다음 해부터 자동으로 일반과세</b>가 됩니다.<br><br>' +
+      '<b>정리하면</b> — <b>손님이 개인이고 매입이 적으면 간이</b>, <b>거래처가 사업자이거나 초기 투자가 크면 일반</b>입니다. <b>세금 차이만으로 정하지 마세요.</b>');
+  }
+}
+['vtSale', 'vtBuy'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', vtDraw);
+});
+document.getElementById('vtKind').addEventListener('change', vtDraw);
+
+/* ══════════ 5. 함정 ══════════ */
+var MS = [
+  { h:'건강보험료', color:'#8E4B3A',
+    t:'세금보다 이쪽이 더 클 수 있습니다',
+    p:'임대·사업 소득이 생기면 <b>세금만 늘어나는 것이 아닙니다.</b> <b>건강보험료</b>가 함께 움직입니다. 그리고 이쪽이 <b>더 큰 경우가 많습니다.</b><br><br>' +
+      '<b>직장가입자라면</b> — 급여 외 소득이 <b>일정 기준을 넘으면</b> 그 초과분에 대해 <b>보험료가 추가로 부과</b>됩니다.<br><br>' +
+      '<b>피부양자라면 — 이게 가장 큽니다.</b> 소득이 기준을 넘으면 <b>피부양자 자격을 잃고 지역가입자</b>가 됩니다. 그러면 <b>0원 내던 사람이 매달 내기 시작</b>합니다. 게다가 지역가입자는 <b>소득뿐 아니라 재산에도</b> 보험료가 붙습니다. <b>집이 있으면 그 자체로</b> 보험료가 나옵니다.<br><br>' +
+      '<b>실제로 자주 생기는 일</b> — 은퇴한 부모님이 <b>작은 임대소득</b>을 신고하기 시작했더니 <b>피부양자에서 빠져</b> 보험료가 크게 늘어나는 경우입니다. <b>세금은 몇십만원인데 보험료는 몇백만원</b>이 되기도 합니다.<br><br>' +
+      '<b>확인하는 법</b> — 국민건강보험공단에 <b>「이 소득이 잡히면 보험료가 얼마가 되는지」</b>를 직접 문의할 수 있습니다. <b>신고 전에</b> 확인하세요. 다만 <b>소득이 있는데 신고하지 않는 것은 별개의 문제</b>입니다 — 그건 선택지가 아닙니다.' },
+  { h:'부양가족에서 빠짐', color:'#8E6B3A',
+    t:'04편의 배분 계획이 통째로 흔들립니다',
+    p:'내가 <b>누군가의 부양가족</b>으로 등록되어 있다면, 임대·사업 소득 때문에 <b>빠질 수</b> 있습니다.<br><br>' +
+      '<b>기준은 「소득금액」</b>입니다 — 매출이나 수입금액이 아니라, <b>필요경비를 뺀 뒤</b>의 금액입니다. 04편에서 다룬 그 기준입니다.<br><br>' +
+      '<b>그래서 어떤 일이 벌어지나</b><br>· 배우자가 소액 임대소득을 신고 → <b>배우자 인적공제 150만원이 사라짐</b><br>· 부모님이 임대소득을 신고 → <b>자녀가 받던 부모님 인적공제가 사라짐</b><br>· 그리고 그 가족의 <b>의료비·교육비·카드 공제까지 함께</b> 못 받게 되는 경우<br><br>' +
+      '<b>이게 무서운 이유</b> — <b>따라오는 것이 많습니다.</b> 인적공제 150만원 하나가 아니라, 04편에서 배분해둔 <b>여러 항목이 동시에</b> 빠집니다.<br><br>' +
+      '<b>그리고 몰랐다고 넘어가지 않습니다</b> — 그대로 공제받으면 나중에 <b>가산세와 함께 추징</b>됩니다.<br><br>' +
+      '<b>확인 습관</b> — 가족 중 누구든 <b>임대·사업 소득이 새로 생긴 해</b>에는, 연말정산 전에 <b>「소득금액이 얼마인지」</b>를 반드시 물어보세요.' },
+  { h:'2,000만원 판정', color:'#5B6E8E',
+    t:'월세만 세면 틀립니다',
+    p:'<b>2,000만원은 「수입금액」 기준</b>입니다. 여기에 무엇이 들어가는지가 핵심입니다.<br><br>' +
+      '<b>들어가는 것</b><br>· <b>월세</b> 전액 (경비를 빼기 전 금액)<br>· <b>간주임대료</b> (3주택 이상일 때 보증금 환산액)<br>· <b>보유한 모든 주택의 임대 수입 합계</b> — 한 채당이 아닙니다<br><br>' +
+      '<b>자주 하는 착각</b><br>· <b>「경비 빼고 2,000만원」</b>이 아닙니다. <b>경비 빼기 전</b> 금액입니다.<br>· <b>「한 채당 2,000만원」</b>이 아닙니다. <b>합계</b>입니다.<br>· <b>「전세만 놓으니 0원」</b>이 아닙니다. 3주택 이상이면 <b>보증금이 환산</b>됩니다.<br><br>' +
+      '<b>넘으면 무슨 일이</b> — <b>선택권이 사라지고 전액 종합과세</b>입니다. 근로소득이 있는 사람이라면 <b>세율이 크게 올라갑니다.</b> 2장 계산기에서 수입을 2,000만원 위아래로 움직여보면 그 차이가 보입니다.<br><br>' +
+      '<b>확인 순서</b> — ① 부부 합산 주택 수를 센다 → ② 3주택 이상이면 간주임대료를 계산한다(3장) → ③ 월세와 더해 2,000만원과 비교한다 → ④ 이하면 2장으로 가서 분리·종합을 고른다.' },
+  { h:'사업자등록 안 하면', color:'#8E4B3A',
+    t:'가산세가 붙고, 혜택도 못 받습니다',
+    p:'주택임대소득이 있으면 <b>사업자등록 의무</b>가 있습니다. 안 하면 <b>가산세</b>가 붙습니다.<br><br>' +
+      '<b>「소액이라 안 해도 되겠지」</b>가 가장 흔한 판단인데, <b>비과세인 1주택자를 제외하면 등록 대상</b>입니다.<br><br>' +
+      '<b>그리고 국세청은 대체로 알고 있습니다</b> — <b>전월세 확정일자·전입신고·임대차 신고 제도</b>를 통해 임대차 정보가 모입니다. 세입자가 <b>월세 세액공제</b>를 신청하면 그 자료도 남습니다. <b>세입자의 정당한 권리를 막을 수는 없습니다.</b><br><br>' +
+      '<b>등록은 두 가지가 다릅니다</b><br>· <b>세무서 사업자등록</b> — 소득이 있으면 하는 것<br>· <b>지자체 민간임대주택 등록</b> — 선택 사항이며, 세제 혜택과 함께 <b>의무임대 기간·임대료 인상 제한</b>이 따라옵니다<br><br>' +
+      '<b>2장의 「등록」 옵션은 둘 다 한 상태</b>를 뜻합니다. 세무서만 등록하고 60% 경비율을 기대하면 <b>틀립니다.</b><br><br>' +
+      '<b>사업자도 마찬가지</b> — 사업을 시작하면 <b>기한 내 사업자등록</b>을 해야 합니다. 늦으면 가산세가 붙고, <b>등록 전 매입세액은 공제받기 어렵습니다.</b> 인테리어를 하기 전에 등록하세요.' },
+  { h:'주택 수 판정', color:'#7A5C9E',
+    t:'세목마다 세는 방법이 다릅니다',
+    p:'가장 헷갈리는 부분입니다. <b>같은 집인데 세금마다 주택 수가 다르게 나옵니다.</b><br><br>' +
+      '<b>임대소득세</b> — <b>부부 합산</b>으로 셉니다. 남편 1채 + 아내 1채 = <b>2주택</b>입니다.<br><br>' +
+      '<b>양도소득세</b> — <b>세대 단위</b>로 봅니다. 같이 사는 가족 전체입니다. 부동산 06편에서 다뤘습니다.<br><br>' +
+      '<b>종합부동산세</b> — <b>인별</b>로 봅니다. 그래서 <b>공동명의가 유리한 구간</b>이 생깁니다.<br><br>' +
+      '<b>그래서 이런 일이 생깁니다</b> — 임대소득세에서는 2주택인데 종부세에서는 각자 1주택인 경우. <b>둘 다 맞습니다.</b> 기준이 다를 뿐입니다.<br><br>' +
+      '<b>추가로 확인할 것</b><br>· <b>오피스텔</b> — 등기부상 업무시설이어도 <b>실제 주거용이면 주택</b>입니다.<br>· <b>분양권·입주권</b> — 세목과 취득 시점에 따라 포함 여부가 다릅니다.<br>· <b>상속 주택</b> — 일정 기간 제외하는 특례가 있는 경우가 있습니다.<br><br>' +
+      '<b>실전 조언</b> — <b>「나는 몇 주택인가」를 하나의 답으로 기억하지 마세요.</b> <b>「이 세금에서는 몇 주택인가」</b>로 물어야 합니다. 이것만 알아도 잘못된 판단의 상당수가 걸러집니다.' }
+];
+bindBtnRow('#msBtns', function(v){
+  document.getElementById('msVerdict').querySelector('.vh').textContent = MS[+v].h;
+  verdict('msVerdict', MS[+v].color, MS[+v].t, MS[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#rtCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#rtCheck li.done').length;
+      document.getElementById('rtCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 여섯째(건강보험료)가 가장 자주 놓치는 항목입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#mpBtns button[data-v="0"]').click();
+chDraw();
+dmDraw();
+vtDraw();
+document.querySelector('#msBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
