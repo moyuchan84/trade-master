@@ -21,6 +21,11 @@
     --s3:#9E7A2E;
     --s4:#7A5C9E;
     --s5:#4C7A6D;
+    /* 세금 트랙 */
+    --x1:#5B6E8E;
+    --x2:#8E6B3A;
+    --x3:#6B7A52;
+    --x4:#8E4B3A;
     /* 부동산 트랙 */
     --r1:#6B7A52;
     --r2:#8E6B3A;
@@ -254,6 +259,7 @@
       <button data-t="stock" class="on">📈 주식 <span class="cnt">11편</span></button>
       <button data-t="coin">🪙 코인 <span class="cnt">8편</span></button>
       <button data-t="realestate">🏠 부동산 <span class="cnt">11편</span></button>
+      <button data-t="tax">🧾 세금 <span class="cnt">7편</span></button>
       <button data-t="commodity" disabled>🛢 원자재 <span class="cnt">예정</span></button>
       <button data-t="futures" disabled>📉 선물 <span class="cnt">예정</span></button>
     </div>
@@ -532,6 +538,118 @@
             <p>무엇에 값이 매겨지나, 변동성의 실제 크기, 거래소와 지갑, 청산, 김치프리미엄, 사이클과 지표, 사기 패턴, 세금, <b>그리고 다른 자산과의 상관성.</b></p>
             <div class="meta"><span>보관·지갑</span><span>레버리지 청산</span><span>김치프리미엄</span><span>사기 패턴</span><span>상관성</span></div>
           </a>
+        </li>
+      </ol>
+    </section>
+  </div>
+
+  <div class="track" id="t-tax">
+
+    <p class="tintro">세금은 <b>주식·코인·부동산 전부에 걸쳐</b> 붙습니다. 그리고 <b>버는 것보다 확실하게 결과를 바꿉니다</b> — 수익은 불확실하지만 <b>절세는 계산으로 확정</b>되기 때문입니다. <b>일곱 편</b>이고, 앞에서 뒤로 읽도록 짰습니다.</p>
+
+    <div class="start" style="--edge:var(--x1)">
+      <div class="sh">읽는 법</div>
+      <p>세율과 공제 한도는 <b>거의 매년 바뀝니다.</b> 그래서 이 트랙의 계산기는 <b>세율과 한도를 슬라이더로</b> 두었고, <b>구조와 판단 기준</b>에 무게를 실었습니다. <b>숫자는 반드시 최신 자료로 확인하세요.</b></p>
+      <ol>
+        <li><b>직장인이라면</b> — 01 → 02 → 03 → 04 순서로</li>
+        <li><b>맞벌이라면</b> — 04편이 가장 실용적입니다</li>
+        <li><b>임대소득이나 사업자라면</b> — 05편</li>
+        <li><b>부모님 재산 문제라면</b> — 06편</li>
+      </ol>
+    </div>
+
+    <section class="part" style="--edge:var(--x1)">
+      <div class="part-head">
+        <span class="part-num">PART A · 기초</span>
+        <h2>세금은 어떻게 계산되나</h2>
+        <p>가장 큰 오해 하나부터 풉니다 — 「구간이 넘으면 전체에 그 세율이 붙는다」는 틀렸습니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="tax-basics.html">
+            <span class="num">01 · 지도</span>
+            <h3>내가 내는 세금의 전체 지도</h3>
+            <p>소득·소비·재산·이전에 붙는 네 갈래. 그리고 <b>누진세와 한계세율</b> — 이 하나를 이해하면 나머지가 전부 쉬워집니다.</p>
+            <div class="meta"><span>세금의 종류</span><span>누진세</span><span>한계세율</span><span>실효세율</span></div>
+          </a>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">02 · 구조 <span class="soon">준비 중</span></span>
+            <h3>연말정산은 어떻게 계산되나</h3>
+            <p>총급여에서 결정세액까지 여섯 단계. 그리고 <b>소득공제와 세액공제의 차이</b> — 같은 100만원이 사람마다 다른 값어치를 갖는 이유.</p>
+            <div class="meta"><span>근로소득공제</span><span>과세표준</span><span>소득공제</span><span>세액공제</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--x2)">
+      <div class="part-head">
+        <span class="part-num">PART B · 직장인 실전</span>
+        <h2>연말정산에서 실제로 줄이는 법</h2>
+        <p>항목마다 <b>「1만원 쓸 때 돌아오는 세금」</b>이 다릅니다. 순서를 알면 같은 돈으로 더 돌려받습니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">03 · 항목 <span class="soon">준비 중</span></span>
+            <h3>연말정산 항목별 공략</h3>
+            <p>연금계좌·신용카드·의료비·월세·기부금. 그리고 <b>고향사랑기부제 10만원</b>처럼 사실상 공짜인 항목들.</p>
+            <div class="meta"><span>연금계좌</span><span>신용카드</span><span>의료비</span><span>고향사랑기부</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">04 · 배분 <span class="soon">준비 중</span></span>
+            <h3>맞벌이·외벌이 절세 전략</h3>
+            <p>카드는 누구 명의로, 의료비는 누구 앞으로, 부양가족은 누가. <b>문턱이 있는 공제</b>는 소득이 낮은 쪽이 유리합니다.</p>
+            <div class="meta"><span>부양가족 배분</span><span>카드 몰아주기</span><span>의료비 문턱</span><span>시뮬레이터</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--x3)">
+      <div class="part-head">
+        <span class="part-num">PART C · 소득이 늘어나면</span>
+        <h2>임대·사업소득과 상속·증여</h2>
+        <p>월급 외의 소득이 생기거나 재산이 오갈 때 알아야 할 것들.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">05 · 임대·사업 <span class="soon">준비 중</span></span>
+            <h3>임대소득과 사업자의 세금</h3>
+            <p>1주택 비과세는 어디까지인가, <b>2천만원 이하 분리과세</b>는 언제 유리한가, 그리고 일반과세와 간이과세의 갈림길.</p>
+            <div class="meta"><span>1주택 비과세</span><span>분리과세</span><span>간주임대료</span><span>일반·간이</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">06 · 상속·증여 <span class="soon">준비 중</span></span>
+            <h3>상속과 증여, 무엇이 유리한가</h3>
+            <p>세율은 같은데 <b>공제가 다릅니다.</b> 10년 단위 증여재산공제와 배우자 공제를 어떻게 쓰느냐가 결과를 가릅니다.</p>
+            <div class="meta"><span>세율 구간</span><span>증여재산공제</span><span>10년 단위</span><span>사전증여</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--x4)">
+      <div class="part-head">
+        <span class="part-num">PART D · 정리</span>
+        <h2>내 상황의 절세 지도</h2>
+        <p>순서를 알면 같은 노력으로 더 줄입니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">07 · 정리 <span class="soon">준비 중</span></span>
+            <h3>내 상황에서 무엇부터</h3>
+            <p>효율이 높은 순서, 흔히 놓치는 항목, 그리고 <b>절세라는 이름의 위험한 방법</b>들.</p>
+            <div class="meta"><span>우선순위</span><span>흔한 실수</span><span>위험한 절세</span><span>체크리스트</span></div>
+          </div>
         </li>
       </ol>
     </section>
