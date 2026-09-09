@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>금리와 세계정세 — 집값을 움직이는 큰 힘</title>
+<meta name="description" content="금리가 집값을 움직이는 경로는 구매력입니다. 같은 월 상환액으로 살 수 있는 집값이 금리에 따라 얼마나 달라지는지 직접 계산해보는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --rate:#3A5A8E;
+    --house:#6B7A52;
+    --world:#7A5C9E;
+    --cost:#8E6B3A;
+    --bad:#8E4B3A;
+    --neutral:#5B5648;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:680px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  .subnote{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);}
+
+  .keyline{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--edge2,var(--rate));
+    border-radius:3px;
+    padding:22px 24px;
+    margin:26px 0;
+    text-align:center;
+  }
+  .keyline .kt{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--edge2,var(--rate));
+    margin-bottom:12px;
+  }
+  .keyline .kb{
+    font-family:'Newsreader',serif;
+    font-size:20px;
+    line-height:1.5;
+    color:var(--ink);
+  }
+  .keyline .kb b{color:var(--edge2,var(--rate));}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">부동산 04 · 금리 · 투자 공부 노트</div>
+    <h1>금리와 세계정세<br>— 집값을 움직이는 큰 힘</h1>
+    <p class="lede">앞 편에서 정책의 효과는 <b>해석이 갈린다</b>고 했습니다. 그런데 <b>금리</b>는 다릅니다. 금리가 집값에 작용하는 경로는 <b>계산으로 명확히 확인</b>할 수 있습니다. 핵심은 하나입니다 — <b>「같은 월 상환액으로 얼마짜리 집을 살 수 있는가」</b>가 금리에 따라 통째로 바뀝니다.</p>
+    <div class="callout">
+      <b>이 편의 계산기 하나만 기억하세요.</b> 매달 <b>같은 돈</b>을 낼 수 있는 사람이, 금리가 <b>3%일 때와 6%일 때</b> 살 수 있는 집값은 <b>1억 넘게</b> 차이 납니다. 이 한 줄이 <b>2022년에 무슨 일이 있었는지</b>를 거의 다 설명합니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산식과 국제 비교까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#path">1. 작동하는 경로</a>
+    <a href="#power">2. 구매력 계산기</a>
+    <a href="#stress">3. 스트레스 테스트</a>
+    <a href="#y2022">4. 2022년에 벌어진 일</a>
+    <a href="#chain">5. 금리는 어디서 오나</a>
+    <a href="#world">6. 다른 나라들</a>
+    <a href="#howto">7. 금리를 보는 법</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="path">
+    <div class="prod-head" style="--edge:var(--rate)">
+      <span class="prod-tag">01 · 경로</span>
+      <h2>금리는 「구매력」을 통해 작동합니다</h2>
+      <p class="one">막연한 심리가 아니라 <b>산수</b>입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>집을 살 때 대부분 <b>은행에서 돈을 빌려</b> 산다고 했지? 그러면 매달 <b>갚을 돈</b>이 생겨.</p>
+      <p>그런데 사람마다 <b>매달 낼 수 있는 돈은 정해져 있어.</b> 월급에서 생활비 빼고 남는 만큼이니까. 예를 들어 <b>매달 150만원</b>까지 낼 수 있다고 해보자.</p>
+      <p>이제 중요한 질문. <b>매달 150만원씩 30년을 갚는다면, 지금 얼마를 빌릴 수 있을까?</b></p>
+      <p>답은 <b>이자에 따라 달라져.</b> 이자가 싸면 갚는 돈 중에 <b>원금 갚는 몫이 커서</b> 더 많이 빌릴 수 있고, 이자가 비싸면 <b>이자로 다 나가서</b> 조금밖에 못 빌려.</p>
+      <p>그러니까 <b>이자가 오르면, 똑같은 사람이 살 수 있는 집이 갑자기 작아져.</b> 월급이 줄어든 것도 아닌데 말이야. <b>이게 금리가 집값을 움직이는 방식</b>이야.</p>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 편 전체의 한 줄</div>
+      <div class="kb">금리가 오르면 <b>사람들의 지갑</b>이 아니라<br><b>빌릴 수 있는 금액</b>이 줄어듭니다.</div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 부동산이 유독 금리에 민감한가</h3>
+      <p>01편에서 <b>부동산은 레버리지가 기본</b>이라고 했습니다. 바로 그 때문입니다.</p>
+      <p>주식은 대부분 <b>내 돈으로</b> 삽니다. 그래서 금리가 올라도 <b>「살 수 있는 금액」 자체는 안 변합니다.</b> 금리는 주식에 <b>할인율과 경기</b>를 통해 간접적으로 작용합니다.</p>
+      <p>부동산은 <b>구매 자금의 절반 이상이 빌린 돈</b>인 경우가 흔합니다. 그러면 금리 변화가 <b>구매력에 직접</b> 꽂힙니다. 중간 단계가 없습니다.</p>
+      <p>그래서 <b>금리 변화가 부동산에 미치는 영향은 주식보다 계산하기 쉽고 예측 가능</b>합니다. 다만 <b>반영되는 데 시간이 걸립니다</b> — 거래가 워낙 느리기 때문입니다.</p>
+
+      <h3>세 갈래로 작동합니다</h3>
+      <p><b>① 구매력</b> — 위에서 본 것. <b>가장 직접적이고 계산 가능</b>합니다.</p>
+      <p><b>② 보유 부담</b> — 이미 대출이 있는 사람의 <b>월 상환액이 늘어납니다.</b> 변동금리라면 즉시. 이게 심해지면 <b>버티지 못하고 파는 사람</b>이 생기고, 급매가 값을 끌어내립니다(3장).</p>
+      <p><b>③ 대안의 매력</b> — 예금 금리가 5%면 <b>굳이 위험을 지고 집을 살 이유</b>가 줄어듭니다. 반대로 예금이 1%면 <b>어디든 돈을 넣어야</b> 할 것 같아집니다. 이건 심리적이지만 실제로 작동합니다.</p>
+      <p>이 편은 <b>①과 ②를 계산으로</b> 다루고, ③은 6·7장에서 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="power">
+    <div class="prod-head" style="--edge:var(--rate)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>같은 돈으로 얼마짜리 집을 살 수 있나</h2>
+      <p class="one">이 편의 <b>핵심 계산기</b>입니다. 직접 움직여보세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">BUYING POWER · 금리별 구매 가능 금액</div>
+      <p class="labsub">매달 낼 수 있는 돈과 자기자본을 넣으면, <b>금리별로 살 수 있는 집값</b>이 나옵니다.</p>
+
+      <div class="ctrl-row">
+        <label for="bpPay">매달 낼 수 있는 돈</label>
+        <input type="range" id="bpPay" min="30" max="500" step="10" value="150">
+        <output id="bpPayOut">150만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="bpYears">대출 기간</label>
+        <input type="range" id="bpYears" min="10" max="40" step="5" value="30">
+        <output id="bpYearsOut">30년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="bpOwn">자기자본 (모아둔 돈)</label>
+        <input type="range" id="bpOwn" min="0" max="100000" step="1000" value="30000">
+        <output id="bpOwnOut">3.0억원</output>
+      </div>
+
+      <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="금리별로 살 수 있는 집값 비교">
+        <g id="bpBars"></g>
+      </svg>
+
+      <div class="ctrl-row">
+        <label for="bpRate">지금 금리</label>
+        <input type="range" id="bpRate" min="1" max="10" step="0.1" value="4.0">
+        <output id="bpRateOut">4.0%</output>
+      </div>
+
+      <div class="readout two">
+        <div><span class="rk">빌릴 수 있는 금액</span><span class="rv" id="bpLoan">—</span></div>
+        <div><span class="rk">살 수 있는 집값</span><span class="rv" id="bpHouse">—</span></div>
+      </div>
+
+      <div class="verdict" id="bpVerdict" style="--vc:var(--rate)">
+        <div class="vh">구매력</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산식.</b> <b>원리금균등 상환</b> 기준입니다. 월이율 <b>i = 연이율 ÷ 12</b>, 개월 수 <b>n</b>일 때 <b>대출원금 = 월상환액 × (1 − (1+i)<sup>−n</sup>) ÷ i</b>. <b>거치기간 없음, 중도상환 없음, 고정금리</b>를 가정했습니다.<br><br>
+        <b>주의</b> — 이 계산은 <b>「이 정도 상환액이면 얼마를 빌릴 수 있나」</b>이지 <b>「은행이 실제로 빌려주는 금액」</b>이 아닙니다. 실제로는 <b>LTV·DSR 규제</b>가 이보다 낮은 한도를 매길 수 있습니다. 그 계산은 <b>05편</b>에서 합니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="stress">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">03 · 스트레스</span>
+      <h2>이미 빌린 사람에게는 반대로 옵니다</h2>
+      <p class="one">변동금리라면 <b>내 월 상환액이 직접</b> 바뀝니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>앞에서는 <b>집을 사려는 사람</b> 이야기였어. 이번엔 <b>이미 산 사람</b> 이야기야.</p>
+      <p>5억을 빌려서 매달 240만원씩 갚고 있었는데, <b>이자가 3%에서 6%로 올랐어.</b> 그러면 매달 내야 하는 돈이 <b>300만원 가까이</b>로 늘어나.</p>
+      <p>월급은 그대로인데 <b>매달 60만원이 더 나가는</b> 거야. 1년이면 <b>720만원.</b></p>
+      <p>이게 감당이 안 되면 어떻게 될까? <b>집을 팔아야 해.</b> 그런데 그때는 <b>다들 같은 처지라 사겠다는 사람이 없어.</b> 그래서 <b>싸게라도 팔게</b> 되고, 그게 집값을 더 떨어뜨려.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">STRESS TEST · 금리가 오르면 내 부담은</div>
+      <p class="labsub">지금 대출을 넣고, <b>금리가 오른 상황</b>을 미리 계산해보세요. 05편의 스트레스 DSR이 요구하는 계산입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="stLoan">대출 금액</label>
+        <input type="range" id="stLoan" min="5000" max="100000" step="1000" value="50000">
+        <output id="stLoanOut">5.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="stYears">남은 기간</label>
+        <input type="range" id="stYears" min="5" max="40" step="5" value="30">
+        <output id="stYearsOut">30년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="stNow">지금 금리</label>
+        <input type="range" id="stNow" min="1" max="8" step="0.1" value="3.5">
+        <output id="stNowOut">3.5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="stUp">금리가 오른다면</label>
+        <input type="range" id="stUp" min="0" max="5" step="0.1" value="2.5">
+        <output id="stUpOut">+2.5%p → 6.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="stIncome">월 소득 (세후)</label>
+        <input type="range" id="stIncome" min="200" max="2000" step="50" value="600">
+        <output id="stIncomeOut">600만원</output>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="금리 상승에 따른 월 상환액 변화">
+        <g id="stScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">월 상환액 변화</span><span class="rv" id="stDelta">—</span></div>
+        <div><span class="rk">소득 대비 상환 부담</span><span class="rv" id="stBurden">—</span></div>
+      </div>
+
+      <div class="verdict" id="stVerdict" style="--vc:var(--bad)">
+        <div class="vh">스트레스 테스트</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>단순화했습니다.</b> 원리금균등, 거치 없음, 남은 기간 전체에 새 금리를 적용했습니다. 실제로는 이미 갚은 원금이 있어 <b>남은 원금이 더 적을 수</b> 있고, 혼합형·주기형이면 <b>금리가 바뀌는 시점이 다릅니다.</b> 다른 대출(신용·전세)이 있으면 부담은 <b>더 큽니다.</b>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="y2022">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">04 · 사례</span>
+      <h2>2022년에 벌어진 일</h2>
+      <p class="one">앞의 두 계산기가 <b>동시에 작동</b>했습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">2022 · 두 힘이 같은 방향으로</div>
+      <p class="labsub">눌러서 <b>순서대로</b> 확인하세요.</p>
+
+      <div class="btnrow" id="y2Btns">
+        <button data-v="0" class="on">① 사려던 사람</button>
+        <button data-v="1">② 이미 산 사람</button>
+        <button data-v="2">③ 전세 시장</button>
+        <button data-v="3">④ 합쳐지면</button>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="2022년 금리 상승이 만든 두 방향의 압력">
+        <g id="y2Scene"></g>
+      </svg>
+
+      <div class="verdict" id="y2Verdict" style="--vc:var(--bad)">
+        <div class="vh">2022</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>여기서 03편의 결론이 뒷받침됩니다.</b> 2022년에 <b>정책은 크게 바뀌지 않았습니다.</b> 오히려 일부는 완화 방향이었습니다. 그런데도 <b>방향이 뒤집혔습니다.</b></p>
+      <p>그래서 <b>「크기를 정한 것은 대체로 금리와 공급」</b>이라고 쓴 것입니다. 다만 <b>어느 지역이 얼마나 떨어졌는가</b>는 지역별 공급과 수요가 갈랐습니다 — <b>금리는 방향을, 나머지가 크기를</b> 정했다고 보는 편이 정확합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="chain">
+    <div class="prod-head" style="--edge:var(--world)">
+      <span class="prod-tag">05 · 전달</span>
+      <h2>그 금리는 어디서 오나</h2>
+      <p class="one">미국에서 시작해 <b>내 대출 이자까지</b> 오는 길이 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>「미국이 금리를 올렸대」라는 뉴스가 나오면 왜 우리 집값이 흔들릴까? 좀 이상하지?</p>
+      <p>돈은 <b>이자를 많이 주는 곳으로 흘러가.</b> 미국이 이자를 많이 주면 <b>세계의 돈이 미국으로 몰려.</b></p>
+      <p>그러면 우리나라에서 <b>돈이 빠져나가고 환율이 오르지.</b> 물건값도 오르고. 그래서 우리도 <b>이자를 올릴 수밖에</b> 없어. 안 그러면 돈이 계속 나가니까.</p>
+      <p>우리 이자가 오르면 <b>은행 대출 이자도 오르고</b>, 그러면 아까 배운 대로 <b>살 수 있는 집이 작아져.</b></p>
+      <p>이렇게 <b>미국 → 우리나라 → 은행 → 우리 집</b>까지 이어져 있어.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CHAIN · 단계를 눌러보세요</div>
+      <p class="labsub">각 단계마다 <b>연결이 끊기거나 약해질 수 있는 지점</b>도 함께 봅니다.</p>
+
+      <div class="btnrow" id="chBtns">
+        <button data-v="0" class="on">① 미국 정책금리</button>
+        <button data-v="1">② 자본 이동·환율</button>
+        <button data-v="2">③ 한국 기준금리</button>
+        <button data-v="3">④ 시장금리·채권</button>
+        <button data-v="4">⑤ 내 대출 금리</button>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="미국 금리에서 개인 대출 금리까지의 전달 경로">
+        <g id="chScene"></g>
+      </svg>
+
+      <div class="verdict" id="chVerdict" style="--vc:var(--world)">
+        <div class="vh">전달 경로</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>연결이 항상 그대로는 아닙니다</h3>
+      <p>위 경로는 <b>대체로 작동하지만 자동은 아닙니다.</b> 각 단계에서 <b>끊기거나 약해질 수 있습니다.</b></p>
+      <p><b>① 한국이 미국을 그대로 따라가지는 않습니다.</b> 국내 경기가 나쁘면 <b>금리 차이를 감수하고 덜 올리기도</b> 합니다. 실제로 한미 금리 역전이 상당 기간 유지된 적도 있습니다.</p>
+      <p><b>② 기준금리와 대출금리가 함께 움직이지 않을 때가 있습니다.</b> 대출금리는 <b>은행의 조달 비용과 가산금리</b>로 결정되는데, 정책 당국이 <b>가산금리를 낮추라고 압박</b>하거나 반대로 <b>대출을 조이라고</b> 하면 기준금리와 따로 놉니다.</p>
+      <p><b>③ 고정금리를 쓰면 나에게는 즉시 오지 않습니다.</b> 미국에서 금리 인상의 효과가 한국보다 천천히 나타난 이유 중 하나가 <b>30년 고정금리가 일반적</b>이기 때문입니다(6장).</p>
+      <p class="plain"><b>실전적 함의.</b> 뉴스에서 <b>「미국 금리 인상」</b>을 봤다고 바로 반응할 필요는 없습니다. 그보다 <b>「내가 받을 수 있는 주택담보대출 금리가 지금 몇 %인가」</b>를 직접 확인하는 것이 훨씬 정확합니다. <b>중간 단계가 여러 개</b> 있어서 결과가 달라지기 때문입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="world">
+    <div class="prod-head" style="--edge:var(--world)">
+      <span class="prod-tag">06 · 세계</span>
+      <h2>다른 나라에서도 같은 일이 있었습니다</h2>
+      <p class="one">그리고 <b>제도가 다르면 결과도 달랐습니다.</b></p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th></th><th>2020~21</th><th>2022~23</th><th>제도적 특징</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>미국</th><td>크게 상승</td><td>조정 후 비교적 견고</td><td><b>30년 고정금리</b>가 일반적 — 기존 대출자는 충격이 작았음</td></tr>
+          <tr><th>캐나다·호주</th><td>크게 상승</td><td>뚜렷한 조정</td><td><b>변동금리 비중 높음</b> — 금리 인상이 빠르게 전달</td></tr>
+          <tr><th>영국</th><td>상승</td><td>조정</td><td>2~5년 고정 후 갱신 — <b>갱신 시점에 충격</b>이 몰림</td></tr>
+          <tr><th>한국</th><td>크게 상승</td><td>뚜렷한 조정 후 지역별 차별화</td><td><b>전세</b>라는 별도 레버리지 존재</td></tr>
+          <tr><th>일본</th><td>완만한 상승</td><td>대체로 유지</td><td><b>금리를 올리지 않았음</b> — 오랜 저금리 유지</td></tr>
+          <tr><th>중국</th><td>상승 후 둔화</td><td>부동산 개발업체 위기</td><td>금리보다 <b>개발업체 부채 문제</b>가 주도</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <div class="note">
+      <p><b>이 표에서 볼 것.</b> <b>2020~21년에 대부분의 나라가 함께 올랐고, 2022~23년에 대부분이 함께 꺾였습니다.</b> 각국의 부동산 정책은 전부 달랐는데도요. 이건 <b>공통 요인(금리와 유동성)이 컸다</b>는 근거로 자주 인용됩니다.</p>
+      <p>동시에 <b>제도가 결과를 갈랐습니다.</b> 30년 고정금리를 쓰는 나라는 <b>기존 대출자가 덜 다쳤고</b>, 변동금리 비중이 높은 나라는 <b>충격이 빨랐습니다.</b> 그리고 금리를 안 올린 나라는 <b>조정 자체가 작았습니다.</b></p>
+      <p>표의 방향 표시는 <b>대체적인 경향</b>이며, 나라 안에서도 <b>지역별 편차가 큽니다.</b> 구체적 수치는 각국 공식 통계로 확인하세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">GLOBAL · 금리 말고 다른 세계 요인들</div>
+      <p class="labsub">집값에 작용하는 <b>국제적인 힘</b>이 금리만은 아닙니다.</p>
+
+      <div class="btnrow" id="glBtns">
+        <button data-v="0" class="on">공사비·원자재</button>
+        <button data-v="1">환율</button>
+        <button data-v="2">이민·인구 이동</button>
+        <button data-v="3">지정학</button>
+      </div>
+
+      <div class="verdict" id="glVerdict" style="--vc:var(--cost)">
+        <div class="vh">세계 요인</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7 ══════════ -->
+  <section id="howto">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 실전</span>
+      <h2>그래서 금리를 어떻게 볼 것인가</h2>
+      <p class="one">맞히려 하지 말고 <b>대비할 수 있게</b>.</p>
+    </div>
+
+    <div class="deep">
+      <h3>금리 예측은 전문가도 자주 틀렸습니다</h3>
+      <p>2021년에 <b>「금리는 한동안 낮게 유지될 것」</b>이라는 것이 다수 의견이었습니다. 2022년에 벌어진 일은 그 예상과 달랐습니다.</p>
+      <p>반대로 2022년 말에는 <b>「고금리가 오래 갈 것」</b>이라는 전망이 많았고, 그것도 그대로 되지는 않았습니다.</p>
+      <p>주식 트랙 08편에서 <b>「예상치와 실제치의 차이가 가격을 움직인다」</b>고 한 이유가 이것입니다. <b>이미 예상된 금리는 값에 들어 있습니다.</b> 움직이는 것은 <b>예상이 빗나갈 때</b>입니다. 그리고 그건 정의상 <b>미리 알 수 없습니다.</b></p>
+
+      <h3>그래서 실용적인 방법 세 가지</h3>
+      <p><b>① 예측 대신 스트레스 테스트.</b> 「금리가 어떻게 될까」가 아니라 <b>「금리가 3%p 올라도 내가 버틸 수 있나」</b>를 계산합니다. 3장의 계산기가 그것입니다. 답이 「아니오」면 <b>대출을 줄이는 것</b>이 답이고, 이건 예측이 필요 없습니다.</p>
+      <p><b>② 고정과 변동을 선택으로 다룹니다.</b> 「어느 쪽이 유리한가」는 미래를 알아야 답할 수 있지만, <b>「어느 쪽이 내가 감당할 수 있는 불확실성인가」</b>는 지금 답할 수 있습니다. 05편에서 다룹니다.</p>
+      <p><b>③ 금리 수준보다 「방향이 바뀌는 시점」을 봅니다.</b> 절대 수준보다 <b>바뀌는 순간</b>에 시장이 크게 반응했습니다. 다만 이것도 <b>지나고 나서야 확실해집니다.</b></p>
+    </div>
+
+    <ul class="check" id="rtCheck">
+      <li><b>2장 계산기로 내 구매력을 계산해봤나?</b> 「얼마짜리 집을 볼 것인가」의 출발점입니다.</li>
+      <li><b>3장 스트레스 테스트에서 +3%p를 넣어봤나?</b> 그래도 버틸 수 있는 금액이 내 한도입니다.</li>
+      <li><b>내 대출이 고정인지 변동인지 알고 있나?</b> 의외로 모르는 경우가 많습니다.</li>
+      <li><b>변동이라면 언제 금리가 바뀌나?</b> 6개월인지 1년인지에 따라 충격 시점이 다릅니다.</li>
+      <li><b>소득이 줄어드는 상황도 같이 가정했나?</b> 금리 상승과 경기 악화는 대개 함께 옵니다.</li>
+      <li><b>「금리가 곧 내릴 것」을 전제로 계획하고 있지는 않나?</b> 그 예측은 자주 틀렸습니다.</li>
+      <li><b>지금 받을 수 있는 실제 대출 금리를 확인해봤나?</b> 뉴스의 기준금리와 다릅니다.</li>
+    </ul>
+    <div class="checkcount" id="rtCount">0 / 7 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 금리는 <b>구매력</b>을 통해 집값에 작용합니다. 매달 낼 수 있는 돈이 같아도 <b>금리가 3%p 오르면 빌릴 수 있는 금액이 30% 가까이 줄어듭니다.</b> 그리고 이미 빌린 사람에게는 <b>월 상환액 증가</b>로 반대 방향에서 작용합니다.</p>
+      <p>2022년에는 이 <b>두 힘이 같은 방향으로</b> 왔습니다. 그래서 정책이 크게 바뀌지 않았는데도 <b>방향이 뒤집혔습니다.</b></p>
+      <p>다음 편에서는 이 이야기를 <b>내 계좌 수준</b>으로 좁힙니다. <b>LTV·DTI·DSR이 각각 무엇이고, 내가 실제로 얼마를 빌릴 수 있는지</b>, 그리고 <b>원리금균등과 원금균등 중 무엇을 고를지</b>.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 부동산 04 · 금리와 세계정세<br>
+    <a href="index.html#realestate">← 부동산 목록으로</a> · <a href="realestate-history.html">03 · 부동산의 역사</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 금융 조언이 아닙니다.<br>
+    계산기는 원리금균등·고정금리를 가정한 단순 모형이며 실제 대출 한도는 LTV·DSR 규제에 따라 달라집니다. 국제 비교는 대체적 경향이며 구체적 수치는 각국 공식 통계로 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 공통 계산 ══════════ */
+// 원리금균등: 월상환액 M, 월이율 i, 개월 n → 대출원금
+function loanFromPayment(M, rate, years){
+  var i = rate / 100 / 12, n = years * 12;
+  if(i <= 0) return M * n;
+  return M * (1 - Math.pow(1 + i, -n)) / i;
+}
+// 대출원금 P → 월상환액
+function paymentFromLoan(P, rate, years){
+  var i = rate / 100 / 12, n = years * 12;
+  if(i <= 0) return P / n;
+  return P * i / (1 - Math.pow(1 + i, -n));
+}
+function eok(man){ return (man / 10000).toFixed(2) + '억원'; }
+
+/* ══════════ 2. 구매력 ══════════ */
+var BP_RATES = [2, 3, 4, 5, 6, 7];
+function bpDraw(){
+  var pay = +document.getElementById('bpPay').value;
+  var years = +document.getElementById('bpYears').value;
+  var own = +document.getElementById('bpOwn').value;
+  var rate = +document.getElementById('bpRate').value;
+
+  document.getElementById('bpPayOut').textContent = pay.toLocaleString() + '만원';
+  document.getElementById('bpYearsOut').textContent = years + '년';
+  document.getElementById('bpOwnOut').textContent = (own / 10000).toFixed(1) + '억원';
+  document.getElementById('bpRateOut').textContent = rate.toFixed(1) + '%';
+
+  var loan = loanFromPayment(pay, rate, years);
+  var house = loan + own;
+  document.getElementById('bpLoan').textContent = eok(loan);
+  document.getElementById('bpHouse').textContent = eok(house);
+  document.getElementById('bpHouse').style.color = 'var(--ink)';
+
+  var vals = BP_RATES.map(function(r){ return { r:r, loan:loanFromPayment(pay, r, years) }; });
+  var maxH = Math.max.apply(null, vals.map(function(v){ return v.loan + own; })) * 1.05 || 1;
+  var X0 = 96, W = 430;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">금리별로 살 수 있는 집값 (자기자본 ' + (own / 10000).toFixed(1) + '억 포함)</text>';
+  vals.forEach(function(v, idx){
+    var y = 34 + idx * 30;
+    var wo = own / maxH * W, wl = v.loan / maxH * W;
+    var near = Math.abs(v.r - rate) < 0.5;
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + wo.toFixed(1) + '" height="21" rx="2" fill="#6B7A52" fill-opacity="' +
+         (near ? '.5' : '.2') + '" stroke="#6B7A52" stroke-width="' + (near ? '1.3' : '0.8') + '"/>';
+    g += '<rect x="' + (X0 + wo).toFixed(1) + '" y="' + y + '" width="' + wl.toFixed(1) + '" height="21" rx="2" fill="#3A5A8E" fill-opacity="' +
+         (near ? '.5' : '.2') + '" stroke="#3A5A8E" stroke-width="' + (near ? '1.3' : '0.8') + '"/>';
+    g += '<text class="' + (near ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 15) + '" text-anchor="end"' +
+         (near ? ' fill="#3A5A8E"' : '') + '>' + v.r + '%</text>';
+    g += '<text class="' + (near ? 'lblb' : 'axt') + '" x="' + (X0 + wo + wl + 8).toFixed(1) + '" y="' + (y + 15) + '"' +
+         (near ? ' fill="#3A5A8E"' : '') + '>' + ((v.loan + own) / 10000).toFixed(2) + '억</text>';
+  });
+  g += '<rect x="' + X0 + '" y="222" width="10" height="8" fill="#6B7A52" fill-opacity=".5"/>';
+  g += '<text class="axt" x="' + (X0 + 16) + '" y="230">내 돈</text>';
+  g += '<rect x="' + (X0 + 70) + '" y="222" width="10" height="8" fill="#3A5A8E" fill-opacity=".5"/>';
+  g += '<text class="axt" x="' + (X0 + 86) + '" y="230">빌리는 돈 (매달 ' + pay.toLocaleString() + '만원 · ' + years + '년)</text>';
+  document.getElementById('bpBars').innerHTML = g;
+
+  var l3 = loanFromPayment(pay, 3, years), l6 = loanFromPayment(pay, 6, years);
+  var drop = (l6 - l3) / l3 * 100;
+  var h3 = l3 + own, h6 = l6 + own;
+  var hDrop = (h6 - h3) / h3 * 100;
+
+  if(rate <= 3.5){
+    verdict('bpVerdict', '#4C7A6D',
+      '금리가 낮으면 같은 돈으로 더 큰 집을 삽니다',
+      '매달 <b>' + pay.toLocaleString() + '만원</b>을 <b>' + years + '년</b> 낼 수 있다면, 금리 <b>' + rate.toFixed(1) +
+      '%</b>에서 <b>' + eok(loan) + '</b>을 빌릴 수 있습니다. 자기자본을 더하면 <b>' + eok(house) + '</b>짜리 집입니다.<br><br>' +
+      '<b>금리 슬라이더를 6%로 올려보세요.</b> 월 상환액은 그대로인데 <b>살 수 있는 집값이 ' +
+      Math.abs(hDrop).toFixed(0) + '% 줄어듭니다.</b><br><br>이게 <b>「금리가 집값을 움직인다」의 실제 의미</b>입니다. 사람들의 소득이 준 것도, 집이 나빠진 것도 아닙니다. <b>빌릴 수 있는 금액이 준 것</b>뿐입니다.');
+  } else if(rate <= 5.5){
+    verdict('bpVerdict', '#9E7A2E',
+      '금리 ' + rate.toFixed(1) + '%에서는 ' + eok(house) + '까지입니다',
+      '매달 <b>' + pay.toLocaleString() + '만원</b>씩 <b>' + years + '년</b>이면 <b>' + eok(loan) +
+      '</b>을 빌립니다. 자기자본 <b>' + (own / 10000).toFixed(1) + '억</b>을 더해 <b>' + eok(house) + '</b>입니다.<br><br>' +
+      '<b>비교해보면</b> — 같은 조건에서 금리 3%면 <b>' + eok(h3) + '</b>, 6%면 <b>' + eok(h6) +
+      '</b>입니다. 차이가 <b>' + eok(h3 - h6) + '</b>입니다.<br><br>대출 자체로만 보면 3% → 6%에서 빌릴 수 있는 금액이 <b>' +
+      Math.abs(drop).toFixed(0) + '%</b> 줄어듭니다. <b>월급이 30% 깎인 것과 비슷한 효과</b>가 집을 살 때만 나타나는 셈입니다.');
+  } else {
+    verdict('bpVerdict', '#8E4B3A',
+      '고금리에서는 같은 사람이 훨씬 작은 집만 살 수 있습니다',
+      '금리 <b>' + rate.toFixed(1) + '%</b>에서는 매달 <b>' + pay.toLocaleString() + '만원</b>을 내도 <b>' + eok(loan) +
+      '</b>밖에 못 빌립니다. 살 수 있는 집은 <b>' + eok(house) + '</b>입니다.<br><br>금리 3%였다면 같은 조건에서 <b>' +
+      eok(h3) + '</b>이었습니다. <b>' + eok(h3 - house) + '만큼 줄었습니다.</b><br><br>' +
+      '<b>여기서 중요한 것</b> — 이 사람의 소득도, 저축도, 집의 상태도 <b>아무것도 안 바뀌었습니다.</b> 바뀐 것은 <b>금리 하나</b>입니다.<br><br>' +
+      '시장 전체로 보면 <b>모든 매수자에게 동시에</b> 이 일이 일어납니다. 그래서 <b>수요가 통째로 줄어들고</b>, 값이 내려갑니다. <b>2022년에 벌어진 일</b>입니다(4장).');
+  }
+}
+['bpPay', 'bpYears', 'bpOwn', 'bpRate'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', bpDraw);
+});
+
+/* ══════════ 3. 스트레스 테스트 ══════════ */
+function stDraw(){
+  var loan = +document.getElementById('stLoan').value;
+  var years = +document.getElementById('stYears').value;
+  var now = +document.getElementById('stNow').value;
+  var up = +document.getElementById('stUp').value;
+  var income = +document.getElementById('stIncome').value;
+
+  var after = now + up;
+  document.getElementById('stLoanOut').textContent = (loan / 10000).toFixed(1) + '억원';
+  document.getElementById('stYearsOut').textContent = years + '년';
+  document.getElementById('stNowOut').textContent = now.toFixed(1) + '%';
+  document.getElementById('stUpOut').textContent = '+' + up.toFixed(1) + '%p → ' + after.toFixed(1) + '%';
+  document.getElementById('stIncomeOut').textContent = income.toLocaleString() + '만원';
+
+  var payNow = paymentFromLoan(loan, now, years);
+  var payAfter = paymentFromLoan(loan, after, years);
+  var delta = payAfter - payNow;
+  var burdenNow = payNow / income * 100;
+  var burdenAfter = payAfter / income * 100;
+
+  var dEl = document.getElementById('stDelta');
+  dEl.textContent = Math.round(payNow).toLocaleString() + ' → ' + Math.round(payAfter).toLocaleString() +
+                    '만원 (+' + Math.round(delta).toLocaleString() + ')';
+  dEl.style.color = delta > 0 ? 'var(--neg)' : '';
+  var bEl = document.getElementById('stBurden');
+  bEl.textContent = burdenNow.toFixed(0) + '% → ' + burdenAfter.toFixed(0) + '%';
+  var burdenShown = Math.round(burdenAfter);
+  bEl.style.color = burdenShown >= 50 ? 'var(--neg)' : (burdenShown >= 35 ? '' : 'var(--pos)');
+
+  var X0 = 130, W = 400, maxPay = Math.max(payAfter, income) * 1.1;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">월 상환액과 소득 (만원)</text>';
+  g += '<rect x="' + X0 + '" y="34" width="' + (payNow / maxPay * W).toFixed(1) + '" height="24" rx="2" fill="#6B7A52" fill-opacity=".45" stroke="#6B7A52" stroke-width="1.2"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="50" text-anchor="end">지금 ' + now.toFixed(1) + '%</text>';
+  g += '<text class="lblb" x="' + (X0 + payNow / maxPay * W + 8).toFixed(1) + '" y="50" fill="#6B7A52">' + Math.round(payNow).toLocaleString() + '</text>';
+
+  g += '<rect x="' + X0 + '" y="68" width="' + (payAfter / maxPay * W).toFixed(1) + '" height="24" rx="2" fill="#8E4B3A" fill-opacity=".45" stroke="#8E4B3A" stroke-width="1.2"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="84" text-anchor="end">' + after.toFixed(1) + '%라면</text>';
+  g += '<text class="lblb" x="' + (X0 + payAfter / maxPay * W + 8).toFixed(1) + '" y="84" fill="#8E4B3A">' + Math.round(payAfter).toLocaleString() + '</text>';
+
+  g += '<rect x="' + X0 + '" y="106" width="' + (income / maxPay * W).toFixed(1) + '" height="24" rx="2" fill="#3A5A8E" fill-opacity=".2" stroke="#3A5A8E" stroke-width="1.2"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="122" text-anchor="end">월 소득</text>';
+  g += '<text class="axt" x="' + (X0 + income / maxPay * W + 8).toFixed(1) + '" y="122">' + income.toLocaleString() + '</text>';
+
+  g += '<text class="axt" x="' + X0 + '" y="152">연간으로는 ' + Math.round(delta * 12).toLocaleString() + '만원이 더 나갑니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="172">소득은 그대로인데 지출만 늘어납니다.</text>';
+  document.getElementById('stScene').innerHTML = g;
+
+  if(up < 0.05){
+    verdict('stVerdict', '#5B5648',
+      '금리가 그대로라면 부담도 그대로입니다',
+      '지금 월 상환액은 <b>' + Math.round(payNow).toLocaleString() + '만원</b>이고 소득의 <b>' + burdenNow.toFixed(0) + '%</b>입니다.<br><br>' +
+      '<b>「금리가 오른다면」 슬라이더를 올려보세요.</b> 대출 규제에서 요구하는 <b>스트레스 테스트</b>가 바로 이 계산입니다. <b>+2~3%p</b>를 넣어보는 것이 보통입니다.<br><br>이유는 <b>금리가 앞으로 오를지 알 수 없기 때문</b>입니다. 그래서 <b>「오르면 어떻게 되나」를 미리 확인</b>합니다.');
+  } else if(burdenShown >= 50){
+    verdict('stVerdict', '#8E4B3A',
+      '금리가 오르면 소득의 절반 이상이 상환에 들어갑니다',
+      '월 상환액이 <b>' + Math.round(payNow).toLocaleString() + '만원 → ' + Math.round(payAfter).toLocaleString() +
+      '만원</b>으로 <b>' + Math.round(delta).toLocaleString() + '만원</b> 늘어납니다. 소득 대비 <b>' + burdenAfter.toFixed(0) + '%</b>입니다.<br><br>' +
+      '<b>이 수준은 사실상 감당하기 어렵습니다.</b> 남는 돈으로 생활비·교육비·보험료를 다 내야 하는데, 절반이 이미 나갔습니다.<br><br>' +
+      '그리고 <b>진짜 문제는 여기서 소득까지 흔들릴 때</b>입니다. 금리 상승은 대개 <b>경기 둔화와 함께</b> 옵니다. 상여금이 줄거나 일자리가 흔들리면 <b>버티지 못하고 팔아야</b> 합니다.<br><br>' +
+      '<b>그때는 값이 떨어져 있고 사겠다는 사람도 없습니다.</b> 01편에서 <b>「진짜 위험은 하락과 소득 충격이 겹치는 것」</b>이라고 한 상황이 정확히 이것입니다.<br><br><b>대출 금액을 줄여보세요.</b> 이 화면이 감당 가능해지는 지점이 <b>내 실제 한도</b>입니다.');
+  } else if(burdenShown >= 35){
+    verdict('stVerdict', '#9E7A2E',
+      '빠듯하지만 버틸 수 있는 구간입니다',
+      '금리가 <b>' + after.toFixed(1) + '%</b>가 되면 월 상환액이 <b>' + Math.round(payAfter).toLocaleString() +
+      '만원</b>, 소득의 <b>' + burdenAfter.toFixed(0) + '%</b>가 됩니다. 지금보다 <b>' + Math.round(delta).toLocaleString() +
+      '만원</b> 늘어납니다.<br><br>이 정도는 <b>생활을 조이면 버틸 수 있는 수준</b>입니다. 다만 여유는 없습니다.<br><br>' +
+      '<b>여기서 함께 확인할 것 두 가지</b><br>' +
+      '<b>①</b> 다른 대출(신용대출·전세대출·자동차)이 있다면 <b>부담은 이보다 큽니다.</b><br>' +
+      '<b>②</b> 소득이 줄어드는 경우도 함께 가정해보세요. <b>소득 슬라이더를 20% 내려보면</b> 그림이 달라집니다.');
+  } else {
+    verdict('stVerdict', '#4C7A6D',
+      '금리가 올라도 감당 가능한 범위입니다',
+      '금리가 <b>' + after.toFixed(1) + '%</b>로 올라도 월 상환액은 <b>' + Math.round(payAfter).toLocaleString() +
+      '만원</b>, 소득의 <b>' + burdenAfter.toFixed(0) + '%</b>입니다.<br><br>' +
+      '<b>이 정도가 안전한 구간</b>입니다. 금리가 올라도 생활이 크게 흔들리지 않고, 무엇보다 <b>급하게 팔지 않아도 됩니다.</b><br><br>' +
+      '01편에서 봤듯 부동산에서 진짜 손실은 <b>값이 떨어져서가 아니라 버티지 못해서</b> 납니다. <b>버틸 수 있으면 회복을 기다릴 수 있습니다.</b><br><br>' +
+      '<b>참고</b> — 이 계산에 <b>다른 대출은 포함되지 않았습니다.</b> 신용대출이나 전세대출이 있다면 합쳐서 다시 계산해보세요.');
+  }
+}
+['stLoan', 'stYears', 'stNow', 'stUp', 'stIncome'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', stDraw);
+});
+
+/* ══════════ 4. 2022 ══════════ */
+var Y2 = [
+  { h:'① 사려던 사람', color:'#3A5A8E', hi:0,
+    t:'구매력이 통째로 줄었습니다',
+    p:'2장 계산기 그대로입니다. 금리가 오르자 <b>같은 사람이 빌릴 수 있는 금액이 크게 줄었습니다.</b><br><br>매달 150만원을 낼 수 있는 사람 기준으로, 30년 대출에서 금리 <b>3% → 6%</b>면 빌릴 수 있는 돈이 <b>3.6억 → 2.5억</b> 수준으로 줍니다. <b>1억 넘게</b> 줄어듭니다.<br><br><b>이게 시장 전체에 동시에</b> 일어납니다. 모든 매수 희망자의 예산이 한꺼번에 줄어드는 것이니, <b>수요 곡선이 통째로 아래로</b> 내려갑니다.<br><br>그래서 <b>거래가 먼저 멈췄습니다.</b> 파는 사람은 예전 가격을 원하고, 사는 사람은 그 가격을 낼 수 없으니 <b>거래 자체가 성립하지 않았습니다.</b>' },
+  { h:'② 이미 산 사람', color:'#8E4B3A', hi:1,
+    t:'월 상환액이 늘고, 일부는 버티지 못했습니다',
+    p:'3장 계산기 그대로입니다. <b>변동금리</b>로 빌린 사람은 <b>몇 달 만에 월 상환액이 크게 늘었습니다.</b><br><br>5억을 30년 변동으로 빌린 경우, 금리 <b>3.5% → 6%</b>면 월 상환액이 <b>225만원 → 300만원</b> 수준으로 늘어납니다. <b>연간 900만원</b>이 더 나갑니다.<br><br>여기에 <b>「영끌」</b>이라 불린, 신용대출까지 최대한 끌어 쓴 경우는 부담이 훨씬 컸습니다.<br><br>대부분은 버텼습니다. 다만 <b>일부는 팔아야</b> 했고, 그 <b>급매가 시세를 끌어내렸습니다.</b> 거래가 적을 때는 <b>몇 건의 급매가 그 단지의 시세가 됩니다.</b>' },
+  { h:'③ 전세 시장', color:'#8E6B3A', hi:2,
+    t:'전세가 무너지면서 별도의 사고가 났습니다',
+    p:'전세도 함께 흔들렸습니다. <b>전세대출 금리도 같이 올랐기</b> 때문에, 전세보다 <b>월세를 택하는 사람</b>이 늘었습니다.<br><br>그러자 <b>전세 수요가 줄고 전세가가 떨어졌습니다.</b> 여기서 문제가 생겼습니다 — <b>새 세입자에게 받을 보증금이 기존 보증금보다 적어진 것</b>입니다. 이걸 <b>역전세</b>라고 합니다.<br><br>집주인이 차액을 메워주지 못하면 <b>보증금을 돌려주지 못합니다.</b> 그리고 <b>전세를 끼고 산 사람(갭투자)</b>은 애초에 여유 자금이 없는 경우가 많았습니다.<br><br>02편에서 본 <b>다가구·다세대 구조</b>가 여기서 실제 피해로 이어졌습니다. <b>전세사기</b>가 사회 문제가 된 시기입니다. <b>07편의 주제</b>입니다.' },
+  { h:'④ 합쳐지면', color:'#8E4B3A', hi:-1,
+    t:'세 방향이 같은 쪽을 밀었습니다',
+    p:'각각은 익숙한 이야기지만, <b>동시에 일어났다는 것</b>이 2022년의 특징입니다.<br><br><b>사려는 사람은 살 수 없고</b>(①), <b>가진 사람 일부는 팔아야 하고</b>(②), <b>전세는 무너지면서 급매를 더 만들었습니다</b>(③).<br><br>수요는 줄고 공급(매물)은 늘었으니 <b>값이 떨어지는 것이 당연했습니다.</b><br><br><b>여기서 03편의 결론이 확인됩니다</b> — 이 모든 것을 시작한 것은 <b>부동산 정책이 아니라 금리</b>였습니다. 그리고 <b>같은 시기 세계 여러 나라에서 같은 일이 일어났습니다</b>(6장).<br><br><b>다만 크기는 지역마다 완전히 달랐습니다.</b> 입주 물량이 많던 지역은 더 크게 떨어졌고, 공급이 적고 수요가 유지된 곳은 덜 떨어졌습니다. <b>금리는 방향을, 지역별 수급이 크기를</b> 정했습니다.' }
+];
+function y2Scene(hi){
+  var boxes = [
+    { n:'사려던 사람', d:'구매력 감소', x:60, c:'#3A5A8E' },
+    { n:'이미 산 사람', d:'상환 부담 증가', x:245, c:'#8E4B3A' },
+    { n:'전세 시장', d:'역전세·보증금 사고', x:430, c:'#8E6B3A' }
+  ];
+  var g = '';
+  g += '<text class="lblb" x="40" y="24" fill="#8E4B3A">금리 상승</text>';
+  boxes.forEach(function(b, i){
+    var on = (hi === i || hi === -1);
+    g += '<line x1="' + (b.x + 75) + '" y1="34" x2="' + (b.x + 75) + '" y2="52" stroke="' + b.c +
+         '" stroke-width="1.2" stroke-dasharray="3 3" stroke-opacity="' + (on ? '1' : '.35') + '"/>';
+    g += '<rect x="' + b.x + '" y="52" width="150" height="46" rx="3" fill="' + b.c +
+         '" fill-opacity="' + (on ? '.4' : '.12') + '" stroke="' + b.c + '" stroke-width="' + (on ? '1.6' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (b.x + 10) + '" y="' + 72 + '"' +
+         (on ? ' fill="' + b.c + '"' : '') + '>' + b.n + '</text>';
+    g += '<text class="axt" x="' + (b.x + 10) + '" y="' + 88 + '">' + b.d + '</text>';
+    g += '<line x1="' + (b.x + 75) + '" y1="98" x2="' + (b.x + 75) + '" y2="122" stroke="' + b.c +
+         '" stroke-width="1.2" stroke-dasharray="3 3" stroke-opacity="' + (on ? '1' : '.35') + '"/>';
+  });
+  g += '<line x1="40" y1="34" x2="600" y2="34" stroke="#8E4B3A" stroke-width="1.4"/>';
+  g += '<rect x="60" y="122" width="520" height="34" rx="3" fill="#8E4B3A" fill-opacity="' +
+       (hi === -1 ? '.35' : '.12') + '" stroke="#8E4B3A" stroke-width="' + (hi === -1 ? '1.6' : '1') + '"/>';
+  g += '<text class="' + (hi === -1 ? 'lblb' : 'axt') + '" x="320" y="143" text-anchor="middle"' +
+       (hi === -1 ? ' fill="#8E4B3A"' : '') + '>수요 감소 + 매물 증가 → 가격 하락</text>';
+  g += '<text class="axt" x="60" y="178">' +
+       (hi === -1 ? '세 방향이 동시에 같은 쪽을 밀었습니다.' : '금리 하나가 세 방향으로 갈라져 작동했습니다.') + '</text>';
+  document.getElementById('y2Scene').innerHTML = g;
+}
+bindBtnRow('#y2Btns', function(v){
+  y2Scene(Y2[+v].hi);
+  document.getElementById('y2Verdict').querySelector('.vh').textContent = Y2[+v].h;
+  verdict('y2Verdict', Y2[+v].color, Y2[+v].t, Y2[+v].p);
+});
+
+/* ══════════ 5. 전달 경로 ══════════ */
+var CH = [
+  { h:'① 미국 정책금리', color:'#7A5C9E', step:0,
+    t:'세계 금리의 기준점',
+    p:'미국 중앙은행이 정하는 금리입니다. 물가가 오르면 올리고, 경기가 나쁘면 내립니다.<br><br><b>왜 다른 나라에 영향을 주나</b> — 달러가 <b>세계 기축통화</b>이기 때문입니다(코인 07편에서 다룬 이야기입니다). 미국 국채는 <b>세계에서 가장 안전한 자산</b>으로 취급되므로, <b>미국 금리가 사실상 세계의 「기준 수익률」</b> 역할을 합니다.<br><br>미국이 금리를 올리면 <b>「아무 위험 없이 얻을 수 있는 수익」</b>이 올라갑니다. 그러면 다른 모든 자산이 <b>그보다 나은 수익을 줘야</b> 하고, 그래서 <b>전 세계 자산 가격이 함께 조정</b>됩니다.<br><br>주식 트랙 <b>08편(경제지표)</b>에서 다룬 그 구조입니다.' },
+  { h:'② 자본 이동·환율', color:'#7A5C9E', step:1,
+    t:'돈이 이자를 따라 움직입니다',
+    p:'미국 금리가 우리보다 높아지면, <b>돈이 미국으로 흘러갑니다.</b> 원화를 팔고 달러를 사니 <b>환율이 오릅니다</b>(원화 가치 하락).<br><br><b>환율이 오르면 무슨 일이</b> — 수입 물가가 오릅니다. 기름, 원자재, 식료품이 비싸집니다. 그러면 <b>국내 물가가 오르고</b>, 중앙은행은 <b>물가를 잡으려고 금리를 올려야</b> 합니다.<br><br>즉 미국 금리는 <b>「자본 유출」과 「수입 물가」</b>라는 두 경로로 한국 금리를 밀어 올립니다.<br><br><b>그런데 자동은 아닙니다</b> — 국내 경기가 나쁘면 <b>금리 차이를 감수하고 덜 올리는</b> 선택을 하기도 합니다. 실제로 한미 금리가 역전된 상태가 상당 기간 이어진 적도 있습니다.' },
+  { h:'③ 한국 기준금리', color:'#3A5A8E', step:2,
+    t:'한국은행이 결정합니다',
+    p:'한국은행 금융통화위원회가 <b>연 8회</b> 결정합니다. 물가, 경기, 환율, 가계부채를 함께 봅니다.<br><br><b>부동산과의 관계</b> — 기준금리 자체가 <b>내 대출 금리는 아닙니다.</b> 다만 <b>모든 금리의 출발점</b>입니다.<br><br><b>딜레마</b> — 금리를 올리면 물가와 환율은 잡히지만 <b>가계 부담이 커지고 경기가 나빠집니다.</b> 내리면 반대입니다. 그리고 <b>가계부채가 많은 나라일수록 금리 인상의 충격이 큽니다.</b><br><br>한국은 <b>가계부채 비율이 높은 편</b>이라, 금리 인상의 부담이 상대적으로 크게 작용합니다. 이건 <b>03편의 「완화기에 늘어난 부채가 나중에 부담이 됐다」</b>는 이야기와 이어집니다.' },
+  { h:'⑤ 내 대출 금리', color:'#8E4B3A', step:4,
+    t:'여기까지 와야 내 일이 됩니다',
+    p:'실제 내 대출 금리는 <b>기준금리가 아니라 「지표금리 + 가산금리」</b>로 정해집니다.<br><br><b>지표금리</b> — 은행이 돈을 조달하는 비용을 반영합니다. 변동형은 흔히 <b>COFIX</b>나 <b>금융채 금리</b>에 연동됩니다. 어떤 지표에 연동되느냐에 따라 <b>반영 속도가 다릅니다.</b><br><br><b>가산금리</b> — 은행이 붙이는 몫입니다. <b>내 신용도, 대출 규모, 은행의 영업 정책</b>에 따라 달라집니다. 여기에 우대금리(급여이체, 카드실적 등)로 깎이기도 합니다.<br><br><b>실전에서 중요한 것</b> — <b>같은 시점에도 은행마다, 사람마다 금리가 다릅니다.</b> 그래서 <b>여러 곳을 비교하는 것만으로 0.3~0.5%p를 아끼는 경우</b>가 흔합니다. 5억 대출이면 <b>연 150~250만원</b> 차이입니다.<br><br>05편에서 자세히 다룹니다.' },
+  { h:'④ 시장금리·채권', color:'#6B7A52', step:3,
+    t:'기준금리보다 먼저 움직이는 것',
+    p:'은행이 돈을 빌려주려면 <b>먼저 돈을 조달</b>해야 합니다. 예금을 받거나 <b>채권을 발행</b>합니다. 그 비용이 <b>시장금리</b>입니다.<br><br><b>중요한 특징</b> — 시장금리는 <b>기준금리 결정을 미리 반영</b>합니다. 「다음 달에 올릴 것 같다」는 예상이 있으면 <b>발표 전에 이미 올라 있습니다.</b><br><br>그래서 <b>기준금리 발표일에 대출금리가 그날 바뀌는 것이 아닙니다.</b> 이미 몇 주 전에 반영돼 있는 경우가 많습니다.<br><br>주식 트랙 08편의 <b>「예상치와 실제치」</b> 이야기가 여기서도 그대로 적용됩니다 — <b>예상된 인상은 이미 값에 들어 있고, 예상을 벗어날 때 크게 움직입니다.</b><br><br><b>실전 팁</b> — 대출 시점을 고민한다면 기준금리 뉴스보다 <b>은행이 고시하는 금리를 직접 확인</b>하는 것이 정확합니다.' }
+];
+function chScene(step){
+  var nodes = ['미국 금리', '자본이동·환율', '한국 기준금리', '시장금리', '내 대출금리'];
+  var cols = ['#7A5C9E', '#7A5C9E', '#3A5A8E', '#6B7A52', '#8E4B3A'];
+  var g = '';
+  var X0 = 30, gap = 122;
+  nodes.forEach(function(n, i){
+    var x = X0 + i * gap, on = (i === step);
+    g += '<rect x="' + x + '" y="60" width="106" height="42" rx="3" fill="' + cols[i] +
+         '" fill-opacity="' + (on ? '.42' : '.12') + '" stroke="' + cols[i] + '" stroke-width="' + (on ? '1.8' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (x + 53) + '" y="85" text-anchor="middle"' +
+         (on ? ' fill="' + cols[i] + '"' : '') + '>' + n + '</text>';
+    if(i < nodes.length - 1){
+      g += '<line x1="' + (x + 108) + '" y1="81" x2="' + (x + gap - 2) + '" y2="81" stroke="#8A8474" stroke-width="1.2" stroke-dasharray="3 3"/>';
+    }
+  });
+  g += '<text class="axt" x="' + X0 + '" y="42">뉴스에서 보는 것</text>';
+  g += '<text class="axt" x="' + (X0 + 4 * gap) + '" y="42">내가 실제로 내는 것</text>';
+  g += '<text class="axt" x="' + X0 + '" y="132">각 단계마다 연결이 약해지거나 시차가 생깁니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="152">그래서 「미국이 올렸다」가 곧바로 「내 이자가 오른다」는 아닙니다.</text>';
+  document.getElementById('chScene').innerHTML = g;
+}
+bindBtnRow('#chBtns', function(v){
+  var c = CH.filter(function(x){ return x.step === +v; })[0];
+  chScene(c.step);
+  document.getElementById('chVerdict').querySelector('.vh').textContent = c.h;
+  verdict('chVerdict', c.color, c.t, c.p);
+});
+
+/* ══════════ 6. 세계 요인 ══════════ */
+var GL = [
+  { h:'공사비·원자재', color:'#8E6B3A',
+    t:'짓는 값이 오르면 새 집이 안 지어집니다',
+    p:'집을 짓는 데는 <b>철근, 시멘트, 목재, 그리고 인건비</b>가 듭니다. 이 값이 오르면 <b>분양가가 올라야</b> 사업이 성립합니다.<br><br>2021~2022년에 <b>원자재 값과 물류비가 세계적으로 급등</b>했습니다. 여기에 인건비 상승이 겹쳐 <b>공사비가 크게 올랐습니다.</b><br><br><b>두 방향으로 작용합니다</b><br><b>①</b> 새로 분양하는 집이 <b>비싸집니다.</b> 그러면 기존 집값의 기준선도 올라갑니다.<br><b>②</b> 분양가를 못 올리면 <b>사업을 포기</b>합니다. 그러면 <b>몇 년 뒤 공급이 줍니다</b>(03편의 시차).<br><br>그리고 이건 <b>재건축·재개발에 특히 크게</b> 작용합니다. 공사비가 오르면 조합원 부담금이 커져 <b>사업이 멈추는</b> 경우가 생깁니다.' },
+  { h:'환율', color:'#7A5C9E',
+    t:'수입 물가를 통해 돌아서 작용합니다',
+    p:'환율은 집값에 <b>직접</b> 작용하지는 않습니다. <b>돌아서</b> 옵니다.<br><br><b>경로 ①</b> — 환율이 오르면 <b>수입 물가</b>가 오르고, 물가가 오르면 <b>금리를 올려야</b> 합니다. 그러면 앞의 계산기 그대로입니다.<br><br><b>경로 ②</b> — 건축 자재 상당수가 <b>수입</b>입니다. 환율이 오르면 <b>공사비가 올라갑니다.</b><br><br><b>경로 ③</b> — 해외 자금의 국내 부동산 투자에 영향을 줍니다. 다만 한국은 <b>이 비중이 작아</b> 영향이 제한적입니다. 반면 <b>캐나다·호주·뉴질랜드</b> 등은 외국인 매수 비중이 커서 <b>규제를 도입</b>하기도 했습니다.<br><br><b>반대 방향도 있습니다</b> — 원화가 약하면 <b>외국인에게는 한국 부동산이 싸 보입니다.</b> 다만 이 효과가 시장 전체를 움직일 만큼 크지는 않았습니다.' },
+  { h:'이민·인구 이동', color:'#6B7A52',
+    t:'다른 나라에서는 이게 가장 큰 변수인 경우도 있습니다',
+    p:'집 수요는 결국 <b>가구 수</b>입니다(03편). 그런데 어떤 나라에서는 <b>이민이 가구 수를 결정</b>합니다.<br><br><b>캐나다·호주</b>가 대표적입니다. 인구 증가의 상당 부분이 이민이고, <b>이민이 늘면 주택 수요가 즉시 늘어납니다.</b> 그래서 이 나라들에서는 <b>이민 정책이 곧 부동산 정책</b>처럼 작동합니다.<br><br><b>한국은</b> 아직 이 요인이 크지 않지만, <b>인구가 줄어드는 국면</b>에서는 이야기가 달라질 수 있습니다. 이미 일부 지역에서는 <b>외국인 노동자 유입이 지역 임대 수요</b>를 떠받치고 있습니다.<br><br><b>더 중요한 것은 국내 이동</b>입니다. 인구가 줄어도 <b>특정 지역으로 몰리면</b> 그곳 집값은 오릅니다. <b>「인구 감소 = 집값 하락」이 단순하지 않은</b> 이유입니다. 09편에서 다룹니다.' },
+  { h:'지정학', color:'#8E4B3A',
+    t:'가장 예측하기 어렵고, 대개 금리를 통해 옵니다',
+    p:'전쟁, 무역 분쟁, 공급망 재편 같은 것들입니다. 이것들이 <b>집값에 직접 작용하는 경우는 드뭅니다.</b> 대개 <b>물가와 금리를 통해</b> 돌아서 옵니다.<br><br><b>실제 경로</b> — 분쟁으로 <b>에너지·곡물 값이 오르면</b> → 세계 물가가 오르고 → <b>각국이 금리를 올리고</b> → 앞의 계산기 그대로입니다. 2022년의 물가 급등에 이 요인이 있었습니다.<br><br><b>또 하나</b> — 지정학적 위험이 커지면 <b>안전자산으로 돈이 몰립니다.</b> 달러와 미국 국채로요. 그러면 <b>신흥국에서 자금이 빠져나가고 환율이 오릅니다.</b> 다시 경로 ②입니다.<br><br><b>실전적 결론</b> — 지정학 뉴스에 부동산 판단을 직접 연결하지 마세요. <b>「그래서 금리가 어떻게 되나」</b>까지 와야 의미가 생깁니다. 그리고 그 경로는 <b>몇 단계를 거치면서 예측이 매우 어려워집니다.</b>' }
+];
+bindBtnRow('#glBtns', function(v){
+  document.getElementById('glVerdict').querySelector('.vh').textContent = GL[+v].h;
+  verdict('glVerdict', GL[+v].color, GL[+v].t, GL[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#rtCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#rtCheck li.done').length;
+      document.getElementById('rtCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 둘째 항목이 핵심입니다. 예측 대신 스트레스 테스트.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+bpDraw();
+stDraw();
+document.querySelector('#y2Btns button[data-v="0"]').click();
+document.querySelector('#chBtns button[data-v="0"]').click();
+document.querySelector('#glBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
