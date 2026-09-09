@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>메이저 코인 도감 — 비트코인·이더리움·리플, 그리고 나머지</title>
+<meta name="description" content="비트코인·이더리움·리플이 각각 무엇을 하려고 태어났는지, 코인의 유형은 어떻게 나뉘는지, 그리고 그 많던 알트코인들이 어디로 갔는지 정리한 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --btc:#B8860B;
+    --eth:#5C6BC0;
+    --xrp:#4C7A6D;
+    --alt:#9E7A2E;
+    --bad:#8E4B3A;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+    --neutral:#5B5648;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0 8px;}
+  .pc > div{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-radius:3px;
+    padding:16px 18px;
+  }
+  .pc h5{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    font-weight:500;
+    margin:0 0 10px;
+    letter-spacing:.04em;
+  }
+  .pc .good h5{color:#3F6B52;}
+  .pc .bad h5{color:var(--bad);}
+  .pc ul{margin:0;padding-left:16px;}
+  .pc li{font-size:14px;color:var(--ink-soft);margin-bottom:8px;line-height:1.62;}
+  .pc li:last-child{margin-bottom:0;}
+  .pc li b{color:var(--ink);font-weight:600;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin-top:-14px;margin-bottom:24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  /* 코인 카드 */
+  .coincard{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--edge);
+    border-radius:3px;
+    padding:20px 22px;
+    margin:20px 0;
+  }
+  .coincard .ct{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--edge);
+    margin-bottom:7px;
+  }
+  .coincard h3{font-size:21px;margin:0 0 10px;}
+  .coincard .cspec{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px;
+    margin:14px 0 0;
+    padding-top:14px;
+    border-top:1px solid var(--rule);
+  }
+  .coincard .cspec > div{text-align:center;}
+  .coincard .cspec .sk{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    color:var(--ink-faint);
+    display:block;
+    margin-bottom:4px;
+  }
+  .coincard .cspec .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .pc{grid-template-columns:1fr;}
+    .coincard{padding:17px 18px;}
+    .coincard .cspec{grid-template-columns:1fr;gap:12px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">코인 05 · 도감 · 투자 공부 노트</div>
+    <h1>메이저 코인 도감<br>— 각각 무엇을 하려고 태어났나</h1>
+    <p class="lede">코인은 <b>수만 개</b>가 있습니다. 그런데 그중 <b>서로 다른 일을 하려는 것</b>은 몇 종류 되지 않습니다. 이 편에서는 <b>비트코인·이더리움·리플</b>이 각각 무엇을 목표로 만들어졌는지 보고, 나머지를 <b>유형별로 정리</b>합니다. 그리고 <b>그 많던 코인들이 어디로 갔는지</b>도 확인합니다.</p>
+    <div class="callout">
+      <b>이 편에서 특히 중요한 것.</b> 각 코인의 <b>「무엇을 하려는가」</b>와 <b>「지금 값이 얼마인가」</b>는 별개입니다. 좋은 아이디어가 좋은 투자가 되지 않은 사례는 <b>코인 쪽이 주식보다 훨씬 많습니다.</b> 이 문서는 <b>정체를 파악하는 것</b>까지가 목적이고, 살지 말지의 판단은 <b>08편</b>에서 따로 다룹니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="기술 배경과 논쟁까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#many">1. 몇 개나 있나</a>
+    <a href="#btc">2. 비트코인</a>
+    <a href="#eth">3. 이더리움</a>
+    <a href="#xrp">4. 리플</a>
+    <a href="#types">5. 유형 분류</a>
+    <a href="#gone">6. 사라진 이름들</a>
+    <a href="#ask">7. 새 코인을 볼 때</a>
+  </nav>
+
+  <!-- ══════════ 1. 몇 개 ══════════ -->
+  <section id="many">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 규모</span>
+      <h2>코인은 몇 개나 있나</h2>
+      <p class="one">숫자를 보면 <b>이 시장의 성격</b>이 바로 드러납니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>앞 편에서 <b>「누구나 10분이면 코인을 만들 수 있다」</b>고 했지? 그러면 어떻게 될까? <b>엄청나게 많이 만들어져.</b></p>
+      <p>지금 세상에는 코인이 <b>수만 개</b>가 있어. 그런데 그중에 <b>실제로 사람들이 쓰거나 거래하는 건 아주 일부</b>야. 나머지는 만들어놓고 <b>아무도 안 쓰는 상태로 남아 있어.</b></p>
+      <p>비유하자면 <b>누구나 공짜로 가게를 낼 수 있는 시장</b> 같은 거야. 가게는 수만 개인데 <b>손님이 있는 가게는 몇십 곳</b>뿐인 거지. 그러니까 <b>「코인이 몇 개다」보다 「손님이 있는 곳이 어디냐」가 훨씬 중요해.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SCALE · 숫자로 보는 구조</div>
+      <p class="labsub">시장의 <b>집중도</b>가 얼마나 극단적인지 보여주는 개념도입니다.</p>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="코인 시장의 시가총액 집중 구조">
+        <g id="scBars"></g>
+      </svg>
+
+      <div class="verdict" id="scVerdict" style="--vc:var(--neutral)">
+        <div class="vh">시장 구조</div>
+        <div class="vt">막대를 눌러보세요</div>
+        <p>코인 시장은 <b>극단적으로 집중</b>되어 있습니다. 각 구간을 눌러 확인하세요.</p>
+      </div>
+
+      <div class="plain">
+        <b>비율에 대해.</b> 정확한 수치는 시점에 따라 크게 달라집니다. 위 그림은 <b>「상위 소수가 시장 대부분을 차지하고, 나머지 수만 개가 나머지를 나눠 갖는」</b>는 구조를 보여주기 위한 개념도입니다. 방향과 크기 감각으로 봐주세요.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2. 비트코인 ══════════ -->
+  <section id="btc">
+    <div class="prod-head" style="--edge:var(--btc)">
+      <span class="prod-tag">02 · BTC</span>
+      <h2>비트코인 — 「디지털 금」이 되려는 것</h2>
+      <p class="one">원래 목표는 결제였지만, <b>지금의 서사는 가치 저장</b>입니다.</p>
+    </div>
+
+    <div class="coincard" style="--edge:var(--btc)">
+      <div class="ct">BITCOIN · BTC · 2009</div>
+      <h3>목표: 관리자 없는 화폐, 그리고 예측 가능한 희소성</h3>
+      <p style="margin:0;font-size:14.5px;color:var(--ink-soft);">
+        블록체인의 <b>원조</b>이며 지금도 시장에서 가장 큰 비중을 차지합니다. 기술적으로는 <b>가장 단순</b>하고, 그래서 <b>가장 덜 고장 납니다.</b> 스마트 컨트랙트 같은 복잡한 기능이 없는 것이 <b>약점이자 강점</b>입니다.
+      </p>
+      <div class="cspec">
+        <div><span class="sk">발행 상한</span><span class="sv">2,100만 개</span></div>
+        <div><span class="sk">합의 방식</span><span class="sv">작업증명</span></div>
+        <div><span class="sk">블록 간격</span><span class="sv">약 10분</span></div>
+      </div>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>비트코인은 <b>가장 먼저 나왔고, 가장 단순해.</b> 할 수 있는 게 「돈 보내기」밖에 없어. 그런데 <b>바로 그게 강점</b>이기도 해 — <b>단순하니까 고장 날 데가 적거든.</b></p>
+      <p>지금 사람들이 비트코인을 부르는 이름은 <b>「디지털 금」</b>이야. 금처럼 <b>양이 정해져 있고, 캐내기 어렵고, 누가 마음대로 더 만들 수 없으니까.</b></p>
+      <p>그런데 <b>원래 목표는 그게 아니었어.</b> 백서 제목은 「전자화폐」였거든. <b>결제에 쓰기엔 느리고 비싸서</b> 용도가 바뀐 거야. 이게 발전인지 실패인지는 <b>사람마다 답이 달라.</b></p>
+    </div>
+
+    <div class="deep">
+      <h3>강점과 약점이 같은 곳에서 나옵니다</h3>
+      <p><b>강점</b> — 십수 년간 <b>한 번도 중단되지 않고</b> 돌아갔습니다. 규칙이 거의 바뀌지 않아 예측 가능합니다. 참여자가 가장 많아 <b>공격 비용도 가장 큽니다.</b> 그리고 <b>가장 널리 알려져 있어</b> 유동성이 좋습니다.</p>
+      <p><b>약점</b> — 초당 처리할 수 있는 거래가 매우 적습니다. 수수료가 혼잡도에 따라 크게 뜁니다. 스마트 컨트랙트가 없어 <b>그 위에 무언가를 올리기 어렵습니다.</b> 그리고 <b>바꾸기가 매우 어렵습니다</b> — 보수적인 것이 안정성이자 경직성입니다.</p>
+
+      <h3>「비트코인 맥시멀리즘」이라는 입장</h3>
+      <p>「비트코인만이 유일하게 의미 있고 나머지는 전부 불필요하다」는 주장을 이렇게 부릅니다. 근거는 <b>「네트워크 효과는 하나로 수렴한다」</b>와 <b>「나머지는 대부분 만든 사람이 이익을 챙기는 구조」</b>입니다.</p>
+      <p>일부는 설득력이 있고 일부는 과합니다. 다만 <b>투자자 입장에서 유용한 관점</b>이 하나 있습니다 — <b>「이 코인이 비트코인보다 나은 점이 무엇이고, 그 대가로 무엇을 포기했는가」</b>를 묻는 것입니다. 대부분의 코인은 이 질문에 명확히 답하지 못합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3. 이더리움 ══════════ -->
+  <section id="eth">
+    <div class="prod-head" style="--edge:var(--eth)">
+      <span class="prod-tag">03 · ETH</span>
+      <h2>이더리움 — 그 위에 올릴 수 있는 컴퓨터</h2>
+      <p class="one">앞 편에서 자세히 봤으니, 여기서는 <b>「자산으로서 무엇인가」</b>에 집중합니다.</p>
+    </div>
+
+    <div class="coincard" style="--edge:var(--eth)">
+      <div class="ct">ETHEREUM · ETH · 2015</div>
+      <h3>목표: 누구나 프로그램을 올릴 수 있는 공용 컴퓨터</h3>
+      <p style="margin:0;font-size:14.5px;color:var(--ink-soft);">
+        스마트 컨트랙트를 처음으로 널리 실현했습니다. 토큰·NFT·DeFi 대부분이 <b>이더리움 위에서 시작</b>됐고, 지금도 <b>가장 많은 개발자와 서비스</b>가 모여 있습니다. 2022년에 <b>작업증명에서 지분증명으로</b> 전환했습니다.
+      </p>
+      <div class="cspec">
+        <div><span class="sk">발행 상한</span><span class="sv">없음 (소각 있음)</span></div>
+        <div><span class="sk">합의 방식</span><span class="sv">지분증명</span></div>
+        <div><span class="sk">주 용도</span><span class="sv">플랫폼 연료</span></div>
+      </div>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>비트코인이 <b>「금」</b>이라면 이더리움은 <b>「석유」</b>에 가까워. 그 자체로 값어치가 있다기보다, <b>무언가를 돌리는 데 쓰이는 연료</b>거든.</p>
+      <p>이더리움 위에서 뭔가를 하려면 <b>반드시 이더로 수수료를 내야</b> 해. 그러니까 <b>이더리움 위에서 하는 일이 많아질수록 이더가 더 많이 필요</b>해져. 이게 이더 가치의 근거로 이야기되는 부분이야.</p>
+      <p>반대로 말하면 <b>이더리움 위에서 아무도 아무것도 안 하면</b> 이더는 쓸 데가 없어져. 그래서 이더는 <b>「이 플랫폼이 계속 쓰일 것인가」에 거는 것</b>에 가까워.</p>
+    </div>
+
+    <div class="deep">
+      <h3>자산으로서의 성격</h3>
+      <p>비트코인과 이더리움은 <b>같은 「코인」이지만 성격이 다릅니다.</b></p>
+      <p>비트코인은 <b>「이 자산의 희소성을 사람들이 계속 인정할 것인가」</b>에 걸려 있습니다. 사용량과 직접 연결되지 않습니다.</p>
+      <p>이더리움은 <b>「이 플랫폼이 얼마나 쓰이는가」</b>에 더 직접 연결됩니다. 네트워크가 많이 쓰이면 <b>수수료 소각이 늘어 총량이 줄고</b>, 스테이킹 보상의 근거도 커집니다. 주식으로 치면 <b>사용량이 실적처럼 작동하는 면</b>이 있습니다.</p>
+      <p>다만 <b>주식과 결정적으로 다릅니다</b> — 이더 보유자에게 <b>배당이나 청산 시 잔여재산 청구권 같은 법적 권리는 없습니다.</b> 「사용량이 늘면 가치가 오른다」는 것은 <b>메커니즘에 근거한 기대</b>이지 계약된 권리가 아닙니다.</p>
+
+      <h3>경쟁자들</h3>
+      <p>이더리움이 느리고 비싸다는 문제를 노린 <b>경쟁 체인</b>들이 많이 나왔습니다. 대체로 <b>더 빠르고 싼 대신 검증자 수가 적거나 참여 장벽이 높습니다.</b> 앞 편의 트릴레마 그대로입니다.</p>
+      <p>그리고 이더리움 자신도 <b>레이어2</b>로 이 문제를 풀려 하고 있습니다. 지금 시장의 중요한 관전 포인트 중 하나가 <b>「빠른 별도 체인이 이길까, 이더리움 + 레이어2가 이길까」</b>입니다. <b>아직 결론이 나지 않았습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4. 리플 ══════════ -->
+  <section id="xrp">
+    <div class="prod-head" style="--edge:var(--xrp)">
+      <span class="prod-tag">04 · XRP</span>
+      <h2>리플(XRP) — 은행 사이의 돈을 빠르게 옮기려는 것</h2>
+      <p class="one">앞의 둘과 <b>지향점이 근본적으로 다릅니다.</b> 그리고 <b>회사가 있습니다.</b></p>
+    </div>
+
+    <div class="coincard" style="--edge:var(--xrp)">
+      <div class="ct">XRP · 2012~</div>
+      <h3>목표: 국제 송금의 중간 다리</h3>
+      <p style="margin:0;font-size:14.5px;color:var(--ink-soft);">
+        비트코인·이더리움과 달리 <b>채굴이 없습니다.</b> 처음부터 정해진 양이 전부 발행되어 있었고, <b>리플랩스라는 회사</b>가 상당량을 보유하며 개발을 주도해왔습니다. 목표 고객이 개인이 아니라 <b>금융기관</b>이라는 점이 가장 큰 차이입니다.
+      </p>
+      <div class="cspec">
+        <div><span class="sk">발행</span><span class="sv">처음부터 전량</span></div>
+        <div><span class="sk">채굴</span><span class="sv">없음</span></div>
+        <div><span class="sk">주 대상</span><span class="sv">금융기관 송금</span></div>
+      </div>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>한국 돈을 브라질 돈으로 바꿔서 보내려면 <b>은행 여러 곳을 거쳐야</b> 하고, <b>며칠</b>이 걸리고, <b>수수료도 많이</b> 들어. 서로 직접 거래하는 통로가 없어서 <b>달러를 거쳐 가는</b> 경우가 많거든.</p>
+      <p>리플은 이걸 <b>「중간에 다리를 하나 놓자」</b>는 아이디어로 풀려고 했어. 한국 돈 → XRP → 브라질 돈. <b>몇 초 만에</b> 끝나게.</p>
+      <p>그런데 앞의 둘과 아주 다른 점이 있어. <b>비트코인은 주인이 없는데, XRP는 만든 회사가 있어.</b> 그 회사가 코인을 많이 갖고 있고 방향도 정해. <b>은행이 싫어서 만든 게 아니라 은행에 팔려고 만든</b> 셈이야.</p>
+    </div>
+
+    <div class="deep">
+      <h3>「탈중앙」의 관점에서 보면</h3>
+      <p>비트코인의 출발점은 <b>「기관을 믿지 말자」</b>였습니다. XRP는 반대로 <b>「기관이 더 잘 쓰게 하자」</b>에 가깝습니다. 그래서 <b>같은 잣대로 평가하기 어렵습니다.</b></p>
+      <p>비판하는 쪽은 <b>「회사가 대량 보유하고 방향을 정하면 그건 탈중앙이 아니다」</b>라고 봅니다. 옹호하는 쪽은 <b>「애초에 탈중앙이 목표가 아니었고, 실제 송금 문제를 푸는 게 목표」</b>라고 봅니다.</p>
+      <p><b>투자자에게 중요한 건 이 논쟁의 승패가 아니라</b>, 이 구조에서 나오는 <b>구체적 위험</b>입니다 — <b>회사가 보유 물량을 시장에 내놓으면 가격에 영향을 줍니다.</b> 주식 트랙에서 본 <b>「대주주 지분과 락업」</b>과 같은 문제입니다.</p>
+
+      <h3>규제 소송이라는 변수</h3>
+      <p>XRP는 <b>미국 규제 당국과의 소송</b>으로 오랫동안 화제였습니다. 쟁점은 <b>「XRP 판매가 증권 판매에 해당하는가」</b>였습니다. 이 문제는 XRP 하나만의 이슈가 아니라 <b>대부분의 코인에 적용될 수 있는 질문</b>이라 업계 전체가 주목했습니다.</p>
+      <p>소송 과정에서 <b>판매 방식에 따라 판단이 갈리는</b> 결과가 나왔고, 이후에도 절차가 이어졌습니다.</p>
+      <p class="plain"><b>확인이 필요합니다.</b> 규제와 소송은 <b>계속 진행되고 결론이 바뀝니다.</b> 이 문서는 <b>「규제 판단이 코인 가격에 큰 변수가 된다」</b>는 구조를 설명하는 것이 목적이며, <b>특정 사건의 현재 상태는 최신 자료로 확인하세요.</b></p>
+
+      <h3>여기서 얻을 일반적인 교훈</h3>
+      <p><b>코인마다 「무엇을 하려는가」가 근본적으로 다릅니다.</b> 그래서 <b>「좋은 코인」이라는 단일한 기준이 없습니다.</b> 비트코인의 잣대로 XRP를 재면 이상해 보이고, XRP의 잣대로 비트코인을 재도 마찬가지입니다.</p>
+      <p>대신 물어야 할 질문은 <b>「이 코인이 풀려는 문제가 진짜 문제인가」</b>, <b>「그 문제를 이 방식으로 푸는 게 최선인가」</b>, 그리고 <b>「그 성공이 이 코인의 가치로 이어지는 경로가 있는가」</b>입니다. 마지막 질문이 가장 자주 빠집니다.</p>
+    </div>
+    <h3>세 개를 한 장으로</h3>
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th></th><th>비트코인 (BTC)</th><th>이더리움 (ETH)</th><th>리플 (XRP)</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>태어난 목적</th><td>관리자 없는 화폐</td><td>누구나 프로그램을 올리는 공용 컴퓨터</td><td>기관 사이 국제 송금의 중간 다리</td></tr>
+          <tr><th>지금의 쓰임</th><td>주로 가치 저장 (「디지털 금」)</td><td>플랫폼 연료 + 스테이킹 자산</td><td>송금·거래 매개, 실사용은 논쟁적</td></tr>
+          <tr><th>발행 상한</th><td>2,100만 개로 고정</td><td>상한 없음 · 수수료 소각 있음</td><td>처음부터 전량 발행</td></tr>
+          <tr><th>새 코인이 나오는 방식</th><td>채굴 보상 (반감기로 감소)</td><td>스테이킹 보상 (소각과 상쇄)</td><td>새로 나오지 않음 · 보유 물량이 풀림</td></tr>
+          <tr><th>중심 주체</th><td>없음</td><td>재단이 있으나 영향력은 제한적</td><td>회사가 대량 보유하고 개발을 주도</td></tr>
+          <tr><th>가치의 근거로 이야기되는 것</th><td>희소성과 오래 버틴 신뢰</td><td>네트워크 사용량</td><td>송금 채택 여부</td></tr>
+          <tr><th>가장 큰 위험</th><td>서사가 흔들리면 근거가 얇아짐</td><td>경쟁 체인·레이어2 판도 변화</td><td>보유 물량 출회 · 규제 판단</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <div class="plain">
+      <b>표를 보는 법.</b> 가로줄 「가치의 근거로 이야기되는 것」이 <b>서로 완전히 다르다</b>는 점이 핵심입니다. 셋을 같은 잣대로 비교하는 것은 <b>금과 정유회사와 결제 인프라를 한 줄로 세우는 것</b>과 비슷합니다.
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5. 유형 ══════════ -->
+  <section id="types">
+    <div class="prod-head" style="--edge:var(--alt)">
+      <span class="prod-tag">05 · 분류</span>
+      <h2>나머지는 유형으로 묶으면 정리됩니다</h2>
+      <p class="one">수만 개라도 <b>하는 일로 나누면 몇 갈래</b>뿐입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TYPES · 눌러서 확인하세요</div>
+      <p class="labsub">각 유형이 <b>무엇을 하려는지</b>, 그리고 <b>어떤 위험이 따라오는지</b>입니다.</p>
+
+      <div class="btnrow" id="tyBtns">
+        <button data-v="0" class="on">레이어1</button>
+        <button data-v="1">레이어2</button>
+        <button data-v="2">스테이블코인</button>
+        <button data-v="3">유틸리티·거버넌스</button>
+        <button data-v="4">밈코인</button>
+      </div>
+
+      <div class="verdict" id="tyVerdict" style="--vc:var(--alt)">
+        <div class="vh">유형</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>분류가 왜 중요한가.</b> 유형이 다르면 <b>봐야 할 것이 완전히 다릅니다.</b> 레이어1은 「검증자가 몇이고 얼마나 쓰이는가」를, 스테이블코인은 「담보가 진짜 있는가」를, 밈코인은 「애초에 근거가 없다는 것을 알고 사는가」를 봐야 합니다.</p>
+      <p>주식 트랙에서 <b>은행에는 PBR, 소프트웨어에는 PER</b>을 쓴 것과 같습니다 — <b>대상이 다르면 자도 달라야 합니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6. 사라진 것들 ══════════ -->
+  <section id="gone">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">06 · 생존율</span>
+      <h2>그 많던 코인들은 어디로 갔나</h2>
+      <p class="one">이 편에서 <b>가장 중요한 장</b>입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>몇 년 전에 <b>인기 1등이던 딱지</b>를 기억해? 지금은 아무도 안 갖고 놀지. 그런데 그때는 <b>모두가 그게 영원할 거라고</b> 생각했어.</p>
+      <p>코인도 그래. 몇 년 전 <b>순위 10위 안에 있던 코인들</b> 중 상당수는 지금 <b>이름조차 잘 안 들려.</b> 완전히 사라진 것도 많고.</p>
+      <p>중요한 건 이거야 — <b>그때 그 코인들도 다 「이유」가 있었어.</b> 기술이 대단하다고 했고, 유명한 사람들이 지지했고, 미래가 밝다고 했어. <b>지금 화제인 코인들과 똑같이.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SURVIVAL · 상위권은 얼마나 유지될까</div>
+      <p class="labsub">버튼을 눌러 각 관점을 확인하세요. <b>주식 트랙의 「자동차 회사 수백 개」 이야기와 같은 구조</b>입니다.</p>
+
+      <div class="btnrow" id="svBtns">
+        <button data-v="0" class="on">상위권의 교체</button>
+        <button data-v="1">완전히 사라진 것들</button>
+        <button data-v="2">왜 이런 일이 생기나</button>
+        <button data-v="3">그래서 어떻게</button>
+      </div>
+
+      <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="시간에 따른 상위권 코인의 교체를 나타낸 개념도">
+        <g id="svScene"></g>
+      </svg>
+
+      <div class="verdict" id="svVerdict" style="--vc:var(--bad)">
+        <div class="vh">생존율</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>수치에 대해.</b> 정확한 생존율은 <b>「사라졌다」의 기준을 어떻게 잡느냐</b>에 따라 크게 달라집니다(상장폐지·거래량 소멸·개발 중단 등). 위 그림은 <b>「상위권이 빠르게 교체되어 왔다」</b>는 널리 관찰되는 경향을 보여주기 위한 개념도입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>비트코인과 이더리움만 예외적이었습니다</h3>
+      <p>이 시장에서 <b>여러 사이클을 넘기며 상위권을 유지한 것은 극소수</b>입니다. 대부분은 <b>한 사이클의 주인공</b>으로 끝났습니다.</p>
+      <p>그래서 <b>「지금 잘 나가는 코인」과 「오래 갈 코인」은 다른 질문</b>입니다. 그리고 후자를 맞히는 것은 <b>전문가들도 거의 못 했습니다.</b></p>
+
+      <h3>주식과 비교하면</h3>
+      <p>주식 트랙에서 <b>「자동차는 대성공했지만 자동차 회사 대부분은 사라졌다」</b>고 했습니다. 코인은 <b>같은 일이 훨씬 빠르고 극단적으로</b> 일어납니다.</p>
+      <p>이유가 있습니다 — <b>진입 장벽이 없고</b>(누구나 만들 수 있고), <b>실적이라는 검증 장치가 없고</b>(매출·이익이 없으니), <b>상장 심사가 없거나 약합니다.</b> 주식이라면 걸러졌을 것들이 <b>그대로 시장에 나옵니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7. 질문 ══════════ -->
+  <section id="ask">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 정리</span>
+      <h2>새로운 코인을 만났을 때 물어볼 것</h2>
+      <p class="one">이름과 홍보 문구를 걷어내고 남는 <b>실질</b>을 보는 질문들입니다.</p>
+    </div>
+
+    <ul class="check" id="askCheck">
+      <li><b>어떤 유형인가?</b> 레이어1인지, 토큰인지, 밈코인인지. 유형에 따라 봐야 할 것이 달라집니다.</li>
+      <li><b>어떤 문제를 푸는가? 그게 진짜 문제인가?</b> 「블록체인으로 한다」는 답이 아닙니다.</li>
+      <li><b>왜 굳이 블록체인이어야 하나?</b> 보통 데이터베이스로 되는 일이면 그게 낫습니다.</li>
+      <li><b>토큰이 없으면 안 되나?</b> 서비스는 좋은데 토큰이 불필요한 경우가 아주 많습니다.</li>
+      <li><b>성공이 토큰 가치로 이어지는 경로가 있나?</b> 가장 자주 빠지는 질문입니다.</li>
+      <li><b>누가 얼마나 갖고 있나?</b> 팀·재단 물량과 잠금 해제 일정.</li>
+      <li><b>규칙을 바꿀 수 있나? 누가?</b> 바꿀 수 있다면 그 자체가 위험입니다.</li>
+      <li><b>비트코인·이더리움보다 나은 점이 무엇이고, 대가로 무엇을 포기했나?</b></li>
+    </ul>
+    <div class="checkcount" id="askCount">0 / 8 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 코인은 수만 개지만 <b>하는 일로 나누면 몇 갈래</b>이고, 그중 <b>여러 사이클을 살아남은 것은 극소수</b>입니다. 비트코인·이더리움·리플은 <b>목표 자체가 서로 달라</b> 같은 잣대로 비교할 수 없습니다.</p>
+      <p>그리고 이 트랙이 반복하는 이야기 — <b>기술의 성공과 그 자산의 성공은 다른 문제</b>입니다. 다음 편에서는 <b>가격이 흔들리지 않도록 만든 코인</b>, 즉 스테이블코인을 봅니다. 그리고 그중 하나가 <b>어떻게 며칠 만에 무너졌는지</b>도 함께.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 코인 05 · 메이저 코인 도감<br>
+    <a href="index.html#coin">← 코인 목록으로</a> · <a href="coin-ethereum.html">04 · 스마트 컨트랙트와 이더리움</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 특정 코인의 매수·매도 추천이 아닙니다.<br>
+    시장 비중·생존율 등의 수치는 시점에 따라 크게 달라지는 개념도이며, 규제·소송 상황은 계속 변합니다. 최신 자료로 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 1. 시장 집중도 ══════════ */
+var SC = [
+  { label:'상위 2개', w:62, color:'#B8860B',
+    t:'상위 두 개가 시장의 절반을 훌쩍 넘습니다',
+    p:'비트코인과 이더리움만으로 <b>전체 시가총액의 상당 부분</b>을 차지합니다. 나머지 수만 개가 남은 것을 나눠 갖습니다.<br><br>이 집중도는 <b>주식 시장보다도 극단적</b>입니다. 그래서 <b>「코인 시장이 올랐다」는 대개 「비트코인이 올랐다」와 거의 같은 말</b>입니다.<br><br>실전적으로 중요한 함의가 있습니다 — <b>알트코인 여러 개를 담아도 분산이 잘 안 됩니다.</b> 대부분 비트코인 방향을 따라가기 때문입니다.' },
+  { label:'3~20위', w:22, color:'#5C6BC0',
+    t:'그다음 열여덟 개가 나머지의 대부분',
+    p:'여기까지가 <b>「이름을 들어봤을 법한」</b> 구간입니다. 대형 거래소에 상장돼 있고, 어느 정도 거래량이 있으며, 개발이 진행 중인 경우가 많습니다.<br><br>다만 <b>이 구간의 구성은 사이클마다 크게 바뀝니다.</b> 6장에서 확인합니다.' },
+  { label:'21위~수만 개', w:16, color:'#8A8474',
+    t:'나머지 수만 개가 나눠 갖는 몫',
+    p:'개수로는 <b>99.9% 이상</b>이지만 시장에서 차지하는 비중은 <b>매우 작습니다.</b><br><br>그리고 이 구간의 상당수는 <b>거래가 거의 없습니다.</b> 호가창 편에서 본 <b>유동성 함정</b>이 그대로 적용됩니다 — <b>살 수는 있는데 팔 때 받아줄 사람이 없는</b> 상태입니다.<br><br>「시가총액 ○○억」이라는 숫자도 조심해야 합니다. <b>거래가 거의 없는 상태에서 마지막 체결가에 총 발행량을 곱한 값</b>이라, 실제로 그 금액이 시장에 있는 것이 아닙니다.' }
+];
+(function(){
+  var g = '', x = 60, W = 520;
+  SC.forEach(function(s, i){
+    var w = s.w / 100 * W;
+    g += '<g class="scBar" data-v="' + i + '" tabindex="0" role="button" style="cursor:pointer">' +
+         '<rect x="' + x.toFixed(1) + '" y="55" width="' + w.toFixed(1) + '" height="52" fill="' + s.color +
+         '" fill-opacity=".5" stroke="' + s.color + '" stroke-width="1.4"/>' +
+         '<text class="lblb" x="' + (x + w / 2).toFixed(1) + '" y="86" text-anchor="middle" fill="' + s.color + '">' + s.w + '%</text>' +
+         '<text class="axt" x="' + (x + w / 2).toFixed(1) + '" y="128" text-anchor="middle">' + s.label + '</text></g>';
+    x += w;
+  });
+  g += '<text class="axt" x="60" y="40">전체 시가총액에서 차지하는 비중 (개념도)</text>';
+  g += '<text class="axt" x="60" y="168">개수로는 상위 20개가 전체의 0.1% 미만인데,</text>';
+  g += '<text class="axt" x="60" y="186">시장 비중은 80% 이상입니다.</text>';
+  document.getElementById('scBars').innerHTML = g;
+
+  document.querySelectorAll('.scBar').forEach(function(el){
+    function open(){
+      var s = SC[+el.getAttribute('data-v')];
+      document.getElementById('scVerdict').querySelector('.vh').textContent = s.label;
+      verdict('scVerdict', s.color, s.t, s.p);
+    }
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', function(e){
+      if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); }
+    });
+  });
+})();
+
+/* ══════════ 5. 유형 ══════════ */
+var TY = [
+  { h:'레이어1', color:'#5C6BC0',
+    t:'레이어1 — 자기 블록체인을 가진 것들',
+    p:'비트코인·이더리움처럼 <b>독자적인 블록체인</b>을 운영합니다. 다른 코인들이 그 위에 올라탈 수 있는 <b>바닥</b> 역할입니다.<br><br><b>봐야 할 것</b> — 검증자·채굴자가 몇이고 얼마나 분산돼 있는가, 실제로 쓰는 사람이 있는가(활성 주소·거래 수), 네트워크가 멈춘 적이 있는가.<br><br><b>주의</b> — <b>「초당 몇 만 건 처리」</b>를 내세우는 경우가 많은데, 트릴레마상 <b>무언가를 포기했다는 뜻</b>입니다. 대개 검증자 수나 참여 장벽에서 대가를 치릅니다.' },
+  { h:'레이어2', color:'#4C7A6D',
+    t:'레이어2 — 기존 체인의 짐을 덜어주는 것들',
+    p:'이더리움 같은 <b>기존 체인 위에 얹혀</b> 거래를 대신 처리하고, 결과만 원래 체인에 기록합니다. <b>수수료가 크게 싸집니다.</b><br><br><b>봐야 할 것</b> — 자금을 원래 체인으로 빼내는 데 <b>얼마나 걸리고 제약이 있는가</b>, 문제가 생겼을 때 <b>사용자가 스스로 자금을 회수할 수 있는 장치</b>가 있는가.<br><br><b>주의</b> — 레이어2마다 안전성 설계가 <b>상당히 다릅니다.</b> 「이더리움 위에 있으니 이더리움만큼 안전하다」는 <b>설계에 따라 맞기도 하고 틀리기도</b> 합니다.' },
+  { h:'스테이블코인', color:'#9E7A2E',
+    t:'스테이블코인 — 값이 흔들리지 않게 만든 것',
+    p:'달러 같은 것에 <b>가격을 고정</b>시키려는 코인입니다. 거래의 기준 통화, 임시 대피처, 송금 수단으로 널리 쓰입니다.<br><br><b>봐야 할 것</b> — <b>무엇으로 값을 유지하는가</b>입니다. 진짜 달러와 국채를 쌓아둔 것인지, 다른 코인을 담보로 잡은 것인지, <b>아니면 아무 담보 없이 알고리즘으로 버티는 것인지.</b><br><br>이 구분이 <b>생사를 가릅니다.</b> 담보 없이 버티려던 스테이블코인이 며칠 만에 무너진 사례가 있습니다 — <b>다음 편(06)의 주제</b>입니다.' },
+  { h:'유틸리티·거버넌스', color:'#8E6B3A',
+    t:'유틸리티·거버넌스 토큰 — 「쓸모」를 붙인 것들',
+    p:'특정 서비스 안에서 <b>수수료 할인, 이용권, 투표권</b> 같은 기능을 갖는 토큰입니다.<br><br><b>봐야 할 것</b> — <b>「그 토큰이 없으면 서비스를 못 쓰는가?」</b> 대부분은 <b>없어도 됩니다.</b> 그러면 그 토큰은 실질적으로 <b>기부금 영수증</b>에 가깝습니다.<br><br>거버넌스 토큰(투표권)의 경우 <b>「내 표가 실제로 무엇을 바꾸는가」</b>를 물어야 합니다. 대부분 소액 보유자의 표는 <b>결과에 영향을 주지 못합니다.</b><br><br>주식 트랙 표현으로 바꾸면 — <b>의결권은 있는데 배당도 잔여재산 청구권도 없는 주식</b>에 가깝습니다.' },
+  { h:'밈코인', color:'#8E4B3A',
+    t:'밈코인 — 처음부터 근거가 없다고 말하는 것들',
+    p:'농담이나 유행에서 출발한 코인들입니다. <b>기술적 목표도, 사업 계획도 없습니다.</b> 그리고 <b>많은 경우 그걸 숨기지도 않습니다.</b><br><br>가격은 순전히 <b>관심과 유행</b>으로 움직입니다. 그래서 <b>수십 배가 되기도 하고 며칠 만에 90%가 사라지기도</b> 합니다.<br><br><b>이 문서의 입장</b> — 밈코인을 사는 것 자체를 「틀렸다」고 하지는 않겠습니다. 다만 <b>그것이 투자가 아니라 도박에 가깝다는 것을 알고 하는가</b>가 전부입니다.<br><br>가장 위험한 경우는 <b>밈코인에 그럴듯한 기술 설명이 붙어 있을 때</b>입니다. 실질은 밈인데 <b>투자처럼 보이게 포장한</b> 것이라, 판단이 흐려집니다.' }
+];
+bindBtnRow('#tyBtns', function(v){
+  var t = TY[+v];
+  document.getElementById('tyVerdict').querySelector('.vh').textContent = t.h;
+  verdict('tyVerdict', t.color, t.t, t.p);
+});
+
+/* ══════════ 6. 생존율 ══════════ */
+function svScene(mode){
+  var g = '';
+  var TOP = ['#B8860B', '#5C6BC0'];
+  var eras = ['초기 사이클', '다음 사이클', '그다음'];
+  var caps = [
+    '위 두 칸만 자리를 지켰고, 아래 세 칸은 사이클마다 다른 이름으로 바뀌었습니다.',
+    '바뀐 정도가 아니라 개발이 멈추고 상장폐지되어 사라진 것도 많습니다.',
+    '걸러내는 장치가 없어서, 검증되지 않은 것들이 그대로 상위권에 올라옵니다.',
+    '「살아남을 것을 맞히기」 대신 「살아남아 온 것으로 좁히기」가 현실적인 대안입니다.'
+  ];
+  eras.forEach(function(era, e){
+    var x = 110 + e * 200;
+    g += '<text class="axt" x="' + x + '" y="34" text-anchor="middle">' + era + '</text>';
+    for(var i = 0; i < 5; i++){
+      var y = 56 + i * 30;
+      var top = (i < 2);                        // 상위 두 자리 = 비트코인 · 이더리움
+      var col, op = .45, label;
+      if(top){
+        label = (i === 0) ? 'BTC' : 'ETH';
+        if(mode === 3){ col = '#4C7A6D'; op = .5; }        // 좁히기 — 살아남은 것 강조
+        else col = TOP[i];
+      } else if(e === 0){
+        if(mode === 2){ col = '#9E7A2E'; label = '무심사 진입'; }   // 걸러지지 않고 올라옴
+        else if(mode === 3){ col = '#D9D2C0'; op = .35; label = '제외'; }
+        else { col = '#8A8474'; label = '3~5위'; }
+      } else {
+        if(mode === 1){ col = '#8E4B3A'; label = '소멸'; }
+        else if(mode === 2){ col = '#9E7A2E'; op = .22; label = '탈락'; }
+        else if(mode === 3){ col = '#D9D2C0'; op = .35; label = '제외'; }
+        else { col = '#D9D2C0'; op = .5; label = '교체'; }
+      }
+      g += '<rect x="' + (x - 44) + '" y="' + y + '" width="88" height="22" rx="3" fill="' + col +
+           '" fill-opacity="' + op + '" stroke="' + col + '" stroke-width="1.2"/>';
+      g += '<text class="axt" x="' + x + '" y="' + (y + 15) + '" text-anchor="middle">' + label + '</text>';
+    }
+  });
+  g += '<text class="axt" x="60" y="205">' + caps[mode] + '</text>';
+  document.getElementById('svScene').innerHTML = g;
+}
+var SV = [
+  { h:'상위권의 교체', color:'#9E7A2E',
+    t:'꼭대기 두 자리만 그대로였습니다',
+    p:'사이클이 바뀔 때마다 <b>상위권 명단이 크게 바뀌었습니다.</b> 여러 사이클을 넘기며 최상위를 유지한 것은 <b>비트코인과 이더리움 정도</b>입니다.<br><br>그 아래는 <b>매번 새로운 이름</b>으로 채워졌습니다. 어떤 사이클에는 특정 기능이, 다음 사이클에는 다른 유행이 주인공이었습니다.<br><br><b>여기서 중요한 것</b> — 당시 그 코인들도 <b>지금 화제인 코인들만큼 그럴듯한 이유가 있었습니다.</b> 「이번엔 다르다」는 말도 매번 있었습니다.' },
+  { h:'완전히 사라진 것들', color:'#8E4B3A',
+    t:'순위만 내려간 게 아니라 없어진 것도 많습니다',
+    p:'상당수는 <b>순위가 떨어진 정도가 아니라 아예 사라졌습니다.</b> 개발이 중단되고, 거래소에서 상장폐지되고, 웹사이트가 닫혔습니다.<br><br>사라지는 방식도 여러 가지입니다 — <b>프로젝트가 조용히 방치되거나</b>, <b>만든 사람들이 물량을 처분하고 떠나거나</b>, <b>붕괴 사건으로 한순간에 무너지거나.</b><br><br>대형 스테이블코인 하나가 <b>며칠 만에 사실상 0에 가까워진</b> 사례도 있었고, 큰 거래소가 파산하며 <b>그 거래소 토큰이 함께 무너진</b> 사례도 있었습니다.<br><br>그리고 <b>이런 일이 예고 없이 며칠 만에</b> 일어났다는 점이 중요합니다.' },
+  { h:'왜 이런 일이 생기나', color:'#5C6BC0',
+    t:'걸러지는 장치가 없기 때문입니다',
+    p:'주식이라면 이런 것들이 <b>애초에 시장에 나오지 못합니다.</b> 상장 심사가 있고, 재무제표를 공시해야 하고, 감사를 받아야 합니다.<br><br>코인에는 그 장치가 <b>없거나 훨씬 약합니다.</b> 그래서 —<br><br><b>① 진입 장벽이 없습니다.</b> 누구나 10분이면 만듭니다.<br><b>② 검증 장치가 없습니다.</b> 매출도 이익도 없으니 <b>실패가 늦게 드러납니다.</b><br><b>③ 서사만으로 값이 붙습니다.</b> 실적 대신 <b>기대</b>가 가격을 만듭니다.<br><br>그래서 <b>실패율이 높은 게 아니라, 실패할 것들이 걸러지지 않고 그대로 시장에 나오는 것</b>입니다.' },
+  { h:'그래서 어떻게', color:'#4C7A6D',
+    t:'맞히려 하지 말고 구조를 인정하는 편이 낫습니다',
+    p:'「다음 사이클의 승자를 고르겠다」는 접근은 <b>역사적으로 성공률이 매우 낮았습니다.</b> 전문가도 마찬가지였습니다.<br><br>현실적인 대안은 세 가지입니다.<br><br><b>① 상위 소수로 제한하기.</b> 여러 사이클을 넘긴 것들로 좁히면 <b>생존 확률이 다릅니다.</b><br><b>② 금액을 제한하기.</b> 이 시리즈가 반복한 <b>포지션 사이징</b>입니다. 전부 0이 돼도 계획이 유지되는 금액.<br><b>③ 아예 하지 않기.</b> 이것도 <b>정당한 선택</b>이며, 이해하지 못한 것을 사지 않는다는 원칙에 부합합니다.<br><br>어느 쪽이든 <b>「이번에는 내가 고른 게 살아남을 것」이라는 근거 없는 자신감</b>만 피하면 됩니다.' }
+];
+bindBtnRow('#svBtns', function(v){
+  var s = SV[+v];
+  svScene(+v);
+  document.getElementById('svVerdict').querySelector('.vh').textContent = s.h;
+  verdict('svVerdict', s.color, s.t, s.p);
+});
+
+/* ══════════ 7. 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#askCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#askCheck li.done').length;
+      document.getElementById('askCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 다섯 번째 질문에 답할 수 없다면 나머지가 다 좋아도 소용이 없습니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelectorAll('.scBar')[0].dispatchEvent(new Event('click'));
+document.querySelector('#tyBtns button[data-v="0"]').click();
+document.querySelector('#svBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
