@@ -22,6 +22,10 @@
     --s4:#7A5C9E;
     --s5:#4C7A6D;
     /* 세금 트랙 */
+    --b1:#4C6B7A;
+    --b2:#7A5C3A;
+    --b3:#5F7A52;
+    --b4:#8E4B3A;
     --x1:#5B6E8E;
     --x2:#8E6B3A;
     --x3:#6B7A52;
@@ -259,6 +263,7 @@
       <button data-t="stock" class="on">📈 주식 <span class="cnt">11편</span></button>
       <button data-t="coin">🪙 코인 <span class="cnt">8편</span></button>
       <button data-t="realestate">🏠 부동산 <span class="cnt">11편</span></button>
+      <button data-t="bond">📜 채권 <span class="cnt">10편</span></button>
       <button data-t="tax">🧾 세금 <span class="cnt">7편</span></button>
       <button data-t="commodity" disabled>🛢 원자재 <span class="cnt">예정</span></button>
       <button data-t="futures" disabled>📉 선물 <span class="cnt">예정</span></button>
@@ -541,6 +546,146 @@
         </li>
       </ol>
     </section>
+  </div>
+
+
+  <!-- ══════════════════════════════════════════════════════
+       채권 트랙
+       ══════════════════════════════════════════════════════ -->
+  <div class="track" id="t-bond">
+
+    <p class="tintro">채권은 <b>주식·코인과 완전히 다른 물건</b>입니다. 그런데 <b>「안전자산」이라는 한 단어</b> 때문에 성격을 모른 채 사는 경우가 많습니다. <b>열 편</b>이고, <b>02편(금리와 가격)</b>만 이해해도 대부분의 오해가 풀립니다.</p>
+
+    <div class="start" style="--edge:var(--b1)">
+      <div class="sh">지금 장기채가 마이너스라면 — 이 세 편 먼저</div>
+      <p>기다리기 전에 <b>무엇을 들고 있는지</b>부터 확인해야 합니다. 특히 <b>ETF에는 만기가 없다</b>는 점이 판단을 완전히 바꿉니다.</p>
+      <ol>
+        <li><a href="bond-price.html">왜 떨어졌는지</a> — 듀레이션이 전부 설명합니다</li>
+        <li><a href="bond-products.html">내가 산 게 무엇인지</a> — 실물 채권이냐 ETF냐 선물 ETF냐</li>
+        <li><a href="bond-strategy.html">회복 조건이 무엇인지</a> — 금리가 얼마나 내려야 하는지 계산</li>
+      </ol>
+    </div>
+
+    <section class="part" style="--edge:var(--b1)">
+      <div class="part-head">
+        <span class="part-num">PART A · 기초</span>
+        <h2>채권이라는 물건</h2>
+        <p>빌려준 증서 한 장. 주식과는 <b>완전히 다른 물건</b>입니다 — 위로 열려 있지 않은 대신, 아래도 다르게 막혀 있습니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="bond-basics.html">
+            <span class="num">01 · 기초</span>
+            <h3>채권이란 무엇인가</h3>
+            <p><b>액면·표면금리·만기</b> 세 가지면 채권 한 장이 정의됩니다. 그리고 주식과 결정적으로 다른 점 — <b>받을 돈이 미리 정해져 있습니다.</b></p>
+            <div class="meta"><span>액면가</span><span>표면금리</span><span>만기</span><span>청산 순위</span><span>YTM</span></div>
+          </a>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">02 · 가격 <span class="soon">준비 중</span></span>
+            <h3>금리가 내리면 채권값은 오릅니다</h3>
+            <p><b>방향이 반대</b>입니다. 그리고 <b>만기가 길수록 그 폭이 커집니다</b> — 30년 국채가 1년 만에 반토막 난 이유가 전부 여기 있습니다.</p>
+            <div class="meta"><span>역방향 관계</span><span>듀레이션</span><span>볼록성</span><span>2022년</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--b2)">
+      <div class="part-head">
+        <span class="part-num">PART B · 종류와 기간</span>
+        <h2>누가 빌리고, 얼마나 오래 빌리나</h2>
+        <p>같은 「채권」이라도 <b>발행자</b>와 <b>기간</b>이 다르면 전혀 다른 물건이 됩니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">03 · 발행자 <span class="soon">준비 중</span></span>
+            <h3>국채와 회사채, 그리고 신용등급</h3>
+            <p>나라가 빌리는 것과 회사가 빌리는 것은 <b>위험의 종류가 다릅니다.</b> 신용 스프레드가 벌어질 때 무슨 일이 일어나는지.</p>
+            <div class="meta"><span>국채</span><span>회사채</span><span>신용등급</span><span>스프레드</span><span>부도율</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">04 · 기간 <span class="soon">준비 중</span></span>
+            <h3>단기채와 장기채는 왜 다르게 움직이나</h3>
+            <p>기준금리가 움직여도 <b>장기채는 따라오지 않는 경우</b>가 있습니다. 둘을 움직이는 힘이 다르기 때문입니다.</p>
+            <div class="meta"><span>단기채</span><span>장기채</span><span>기준금리</span><span>기대인플레</span><span>기간 프리미엄</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--b3)">
+      <div class="part-head">
+        <span class="part-num">PART C · 곡선과 경기</span>
+        <h2>채권 시장이 말하는 것</h2>
+        <p>금리 하나가 아니라 <b>기간별 금리의 모양</b>을 봅니다. 그 모양이 경기를 이야기합니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">05 · 곡선 <span class="soon">준비 중</span></span>
+            <h3>수익률곡선과 금리 스프레드</h3>
+            <p>정상·평탄·역전. <b>장단기 금리차</b>가 왜 그렇게 주목받는지, 그리고 <b>기준금리와 시장금리가 다른</b> 이유.</p>
+            <div class="meta"><span>수익률곡선</span><span>장단기 역전</span><span>신용 스프레드</span><span>기준금리</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">06 · 경기 <span class="soon">준비 중</span></span>
+            <h3>채권금리가 말하는 경기, 그리고 예측의 한계</h3>
+            <p>채권 시장은 <b>자주 맞습니다.</b> 그런데 <b>시점은 거의 못 맞힙니다.</b> 그 차이가 투자에서 전부입니다.</p>
+            <div class="meta"><span>경기 사이클</span><span>역전 후 시차</span><span>예측의 한계</span><span>인플레이션</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--b4)">
+      <div class="part-head">
+        <span class="part-num">PART D · 실전</span>
+        <h2>실제로 사고 버티는 법</h2>
+        <p>상품을 고르는 순간 <b>다른 물건</b>이 됩니다. 특히 <b>만기가 있느냐 없느냐</b>가 결정적입니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">07 · 상품 <span class="soon">준비 중</span></span>
+            <h3>실물 채권 · 채권 ETF · 선물 ETF</h3>
+            <p><b>가장 중요한 차이 하나</b> — 실물 채권은 만기까지 들면 원금이 돌아오지만, <b>채권 ETF에는 만기가 없습니다.</b></p>
+            <div class="meta"><span>직접투자</span><span>채권 ETF</span><span>선물 ETF</span><span>롤오버</span><span>만기의 유무</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">08 · 해외 <span class="soon">준비 중</span></span>
+            <h3>미국 장기채와 환율, 그리고 다른 나라들</h3>
+            <p>환헤지(H)와 언헤지의 결과가 <b>완전히 다릅니다.</b> 그리고 일본·유럽·신흥국 채권이 미국과 다르게 움직이는 이유.</p>
+            <div class="meta"><span>미국 국채</span><span>환헤지</span><span>헤지 비용</span><span>일본·유럽</span><span>신흥국</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">09 · 실패 <span class="soon">준비 중</span></span>
+            <h3>채권에서 돈을 잃는 여섯 가지 방법</h3>
+            <p><b>「채권은 안전하다」</b>가 가장 위험한 문장입니다. 실제로 손실이 나는 경로를 하나씩 짚습니다.</p>
+            <div class="meta"><span>안전자산 오해</span><span>듀레이션 무시</span><span>만기 착각</span><span>환율</span><span>레버리지</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">10 · 전략 <span class="soon">준비 중</span></span>
+            <h3>내 장기채를 어떻게 볼 것인가</h3>
+            <p><b>지금 마이너스인 장기채 ETF</b>를 앞에 두고 무엇을 확인해야 하는지. 시나리오별 계산과 마음가짐.</p>
+            <div class="meta"><span>시나리오</span><span>회복 조건</span><span>버티는 힘</span><span>체크리스트</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
   </div>
 
   <div class="track" id="t-tax">
