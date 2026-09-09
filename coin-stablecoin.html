@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>스테이블코인 — 흔들리지 않는 코인의 정체</title>
+<meta name="description" content="달러에 값을 고정한 코인은 어떻게 그 값을 유지할까. 세 가지 유형의 차이, 페그가 유지되는 원리, 테라·루나 붕괴와 USDC 디페깅을 시뮬레이터로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --fiat:#3F6B52;
+    --crypto:#3A5A8E;
+    --algo:#8E4B3A;
+    --neutral:#5B5648;
+    --bad:#8E4B3A;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:660px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  /* 단계별 타임라인 */
+  .steps{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px;}
+  .steps button{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    padding:8px 13px;
+    border:1px solid var(--rule);
+    background:var(--card);
+    color:var(--ink-soft);
+    border-radius:99px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .steps button:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .steps button.on{background:var(--bad);border-color:var(--bad);color:#fff;}
+  .steps button.done{border-color:var(--bad);color:var(--bad);}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">코인 06 · 스테이블코인 · 투자 공부 노트</div>
+    <h1>스테이블코인<br>— 흔들리지 않는 코인의 정체</h1>
+    <p class="lede">코인은 하루에 20%씩 움직입니다. 그러면 <b>물건값을 매길 수도, 잠깐 넣어둘 수도 없습니다.</b> 그래서 <b>「1달러에 딱 고정된 코인」</b>을 만들었습니다. 이 편은 그 고정이 <b>무엇으로 유지되는지</b>, 그리고 <b>고정이 풀렸을 때 어떤 일이 벌어졌는지</b>를 다룹니다.</p>
+    <div class="callout">
+      <b>이 편의 핵심 질문 하나.</b> <b>「무엇이 이 1달러를 받쳐주고 있는가?」</b> 이 질문에 답할 수 없는 스테이블코인은 <b>이름만 스테이블</b>입니다. 실제로 그중 하나가 <b>며칠 만에 400억 달러 규모로 사라졌습니다.</b> 4장에서 그 과정을 단계별로 봅니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="구조와 붕괴 과정까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#why">1. 왜 필요한가</a>
+    <a href="#kinds">2. 세 가지 방식</a>
+    <a href="#peg">3. 1달러가 유지되는 원리</a>
+    <a href="#terra">4. 테라·루나 붕괴</a>
+    <a href="#spiral">5. 죽음의 소용돌이</a>
+    <a href="#usdc">6. 담보형도 흔들린다</a>
+    <a href="#check">7. 확인하는 법</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="why">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 문제</span>
+      <h2>값이 흔들리면 돈으로 쓸 수 없습니다</h2>
+      <p class="one">01편에서 본 <b>돈의 세 조건</b> 중 하나가 여기서 걸립니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>아침에 아이스크림이 <b>3,000원</b>이었는데 점심엔 <b>3,600원</b>, 저녁엔 <b>2,400원</b>이면 어떨까? 가게 주인도 손님도 <b>미치겠지.</b> 값을 붙일 수가 없으니까.</p>
+      <p>비트코인이 딱 그래. <b>하루에 10%, 20%씩 움직여.</b> 그래서 <b>물건값을 매기는 데는 거의 못 써.</b></p>
+      <p>그래서 사람들이 이렇게 생각했어. <b>「블록체인은 편한데, 값만 안 흔들리면 좋겠다.」</b> 그렇게 나온 게 <b>스테이블코인</b>이야. <b>「1개 = 1달러」</b>로 값을 딱 붙여놓은 코인.</p>
+      <p>그런데 여기서 <b>가장 중요한 질문</b>이 생겨. <b>「누가, 무엇으로 그 1달러를 보장해?」</b> 이 답이 <b>세 가지</b>야. 그리고 그중 하나는 <b>실제로 무너졌어.</b></p>
+    </div>
+
+    <div class="deep">
+      <h3>실제로 어디에 쓰이나</h3>
+      <p>스테이블코인은 <b>지금 코인 시장에서 가장 많이 쓰이는 것</b>에 속합니다. 용도가 뚜렷합니다.</p>
+      <p><b>① 거래의 기준 통화.</b> 대부분의 거래소에서 코인 가격은 <b>달러가 아니라 스테이블코인으로</b> 매겨집니다. 은행을 거치지 않고도 「달러 표시」로 거래할 수 있기 때문입니다.</p>
+      <p><b>② 임시 대피처.</b> 시장이 무서울 때 코인을 팔아 현금화하려면 <b>은행을 거쳐야 하고 시간이 걸립니다.</b> 스테이블코인으로 바꾸면 <b>몇 초</b>면 됩니다.</p>
+      <p><b>③ 국제 송금.</b> 은행망을 거치지 않고 <b>달러 표시 가치</b>를 국경 너머로 몇 분 만에 보냅니다. 자국 통화가 불안정한 나라에서 <b>실제 수요가 큽니다.</b></p>
+      <p><b>④ DeFi의 연료.</b> 04편에서 본 담보 대출·거래 대부분이 <b>스테이블코인 단위</b>로 돌아갑니다.</p>
+
+      <h3>그래서 이게 왜 위험한 이야기인가</h3>
+      <p>위 네 가지 모두 <b>「1달러가 유지된다」는 전제</b> 위에 서 있습니다. 그 전제가 깨지면 <b>대피처가 대피처가 아니게 되고</b>, 그 위에 쌓인 대출과 거래가 <b>동시에 무너집니다.</b></p>
+      <p>주식 트랙의 표현을 빌리면 — 스테이블코인은 코인 시장의 <b>단기 자금 시장</b>에 해당합니다. 그리고 <b>단기 자금 시장이 얼어붙을 때 위기가 온다</b>는 것은 2008년에 이미 확인된 일입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="kinds">
+    <div class="prod-head" style="--edge:var(--crypto)">
+      <span class="prod-tag">02 · 유형</span>
+      <h2>1달러를 받치는 세 가지 방식</h2>
+      <p class="one">이름은 다 「스테이블」인데, <b>안에 든 것이 완전히 다릅니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TYPE · 무엇이 받치고 있나</div>
+      <p class="labsub">각 방식을 눌러 <b>담보 구조</b>와 <b>어디서 깨지는지</b>를 확인하세요.</p>
+
+      <div class="btnrow" id="stBtns">
+        <button data-v="0" class="on">① 진짜 달러를 쌓아둠</button>
+        <button data-v="1">② 코인을 담보로 잡음</button>
+        <button data-v="2">③ 담보 없이 알고리즘</button>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="스테이블코인 담보 구조 도식">
+        <g id="stScene"></g>
+      </svg>
+
+      <div class="verdict" id="stVerdict" style="--vc:var(--fiat)">
+        <div class="vh">담보 구조</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <h3>한 장으로 비교</h3>
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th></th><th>① 법정화폐 담보형</th><th>② 암호화폐 담보형</th><th>③ 알고리즘형</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>받치는 것</th><td>은행에 넣어둔 달러·국채</td><td>맡겨둔 코인 (초과 담보)</td><td>없음 · 다른 코인과의 교환 약속</td></tr>
+          <tr><th>담보 비율</th><td>1달러당 1달러</td><td>1달러당 1.5~2달러어치</td><td>0</td></tr>
+          <tr><th>1달러를 되찾는 법</th><td>발행사에 상환 요청</td><td>담보를 되찾고 코인 소각</td><td>다른 코인으로 교환</td></tr>
+          <tr><th>가장 큰 위험</th><td>담보를 맡긴 <b>은행이나 발행사가 문제</b></td><td>담보 코인 급락 → <b>연쇄 청산</b></td><td>믿음이 흔들리면 <b>받쳐줄 것이 없음</b></td></tr>
+          <tr><th>실제 사례</th><td>USDT · USDC</td><td>DAI</td><td>UST (2022년 붕괴)</td></tr>
+          <tr><th>믿어야 하는 대상</th><td>발행 회사와 은행</td><td>코드와 담보 시세</td><td>다른 사람들의 믿음</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <div class="note">
+      <p><b>가장 중요한 줄은 맨 아래입니다.</b> ①은 <b>회사와 은행</b>을 믿는 것이고, ②는 <b>코드와 담보 시세</b>를 믿는 것이며, ③은 <b>다른 사람들이 계속 믿어줄 것</b>을 믿는 것입니다.</p>
+      <p>③은 <b>믿음이 흔들리는 순간 받쳐줄 것이 아무것도 없습니다.</b> 그래서 ③은 「위험한 스테이블코인」이 아니라 <b>구조적으로 스테이블할 수 없는 것</b>에 가깝습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="peg">
+    <div class="prod-head" style="--edge:var(--fiat)">
+      <span class="prod-tag">03 · 원리</span>
+      <h2>1달러는 어떻게 유지되나 — 차익거래</h2>
+      <p class="one">발행사가 값을 「정하는」 게 아닙니다. <b>돈 벌려는 사람들이 자동으로 맞춰줍니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>문방구에서 <b>「이 딱지는 언제든 100원에 사줄게」</b>라고 약속했다고 해보자. 그런데 친구들 사이에서 이 딱지가 <b>90원</b>에 거래되고 있어.</p>
+      <p>그러면 어떻게 하겠어? <b>90원에 사서 문방구에 가져가 100원 받으면 10원이 남지.</b> 사람들이 우르르 사들이면 <b>딱지값은 다시 100원으로 올라가.</b></p>
+      <p>스테이블코인이 딱 이렇게 돌아가. <b>문방구가 진짜로 사줄 수 있으면</b> 값이 저절로 맞춰져. 그런데 <b>문방구가 돈이 없거나 문을 닫으면?</b> 그때부터 딱지값은 아무도 못 잡아.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">ARBITRAGE · 차익거래 계산기</div>
+      <p class="labsub">시장 가격이 1달러를 벗어났을 때 <b>차익거래자가 얼마를 벌 수 있는지</b>, 그리고 <b>상환 창구가 막히면 어떻게 되는지</b>.</p>
+
+      <div class="ctrl-row">
+        <label for="arPrice">시장 거래가격</label>
+        <input type="range" id="arPrice" min="0.80" max="1.05" step="0.005" value="0.97">
+        <output id="arPriceOut">$0.970</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="arAmt">차익거래 자금</label>
+        <input type="range" id="arAmt" min="1000" max="100000" step="1000" value="10000">
+        <output id="arAmtOut">$10,000</output>
+      </div>
+      <div class="btnrow" id="arGate">
+        <button data-v="1" class="on">상환 창구 정상</button>
+        <button data-v="0">상환 중단됨</button>
+      </div>
+
+      <div class="readout two">
+        <div><span class="rk" id="arGainK">1달러에 상환하면</span><span class="rv" id="arGain">—</span></div>
+        <div><span class="rk">수익률</span><span class="rv" id="arPct">—</span></div>
+      </div>
+
+      <div class="verdict" id="arVerdict" style="--vc:var(--fiat)">
+        <div class="vh">페그 복원력</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>단순화했습니다.</b> 실제로는 거래 수수료, 상환 최소 금액, 처리 기간(며칠 걸리기도 합니다), 은행 송금 비용이 붙습니다. 그래서 <b>아주 작은 괴리는 차익거래로 메워지지 않고 그대로 남습니다.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>핵심은 「상환 창구」입니다</h3>
+      <p>스테이블코인의 값을 지키는 것은 <b>발행사의 선언이 아니라 상환 창구</b>입니다. 1달러로 되바꿔주는 창구가 <b>실제로 열려 있고 실제로 지급 능력이 있으면</b>, 가격은 차익거래로 저절로 맞춰집니다.</p>
+      <p>그래서 담보형 스테이블코인에서 확인할 것은 <b>「담보가 있느냐」만이 아니라</b> —</p>
+      <p><b>① 담보가 실제로 있는가</b> (그리고 무엇으로 되어 있는가)<br>
+         <b>② 그 담보를 즉시 현금화할 수 있는가</b> (국채는 되지만 회사채·대출채권은 어렵습니다)<br>
+         <b>③ 상환 창구가 나에게도 열려 있는가</b> (개인은 못 하고 대형 기관만 되는 경우가 많습니다)</p>
+      <p>③이 특히 중요합니다. <b>개인은 직접 상환할 수 없고</b> 거래소에서 팔 수만 있는 경우가 흔합니다. 그러면 개인 입장에서는 <b>차익거래자들이 대신 일해주기를 기다리는</b> 것이고, 그들이 멈추면 <b>가격은 그대로 벌어진 채</b>입니다.</p>
+      <p class="plain"><b>주식 트랙과 이어집니다.</b> ETF의 가격이 순자산가치를 따라가는 것도 <b>똑같이 차익거래</b> 때문이고, ETF에서도 <b>유동성공급자가 손을 놓으면 괴리가 벌어집니다.</b> 이름만 다르고 구조는 같습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="terra">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">04 · 사례</span>
+      <h2>테라·루나 — 며칠 만에 사라진 400억 달러</h2>
+      <p class="one">이 시리즈에서 다루는 <b>가장 중요한 붕괴 사례</b>입니다. 단계별로 봅니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>여기 형제가 있었어. <b>형(UST)</b>은 「나는 항상 1달러야」라고 했고, <b>동생(LUNA)</b>은 값이 오르내리는 보통 코인이었어.</p>
+      <p>규칙은 이랬어. <b>형이 1달러 아래로 떨어지면, 형을 없애고 대신 동생을 1달러어치 만들어서 준다.</b> 그러면 형이 줄어드니까 값이 다시 오를 거라고 본 거지.</p>
+      <p>문제는 <b>동생 뒤에도 아무것도 없었다</b>는 거야. 형을 받쳐주는 게 동생이고, 동생을 받쳐주는 건 <b>「사람들이 동생을 사줄 거라는 믿음」</b>뿐이었어.</p>
+      <p>그러다 사람들이 한꺼번에 형을 내놓기 시작했어. 동생이 <b>엄청나게 많이</b> 만들어졌고, 많아지니까 <b>동생 값이 떨어졌고</b>, 값이 떨어지니까 <b>더 많이 만들어야</b> 했어. 그렇게 <b>둘 다 사라졌어.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TIMELINE · 단계별로 따라가기</div>
+      <p class="labsub">순서대로 눌러보세요. <b>각 단계가 그다음을 부르는 구조</b>였습니다.</p>
+
+      <div class="steps" id="tlBtns">
+        <button data-v="0" class="on">① 설계</button>
+        <button data-v="1">② 20% 이자</button>
+        <button data-v="2">③ 규모</button>
+        <button data-v="3">④ 첫 균열</button>
+        <button data-v="4">⑤ 뱅크런</button>
+        <button data-v="5">⑥ 소용돌이</button>
+        <button data-v="6">⑦ 남은 것</button>
+      </div>
+
+      <div class="verdict" id="tlVerdict" style="--vc:var(--bad)">
+        <div class="vh">단계</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>수치에 대해.</b> 붕괴 당시의 발행량·시가총액·이자율은 자료마다 조금씩 다르고 시점에 따라 크게 변했습니다. 위 설명의 숫자는 <b>규모 감각을 주기 위한 대략값</b>이며, 이 장의 목적은 <b>정확한 수치가 아니라 「왜 이 구조가 반드시 이렇게 끝나는가」</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="spiral">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">05 · 시뮬레이터</span>
+      <h2>죽음의 소용돌이를 직접 돌려보기</h2>
+      <p class="one">숫자를 바꿔가며 <b>어디까지가 버티는 구간이고 어디부터 붕괴인지</b> 확인해보세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DEATH SPIRAL · 커버리지가 1 아래로 내려가면</div>
+      <p class="labsub">
+        <b>커버리지</b> = 동생(LUNA) 시가총액 ÷ 형(UST) 발행량. <b>1보다 작으면 「전부 상환하면 받쳐줄 것이 모자란다」</b>는 뜻입니다.
+      </p>
+
+      <div class="ctrl-row">
+        <label for="dsUst">UST 발행량</label>
+        <input type="range" id="dsUst" min="2" max="20" step="1" value="18">
+        <output id="dsUstOut">180억 달러</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dsLuna">LUNA 시가총액</label>
+        <input type="range" id="dsLuna" min="5" max="60" step="1" value="25">
+        <output id="dsLunaOut">250억 달러</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dsPanic">라운드당 상환 압력</label>
+        <input type="range" id="dsPanic" min="5" max="50" step="1" value="30">
+        <output id="dsPanicOut">30%</output>
+      </div>
+
+      <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="상환 라운드에 따른 UST 발행량과 LUNA 시가총액 변화">
+        <g id="dsAxis"></g>
+        <path id="dsUstLine" fill="none" stroke="var(--crypto)" stroke-width="2"></path>
+        <path id="dsLunaLine" fill="none" stroke="var(--bad)" stroke-width="2"></path>
+        <g id="dsMarks"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">커버리지가 1 아래로</span><span class="rv" id="dsBreak">—</span></div>
+        <div><span class="rk">8라운드 뒤 LUNA 시총</span><span class="rv" id="dsEnd">—</span></div>
+      </div>
+
+      <div class="verdict" id="dsVerdict" style="--vc:var(--bad)">
+        <div class="vh">시뮬레이션</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>이것은 재현이 아니라 개념 모형입니다.</b> 매 라운드 <b>남은 UST의 일정 비율이 상환</b>되고, 그만큼 LUNA가 새로 발행되어 <b>시장에 매도</b>되며, 동시에 <b>기존 보유자도 겁을 먹고 함께 판다</b>는 단순한 가정으로 계산했습니다. 실제 붕괴는 이보다 훨씬 빠르고 불규칙했습니다. <b>숫자를 맞히는 것이 아니라 「구조가 스스로를 무너뜨리는 모양」을 보는 것</b>이 목적입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>이 구조에서 반드시 나오는 결론</h3>
+      <p>슬라이더를 어떻게 놓아도 <b>상환 압력이 충분히 크면 커버리지는 결국 1 아래로 내려갑니다.</b> LUNA 시가총액을 아무리 크게 잡아도 마찬가지입니다 — <b>상환이 곧 LUNA 매도이기 때문</b>입니다.</p>
+      <p>이것이 <b>「알고리즘 스테이블코인은 구조적으로 스테이블할 수 없다」</b>고 하는 이유입니다. 담보형은 <b>상환할수록 담보가 줄어들지만 남은 코인의 담보 비율은 그대로</b>인 반면, 알고리즘형은 <b>상환할수록 받쳐주는 것 자체가 작아집니다.</b></p>
+      <p>차이를 한 줄로 하면 — <b>담보형의 상환은 자산을 나눠 갖는 것이고, 알고리즘형의 상환은 받침대를 깎아 먹는 것</b>입니다.</p>
+
+      <h3>그런데 왜 사람들은 믿었나</h3>
+      <p>이 구조는 <b>붕괴 전까지 몇 년 동안 잘 작동했습니다.</b> 값도 잘 유지됐고, 규모도 계속 커졌습니다. 그게 <b>가장 위험한 부분</b>이었습니다.</p>
+      <p>「오래 잘 돌아갔다」는 것이 <b>구조가 안전하다는 증거로 받아들여졌기 때문</b>입니다. 실제로는 <b>큰 상환 압력을 한 번도 겪지 않았을 뿐</b>이었습니다.</p>
+      <p>주식 트랙의 표현으로 — <b>「지금까지 문제없었다」는 것은 위험이 없다는 뜻이 아니라, 아직 그 위험이 실현되지 않았다는 뜻</b>입니다. 그리고 이런 구조는 <b>실현될 때 한 번에 전부</b> 실현됩니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="usdc">
+    <div class="prod-head" style="--edge:var(--fiat)">
+      <span class="prod-tag">06 · 대조</span>
+      <h2>담보형이라고 안 흔들리는 것은 아닙니다</h2>
+      <p class="one">2023년, <b>진짜 달러를 쌓아둔 스테이블코인도 1달러가 깨졌습니다.</b> 다만 결말이 달랐습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>앞의 문방구 이야기로 돌아가 보자. 문방구가 <b>딱지값 100원씩을 진짜로 금고에 넣어뒀어.</b> 그런데 그 금고를 <b>옆집 은행에 맡겼는데, 그 은행이 갑자기 망했어.</b></p>
+      <p>돈이 없어진 건 아니야. 그런데 <b>당장 꺼낼 수가 없어.</b> 그 소문이 퍼지자 딱지값이 <b>88원까지</b> 떨어졌어.</p>
+      <p>며칠 뒤 <b>「그 돈 다 돌려받을 수 있다」</b>는 발표가 나왔고, 딱지값은 <b>다시 100원으로 돌아왔어.</b></p>
+      <p>테라 때랑 뭐가 달랐을까? <b>이번엔 금고에 진짜 돈이 있었어.</b> 잠깐 못 꺼냈을 뿐이지. 테라는 <b>애초에 금고가 없었고.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CONTRAST · 두 사건을 나란히</div>
+      <p class="labsub">같은 「1달러가 깨졌다」인데 결말이 정반대였습니다. <b>차이가 무엇이었는지</b> 눌러 확인하세요.</p>
+
+      <div class="btnrow" id="ctBtns">
+        <button data-v="0" class="on">무엇이 깨졌나</button>
+        <button data-v="1">어디까지 갔나</button>
+        <button data-v="2">어떻게 끝났나</button>
+        <button data-v="3">무엇이 갈랐나</button>
+      </div>
+
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="테라 UST와 USDC의 가격 회복 경로 비교 개념도">
+        <g id="ctAxis"></g>
+        <path id="ctUst" fill="none" stroke="var(--bad)" stroke-width="2.2"></path>
+        <path id="ctUsdc" fill="none" stroke="var(--fiat)" stroke-width="2.2"></path>
+        <g id="ctLbl"></g>
+      </svg>
+
+      <div class="verdict" id="ctVerdict" style="--vc:var(--fiat)">
+        <div class="vh">대조</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>그림에 대해.</b> 위 곡선은 <b>실제 시세 데이터가 아니라</b>, 두 사건의 <b>모양 차이(회복 vs 미회복)</b>를 보여주기 위한 개념도입니다. 최저가와 회복 시점은 자료마다 다르게 기록됩니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>담보형에서 진짜로 봐야 할 위험</h3>
+      <p>담보형의 위험은 <b>「담보가 없다」가 아니라 「담보가 어디에 어떤 형태로 있느냐」</b>입니다.</p>
+      <p><b>① 보관처 위험.</b> 담보를 맡긴 은행이 문제가 되면 <b>담보가 있어도 못 꺼냅니다.</b> 위 사례가 정확히 이것입니다.</p>
+      <p><b>② 담보의 질.</b> 현금과 단기 국채는 즉시 팔 수 있습니다. 회사채·기업어음·대출채권은 <b>급할 때 제값에 팔리지 않습니다.</b> 「담보 100%」라는 말만으로는 부족하고 <b>구성을 봐야 합니다.</b></p>
+      <p><b>③ 발행사 위험.</b> 회사가 규제 조치를 받거나 파산하면 <b>상환 창구 자체가 닫힙니다.</b></p>
+      <p><b>④ 동결 권한.</b> 대부분의 담보형 스테이블코인은 <b>발행사가 특정 지갑을 동결할 수 있습니다.</b> 범죄 자금 차단에는 쓰이지만, <b>「누구도 막을 수 없는 돈」이라는 코인의 원래 취지와는 정반대</b>입니다. 스테이블코인을 쓴다는 것은 <b>그 권한을 받아들인다는 뜻</b>입니다.</p>
+
+      <h3>그래도 남는 결론</h3>
+      <p>담보형과 알고리즘형은 <b>위험의 종류가 다릅니다.</b> 담보형은 <b>「담보가 묶일 수 있다」</b>는 위험이고, 알고리즘형은 <b>「받쳐줄 것이 애초에 없다」</b>는 위험입니다.</p>
+      <p>전자는 <b>회복될 수 있고 실제로 회복됐습니다.</b> 후자는 <b>회복될 방법이 구조적으로 없었습니다.</b> 둘을 「스테이블코인도 위험하다」로 뭉뚱그리면 <b>가장 중요한 구분을 잃습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7 ══════════ -->
+  <section id="check">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 실전</span>
+      <h2>스테이블코인을 쓰기 전에 확인할 것</h2>
+      <p class="one">그리고 <b>가장 많은 사람을 잃게 만든 질문</b> 하나.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">QUIZ · 이 이자는 어디서 나올까</div>
+      <p class="labsub">붕괴 전, 이 스테이블코인을 맡기면 <b>연 20% 이자</b>를 준다고 했습니다. 은행 예금이 연 2~4%이던 때입니다.</p>
+      <div class="quiz">
+        <div class="quizq" id="qz1">
+          <div class="qq">「원금 손실 없이 연 20%」가 가능하려면, 그 돈은 어디서 나와야 할까요?</div>
+          <div class="qbtns">
+            <button data-c="0">블록체인이 효율적이라 비용이 안 들어서</button>
+            <button data-c="0">코인 대출 이자가 원래 높아서</button>
+            <button data-c="1">누군가 그만큼 손해를 보거나, 새로 들어온 돈으로 주고 있어서</button>
+          </div>
+          <div class="qa"></div>
+        </div>
+      </div>
+    </div>
+
+    <ul class="check" id="sbCheck">
+      <li><b>세 유형 중 어디인가?</b> 알고리즘형이면 그 자체로 답이 나옵니다.</li>
+      <li><b>담보가 무엇으로 되어 있나?</b> 현금·단기 국채인지, 회사채·대출채권이 섞여 있는지.</li>
+      <li><b>누가 확인했나?</b> 「검증 보고서」와 「회계 감사」는 다릅니다. 전자는 특정 시점의 잔액만 확인합니다.</li>
+      <li><b>상환 창구가 나에게도 열려 있나?</b> 대형 기관만 가능하다면 나는 거래소 가격에 의존하는 것입니다.</li>
+      <li><b>발행사가 어느 나라에 있고 규제를 받나?</b> 문제가 생겼을 때 기댈 곳이 있는지의 문제입니다.</li>
+      <li><b>발행사가 내 지갑을 동결할 수 있나?</b> 대부분 가능합니다. 알고 쓰는지가 중요합니다.</li>
+      <li><b>이자를 준다면 그 돈이 어디서 나오나?</b> 답할 수 없으면 <b>내가 그 돈일 가능성</b>이 있습니다.</li>
+      <li><b>거래소에 맡긴 스테이블코인은 스테이블코인이 아닙니다.</b> 거래소가 무너지면 함께 사라집니다. (08편)</li>
+    </ul>
+    <div class="checkcount" id="sbCount">0 / 8 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 스테이블코인의 안정성은 <b>이름이 아니라 상환 창구</b>에서 나옵니다. 담보가 실제로 있고 즉시 현금화할 수 있으면 <b>흔들려도 돌아옵니다.</b> 받쳐줄 것이 다른 코인뿐이면 <b>흔들릴 때 함께 사라집니다.</b></p>
+      <p>그리고 이 시리즈가 계속 반복하는 질문 — <b>「이 수익은 누가 내는 돈인가?」</b> 연 20%에 이 질문을 하지 않은 대가는 <b>수십만 명의 저축</b>이었습니다.</p>
+      <p>다음 편에서는 시야를 넓힙니다. <b>왜 미국은 달러 스테이블코인을 허용했고, 각국은 왜 저마다 디지털 화폐를 준비하는가.</b> 스테이블코인이 <b>기존 화폐 체제와 어떤 관계</b>인지의 이야기입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 코인 06 · 스테이블코인<br>
+    <a href="index.html#coin">← 코인 목록으로</a> · <a href="coin-majors.html">05 · 메이저 코인 도감</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 특정 스테이블코인의 이용을 권하거나 만류하는 것이 아닙니다.<br>
+    붕괴 당시 수치, 담보 구성, 규제 현황은 자료와 시점에 따라 달라집니다. 시뮬레이터는 실제 사건의 재현이 아니라 구조를 보여주는 개념 모형입니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 2. 유형 도식 ══════════ */
+var ST = [
+  { color:'#3F6B52',
+    t:'① 법정화폐 담보형 — 금고에 진짜 달러가 있습니다',
+    p:'발행한 코인 <b>1개당 1달러</b>를 은행 예금이나 단기 국채로 쌓아둡니다. 코인을 가져오면 <b>1달러로 되바꿔줍니다.</b><br><br><b>믿어야 하는 것</b> — 발행 회사가 <b>정말로 그만큼 갖고 있는지</b>, 그리고 <b>맡긴 은행이 안전한지</b>.<br><br><b>깨지는 지점</b> — 담보를 맡긴 <b>은행이 무너지거나</b>, 담보에 <b>즉시 팔기 어려운 자산이 섞여 있거나</b>, 발행사가 <b>규제로 상환을 멈출 때.</b><br><br>가장 널리 쓰이는 방식이고, <b>실제로 한 번 흔들렸다가 회복한 적</b>이 있습니다(6장).' },
+  { color:'#3A5A8E',
+    t:'② 암호화폐 담보형 — 넉넉하게 잡아둡니다',
+    p:'은행 대신 <b>코인을 담보로</b> 맡기고 스테이블코인을 받아 갑니다. 다만 담보 코인 자체가 흔들리니까 <b>1달러를 받으려면 1.5~2달러어치를 맡깁니다.</b> 이를 <b>초과담보</b>라고 합니다.<br><br><b>믿어야 하는 것</b> — 회사가 아니라 <b>코드</b>, 그리고 <b>담보 시세를 알려주는 장치</b>(04편의 오라클).<br><br><b>깨지는 지점</b> — 담보 코인이 <b>급락하면 자동 청산</b>이 걸리고, 청산 물량이 다시 가격을 밀어내는 <b>연쇄 청산</b>이 일어납니다. 값이 너무 빨리 떨어지면 <b>청산이 제때 못 이뤄져 담보가 모자랄</b> 수도 있습니다.<br><br>중앙 회사가 없는 대신 <b>담보 효율이 나쁘고</b>(2달러 넣고 1달러 받음), 시장 급락에 취약합니다.' },
+  { color:'#8E4B3A',
+    t:'③ 알고리즘형 — 금고 자체가 없습니다',
+    p:'담보를 쌓지 않습니다. 대신 <b>「값이 1달러 아래로 떨어지면 다른 코인으로 바꿔준다」</b>는 규칙만 둡니다. 그 다른 코인의 값은 <b>시장이 정합니다.</b><br><br><b>믿어야 하는 것</b> — <b>다른 사람들이 그 짝 코인을 계속 사줄 것</b>이라는 믿음. 그게 전부입니다.<br><br><b>깨지는 지점</b> — 믿음이 흔들리는 순간. <b>상환하면 짝 코인이 새로 발행되고, 발행이 늘면 값이 떨어지고, 값이 떨어지면 더 많이 발행해야 합니다.</b> 이 고리가 스스로를 가속시킵니다.<br><br>2022년 <b>UST와 LUNA</b>가 이 방식이었고, <b>며칠 만에 사실상 0</b>이 됐습니다. 4·5장에서 단계별로 봅니다.' }
+];
+function stScene(mode){
+  var g = '';
+  var C = ST[mode].color;
+  function box(x, y, w, h, fill, op, label, sub){
+    var s = '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="4" fill="' + fill +
+            '" fill-opacity="' + op + '" stroke="' + fill + '" stroke-width="1.4"/>';
+    s += '<text class="lblb" x="' + (x + w / 2) + '" y="' + (y + h / 2 - 2) + '" text-anchor="middle" fill="' + fill + '">' + label + '</text>';
+    if(sub) s += '<text class="axt" x="' + (x + w / 2) + '" y="' + (y + h / 2 + 15) + '" text-anchor="middle">' + sub + '</text>';
+    return s;
+  }
+  function arrow(x1, y, x2, label){
+    var s = '<line x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '" stroke="' + C +
+            '" stroke-width="1.3" stroke-dasharray="4 3"/>';
+    s += '<text class="axt" x="' + ((x1 + x2) / 2) + '" y="' + (y - 9) + '" text-anchor="middle">' + label + '</text>';
+    return s;
+  }
+  g += '<text class="axt" x="40" y="30">코인 한 개(1달러) 뒤에 무엇이 있나</text>';
+  g += box(40, 55, 150, 62, C, .42, '스테이블코인', '1개 = 1달러');
+  g += arrow(196, 86, 268, '받쳐주는 것');
+
+  if(mode === 0){
+    g += box(274, 42, 150, 42, '#3F6B52', .3, '은행 예금', '');
+    g += box(274, 96, 150, 42, '#3F6B52', .3, '단기 국채', '');
+    g += '<text class="axt" x="446" y="72">합쳐서 1달러 이상</text>';
+    g += '<text class="axt" x="446" y="92">= 상환 창구가 열림</text>';
+    g += '<text class="axt" x="40" y="160">위험한 곳: 은행이 무너지거나, 담보에 팔기 어려운 자산이 섞이거나, 상환이 중단될 때.</text>';
+  } else if(mode === 1){
+    g += box(274, 42, 150, 42, '#3A5A8E', .3, '맡긴 코인', '');
+    g += box(274, 96, 150, 42, '#3A5A8E', .16, '여유분', '');
+    g += '<text class="axt" x="446" y="62">1.5~2달러어치</text>';
+    g += '<text class="axt" x="446" y="82">= 초과담보</text>';
+    g += '<text class="axt" x="446" y="112">담보가 급락하면</text>';
+    g += '<text class="axt" x="446" y="132">자동 청산</text>';
+    g += '<text class="axt" x="40" y="160">위험한 곳: 담보 코인의 급락과 연쇄 청산. 값이 너무 빨리 떨어지면 청산이 못 따라갑니다.</text>';
+  } else {
+    g += box(274, 42, 150, 42, '#8E4B3A', .3, '짝 코인(LUNA)', '');
+    g += box(274, 96, 150, 42, '#D9D2C0', .5, '담보 없음', '');
+    g += '<text class="axt" x="446" y="62">시장이 값을 정함</text>';
+    g += '<text class="axt" x="446" y="112">← 여기가 비어 있음</text>';
+    g += '<line x1="349" y1="138" x2="349" y2="164" stroke="#8E4B3A" stroke-width="1.3" stroke-dasharray="4 3"/>';
+    g += '<text class="axt" x="40" y="182">위험한 곳: 짝 코인마저 흔들리면 받쳐줄 것이 없습니다. 상환할수록 받침대가 깎입니다.</text>';
+  }
+  document.getElementById('stScene').innerHTML = g;
+}
+bindBtnRow('#stBtns', function(v){
+  var s = ST[+v];
+  stScene(+v);
+  verdict('stVerdict', s.color, s.t, s.p);
+});
+
+/* ══════════ 3. 차익거래 ══════════ */
+var arGate = 1;
+function arCalc(){
+  var price = +document.getElementById('arPrice').value;
+  var amt = +document.getElementById('arAmt').value;
+  document.getElementById('arPriceOut').textContent = '$' + price.toFixed(3);
+  document.getElementById('arAmtOut').textContent = '$' + amt.toLocaleString();
+
+  var reverse = price > 1.005;          // 1달러보다 비싸면 반대 방향이 이익
+  var gain, pctv;
+  if(reverse){
+    gain = amt * (price - 1);           // 1달러에 발행받아 시장에 팔 때의 차익
+  } else {
+    gain = amt / price - amt;           // 시장에서 싸게 사서 1달러에 상환할 때의 차익
+  }
+  pctv = gain / amt * 100;
+  document.getElementById('arGainK').textContent = reverse ? '1달러에 발행받아 팔면' : '1달러에 상환하면';
+
+  var gEl = document.getElementById('arGain');
+  var pEl = document.getElementById('arPct');
+
+  if(arGate === 0){
+    document.getElementById('arGainK').textContent = '1달러에 상환하면';
+    gEl.textContent = '상환 불가';
+    pEl.textContent = '—';
+    gEl.style.color = 'var(--bad)';
+    pEl.style.color = '';
+    verdict('arVerdict', '#8E4B3A',
+      '창구가 닫히면 값을 되돌릴 힘이 사라집니다',
+      '차익거래는 <b>「1달러에 되바꿀 수 있다」는 확신</b> 위에서만 작동합니다. 창구가 닫히면 싸게 사도 <b>되팔 곳이 시장밖에 없고</b>, 그 시장은 지금 파는 사람만 있습니다.<br><br>그러면 가격은 <b>담보 가치가 아니라 공포가 정합니다.</b> 담보가 실제로 있는 경우에도 <b>「꺼낼 수 있다」는 확인이 나올 때까지</b> 가격은 벌어진 채로 있습니다.<br><br>테라 때 벌어진 일이 이것의 극단적인 형태였습니다 — <b>애초에 되바꿔줄 담보가 없었으므로</b> 창구가 열려 있어도 소용이 없었습니다.');
+    return;
+  }
+
+  gEl.textContent = (gain >= 0 ? '+' : '') + Math.round(gain).toLocaleString() + '달러';
+  pEl.textContent = pct(pctv, 2);
+  signColor(gEl, gain);
+  signColor(pEl, pctv);
+
+  if(price < 0.90){
+    verdict('arVerdict', '#8E4B3A',
+      '이 정도 괴리는 「담보를 의심한다」는 신호입니다',
+      '차익거래로 ' + pct(pctv, 1) + '를 벌 수 있는데도 값이 이만큼 벌어져 있다면, 시장은 <b>「상환이 정말 될지 의심하고 있다」</b>는 뜻입니다.<br><br>돈을 벌 기회가 눈앞에 있는데 아무도 안 잡는다면 <b>기회가 아니라 위험 신호</b>로 읽어야 합니다. 차익거래자들은 <b>상환이 안 될 위험</b>을 계산에 넣고 있는 것입니다.<br><br>주식 트랙의 표현으로 — <b>「너무 싼 데는 이유가 있다」</b>와 같은 상황입니다.');
+  } else if(price < 0.995){
+    verdict('arVerdict', '#3F6B52',
+      '정상적인 복원 구간입니다',
+      '1달러보다 싸니까 <b>사서 상환하면 ' + Math.round(gain).toLocaleString() + '달러</b>가 남습니다. 이런 기회가 보이면 차익거래자들이 <b>시장에서 사들이고</b>, 사는 사람이 늘면 <b>값이 다시 1달러로 올라갑니다.</b><br><br>발행사가 값을 「지키는」 게 아니라 <b>돈 벌려는 사람들이 자동으로 맞춰주는</b> 구조입니다.<br><br>다만 수수료와 상환 처리 기간이 있어서, <b>0.5% 안쪽의 작은 괴리는 그냥 남아 있는 경우</b>가 많습니다.');
+  } else if(price <= 1.005){
+    verdict('arVerdict', '#3F6B52',
+      '페그가 유지되고 있습니다',
+      '1달러와 거의 같습니다. 차익거래로 벌 것이 <b>수수료보다 작아서</b> 아무도 움직이지 않는 상태이고, 이것이 <b>정상</b>입니다.<br><br>스테이블코인이 늘 정확히 1.000달러인 것은 아닙니다. <b>0.995~1.005 사이에서 미세하게 흔들리는 것이 평상시 모습</b>입니다.');
+  } else {
+    verdict('arVerdict', '#3A5A8E',
+      '1달러보다 비쌀 때는 반대로 작동합니다',
+      '이번엔 <b>1달러를 내고 새로 발행받아 시장에 팔면</b> 차익이 납니다. 파는 사람이 늘면 <b>값이 다시 1달러로 내려옵니다.</b><br><br>양방향으로 작동한다는 점이 중요합니다. 다만 <b>새로 발행받는 창구는 대개 대형 기관에만 열려 있어서</b>, 위쪽 괴리는 아래쪽보다 더 오래 남는 경우가 있습니다.<br><br>특정 나라의 수요가 몰릴 때 이런 일이 생깁니다 — <b>08편의 「김치 프리미엄」</b>과 같은 구조입니다.');
+  }
+}
+['arPrice', 'arAmt'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', arCalc);
+});
+bindBtnRow('#arGate', function(v){ arGate = +v; arCalc(); });
+
+/* ══════════ 4. 타임라인 ══════════ */
+var TL = [
+  { t:'① 설계 — 담보 대신 「형제 코인」',
+    p:'<b>UST</b>는 「항상 1달러」를 표방한 스테이블코인이었고, <b>LUNA</b>는 값이 오르내리는 짝 코인이었습니다.<br><br>규칙은 단순했습니다 — <b>UST 1개를 소각하면 1달러어치의 LUNA를 새로 만들어 줍니다.</b> 반대도 됩니다. UST가 1달러 아래면 사람들이 UST를 소각하고 LUNA를 받아 팔면 이익이니, <b>UST 공급이 줄어 값이 올라간다</b>는 논리였습니다.<br><br>3장의 차익거래와 형태는 같습니다. <b>결정적으로 다른 점은 되받는 것이 「달러」가 아니라 「값이 변하는 다른 코인」이라는 것</b>입니다.' },
+  { t:'② 20% 이자 — 수요를 인위적으로 키움',
+    p:'설계만으로는 사람들이 UST를 들고 있을 이유가 없었습니다. 그래서 <b>UST를 맡기면 연 20% 가까운 이자</b>를 주는 예치 서비스를 함께 운영했습니다.<br><br>당시 은행 예금은 <b>연 2~4%</b>였습니다. 돈이 몰릴 수밖에 없었습니다.<br><br><b>여기서 물었어야 할 질문</b> — <b>「그 20%는 어디서 나오나?」</b> 대출 수요에서 나오는 이자로는 감당이 안 됐고, 상당 부분이 <b>미리 쌓아둔 자금에서 지급</b>되고 있었습니다. 즉 <b>이자를 주기 위해 준비금을 태우는</b> 구조였습니다.<br><br>지속 가능하지 않은 이자율은 <b>그 자체가 경고</b>입니다. 7장에서 다시 다룹니다.' },
+  { t:'③ 규모 — 너무 커져버림',
+    p:'높은 이자에 끌려 자금이 몰리면서 UST 발행량은 <b>180억 달러 규모</b>까지 커졌습니다. LUNA 시가총액도 함께 커져 <b>한때 시가총액 상위권</b>에 올랐습니다.<br><br>여기에 <b>반사성</b>이 작동했습니다 — UST 수요가 늘면 LUNA가 소각되어 <b>LUNA 값이 오르고</b>, LUNA 값이 오르면 <b>「받쳐주는 힘이 커 보여서」</b> UST를 더 믿게 되고, 그러면 UST가 더 늘어납니다.<br><br><b>올라갈 때 서로를 밀어 올리는 고리</b>였습니다. 문제는 <b>이 고리가 반대로도 돈다</b>는 것이었습니다.' },
+  { t:'④ 첫 균열 — 큰 물량이 빠져나감',
+    p:'2022년 5월, 시장 전체가 <b>금리 인상으로 이미 위축된</b> 상태에서 UST에서 큰 규모의 자금이 빠져나갔습니다. UST 가격이 <b>1달러를 살짝 벗어났습니다.</b><br><br>평소라면 차익거래로 금방 돌아왔을 크기였습니다. 그런데 이번엔 <b>돌아오지 않았습니다.</b><br><br>이유는 <b>차익거래의 결말이 달랐기</b> 때문입니다. 담보형이라면 <b>싸게 사서 달러로 상환</b>하면 끝입니다. 그런데 UST를 상환하면 나오는 것은 <b>LUNA</b>였고, 차익거래자는 그 LUNA를 <b>즉시 시장에 팔아야</b> 했습니다.<br><br>즉 <b>페그를 지키는 행동 자체가 LUNA에 매도 압력</b>이었습니다.' },
+  { t:'⑤ 뱅크런 — 20% 이자가 반대로 작동',
+    p:'「UST가 1달러가 아니다」는 사실이 알려지자 <b>예치금이 한꺼번에 빠지기 시작</b>했습니다.<br><br>여기서 <b>20% 이자가 정확히 반대로 작동</b>했습니다. 높은 이자로 끌어모은 자금은 <b>애초에 그 프로젝트를 믿어서 온 돈이 아니라 이자를 보고 온 돈</b>이었습니다. 그런 돈은 <b>가장 먼저, 가장 빨리 빠집니다.</b><br><br>은행 뱅크런과 똑같은 구조입니다. 다른 점은 <b>속도</b>였습니다 — 은행은 영업시간이 있고 예금자 보호가 있지만, <b>코인 시장은 24시간이고 아무 장치가 없었습니다.</b><br><br>수십억 달러가 <b>며칠 만에</b> 상환 창구로 몰렸습니다.' },
+  { t:'⑥ 소용돌이 — 구조가 스스로를 무너뜨림',
+    p:'상환이 몰리자 설계대로 <b>LUNA가 대량으로 새로 발행</b>됐습니다. 그리고 그 LUNA는 <b>즉시 시장에서 팔렸습니다.</b><br><br>그러자 —<br><br><b>LUNA 값 하락</b> → 같은 1달러를 주려면 <b>더 많은 LUNA를 발행</b>해야 함 → <b>발행량 폭증</b> → <b>값이 더 하락</b> → 다시 처음으로.<br><br>이것이 <b>죽음의 소용돌이</b>입니다. 발행량은 며칠 만에 <b>천문학적으로</b> 늘었고, LUNA 가격은 <b>사실상 0</b>이 됐습니다.<br><br>중간에 재단이 보유하던 비트코인을 풀어 방어했지만, <b>소용돌이의 속도를 따라잡지 못했습니다.</b> 오히려 그 매도가 <b>시장 전체를 더 끌어내렸습니다.</b><br><br><b>5장에서 이 과정을 직접 돌려볼 수 있습니다.</b>' },
+  { t:'⑦ 남은 것 — 무엇을 배웠나',
+    p:'<b>400억 달러 규모</b>가 사실상 사라졌습니다. 개인 투자자들의 피해가 컸고, 이 붕괴는 <b>연쇄적으로 여러 코인 대출업체와 헤지펀드의 파산</b>으로 이어졌습니다. 그해 코인 시장 전체가 크게 무너진 출발점이었습니다.<br><br><b>남는 교훈 세 가지.</b><br><br><b>① 「무엇이 받쳐주는가」에 답할 수 없으면 받쳐주는 것이 없는 것입니다.</b> 복잡한 설명은 답이 아닙니다.<br><br><b>② 지속 불가능한 이자율은 그 자체로 경고입니다.</b> 그 돈이 어디서 나오는지 답할 수 없다면, 답은 대개 <b>「새로 들어오는 사람의 돈」</b>입니다.<br><br><b>③ 「몇 년간 잘 돌아갔다」는 안전의 증거가 아닙니다.</b> 큰 압력을 아직 안 겪었다는 뜻일 수 있습니다.<br><br>이후 여러 나라가 <b>알고리즘형 스테이블코인을 제한하거나 금지</b>하는 방향으로 규제를 만들었습니다. <b>07편</b>에서 그 이야기를 이어갑니다.' }
+];
+(function(){
+  var btns = document.querySelectorAll('#tlBtns button');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var v = +b.getAttribute('data-v');
+      btns.forEach(function(o, i){
+        o.classList.toggle('on', i === v);
+        o.classList.toggle('done', i < v);
+      });
+      document.getElementById('tlVerdict').querySelector('.vh').textContent = '단계 ' + (v + 1) + ' / ' + TL.length;
+      verdict('tlVerdict', '#8E4B3A', TL[v].t, TL[v].p);
+    });
+  });
+})();
+
+/* ══════════ 5. 죽음의 소용돌이 ══════════ */
+function dsRun(ust0, luna0, panicPct){
+  var panic = panicPct / 100;
+  var fear = panic * 0.8;                 // 상환 압력이 클수록 기존 보유자도 함께 매도
+  var ust = ust0, luna = luna0;
+  var path = [{ r:0, ust:ust, luna:luna, cov:luna / ust }];
+  var breakAt = null;
+  for(var r = 1; r <= 8; r++){
+    var redeem = ust * panic;
+    ust = Math.max(0, ust - redeem);
+    luna = Math.max(0, (luna - redeem) * (1 - fear));
+    var cov = ust > 0.001 ? luna / ust : 0;
+    if(breakAt === null && cov < 1) breakAt = r;
+    path.push({ r:r, ust:ust, luna:luna, cov:cov });
+  }
+  return { path:path, breakAt:breakAt, endLuna:luna, endUst:ust };
+}
+function dsDraw(){
+  var ust0 = +document.getElementById('dsUst').value;
+  var luna0 = +document.getElementById('dsLuna').value;
+  var panic = +document.getElementById('dsPanic').value;
+  document.getElementById('dsUstOut').textContent = (ust0 * 10) + '억 달러';
+  document.getElementById('dsLunaOut').textContent = (luna0 * 10) + '억 달러';
+  document.getElementById('dsPanicOut').textContent = panic + '%';
+
+  var res = dsRun(ust0, luna0, panic);
+  var ymax = Math.max(ust0, luna0) * 1.1;
+  var X0 = 62, X1 = 596, Y0 = 30, Y1 = 200;
+  function px(r){ return X0 + r / 8 * (X1 - X0); }
+  function py(v){ return Y1 - v / ymax * (Y1 - Y0); }
+
+  var ax = '';
+  for(var i = 0; i <= 4; i++){
+    var v = ymax * i / 4, y = py(v);
+    ax += '<line class="gridl" x1="' + X0 + '" y1="' + y.toFixed(1) + '" x2="' + X1 + '" y2="' + y.toFixed(1) + '"/>';
+    ax += '<text class="axt" x="' + (X0 - 8) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end">' + Math.round(v * 10) + '억</text>';
+  }
+  for(var r = 0; r <= 8; r++){
+    ax += '<text class="axt" x="' + px(r).toFixed(1) + '" y="' + (Y1 + 17) + '" text-anchor="middle">' + r + '</text>';
+  }
+  ax += '<text class="axt" x="' + ((X0 + X1) / 2) + '" y="' + (Y1 + 36) + '" text-anchor="middle">상환 라운드</text>';
+  ax += '<line class="axis" x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '"/>';
+  document.getElementById('dsAxis').innerHTML = ax;
+
+  var du = '', dl = '';
+  res.path.forEach(function(p, i){
+    du += (i ? 'L' : 'M') + px(p.r).toFixed(1) + ' ' + py(p.ust).toFixed(1) + ' ';
+    dl += (i ? 'L' : 'M') + px(p.r).toFixed(1) + ' ' + py(p.luna).toFixed(1) + ' ';
+  });
+  document.getElementById('dsUstLine').setAttribute('d', du.trim());
+  document.getElementById('dsLunaLine').setAttribute('d', dl.trim());
+
+  var mk = '';
+  mk += '<rect x="' + (X0 + 6) + '" y="36" width="10" height="3" fill="var(--crypto)"/>';
+  mk += '<text class="axt" x="' + (X0 + 22) + '" y="41">UST 발행량</text>';
+  mk += '<rect x="' + (X0 + 116) + '" y="36" width="10" height="3" fill="var(--bad)"/>';
+  mk += '<text class="axt" x="' + (X0 + 132) + '" y="41">LUNA 시가총액</text>';
+  if(res.breakAt !== null){
+    var bx = px(res.breakAt);
+    mk += '<line x1="' + bx.toFixed(1) + '" y1="' + Y0 + '" x2="' + bx.toFixed(1) + '" y2="' + Y1 +
+          '" stroke="var(--bad)" stroke-width="1.2" stroke-dasharray="4 3"/>';
+    mk += '<text class="lblb" x="' + (bx + 6).toFixed(1) + '" y="' + (Y0 + 12) + '" fill="var(--bad)">커버리지 &lt; 1</text>';
+  }
+  document.getElementById('dsMarks').innerHTML = mk;
+
+  var bEl = document.getElementById('dsBreak');
+  bEl.textContent = res.breakAt === null ? '8라운드 안에는 없음' : res.breakAt + '라운드째';
+  bEl.style.color = res.breakAt === null ? 'var(--pos)' : 'var(--neg)';
+  var eEl = document.getElementById('dsEnd');
+  eEl.textContent = Math.round(res.endLuna * 10) + '억 달러 (' + pct(res.endLuna / luna0 * 100 - 100, 0) + ')';
+  signColor(eEl, res.endLuna / luna0 - 1);
+
+  var cov0 = (luna0 / ust0).toFixed(2);
+  if(res.breakAt === null){
+    verdict('dsVerdict', '#3F6B52',
+      '이 설정이라면 8라운드까지는 버팁니다',
+      '처음 커버리지가 <b>' + cov0 + '배</b>이고 라운드당 상환 압력이 <b>' + panic + '%</b>라면, 8라운드 동안 커버리지가 1 아래로 내려가지 않습니다.<br><br>이것이 <b>붕괴 전까지 몇 년 동안 잘 돌아갔던 이유</b>입니다. <b>상환 압력이 작을 때는 구조가 멀쩡해 보입니다.</b><br><br>이제 <b>상환 압력 슬라이더를 올려보세요.</b> 어디서부터 무너지는지가 이 구조의 진짜 성격입니다.');
+  } else if(res.breakAt <= 2){
+    verdict('dsVerdict', '#8E4B3A',
+      res.breakAt + '라운드 만에 받쳐줄 것이 모자랍니다',
+      '처음 커버리지 <b>' + cov0 + '배</b>로 시작해도, 상환 압력이 <b>' + panic + '%</b>면 <b>' + res.breakAt + '라운드</b> 만에 LUNA 시가총액이 UST 발행량보다 작아집니다.<br><br>그 순간부터는 <b>「전부 상환하면 받쳐줄 것이 모자란다」</b>는 사실이 누구에게나 보입니다. 그러면 <b>남은 사람들도 서둘러 상환하고</b>, 상환은 다시 LUNA 매도입니다.<br><br>2022년 5월에 벌어진 일이 이것입니다. <b>커버리지가 1을 깨는 순간부터는 되돌릴 방법이 사실상 없었습니다.</b>');
+  } else {
+    verdict('dsVerdict', '#9E7A2E',
+      '조금 버티지만 결국 ' + res.breakAt + '라운드에 무너집니다',
+      '처음엔 커버리지가 <b>' + cov0 + '배</b>로 넉넉해 보입니다. 그런데 라운드가 지날수록 <b>UST는 상환으로 줄고, LUNA는 그보다 빠르게 줄어듭니다.</b><br><br>이유는 <b>상환 자체가 LUNA 매도</b>이고, 거기에 <b>기존 보유자의 공포 매도</b>가 겹치기 때문입니다. <b>줄어드는 속도가 다릅니다.</b><br><br>담보형이었다면 이런 일이 없습니다. 달러로 상환하면 <b>남은 코인의 담보 비율은 그대로</b>입니다. 알고리즘형만 <b>상환할수록 받침대가 얇아집니다.</b>');
+  }
+}
+['dsUst', 'dsLuna', 'dsPanic'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', dsDraw);
+});
+
+/* ══════════ 6. 대조 ══════════ */
+var CT = [
+  { color:'#9E7A2E',
+    t:'둘 다 「1달러」가 깨졌습니다',
+    p:'2022년 <b>UST</b>는 1달러 아래로 내려갔고, 2023년 <b>USDC</b>도 1달러 아래로 내려갔습니다. 헤드라인만 보면 같은 사건입니다.<br><br>하지만 <b>깨진 이유가 완전히 달랐습니다.</b><br><br><b>UST</b> — 받쳐줄 담보가 <b>애초에 없었습니다.</b> 상환하면 나오는 것이 값이 변하는 다른 코인이었습니다.<br><br><b>USDC</b> — 담보는 <b>실제로 있었습니다.</b> 다만 그중 일부를 맡겨둔 <b>은행이 갑자기 문을 닫아</b> 당장 꺼낼 수 있는지가 불확실해졌습니다.<br><br>즉 하나는 <b>「없는 것」</b>이 드러난 것이고, 다른 하나는 <b>「있는데 묶였다」</b>는 걱정이었습니다.' },
+  { color:'#8E4B3A',
+    t:'떨어진 깊이가 달랐습니다',
+    p:'<b>USDC</b>는 <b>0.9달러 안팎</b>까지 내려갔습니다. 큰 낙폭이지만 <b>바닥이 있었습니다</b> — 시장이 「담보의 상당 부분은 멀쩡하다」고 계산했기 때문입니다.<br><br><b>UST</b>는 바닥이 없었습니다. 0.9 → 0.6 → 0.3 → <b>사실상 0.</b> 계산할 담보가 없으니 <b>가격을 붙들어 줄 기준 자체가 없었습니다.</b><br><br>여기서 담보형과 알고리즘형의 결정적 차이가 나옵니다 — <b>담보형은 최악의 경우에도 「담보 가치만큼」에서 멈춥니다.</b> 알고리즘형은 <b>멈출 지점이 없습니다.</b><br><br>주식 트랙 표현으로 하면, 담보형에는 <b>청산가치라는 바닥</b>이 있고 알고리즘형에는 없습니다.' },
+  { color:'#3F6B52',
+    t:'하나는 며칠 만에 돌아왔고, 하나는 돌아오지 않았습니다',
+    p:'<b>USDC</b>는 예금이 전액 보호된다는 발표가 나온 뒤 <b>며칠 만에 1달러로 회복</b>했습니다. 담보가 실제로 있었고, 그것을 꺼낼 수 있다는 것이 확인됐기 때문입니다.<br><br><b>UST</b>는 <b>회복하지 못했습니다.</b> 발표할 담보가 없었기 때문입니다. 재단이 비트코인을 팔아 방어했지만 규모가 부족했고, 그 매도는 <b>시장 전체를 더 끌어내렸습니다.</b><br><br><b>이 대조가 이 편의 결론입니다.</b> 「스테이블코인이 흔들렸다」는 같은 문장이지만, <b>돌아올 수 있는 흔들림과 돌아올 수 없는 흔들림</b>은 완전히 다른 사건입니다.<br><br>그리고 그 차이를 가르는 것은 <b>사고가 난 뒤가 아니라 사기 전에 확인할 수 있습니다.</b>' },
+  { color:'#3A5A8E',
+    t:'무엇이 갈랐나 — 질문 하나로 갈렸습니다',
+    p:'<b>「지금 전부 상환 요청이 들어오면, 무엇으로 갚나?」</b><br><br><b>USDC의 답</b> — 은행 예금과 단기 국채. 일부는 당장 못 꺼낼 수 있지만 <b>존재는 합니다.</b> 그래서 확인만 되면 값이 돌아옵니다.<br><br><b>UST의 답</b> — 새로 발행한 LUNA. 그런데 <b>그 LUNA를 사줄 사람이 없으면 값이 없습니다.</b> 그래서 상환이 몰릴수록 답이 나빠집니다.<br><br><b>이 질문은 사기 전에 물을 수 있습니다.</b> 그리고 답이 「다른 코인」이거나 「복잡한 메커니즘」이면, <b>그건 답이 아닙니다.</b><br><br>이 질문을 그대로 갖고 <b>7장의 체크리스트</b>로 넘어갑니다.' }
+];
+function ctDraw(mode){
+  var X0 = 62, X1 = 590, Y0 = 34, Y1 = 160;
+  var lo = 0, hi = 1.1;
+  function px(t){ return X0 + t / 10 * (X1 - X0); }
+  function py(v){ return Y1 - (v - lo) / (hi - lo) * (Y1 - Y0); }
+  var ax = '';
+  [0, 0.5, 1.0].forEach(function(v){
+    var y = py(v);
+    ax += '<line class="gridl" x1="' + X0 + '" y1="' + y.toFixed(1) + '" x2="' + X1 + '" y2="' + y.toFixed(1) + '"/>';
+    ax += '<text class="axt" x="' + (X0 - 8) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end">$' + v.toFixed(2) + '</text>';
+  });
+  ax += '<text class="axt" x="' + ((X0 + X1) / 2) + '" y="' + (Y1 + 30) + '" text-anchor="middle">사건 발생 이후 경과 (개념도 · 실제 시세 아님)</text>';
+  ax += '<line class="axis" x1="' + X0 + '" y1="' + Y1 + '" x2="' + X1 + '" y2="' + Y1 + '"/>';
+  document.getElementById('ctAxis').innerHTML = ax;
+
+  var UST = [1.00, 0.98, 0.90, 0.68, 0.40, 0.22, 0.12, 0.07, 0.04, 0.02, 0.01];
+  var USDC = [1.00, 0.98, 0.93, 0.90, 0.92, 0.96, 0.99, 1.00, 1.00, 1.00, 1.00];
+  function path(arr){
+    return arr.map(function(v, i){ return (i ? 'L' : 'M') + px(i).toFixed(1) + ' ' + py(v).toFixed(1); }).join(' ');
+  }
+  document.getElementById('ctUst').setAttribute('d', path(UST));
+  document.getElementById('ctUsdc').setAttribute('d', path(USDC));
+  document.getElementById('ctUst').setAttribute('stroke-opacity', mode === 2 ? '1' : '.85');
+  document.getElementById('ctUsdc').setAttribute('stroke-opacity', mode === 2 ? '1' : '.85');
+
+  var lb = '';
+  lb += '<rect x="' + (X0 + 6) + '" y="' + (Y0 + 4) + '" width="10" height="3" fill="var(--bad)"/>';
+  lb += '<text class="axt" x="' + (X0 + 22) + '" y="' + (Y0 + 9) + '">UST · 담보 없음</text>';
+  lb += '<rect x="' + (X0 + 136) + '" y="' + (Y0 + 4) + '" width="10" height="3" fill="var(--fiat)"/>';
+  lb += '<text class="axt" x="' + (X0 + 152) + '" y="' + (Y0 + 9) + '">USDC · 담보 있음</text>';
+  if(mode === 1){
+    lb += '<line x1="' + px(3).toFixed(1) + '" y1="' + py(0.90).toFixed(1) + '" x2="' + px(3).toFixed(1) +
+          '" y2="' + py(0.68).toFixed(1) + '" stroke="#8E4B3A" stroke-width="1.2" stroke-dasharray="3 3"/>';
+    lb += '<text class="lblb" x="' + (px(3) + 8).toFixed(1) + '" y="' + (py(0.79)).toFixed(1) + '" fill="#8E4B3A">여기서 갈립니다</text>';
+  }
+  if(mode === 3){
+    lb += '<text class="lblb" x="' + (px(9) - 6).toFixed(1) + '" y="' + (py(1.00) - 10).toFixed(1) +
+          '" text-anchor="end" fill="var(--fiat)">무엇으로 갚나 → 예금·국채</text>';
+    lb += '<text class="lblb" x="' + (px(9) - 6).toFixed(1) + '" y="' + (py(0.01) - 10).toFixed(1) +
+          '" text-anchor="end" fill="var(--bad)">무엇으로 갚나 → 새로 찍은 LUNA</text>';
+  }
+  if(mode === 2){
+    lb += '<circle cx="' + px(7).toFixed(1) + '" cy="' + py(1.00).toFixed(1) + '" r="4" fill="var(--fiat)"/>';
+    lb += '<text class="lblb" x="' + (px(7) + 8).toFixed(1) + '" y="' + (py(1.00) - 6).toFixed(1) + '" fill="var(--fiat)">회복</text>';
+    lb += '<circle cx="' + px(7).toFixed(1) + '" cy="' + py(0.07).toFixed(1) + '" r="4" fill="var(--bad)"/>';
+    lb += '<text class="lblb" x="' + (px(7) + 8).toFixed(1) + '" y="' + (py(0.07) - 6).toFixed(1) + '" fill="var(--bad)">회복 없음</text>';
+  }
+  document.getElementById('ctLbl').innerHTML = lb;
+}
+bindBtnRow('#ctBtns', function(v){
+  var c = CT[+v];
+  ctDraw(+v);
+  verdict('ctVerdict', c.color, c.t, c.p);
+});
+
+/* ══════════ 7. 퀴즈 · 체크리스트 ══════════ */
+(function(){
+  var q = document.getElementById('qz1');
+  var ans = q.querySelector('.qa');
+  q.querySelectorAll('button').forEach(function(b){
+    b.addEventListener('click', function(){
+      var ok = b.getAttribute('data-c') === '1';
+      q.classList.add('answered');
+      q.querySelectorAll('button').forEach(function(o){ o.classList.remove('right', 'wrong'); });
+      b.classList.add(ok ? 'right' : 'wrong');
+      ans.innerHTML = ok
+        ? '<b>맞습니다.</b> 이자는 <b>어딘가에서 오는 돈</b>입니다. 은행 예금이 2~4%일 때 20%를 주려면, 그 차이를 <b>누군가 메우고 있어야</b> 합니다.<br><br>이 경우 상당 부분이 <b>미리 쌓아둔 준비금</b>에서 나왔습니다. 즉 <b>이자를 주기 위해 곳간을 태우는</b> 구조였고, 곳간이 마르면 끝나는 것이었습니다.<br><br>그래서 이 질문은 코인만이 아니라 <b>모든 고수익 상품에 그대로</b> 씁니다 — <b>「이 수익은 누가 내는 돈인가?」</b> 답할 수 없으면 <b>내가 그 돈일 수 있습니다.</b>'
+        : '<b>아쉽습니다.</b> 블록체인이 효율적이라거나 대출 이자가 높다는 것만으로는 <b>은행의 5~10배 수익률</b>이 설명되지 않습니다.<br><br>정답은 <b>세 번째</b>입니다. 이자는 어디선가 오는 돈이고, 이 경우 상당 부분이 <b>미리 쌓아둔 준비금을 태워서</b> 지급되고 있었습니다.<br><br>수익률이 비정상적으로 높으면 <b>「그 돈이 어디서 나오나」</b>를 먼저 물어야 합니다. 답이 없으면 <b>새로 들어온 사람의 돈</b>인 경우가 많습니다.';
+    });
+  });
+})();
+(function(){
+  var items = document.querySelectorAll('#sbCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#sbCheck li.done').length;
+      document.getElementById('sbCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 일곱 번째 질문에 답할 수 없다면 나머지가 다 좋아도 들어가지 마세요.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#stBtns button[data-v="0"]').click();
+arCalc();
+document.querySelector('#tlBtns button[data-v="0"]').click();
+dsDraw();
+document.querySelector('#ctBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
