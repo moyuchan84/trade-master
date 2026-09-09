@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>국채와 회사채</title>
+<meta name="description" content="누가 빌리느냐에 따라 위험의 종류가 달라집니다. 신용등급·신용 스프레드·기대손실을 계산기로 확인하고, 국채가 안전한 조건까지 짚는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --gov:#4C6B7A;--corp:#7A5C3A;--hy:#8E4B3A;--ok:#5F7A52;--alt:#7A5C9E;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:680px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  table.cmp tr.edge td, table.cmp tr.edge th{background:#F1E6DD;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--gov));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--gov));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--gov));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 0;}
+  .pair > div{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--pc);border-radius:3px;padding:15px 17px;}
+  .pair h4{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--pc);margin:0 0 8px;}
+  .pair p{font-size:13.8px;color:var(--ink-soft);margin:0 0 7px;max-width:none;}
+  .pair p:last-child{margin-bottom:0;}
+  .pair p b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .pair{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">채권 03 · 발행자 · 투자 공부 노트</div>
+    <h1>국채와 회사채,<br>그리고 신용등급</h1>
+    <p class="lede">02편은 <b>금리 위험</b>만 다뤘습니다. 여기서 <b>완전히 다른 축</b>이 하나 붙습니다 — <b>「빌린 쪽이 갚을 수 있는가」</b>입니다.</p>
+    <div class="callout">
+      <p><b>채권의 위험은 두 가지</b>이고, 서로 <b>다른 힘</b>으로 움직입니다.</p>
+      <p><b>① 금리 위험</b> — 세상의 금리가 바뀌어 가격이 움직이는 것. <b>02편</b>에서 다뤘습니다. <b>국채도 회사채도 똑같이</b> 겪습니다.</p>
+      <p><b>② 신용 위험</b> — 빌린 쪽이 <b>못 갚을 가능성</b>. 이건 <b>발행자마다 다릅니다.</b> 이 편의 주제입니다.</p>
+      <p><b>그리고 둘은 자주 반대로 움직입니다.</b> 경기가 나빠지면 <b>금리는 내려가서(국채에 유리)</b> 동시에 <b>부도 걱정이 커집니다(회사채에 불리).</b> 그래서 <b>같은 사건에서 국채는 오르고 회사채는 떨어지는</b> 일이 실제로 일어납니다. 3장에서 계산합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#ladder">1. 발행자의 사다리</a>
+    <a href="#grade">2. 신용등급</a>
+    <a href="#spread">3. 스프레드가 벌어질 때</a>
+    <a href="#gov">4. 국채는 안전한가</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="ladder">
+    <div class="prod-head" style="--edge:var(--gov)">
+      <span class="prod-tag">01 · 사다리</span>
+      <h2>누가 빌리느냐로 줄을 세우면</h2>
+      <p class="one">위로 갈수록 <b>안전하고 이자가 적고</b>, 아래로 갈수록 <b>위험하고 이자가 많습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>돈을 빌려달라는 사람이 여럿 있다고 하자. 누구한테 빌려줄 때 <b>더 마음이 편할까?</b></p>
+      <p><b>나라</b>가 빌려달라면 제일 편해. 나라는 <b>세금을 걷을 수 있고</b>, 자기 나라 돈이면 <b>찍어서라도 갚을 수</b> 있거든.</p>
+      <p><b>아주 큰 회사</b>는 그다음이야. 망할 가능성이 낮지만 <b>없지는 않지.</b></p>
+      <p><b>작고 빚 많은 회사</b>는 제일 불안해. 그래서 그런 회사는 <b>이자를 훨씬 많이</b> 주겠다고 해. 안 그러면 아무도 안 빌려주니까.</p>
+      <p>여기서 중요한 걸 알 수 있어. <b>이자를 많이 준다는 건 좋은 게 아니라 「그만큼 위험하다」는 신호</b>야. 세상에 <b>공짜로 이자를 더 주는 사람</b>은 없어.</p>
+      <p>그래서 물어야 할 건 <b>「이자를 얼마나 더 주나」</b>가 아니라 <b>「더 주는 만큼이 위험을 덮고도 남나」</b>야. 2장에서 그걸 계산해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">LADDER · 발행자를 눌러보세요</div>
+      <p class="labsub">위험의 <b>종류</b>가 어떻게 달라지는지입니다.</p>
+
+      <div class="btnrow" id="ldBtns">
+        <button data-v="0" class="on">국채</button>
+        <button data-v="1">공사채·은행채</button>
+        <button data-v="2">우량 회사채</button>
+        <button data-v="3">하이일드</button>
+        <button data-v="4">후순위·신종자본</button>
+      </div>
+
+      <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="발행자별 위험과 금리의 사다리">
+        <g id="ldScene"></g>
+      </svg>
+
+      <div class="verdict" id="ldVerdict" style="--vc:var(--gov)">
+        <div class="vh">발행자</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>그림의 금리 폭은 개념도이며 근사치</b>입니다. 실제 스프레드는 <b>경기 국면에 따라 몇 배씩 벌어졌다 좁혀집니다.</b> 침체기에는 하이일드 스프레드가 <b>평소의 서너 배</b>가 되기도 합니다. 3장에서 그 효과를 계산합니다.
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 장의 한 줄</div>
+      <div class="kb">이자를 더 준다는 것은 <b>혜택이 아니라 신호</b>입니다.<br>문제는 <b>그 신호가 정확한가</b>입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="grade">
+    <div class="prod-head" style="--edge:var(--corp)">
+      <span class="prod-tag">02 · 등급</span>
+      <h2>신용등급과 기대손실</h2>
+      <p class="one">핵심 질문 하나 — <b>더 받는 이자가 부도 손실을 덮고도 남는가?</b></p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>등급</th><th>뜻</th><th>연 부도율 (근사)</th><th>국채 대비 가산금리 (근사)</th><th>구분</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>AAA</th><td>최상위 · 사실상 부도 없음</td><td>0.0%대</td><td>0.2~0.5%p</td><td rowspan="4"><b>투자등급</b><br>기관이 담을 수 있는 범위</td></tr>
+          <tr><th>AA</th><td>매우 우량</td><td>0.0%대</td><td>0.4~0.8%p</td></tr>
+          <tr><th>A</th><td>우량 · 대형 우량기업</td><td>0.1% 안팎</td><td>0.6~1.2%p</td></tr>
+          <tr class="edge"><th>BBB</th><td><b>투자등급의 마지막 칸</b></td><td>0.2~0.4%</td><td>1.0~2.0%p</td></tr>
+          <tr class="edge"><th>BB</th><td><b>여기부터 투기등급</b></td><td>1% 안팎</td><td>2.5~4%p</td><td rowspan="3"><b>투기등급<br>(하이일드)</b><br>강제 매도가 발생하는 구간</td></tr>
+          <tr><th>B</th><td>취약 · 경기에 민감</td><td>3~4%</td><td>4~7%p</td></tr>
+          <tr><th>CCC 이하</th><td>부도 임박 가능성</td><td>15~25%</td><td>9%p 이상</td></tr>
+          <tr><th>D</th><td>이미 부도</td><td>—</td><td>—</td><td>부실채권</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · <b>부도율과 가산금리는 모두 근사치</b>이며 시기·업종·평가사에 따라 크게 다릅니다</p>
+
+    <div class="lab">
+      <div class="labtitle">EXPECTED LOSS · 더 받는 이자가 남는가</div>
+      <p class="labsub">등급을 고르면 <b>근사값</b>이 들어갑니다. 슬라이더로 직접 바꿔볼 수 있습니다.</p>
+
+      <div class="ctrl-row">
+        <label for="elGrade">신용등급</label>
+        <select id="elGrade">
+          <option value="0">AAA</option>
+          <option value="1">AA</option>
+          <option value="2">A</option>
+          <option value="3" selected>BBB</option>
+          <option value="4">BB</option>
+          <option value="5">B</option>
+          <option value="6">CCC</option>
+        </select>
+      </div>
+      <div class="ctrl-row">
+        <label for="elPd">연 부도율</label>
+        <input type="range" id="elPd" min="0" max="2500" step="1" value="30">
+        <output id="elPdOut">0.30%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="elSp">국채 대비 가산금리 (스프레드)</label>
+        <input type="range" id="elSp" min="0" max="2000" step="1" value="150">
+        <output id="elSpOut">1.50%p</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="elRr">부도 시 회수율</label>
+        <input type="range" id="elRr" min="0" max="90" step="5" value="40">
+        <output id="elRrOut">40%</output>
+      </div>
+
+      <div class="steps-out" id="elSteps"></div>
+
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="가산금리와 기대손실 비교">
+        <g id="elScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">기대손실 / 가산금리</span><span class="rv" id="elBoth">—</span></div>
+        <div><span class="rk">손익분기 부도율</span><span class="rv" id="elBe">—</span></div>
+      </div>
+
+      <div class="verdict" id="elVerdict" style="--vc:var(--corp)">
+        <div class="vh">기대손실</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>기대손실 = 부도율 × (1 − 회수율)</b>입니다. 그리고 <b>순 초과수익 = 가산금리 − 기대손실</b>입니다.<br><br>
+        <b>「손익분기 부도율」</b>은 <b>가산금리를 정확히 다 까먹는 부도율</b>입니다. 실제 부도율이 이보다 낮으면 남고, 높으면 손해입니다.<br><br>
+        <b>⚠️ 이 계산이 놓치는 것 — 그리고 그게 더 중요합니다.</b><br>
+        <b>① 부도는 평균대로 오지 않습니다.</b> 평소에는 거의 없다가 <b>불황에 한꺼번에</b> 터집니다. <b>「평균 부도율」로 계산한 안전 마진은 정작 필요할 때 사라집니다.</b><br>
+        <b>② 부도 나기 전에 가격이 먼저 떨어집니다.</b> 실제로 돈을 잃는 대부분의 경로는 부도가 아니라 <b>가격 하락 중의 매도</b>입니다.<br>
+        <b>③ 회수율도 불황에 함께 떨어집니다.</b> 담보 자산의 값도 같이 내려가기 때문입니다.
+      </div>
+    </div>
+    <div class="deep">
+      <h3>등급은 누가 매기고, 얼마나 믿을 수 있나</h3>
+      <p>신용등급은 <b>신용평가사</b>가 매깁니다. 그런데 구조에 <b>알아둬야 할 특징</b>이 몇 가지 있습니다.</p>
+      <p><b>① 평가 비용을 내는 쪽이 발행자입니다.</b> 등급을 받는 회사가 <b>평가사에 돈을 냅니다.</b> 이해가 완전히 분리되어 있지 않습니다.</p>
+      <p><b>② 등급은 늦게 움직입니다.</b> 평가사는 <b>확인된 사실</b>을 근거로 조정합니다. 그래서 <b>시장 가격이 먼저 떨어지고 등급은 나중에 내려가는</b> 순서가 보통입니다. <b>등급 강등 뉴스를 보고 대응하면 이미 늦습니다.</b></p>
+      <p><b>③ 구조화 상품에서 크게 틀린 적이 있습니다.</b> 2008년 금융위기 때 <b>최상위 등급을 받았던 주택담보 관련 증권들이 대규모로 부실화</b>됐습니다. <b>개별 회사채와 달리 복잡한 구조물의 등급은 가정에 크게 의존</b>한다는 것이 드러났습니다.</p>
+      <p class="plain"><b>그럼 등급을 무시해야 하나 — 아닙니다.</b> 등급은 <b>여전히 가장 표준적인 첫 번째 필터</b>이고, 특히 <b>투자등급과 투기등급의 경계</b>는 실제로 <b>기관의 매매를 강제하는 힘</b>이 있어 시장에 직접 영향을 줍니다. <b>완벽해서가 아니라 모두가 그것을 기준으로 쓰기 때문에</b> 중요합니다.<br><br><b>실전에서는 등급보다 시장 가격이 빠른 신호</b>입니다. 같은 등급인데 <b>유난히 스프레드가 큰 채권</b>이 있다면, 시장이 <b>등급보다 나쁘게 보고 있다</b>는 뜻입니다. 그것이 기회일 수도 있고 <b>등급이 곧 내려갈 신호</b>일 수도 있습니다.</p>
+
+      <h3>개별 채권이 아니라 ETF로 담을 때 달라지는 것</h3>
+      <p>회사채를 <b>한 종목</b> 사면 <b>그 회사가 부도나면 큰 손실</b>입니다. 그래서 개인이 개별 회사채를 담는 것은 <b>분산이 어렵다</b>는 문제가 있습니다.</p>
+      <p><b>ETF나 펀드로 담으면 수백 종목에 분산</b>됩니다. 한두 종목이 부도나도 <b>전체에 미치는 영향이 작습니다.</b> 그래서 <b>기대손실 계산이 실제로 의미를 갖게</b> 됩니다 — 이 편 2장의 계산은 <b>충분히 분산된 경우</b>를 전제로 합니다.</p>
+      <p><b>그런데 분산으로 없앨 수 없는 위험이 남습니다.</b> <b>경기가 나빠지면 모든 회사가 동시에 어려워집니다.</b> 분산은 <b>「특정 회사가 망하는 위험」</b>은 줄이지만 <b>「경기 전체가 나빠지는 위험」</b>은 줄이지 못합니다.</p>
+      <p class="plain"><b>그리고 ETF에는 별개의 문제가 있습니다</b> — <b>만기가 없다는 것</b>입니다. 개별 회사채는 <b>부도만 안 나면 만기에 원금이 나오지만</b>, ETF는 <b>계속 갈아타기 때문에</b> 그 안전장치가 없습니다. <b>07편</b>에서 이 차이를 정확히 다룹니다. <b>지금 장기국채 ETF를 들고 있다면 그 편이 가장 중요합니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="spread">
+    <div class="prod-head" style="--edge:var(--hy)">
+      <span class="prod-tag">03 · 스프레드</span>
+      <h2>국채는 오르는데 회사채는 떨어질 때</h2>
+      <p class="one">채권을 <b>「분산용」</b>으로 산다면 <b>반드시 알아야 하는 장면</b>입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>경기가 나빠지면 두 가지 일이 <b>동시에</b> 일어나.</p>
+      <p><b>① 세상의 금리가 내려가.</b> 사람들이 안전한 걸 찾고, 중앙은행도 금리를 낮추거든. 그럼 02편에서 배운 대로 <b>채권 값이 올라야</b> 해.</p>
+      <p><b>② 그런데 회사들이 위험해져.</b> 장사가 안 되니까 <b>못 갚을 것 같은</b> 회사가 늘어. 그럼 사람들이 <b>「그 회사 채권은 이자를 훨씬 더 줘야 살게」</b>라고 해.</p>
+      <p>이 <b>「더 달라는 이자」</b>가 벌어지는 걸 <b>스프레드 확대</b>라고 해.</p>
+      <p>그래서 어떻게 될까? <b>나라 채권은 ①만 받아서 올라가.</b> 그런데 <b>회사 채권은 ①로 오른 것보다 ②로 떨어진 게 더 커서</b> 결국 내려가.</p>
+      <p><b>같은 날, 같은 사건인데 정반대</b>야. 이게 <b>「채권을 샀으니 분산됐다」가 틀릴 수 있는</b> 이유야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SCENARIO · 두 힘을 따로 움직여보세요</div>
+      <p class="labsub">국채금리와 스프레드는 <b>따로 움직입니다.</b> 그 합이 결과입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="scGov">국채금리 변화</label>
+        <input type="range" id="scGov" min="-30" max="30" step="1" value="-10">
+        <output id="scGovOut">−1.0%p</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="scSp">신용 스프레드 변화</label>
+        <input type="range" id="scSp" min="-30" max="50" step="1" value="20">
+        <output id="scSpOut">+2.0%p</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="scDur">회사채의 듀레이션</label>
+        <input type="range" id="scDur" min="1" max="15" step="1" value="5">
+        <output id="scDurOut">5</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="scGovDur">비교할 국채의 듀레이션</label>
+        <input type="range" id="scGovDur" min="1" max="20" step="1" value="8">
+        <output id="scGovDurOut">8</output>
+      </div>
+
+      <div class="steps-out" id="scSteps"></div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="국채와 회사채의 가격 변화 분해">
+        <g id="scScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">국채 / 회사채</span><span class="rv" id="scBoth">—</span></div>
+        <div><span class="rk">차이</span><span class="rv" id="scGap">—</span></div>
+      </div>
+
+      <div class="verdict" id="scVerdict" style="--vc:var(--hy)">
+        <div class="vh">시나리오</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>가격 변화 ≈ − 듀레이션 × (국채금리 변화 + 스프레드 변화)</b>입니다. 회사채가 받는 금리는 <b>국채금리 + 스프레드</b>이므로, <b>둘 중 어느 쪽이 움직여도</b> 가격에 그대로 반영됩니다.<br><br>
+        <b>단순화한 부분</b> — 하이일드는 듀레이션 계산이 더 복잡합니다. 부도 위험이 크면 <b>「만기까지 못 갈 수 있다」</b>는 점 때문에 금리 민감도가 오히려 낮아지고, <b>스프레드 민감도가 지배</b>하게 됩니다. 그리고 <b>볼록성과 조기상환 조항</b>도 뺐습니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「채권으로 분산한다」가 성립하려면</h3>
+      <p>01편에서 <b>채권을 사는 세 가지 목적</b> 중 <b>②주식과 반대로 움직이라고</b>를 봤습니다. 그 목적이라면 <b>어떤 채권이냐가 결정적</b>입니다.</p>
+      <p><b>국채는 그 역할을 합니다.</b> 경기가 나빠지면 <b>안전한 곳으로 돈이 몰리고</b>(질로의 도피) 금리가 내려가 <b>가격이 오릅니다.</b> 주식이 떨어질 때 오르는 경향이 있습니다.</p>
+      <p><b>회사채, 특히 하이일드는 그 역할을 잘 못합니다.</b> 경기가 나빠지면 <b>부도 걱정이 커져 스프레드가 벌어지고</b>, 그 힘이 금리 하락 효과를 <b>이깁니다.</b> 위 계산기에서 확인한 그대로입니다.</p>
+      <p><b>실제로 하이일드는 주식과 상당히 비슷하게 움직입니다.</b> 이름은 「채권」이지만 <b>위험의 성격은 주식 쪽에 가깝습니다.</b></p>
+      <p class="plain"><b>그래서 이런 판단이 나옵니다.</b> <b>「주식 위험을 줄이려고」</b> 채권을 섞는 것이라면 <b>국채</b>가 맞습니다. 하이일드를 섞는 것은 <b>「주식 위험을 조금 다른 모양으로 바꾸는 것」</b>에 가깝습니다. <b>둘은 다른 결정</b>입니다.</p>
+
+      <h3>그런데 2022년에는 국채도 방어를 못 했습니다</h3>
+      <p>위 논리에는 <b>중요한 조건</b>이 하나 붙습니다 — <b>「경기 걱정 때문에 주식이 떨어질 때」</b>입니다.</p>
+      <p><b>문제의 원인이 인플레이션이면 이야기가 달라집니다.</b> 물가를 잡으려고 <b>금리를 올리면</b> 주식도 떨어지고 <b>국채도 떨어집니다.</b> 2022년이 정확히 그랬습니다.</p>
+      <p>정리하면 이렇습니다.</p>
+      <p>· <b>침체가 문제일 때</b> → 국채가 <b>방어합니다</b><br>
+         · <b>인플레이션이 문제일 때</b> → 국채도 <b>같이 무너집니다</b><br>
+         · <b>신용 위기일 때</b> → 국채는 오르고 <b>회사채는 크게 떨어집니다</b></p>
+      <p class="plain"><b>결론은 「채권이 방어한다」가 아니라 「무엇으로부터 방어하려는지 정해야 한다」</b>입니다. 이 구분이 <b>06편(경기)</b>의 주제이고, <b>지금 장기국채를 들고 있다면 특히 중요</b>합니다 — 인플레이션이 다시 문제가 되면 <b>방어 자산이 아니라 손실 자산</b>이 되기 때문입니다.</p>
+
+      <h3>등급이 떨어질 때 벌어지는 일 — 강제 매도</h3>
+      <p>표에서 <b>BBB와 BB 사이에 굵은 선</b>을 그은 이유가 있습니다. 그 선을 넘어가면 <b>「투자등급」에서 「투기등급」으로</b> 분류가 바뀝니다.</p>
+      <p><b>많은 기관은 규정상 투자등급만 담을 수 있습니다.</b> 그래서 어떤 채권이 <b>BBB에서 BB로 강등</b>되면, 그 채권을 들고 있던 기관들이 <b>동시에 팔아야 합니다.</b> 가격이 <b>펀더멘털보다 훨씬 크게</b> 떨어집니다.</p>
+      <p>이런 채권을 <b>「추락 천사(fallen angel)」</b>라고 부릅니다. <b>강등 직전의 BBB 채권</b>이 특히 위험한 이유가 이것입니다.</p>
+      <p class="plain"><b>실전에서의 의미.</b> <b>「BBB인데 이자를 꽤 주네」</b>는 <b>「강등되면 크게 떨어질 자리에 있다」</b>와 같은 말일 수 있습니다. 회사채 ETF를 볼 때 <b>BBB 비중</b>을 확인해볼 값어치가 있습니다. 반대로 <b>이미 강등이 끝나 싸진 채권</b>을 노리는 전략도 있습니다 — 다만 그건 <b>본격적인 신용 분석</b>의 영역입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="gov">
+    <div class="prod-head" style="--edge:var(--alt)">
+      <span class="prod-tag">04 · 국채</span>
+      <h2>국채는 정말 안전한가</h2>
+      <p class="one">조건이 붙습니다. 그리고 그 조건은 <b>생각보다 좁습니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SOVEREIGN · 눌러서 확인하세요</div>
+      <p class="labsub">「국채는 안전하다」는 말이 <b>언제 성립하고 언제 깨지는지</b>입니다.</p>
+
+      <div class="btnrow" id="svBtns">
+        <button data-v="0" class="on">자국통화 국채</button>
+        <button data-v="1">외화 표시 국채</button>
+        <button data-v="2">유로존의 특수성</button>
+        <button data-v="3">진짜 위험은 인플레이션</button>
+      </div>
+
+      <div class="verdict" id="svVerdict" style="--vc:var(--alt)">
+        <div class="vh">국채</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div style="--pc:var(--ok)">
+        <h4>국채가 실제로 지켜주는 것</h4>
+        <p><b>명목 원리금</b> — 자국통화 국채라면 <b>약속한 「금액」은 거의 확실</b>합니다.</p>
+        <p><b>침체기의 가격</b> — 경기 걱정이 커지면 <b>금리가 내려가 값이 오릅니다.</b></p>
+        <p><b>유동성</b> — 언제든 <b>제값 가까이에 팔 수</b> 있습니다. 위기에도 거래가 됩니다.</p>
+        <p><b>기준점</b> — 다른 모든 채권의 금리가 <b>「국채 + α」</b>로 정해집니다.</p>
+      </div>
+      <div style="--pc:var(--hy)">
+        <h4>국채가 지켜주지 못하는 것</h4>
+        <p><b>구매력</b> — 물가가 오르면 <b>같은 금액의 가치가 깎입니다.</b> 가장 큰 실질 위험입니다.</p>
+        <p><b>중간 가격</b> — 금리가 오르면 <b>크게 떨어집니다</b>(02편). 만기가 길수록 심합니다.</p>
+        <p><b>환율</b> — 해외 국채라면 <b>환율이 결과를 뒤집을 수</b> 있습니다(08편).</p>
+        <p><b>정치·재정 신뢰</b> — 발행량이 급증하면 <b>장기금리가 오를 수</b> 있습니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">위험이 <b>두 종류</b>라는 것만 확실히 하면 됩니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>이럴 때</th><th>국채</th><th>우량 회사채</th><th>하이일드</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>금리 상승</th><td>하락</td><td>하락</td><td>덜 하락 (스프레드가 더 지배)</td></tr>
+          <tr><th>금리 하락</th><td><b>상승</b></td><td>상승</td><td>덜 상승</td></tr>
+          <tr><th>경기 침체 우려</th><td><b>상승</b></td><td>혼조</td><td><b>크게 하락</b></td></tr>
+          <tr><th>신용 위기</th><td><b>상승</b></td><td>하락</td><td><b>급락</b></td></tr>
+          <tr><th>인플레이션 급등</th><td><b>하락</b></td><td>하락</td><td>하락</td></tr>
+          <tr><th>경기 회복 초입</th><td>하락</td><td>상승</td><td><b>크게 상승</b></td></tr>
+          <tr><th>주식과의 관계</th><td>대체로 <b>반대</b></td><td>중간</td><td>대체로 <b>같은 방향</b></td></tr>
+          <tr><th>주된 위험</th><td><b>금리·인플레이션</b></td><td>금리 + 신용</td><td><b>신용</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 경향이며 예외가 있습니다</p>
+
+    <ul class="check" id="btCheck">
+      <li><b>채권의 위험은 금리 위험과 신용 위험 두 가지</b>라는 것.</li>
+      <li><b>둘은 자주 반대로 움직인다</b> — 침체기에 국채는 오르고 회사채는 떨어질 수 있습니다.</li>
+      <li><b>이자를 더 준다는 건 혜택이 아니라 위험 신호</b>라는 것.</li>
+      <li><b>기대손실 = 부도율 × (1 − 회수율)</b> — 가산금리와 비교해야 합니다.</li>
+      <li><b>부도는 평균대로 오지 않고 불황에 몰린다</b>는 것.</li>
+      <li><b>BBB와 BB 사이에 강제 매도의 경계</b>가 있다는 것.</li>
+      <li><b>하이일드는 이름만 채권이고 성격은 주식에 가깝다</b>는 것.</li>
+      <li><b>「분산 목적」이라면 국채여야</b> 한다는 것.</li>
+      <li><b>국채가 안전한 것은 「자국통화 명목 금액」에 한한다</b>는 것.</li>
+      <li><b>국채의 진짜 위험은 부도가 아니라 인플레이션</b>이라는 것.</li>
+      <li><b>내가 든 상품의 등급 구성을 확인했나?</b> 특히 BBB 비중.</li>
+    </ul>
+    <div class="checkcount" id="btCount">0 / 11 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 채권을 볼 때 물어야 할 질문이 <b>두 개</b>로 늘었습니다. <b>「금리가 움직이면 얼마나 흔들리나」</b>(듀레이션, 02편)와 <b>「빌린 쪽이 갚을 수 있나」</b>(신용등급, 이 편)입니다.</p>
+      <p>그리고 <b>둘은 자주 반대로 움직입니다.</b> 그래서 <b>「채권」이라는 한 단어로 묶어 생각하면 판단이 어긋납니다.</b> <b>국채와 하이일드는 거의 다른 자산</b>입니다.</p>
+      <p><b>지금 미국 장기국채를 들고 있다면</b> — 신용 위험은 사실상 없습니다. 겪고 있는 것은 <b>순수한 금리 위험</b>입니다. 그건 <b>회사가 망해서 사라지는 손실이 아니라 금리에 따라 되돌아올 수 있는 손실</b>이라는 뜻입니다. 다만 <b>되돌아오려면 금리가 내려야</b> 하고, <b>얼마나 걸릴지는 아무도 모릅니다.</b></p>
+      <p><b>다음 편은 04편 — 단기채와 장기채</b>입니다. <b>기준금리를 내려도 장기금리는 안 내려갈 수 있다</b>는 것을 다룹니다. 장기채를 들고 있다면 <b>기준금리 뉴스가 아니라 장기금리를 봐야 하는 이유</b>가 거기 있습니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 채권 03 · 발행자<br>
+    <a href="index.html#bond">← 채권 목록으로</a> · <a href="bond-price.html">02 · 금리와 가격</a> · 04 · 단기채와 장기채 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    부도율·회수율·가산금리는 모두 <b>근사치</b>이며 시기·업종·평가사에 따라 크게 다릅니다. 계산기는 구조를 보기 위한 단순 모형입니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 2 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return (r >= 0 ? '+' : '') + r.toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 1. 사다리 ══════════ */
+var LD = [
+  { h:'국채', color:'#4C6B7A', idx:0,
+    t:'신용 위험이 사실상 없는 기준점',
+    p:'<b>나라가 빌리는 것</b>입니다. 다른 모든 채권의 금리가 <b>「국채 금리 + 얼마」</b>로 정해지기 때문에 <b>기준점</b> 역할을 합니다.<br><br>' +
+      '<b>왜 안전한가</b> — 나라는 <b>세금을 걷을 수 있고</b>, <b>자국 통화로 빌렸다면</b> 원리적으로 <b>발행해서라도</b> 갚을 수 있습니다. 회사가 망하는 것과는 성격이 다릅니다.<br><br>' +
+      '<b>그러나 「안전」의 범위는 좁습니다</b> — <b>약속한 「금액」이 나온다</b>는 것뿐입니다. <b>그 금액의 가치</b>도, <b>중간 가격</b>도 보장하지 않습니다. 4장에서 자세히 봅니다.<br><br>' +
+      '<b>그래서 국채를 들고 있다면</b> — 걱정할 것은 <b>부도가 아니라 금리와 물가</b>입니다. <b>02편의 듀레이션이 전부</b>이고, 이 편의 신용 이야기는 <b>거의 해당되지 않습니다.</b>' },
+  { h:'공사채·은행채', color:'#5F7A52', idx:1,
+    t:'나라와 회사 사이 — 「그럴 것 같다」에 기대는 부분이 있습니다',
+    p:'<b>공사채</b>는 공공기관이, <b>은행채</b>는 은행이 발행합니다. 국채보다 <b>조금 더</b> 주고, 우량 회사채보다는 <b>덜</b> 줍니다.<br><br>' +
+      '<b>왜 국채보다 조금 더 주나</b> — <b>정부가 법적으로 보증한 것은 아니기</b> 때문입니다. 다만 시장은 <b>「어려워지면 정부가 도울 것」</b>이라고 기대합니다. 이 <b>암묵적 기대</b>가 금리 차이를 좁혀줍니다.<br><br>' +
+      '<b>⚠️ 그 기대가 흔들리면</b> — 스프레드가 <b>갑자기</b> 벌어집니다. <b>「보증이 아니라 기대였다」</b>는 것이 드러나는 순간이 있습니다.<br><br>' +
+      '<b>은행채의 특수성</b> — 은행은 <b>남의 돈으로 굴리는 사업</b>이라 위기 때 <b>연쇄적으로</b> 흔들립니다. 그리고 은행이 발행한 것 중에도 <b>후순위·신종자본증권</b>은 성격이 완전히 다릅니다(마지막 버튼).' },
+  { h:'우량 회사채', color:'#7A5C3A', idx:2,
+    t:'투자등급 — 부도는 드물지만 가격은 흔들립니다',
+    p:'<b>AAA에서 BBB까지</b>를 <b>투자등급</b>이라고 합니다. 기관투자자가 <b>규정상 담을 수 있는 범위</b>이기도 합니다.<br><br>' +
+      '<b>부도율은 실제로 낮습니다</b> — A등급이면 연 <b>0.1% 안팎</b>, BBB도 <b>0.2~0.4%</b> 수준입니다(근사치).<br><br>' +
+      '<b>그런데 위험이 없다는 뜻은 아닙니다.</b> 실제로 손실이 나는 경로는 <b>부도가 아니라 세 가지</b>입니다.<br>' +
+      '· <b>금리 상승</b> — 국채와 똑같이 겪습니다(02편)<br>· <b>스프레드 확대</b> — 경기가 나빠지면 벌어집니다(3장)<br>· <b>등급 강등</b> — 특히 BBB에서 BB로 떨어질 때(「자세히 보기」)<br><br>' +
+      '<b>그래서 우량 회사채는 「국채 + 신용」</b>입니다. 두 위험을 <b>함께</b> 집니다. 대신 <b>가산금리</b>를 받습니다. <b>2장에서 그 거래가 남는 장사인지</b> 계산합니다.' },
+  { h:'하이일드', color:'#8E4B3A', idx:3,
+    t:'이름만 채권이고 성격은 주식에 가깝습니다',
+    p:'<b>BB 이하</b>를 <b>투기등급</b> 또는 <b>하이일드</b>라고 부릅니다. <b>「고수익」</b>이라는 이름이 붙지만, 정확히는 <b>「고위험이라 이자를 많이 줘야 하는」</b> 채권입니다.<br><br>' +
+      '<b>가장 중요한 성질</b> — <b>주식과 비슷하게 움직입니다.</b> 경기가 좋으면 같이 오르고, 나쁘면 같이 떨어집니다. <b>「주식 위험을 줄이려고」 하이일드를 섞는 것은 목적에 맞지 않습니다.</b><br><br>' +
+      '<b>부도율이 경기에 극단적으로 민감합니다</b> — 평시에는 <b>1~4%</b>지만 불황에는 <b>10%를 넘기도</b> 합니다(근사치). <b>평균으로 계산한 안전 마진이 정작 필요할 때 사라집니다.</b><br><br>' +
+      '<b>그리고 유동성이 나쁩니다</b> — 팔고 싶을 때 <b>사려는 사람이 사라집니다.</b> 위기 때 <b>제값에 못 파는 것</b>이 실제 손실의 큰 부분입니다.<br><br>' +
+      '<b>2장에서 CCC를 골라보세요.</b> 가산금리가 <b>12%p</b>나 되는데 기대손실도 <b>12%</b>여서 <b>남는 게 거의 없는</b> 상태가 나옵니다. <b>높은 이자가 공짜가 아니라는 것</b>이 숫자로 보입니다.' },
+  { h:'후순위·신종자본', color:'#7A5C9E', idx:4,
+    t:'채권처럼 보이지만 청산 순위가 뒤에 있습니다',
+    p:'<b>같은 회사가 발행해도 순위가 다른</b> 채권들이 있습니다. <b>후순위채</b>, <b>신종자본증권(영구채)</b>, <b>조건부자본증권</b> 등입니다.<br><br>' +
+      '<b>공통점</b> — <b>일반 채권보다 뒤에서</b> 받습니다. 01편의 청산 순위 그림에서 <b>주주 쪽으로 한 칸 가까이</b> 있는 자리입니다. 그래서 <b>이자를 더 줍니다.</b><br><br>' +
+      '<b>⚠️ 반드시 확인할 조항들</b><br>' +
+      '· <b>만기가 사실상 없는 경우</b>(영구채) — 발행자가 <b>안 갚아도 되는</b> 구조입니다.<br>' +
+      '· <b>조기상환은 「권리」이지 「의무」가 아닙니다</b> — <b>「5년 뒤 콜」</b>을 만기처럼 생각했다가 <b>안 갚으면</b> 돈이 계속 묶입니다.<br>' +
+      '· <b>이자 지급을 미룰 수 있는</b> 조항이 있는 경우가 있습니다.<br>' +
+      '· <b>일정 조건에서 상각되거나 주식으로 전환</b>되는 경우가 있습니다 — 그러면 <b>원금이 사라질 수</b> 있습니다.<br><br>' +
+      '<b>실제로 벌어진 일</b> — 은행이 위기에 빠졌을 때 <b>일부 조건부자본증권이 전액 상각</b>된 사례가 있습니다. <b>주주보다 먼저 없어진</b> 경우도 있었습니다. <b>「채권이니까 주식보다 안전하다」가 성립하지 않는</b> 대표적인 예입니다.<br><br>' +
+      '<b>정리</b> — <b>「금리가 유난히 높은 채권」</b>을 만나면 <b>등급뿐 아니라 순위와 조항</b>을 확인해야 합니다. 이자가 높은 데는 <b>반드시 이유가 있습니다.</b>' }
+];
+function ldScene(idx){
+  var g = '';
+  var X0 = 60, W = 480, ROWH = 30;
+  var rows = [
+    { n:'국채', sp:0.0, c:'#4C6B7A' },
+    { n:'공사채·은행채', sp:0.4, c:'#5F7A52' },
+    { n:'우량 회사채 (A~BBB)', sp:1.3, c:'#7A5C3A' },
+    { n:'하이일드 (BB~B)', sp:4.5, c:'#8E4B3A' },
+    { n:'후순위·신종자본', sp:6.0, c:'#7A5C9E' }
+  ];
+  var maxSp = 7;
+  g += '<text class="axt" x="' + X0 + '" y="20">국채 대비 가산금리 (개념도 · 근사치)</text>';
+  rows.forEach(function(r, i){
+    var y = 30 + i * ROWH;
+    var on = (i === idx);
+    var w = Math.max(3, r.sp / maxSp * W);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="20" rx="2" fill="' + r.c +
+         '" fill-opacity="' + (on ? '.5' : '.16') + '" stroke="' + r.c + '" stroke-width="' + (on ? '1.7' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 14) + '"' +
+         (on ? ' fill="' + r.c + '"' : '') + '>' + r.n + (r.sp > 0 ? '  +' + r.sp.toFixed(1) + '%p' : '  기준') + '</text>';
+  });
+  var by = 30 + rows.length * ROWH + 8;
+  g += '<line x1="' + X0 + '" y1="' + by + '" x2="' + (X0 + W) + '" y2="' + by + '" stroke="#D9D2C0" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (by + 26) + '">위로 갈수록 안전하고 이자가 적고, 아래로 갈수록 위험하고 이자가 많습니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (by + 46) + '">' +
+       ['국채는 신용 위험이 사실상 없어 금리 위험만 남습니다.',
+        '정부 지원은 「보증」이 아니라 「기대」입니다 — 흔들릴 수 있습니다.',
+        '국채의 금리 위험에 신용 위험이 더해집니다.',
+        '경기에 따라 스프레드가 몇 배씩 벌어집니다 — 주식과 비슷하게 움직입니다.',
+        '청산 순위가 뒤에 있고 조항이 복잡합니다 — 원금이 사라질 수도 있습니다.'][idx] + '</text>';
+  document.getElementById('ldScene').innerHTML = g;
+}
+bindBtnRow('#ldBtns', function(v){
+  ldScene(+v);
+  document.getElementById('ldVerdict').querySelector('.vh').textContent = LD[+v].h;
+  verdict('ldVerdict', LD[+v].color, LD[+v].t, LD[+v].p);
+});
+
+/* ══════════ 2. 기대손실 ══════════ */
+var GRADES = [
+  { n:'AAA', pd:2,   sp:35,  c:'#4C6B7A' },
+  { n:'AA',  pd:5,   sp:60,  c:'#4C6B7A' },
+  { n:'A',   pd:10,  sp:90,  c:'#5F7A52' },
+  { n:'BBB', pd:30,  sp:150, c:'#7A5C3A' },
+  { n:'BB',  pd:120, sp:300, c:'#8E4B3A' },
+  { n:'B',   pd:350, sp:550, c:'#8E4B3A' },
+  { n:'CCC', pd:2000, sp:1200, c:'#8E4B3A' }
+];
+function elDraw(){
+  var pd = +document.getElementById('elPd').value / 100;
+  var sp = +document.getElementById('elSp').value / 100;
+  var rr = +document.getElementById('elRr').value / 100;
+  document.getElementById('elPdOut').textContent = num(pd, 2) + '%';
+  document.getElementById('elSpOut').textContent = num(sp, 2) + '%p';
+  document.getElementById('elRrOut').textContent = (rr * 100).toFixed(0) + '%';
+
+  var el = pd * (1 - rr);
+  var net = sp - el;
+  var be = (1 - rr) > 0.0001 ? sp / (1 - rr) : Infinity;
+
+  steps('elSteps', [
+    { k:'연 부도율', v:num(pd, 2) + '%' },
+    { k:'부도 시 회수율', v:(rr * 100).toFixed(0) + '%' },
+    { k:'기대손실 = 부도율 × (1 − 회수율)', v:num(el, 2) + '%' },
+    { k:'국채 대비 가산금리', v:num(sp, 2) + '%p' },
+    { k:'순 초과수익 = 가산금리 − 기대손실', v:sgn(net, 2) + '%p', total:true }
+  ]);
+
+  document.getElementById('elBoth').textContent = num(el, 2) + '% / ' + num(sp, 2) + '%p';
+  document.getElementById('elBe').textContent = be === Infinity ? '—' : num(be, 2) + '%';
+  document.getElementById('elBe').style.color = be > pd ? 'var(--pos)' : 'var(--neg)';
+
+  var X0 = 150, W = 380;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">더 받는 이자와 예상되는 손실 (%p)</text>';
+  var maxV = Math.max(sp, el, 0.2);
+  [{ n:'가산금리 (받는 것)', v:sp, c:'#5F7A52' },
+   { n:'기대손실 (잃을 것)', v:el, c:'#8E4B3A' }].forEach(function(b, i){
+    var y = 32 + i * 34;
+    var w = Math.max(1, b.v / maxV * W);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="22" rx="2" fill="' + b.c +
+         '" fill-opacity=".42" stroke="' + b.c + '" stroke-width="1.3"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 15) + '" text-anchor="end">' + b.n + '</text>';
+    g += '<text class="lblb" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 16) + '" fill="' + b.c + '">' +
+         num(b.v, 2) + '</text>';
+  });
+  var ny = 32 + 2 * 34 + 8;
+  var nw = Math.max(1, Math.abs(net) / maxV * W);
+  var nc = net >= 0 ? '#5F7A52' : '#8E4B3A';
+  g += '<rect x="' + X0 + '" y="' + ny + '" width="' + nw.toFixed(1) + '" height="18" rx="2" fill="' + nc +
+       '" fill-opacity=".62" stroke="' + nc + '" stroke-width="1.5"/>';
+  g += '<text class="lblb" x="' + (X0 - 10) + '" y="' + (ny + 13) + '" text-anchor="end" fill="' + nc + '">순 초과수익</text>';
+  g += '<text class="lblb" x="' + (X0 + nw + 8).toFixed(1) + '" y="' + (ny + 13) + '" fill="' + nc + '">' + sgn(net, 2) + '%p</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (ny + 44) + '">부도율이 ' + (be === Infinity ? '—' : num(be, 2)) +
+       '%를 넘으면 가산금리를 전부 잃습니다.</text>';
+  document.getElementById('elScene').innerHTML = g;
+
+  if(net < -0.001){
+    verdict('elVerdict', '#8E4B3A',
+      '기대손실이 가산금리보다 큽니다 — ' + sgn(net, 2) + '%p',
+      '이 조건에서는 <b>더 받는 이자(' + num(sp, 2) + '%p)보다 예상되는 손실(' + num(el, 2) +
+      '%)이 큽니다.</b> <b>평균적으로 손해</b>인 거래입니다.<br><br>' +
+      '<b>이런 일이 실제로 일어나나</b> — 일어납니다. <b>경기가 좋을 때 스프레드가 과도하게 좁혀지면</b> 위험 대비 보상이 사라집니다. 그런데 그때가 <b>「하이일드가 잘 나가던 시기」</b>라 오히려 돈이 몰립니다.<br><br>' +
+      '<b>그리고 CCC 등급을 골라보면</b> 근사값만으로도 <b>순 초과수익이 거의 0</b>이 됩니다. <b>이자 12%p를 더 받아도 부도로 12%를 잃는</b> 구조입니다.<br><br>' +
+      '<b>여기서 배울 것</b> — <b>「이자가 높다」는 것만으로 좋은 투자가 되지 않습니다.</b> 반드시 <b>부도율·회수율과 함께</b> 봐야 합니다.');
+  } else if(Math.abs(net) < 0.05){
+    verdict('elVerdict', '#8E4B3A',
+      '정확히 본전입니다 — 더 받는 이자가 부도 손실과 같습니다',
+      '가산금리 <b>' + num(sp, 2) + '%p</b>와 기대손실 <b>' + num(el, 2) + '%</b>가 <b>거의 같습니다.</b> ' +
+      '<b>이자를 더 받는 만큼 정확히 부도로 잃는</b> 구조입니다.<br><br>' +
+      '<b>CCC 등급을 골랐다면 이것이 바로 그 상태</b>입니다. <b>12%p나 더 받는데 남는 것이 0</b>입니다. ' +
+      '<b>「이자가 높다」가 왜 그 자체로는 아무 의미가 없는지</b>를 가장 분명하게 보여주는 지점입니다.<br><br>' +
+      '<b>그런데 실제로는 본전보다 나쁩니다.</b> 이 계산은 <b>평균</b>을 쓰는데, 하이일드의 실제 부도는 <b>불황에 몰려서</b> 옵니다. ' +
+      '그때는 <b>회수율도 함께 떨어지고</b>, <b>팔고 싶어도 사려는 사람이 없습니다.</b><br><br>' +
+      '<b>그리고 부도가 나기 전에 가격이 먼저 무너집니다.</b> 대부분의 투자자는 <b>부도를 겪어서가 아니라 떨어지는 중에 팔아서</b> 잃습니다.<br><br>' +
+      '<b>회수율을 20%로 내려보세요.</b> 본전이던 것이 <b>확실한 마이너스</b>로 바뀝니다.');
+  } else if(pd <= 0.06){
+    verdict('elVerdict', '#4C6B7A',
+      '부도 위험이 거의 없어 가산금리가 그대로 남습니다',
+      '부도율이 <b>' + num(pd, 2) + '%</b>로 매우 낮아 기대손실이 <b>' + num(el, 2) +
+      '%</b>에 그칩니다. 가산금리 <b>' + num(sp, 2) + '%p</b>가 <b>거의 그대로</b> 초과수익이 됩니다.<br><br>' +
+      '<b>다만 여기서 오해하기 쉽습니다.</b> 최우량 등급이라도 <b>가격이 안 흔들리는 것은 아닙니다.</b><br><br>' +
+      '· <b>금리가 오르면</b> 국채와 <b>똑같이</b> 떨어집니다(02편). <b>신용이 좋다고 금리 위험이 줄지는 않습니다.</b><br>' +
+      '· <b>스프레드가 벌어지면</b> 그만큼 더 떨어집니다(3장).<br><br>' +
+      '<b>그래서 최우량 회사채의 실제 위험은 신용이 아니라 금리</b>입니다. <b>듀레이션부터 확인</b>하세요.<br><br>' +
+      '<b>등급 선택을 BB나 CCC로 바꿔보세요.</b> 계산이 어떻게 달라지는지 보입니다.');
+  } else if(net < 1.0){
+    verdict('elVerdict', '#7A5C3A',
+      '남기는 하지만 여유가 얇습니다 — ' + sgn(net, 2) + '%p',
+      '가산금리 <b>' + num(sp, 2) + '%p</b>에서 기대손실 <b>' + num(el, 2) + '%</b>를 빼면 <b>' + sgn(net, 2) +
+      '%p</b>가 남습니다. <b>플러스지만 안전 마진이 얇습니다.</b><br><br>' +
+      '<b>손익분기 부도율은 ' + num(be, 2) + '%</b>입니다. 실제 부도율이 여기를 넘으면 <b>전부 잃습니다.</b> 지금 가정한 <b>' +
+      num(pd, 2) + '%</b>와의 거리가 <b>' + num(be - pd, 2) + '%p</b>뿐입니다.<br><br>' +
+      '<b>⚠️ 그런데 이 여유는 불황에 사라집니다.</b> 부도는 <b>평균대로 오지 않고 한꺼번에</b> 옵니다. 게다가 <b>회수율도 같이 떨어집니다</b> — 담보 자산 값이 함께 내려가기 때문입니다.<br><br>' +
+      '<b>확인해보세요</b> — <b>회수율 슬라이더를 20%로</b> 내려보면 손익분기 부도율이 얼마나 낮아지는지 보입니다. <b>불황에는 두 변수가 동시에 나빠집니다.</b>');
+  } else {
+    verdict('elVerdict', '#5F7A52',
+      '가산금리가 기대손실보다 ' + num(net, 2) + '%p 큽니다',
+      '평균적으로는 <b>남는</b> 거래입니다. 가산금리 <b>' + num(sp, 2) + '%p</b> vs 기대손실 <b>' + num(el, 2) + '%</b>입니다.<br><br>' +
+      '<b>손익분기 부도율은 ' + num(be, 2) + '%</b>로, 가정한 부도율 <b>' + num(pd, 2) + '%</b>보다 <b>' +
+      num(be - pd, 2) + '%p</b> 높습니다. <b>그만큼이 안전 마진</b>입니다.<br><br>' +
+      '<b>그런데 이 계산에는 큰 구멍이 셋 있습니다</b><br>' +
+      '· <b>부도는 평균대로 오지 않습니다.</b> 평시에 낮다가 <b>불황에 몰려서</b> 옵니다. 여러 종목이 <b>동시에</b> 터집니다.<br>' +
+      '· <b>부도 전에 가격이 먼저 떨어집니다.</b> 실제 손실의 대부분은 부도가 아니라 <b>떨어지는 중에 파는 것</b>입니다.<br>' +
+      '· <b>회수율도 불황에 함께 떨어집니다.</b> <b>회수율을 20%로 내려보세요.</b><br><br>' +
+      '<b>그래서 이 숫자는 「평상시의 기대값」</b>일 뿐입니다. <b>분산과 버틸 수 있는 크기</b>가 계산보다 중요합니다.');
+  }
+}
+document.getElementById('elGrade').addEventListener('change', function(){
+  var g = GRADES[+this.value];
+  document.getElementById('elPd').value = g.pd;
+  document.getElementById('elSp').value = g.sp;
+  elDraw();
+});
+['elPd', 'elSp', 'elRr'].forEach(function(id){ document.getElementById(id).addEventListener('input', elDraw); });
+
+/* ══════════ 3. 스프레드 시나리오 ══════════ */
+function scDraw(){
+  var dGov = +document.getElementById('scGov').value / 10;
+  var dSp = +document.getElementById('scSp').value / 10;
+  var dur = +document.getElementById('scDur').value;
+  var gdur = +document.getElementById('scGovDur').value;
+  document.getElementById('scGovOut').textContent = dGov === 0 ? '변화 없음' : sgn(dGov, 1) + '%p';
+  document.getElementById('scSpOut').textContent = dSp === 0 ? '변화 없음' : sgn(dSp, 1) + '%p';
+  document.getElementById('scDurOut').textContent = dur;
+  document.getElementById('scGovDurOut').textContent = gdur;
+
+  var govChg = -gdur * dGov;
+  var corpGovPart = -dur * dGov;
+  var corpSpPart = -dur * dSp;
+  var corpChg = corpGovPart + corpSpPart;
+  var gap = govChg - corpChg;
+  var bigMove = Math.abs(govChg) > 40 || Math.abs(corpChg) > 40;
+  var caveat = bigMove
+    ? '<br><br><b>⚠️ 지금은 금리 변화가 너무 커서 이 근사가 깨집니다.</b> <b>듀레이션 근사(가격 ≈ −듀레이션 × 금리변화)는 변화가 작을 때만</b> 맞습니다. ' +
+      '큰 변화에서는 <b>손실을 과대평가하고 이익을 과소평가</b>합니다 — 02편의 <b>볼록성</b> 때문입니다. ' +
+      '그리고 <b>가격은 0 아래로 내려갈 수 없으므로 −100%보다 큰 하락은 나올 수 없습니다.</b> ' +
+      '<b>슬라이더를 ±1~2%p 범위로</b> 되돌리면 계산이 현실적인 범위로 들어옵니다.'
+    : '';
+
+  steps('scSteps', [
+    { k:'국채 (듀레이션 ' + gdur + ') — 국채금리 ' + sgn(dGov, 1) + '%p', v:sgn(govChg, 1) + '%' },
+    { k:'회사채 — 국채금리 변화분', v:sgn(corpGovPart, 1) + '%' },
+    { k:'회사채 — 스프레드 변화분', v:sgn(corpSpPart, 1) + '%' },
+    { k:'회사채 (듀레이션 ' + dur + ') 합계', v:sgn(corpChg, 1) + '%' },
+    { k:'국채 − 회사채', v:sgn(gap, 1) + '%p', total:true }
+  ]);
+
+  document.getElementById('scBoth').textContent = sgn(govChg, 1) + '% / ' + sgn(corpChg, 1) + '%';
+  document.getElementById('scGap').textContent = sgn(gap, 1) + '%p';
+  document.getElementById('scGap').style.color = gap > 0.05 ? 'var(--pos)' : (gap < -0.05 ? 'var(--neg)' : '');
+
+  var X0 = 150, W = 360;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">같은 사건에서 각각 어떻게 되나 (%)</text>';
+  var maxAbs = Math.max(1, Math.abs(govChg), Math.abs(corpChg), Math.abs(corpGovPart), Math.abs(corpSpPart));
+  var ZERO = X0 + W / 2;
+  var scale = (W / 2 - 40) / maxAbs;
+  function bar(y, v, c, label, on){
+    var w = Math.abs(v) * scale;
+    var x = v >= 0 ? ZERO : ZERO - w;
+    g += '<rect x="' + x.toFixed(1) + '" y="' + y + '" width="' + Math.max(0.6, w).toFixed(1) +
+         '" height="19" rx="1.5" fill="' + c + '" fill-opacity="' + (on ? '.5' : '.2') + '" stroke="' + c +
+         '" stroke-width="' + (on ? '1.6' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end"' +
+         (on ? ' fill="' + c + '"' : '') + '>' + label + '</text>';
+    var tx = v >= 0 ? (x + w + 6) : (x - 6);
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + Math.max(X0 + 2, Math.min(tx, X0 + W - 2)).toFixed(1) +
+         '" y="' + (y + 14) + '" text-anchor="' + (v >= 0 ? 'start' : 'end') + '"' + (on ? ' fill="' + c + '"' : '') +
+         '>' + sgn(v, 1) + '%</text>';
+  }
+  bar(30, govChg, '#4C6B7A', '국채', true);
+  bar(58, corpGovPart, '#8A8474', '회사채 · 금리분', false);
+  bar(86, corpSpPart, '#8A8474', '회사채 · 스프레드분', false);
+  bar(118, corpChg, '#8E4B3A', '회사채 합계', true);
+  g += '<line x1="' + ZERO.toFixed(1) + '" y1="24" x2="' + ZERO.toFixed(1) + '" y2="143" stroke="#8A8474" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="168">회사채가 받는 금리는 「국채금리 + 스프레드」이므로 둘 다 가격에 반영됩니다.</text>';
+  document.getElementById('scScene').innerHTML = g;
+
+  if(dGov === 0 && dSp === 0){
+    verdict('scVerdict', '#5B5648',
+      '두 슬라이더를 움직여보세요',
+      '<b>침체 시나리오</b>를 재현하려면 <b>국채금리는 마이너스로, 스프레드는 플러스로</b> 놓아보세요. 기본값이 그 상태입니다.<br><br>' +
+      '<b>회복 시나리오</b>는 반대입니다 — <b>국채금리 플러스, 스프레드 마이너스.</b> 이때는 <b>회사채가 국채를 이깁니다.</b><br><br>' +
+      '<b>두 힘이 따로 움직인다는 것</b>이 이 장의 전부입니다.' + caveat);
+  } else if(govChg > 0.05 && corpChg < -0.05){
+    verdict('scVerdict', '#8E4B3A',
+      '국채는 ' + sgn(govChg, 1) + '%, 회사채는 ' + sgn(corpChg, 1) + '% — 정반대입니다',
+      '<b>같은 사건인데 결과가 반대</b>입니다. 이것이 이 장에서 보여주려는 장면입니다.<br><br>' +
+      '<b>왜 이렇게 되나</b> — 회사채는 <b>두 힘을 동시에</b> 받습니다.<br>' +
+      '· <b>국채금리 ' + sgn(dGov, 1) + '%p</b> → 가격 <b>' + sgn(corpGovPart, 1) + '%</b> (도움이 됨)<br>' +
+      '· <b>스프레드 ' + sgn(dSp, 1) + '%p</b> → 가격 <b>' + sgn(corpSpPart, 1) + '%</b> (해가 됨)<br><br>' +
+      '<b>스프레드 쪽이 더 커서</b> 합계가 <b>' + sgn(corpChg, 1) + '%</b>가 됩니다. 반면 국채는 <b>스프레드가 없어</b> 금리 하락만 받아 <b>' +
+      sgn(govChg, 1) + '%</b>입니다.<br><br>' +
+      '<b>여기서 나오는 결론</b> — <b>「주식이 떨어질 때 방어해줄 자산」이 목적이라면 국채</b>여야 합니다. 회사채, 특히 하이일드는 <b>주식이 떨어질 때 같이 떨어집니다.</b><br><br>' +
+      '<b>다만 조건이 있습니다</b> — 이 그림은 <b>「경기 걱정으로 금리가 내려갈 때」</b>입니다. <b>인플레이션 때문에 금리가 오르는 국면</b>에서는 <b>국채도 같이 떨어집니다</b>(2022년). 「자세히 보기」에서 다룹니다.' + caveat);
+  } else if(dSp < -0.05 && corpChg > govChg + 0.05){
+    verdict('scVerdict', '#5F7A52',
+      '스프레드가 좁혀져 회사채가 국채를 이깁니다',
+      '스프레드가 <b>' + sgn(dSp, 1) + '%p</b> 좁혀지면 회사채는 <b>' + sgn(corpSpPart, 1) +
+      '%</b>의 이득을 추가로 얻습니다. 합계 <b>' + sgn(corpChg, 1) + '%</b>로 국채(<b>' + sgn(govChg, 1) + '%</b>)를 앞섭니다.<br><br>' +
+      '<b>이런 국면은 언제 오나</b> — <b>침체 우려가 걷히고 경기가 회복될 때</b>입니다. 부도 걱정이 줄어 <b>「더 달라던 이자」가 줄어듭니다.</b><br><br>' +
+      '<b>그래서 회사채·하이일드가 가장 크게 오르는 시점은 「경기가 좋을 때」가 아니라 「나빴다가 돌아설 때」</b>입니다. 스프레드가 <b>이미 벌어져 있어야</b> 좁혀질 여지가 있기 때문입니다.<br><br>' +
+      '<b>다만 그 시점을 맞히는 것이 어렵습니다.</b> 스프레드가 벌어져 있을 때는 <b>보통 무서워서 못 삽니다.</b> 그리고 <b>더 벌어질 수도</b> 있습니다.<br><br>' +
+      '<b>여기서도 결론은 같습니다</b> — <b>방향은 알아도 시점은 모릅니다.</b> 06편의 주제입니다.' + caveat);
+  } else if(dGov > 0.05 && dSp > 0.05){
+    verdict('scVerdict', '#8E4B3A',
+      '둘 다 오르는 최악의 조합 — 국채 ' + sgn(govChg, 1) + '%, 회사채 ' + sgn(corpChg, 1) + '%',
+      '<b>국채금리도 오르고 스프레드도 벌어지는</b> 상황입니다. <b>모든 채권이 떨어집니다.</b><br><br>' +
+      '<b>언제 이런 일이 생기나</b> — <b>인플레이션과 신용 불안이 함께</b> 오는 경우입니다. 물가 때문에 금리를 올려야 하는데 <b>그 금리 인상이 기업을 압박</b>하는 국면입니다.<br><br>' +
+      '<b>이때는 채권 안에서 도망갈 곳이 거의 없습니다.</b> 그나마 <b>만기가 짧을수록</b> 덜 맞습니다 — <b>회사채 듀레이션 슬라이더를 1~2로</b> 내려보세요.<br><br>' +
+      '<b>이것이 「채권도 안전하지 않다」는 말의 실제 모습</b>입니다. 그리고 <b>2022년이 이 국면에 가까웠습니다.</b><br><br>' +
+      '<b>기억할 것</b> — <b>채권에서 「무조건 안전한 자리」는 없습니다.</b> 있다면 <b>만기가 아주 짧은 것</b> 정도입니다. 그건 이자를 거의 못 받는다는 뜻이기도 합니다.' + caveat);
+  } else {
+    verdict('scVerdict', '#7A5C3A',
+      '국채 ' + sgn(govChg, 1) + '%, 회사채 ' + sgn(corpChg, 1) + '%',
+      '회사채의 가격 변화는 <b>두 조각의 합</b>입니다 — <b>국채금리분 ' + sgn(corpGovPart, 1) + '%</b> + <b>스프레드분 ' +
+      sgn(corpSpPart, 1) + '%</b> = <b>' + sgn(corpChg, 1) + '%</b>.<br><br>' +
+      '<b>이 분해가 이 장의 핵심</b>입니다. 회사채를 볼 때는 <b>「금리가 어떻게 될까」와 「스프레드가 어떻게 될까」를 따로</b> 물어야 합니다. 하나만 맞혀도 <b>다른 하나가 반대로 가면</b> 결과가 뒤집힙니다.<br><br>' +
+      '<b>기본값(국채 −1%p, 스프레드 +2%p)으로 되돌려보세요.</b> <b>국채는 오르고 회사채는 떨어지는</b> 침체 국면이 나옵니다.<br><br>' +
+      '<b>그리고 국채 듀레이션을 회사채와 같게 맞춰보세요.</b> 그러면 <b>차이가 순수하게 스프레드 때문</b>이라는 것이 분명해집니다.' + caveat);
+  }
+}
+['scGov', 'scSp', 'scDur', 'scGovDur'].forEach(function(id){ document.getElementById(id).addEventListener('input', scDraw); });
+
+/* ══════════ 4. 국채 ══════════ */
+var SV = [
+  { h:'자국통화 국채', color:'#5F7A52',
+    t:'명목 부도는 거의 없습니다 — 「명목」이 핵심입니다',
+    p:'<b>자기 나라 돈으로 빌린 국채</b>는 원리적으로 <b>발행해서라도 갚을 수</b> 있습니다. 그래서 <b>명목상의 부도</b>는 매우 드뭅니다.<br><br>' +
+      '<b>미국 국채, 한국 국고채, 일본 국채</b>가 여기 해당합니다. 그래서 이들은 <b>「무위험 금리」의 기준</b>으로 쓰입니다.<br><br>' +
+      '<b>그런데 「무위험」의 범위가 아주 좁습니다.</b> 정확히는 <b>「약속한 금액이 그 통화로 나온다」</b>는 것뿐입니다.<br><br>' +
+      '· <b>그 금액의 구매력</b>은 보장하지 않습니다 (네 번째 버튼)<br>· <b>만기 전 가격</b>은 보장하지 않습니다 (02편)<br>· <b>다른 통화로 환산한 가치</b>는 보장하지 않습니다 (08편)<br><br>' +
+      '<b>그래서 이렇게 정리하면 정확합니다</b> — <b>「국채는 신용 위험이 거의 없는 자산이지, 손실 위험이 없는 자산이 아니다.」</b> 지금 미국 장기국채에서 겪고 있는 손실이 정확히 그 차이입니다.' },
+  { h:'외화 표시 국채', color:'#8E4B3A',
+    t:'여기서는 나라도 부도가 납니다',
+    p:'<b>다른 나라 돈으로 빌린 국채</b>는 이야기가 완전히 다릅니다. <b>그 통화를 찍을 수 없기</b> 때문입니다.<br><br>' +
+      '<b>그래서 실제로 부도가 납니다.</b> 신흥국이 달러로 빌린 뒤 <b>달러가 부족해져 못 갚는</b> 사례가 역사적으로 반복되어 왔습니다.<br><br>' +
+      '<b>악순환의 구조</b> — 위기가 오면 <b>자국 통화 가치가 떨어집니다.</b> 그러면 같은 달러 빚을 갚는 데 <b>훨씬 많은 자국 통화</b>가 필요해집니다. <b>부담이 저절로 커집니다.</b><br><br>' +
+      '<b>실전에서의 의미</b> — <b>「신흥국 국채」라고 하면 두 종류</b>가 있습니다. <b>현지 통화 표시</b>와 <b>달러 표시</b>입니다. <b>위험의 성격이 완전히 다릅니다.</b> 상품 이름만 보고 판단하면 안 됩니다.<br><br>' +
+      '<b>「국채니까 안전하다」가 가장 위험하게 적용되는 곳</b>이 여기입니다. 이자가 높은 데는 이유가 있습니다. <b>08편</b>에서 다시 다룹니다.' },
+  { h:'유로존의 특수성', color:'#7A5C9E',
+    t:'자기 통화가 아닌 나라들',
+    p:'<b>유로를 쓰는 나라들</b>은 특이한 위치에 있습니다. <b>유로는 개별 국가가 발행할 수 없습니다.</b> 유럽중앙은행이 발행합니다.<br><br>' +
+      '<b>그래서 유로존 국가의 국채는 「자국통화 국채」의 성질을 온전히 갖지 못합니다.</b> 어떤 면에서는 <b>외화 표시 국채에 가깝습니다.</b><br><br>' +
+      '<b>실제로 드러난 적이 있습니다</b> — <b>유럽 재정위기</b> 때 일부 국가의 국채 금리가 <b>급등하고 스프레드가 크게 벌어졌습니다.</b> <b>같은 유로 표시 국채인데 나라마다 금리가 크게 달라진</b> 것입니다.<br><br>' +
+      '<b>여기서 배울 것</b> — <b>「국채」라는 단어 하나로 묶으면 안 됩니다.</b> 물어야 할 것은 <b>「이 나라가 이 통화를 스스로 발행할 수 있는가」</b>입니다. 그 답에 따라 <b>신용 위험의 성격이 완전히 달라집니다.</b><br><br>' +
+      '<b>그리고 이건 시장이 이미 알고 있습니다</b> — 같은 유로 표시라도 <b>나라별 금리 차이</b>가 그 판단을 반영하고 있습니다.' },
+  { h:'진짜 위험은 인플레이션', color:'#8E6B3A',
+    t:'국채 보유자가 실제로 손해를 보는 가장 흔한 경로',
+    p:'국채가 <b>돈을 안 갚아서</b> 손해를 보는 일은 드뭅니다. 그런데 <b>실질적으로</b> 손해를 보는 일은 <b>흔합니다.</b><br><br>' +
+      '<b>메커니즘</b> — 채권은 <b>받을 금액이 고정</b>입니다. 물가가 오르면 <b>그 금액으로 살 수 있는 것이 줄어듭니다.</b> 나라 입장에서는 <b>같은 돈으로 갚았는데 실질 부담은 줄어든</b> 것입니다.<br><br>' +
+      '<b>그래서 이런 표현이 있습니다</b> — <b>「인플레이션은 채권 보유자에게서 채무자에게로 가는 조용한 이전」</b>입니다. 부도 없이도 <b>가치가 옮겨갑니다.</b><br><br>' +
+      '<b>계산으로 보면</b> — 30년 국채를 연 4%에 샀는데 그 기간 물가가 <b>연 5%</b>씩 오르면, <b>명목으로는 이익이지만 실질로는 매년 1%씩 손해</b>입니다. 그리고 <b>만기가 길수록 이 노출이 큽니다.</b><br><br>' +
+      '<b>그래서 장기국채는 「인플레이션에 가장 취약한 자산」</b>입니다. 2022년의 하락이 <b>바로 그 위험이 현실화된 것</b>입니다 — 물가가 오르자 금리가 오르고, 금리가 오르자 가격이 떨어졌습니다.<br><br>' +
+      '<b>대응 수단</b> — <b>물가연동국채</b>가 있습니다. 원금이 물가에 따라 조정되어 <b>실질 가치를 지키도록</b> 설계된 채권입니다. 다만 <b>금리 위험은 그대로</b> 있어서, <b>물가연동 장기채도 금리가 오르면 떨어집니다.</b> <b>인플레이션 방어와 금리 방어는 다른 문제</b>입니다.' }
+];
+bindBtnRow('#svBtns', function(v){
+  document.getElementById('svVerdict').querySelector('.vh').textContent = SV[+v].h;
+  verdict('svVerdict', SV[+v].color, SV[+v].t, SV[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#btCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#btCheck li.done').length;
+      document.getElementById('btCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 국채를 들고 있다면 아홉째와 열째가 핵심입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#ldBtns button[data-v="0"]').click();
+elDraw();
+scDraw();
+document.querySelector('#svBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
