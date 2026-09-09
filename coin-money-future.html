@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>국가와 스테이블코인 — 돈을 둘러싼 싸움</title>
+<meta name="description" content="미국은 왜 달러 스테이블코인을 허용했고, 각국은 왜 저마다 디지털 화폐를 준비할까. 돈의 계층, 국채 수요, 은행 탈중개화, 통화주권을 시뮬레이터로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --cb:#3A5A8E;
+    --bank:#4C7A6D;
+    --priv:#9E7A2E;
+    --cbdc:#7A5C9E;
+    --bad:#8E4B3A;
+    --neutral:#5B5648;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:660px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  /* 국가 카드 */
+  .flagrow{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px;}
+  .flagrow button{
+    font-family:'IBM Plex Sans KR',sans-serif;
+    font-size:13.5px;
+    padding:8px 15px;
+    border:1px solid var(--rule);
+    background:var(--card);
+    color:var(--ink-soft);
+    border-radius:99px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .flagrow button:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .flagrow button.on{background:var(--cb);border-color:var(--cb);color:#fff;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">코인 07 · 화폐의 미래 · 투자 공부 노트</div>
+    <h1>국가와 스테이블코인<br>— 돈을 둘러싼 싸움</h1>
+    <p class="lede">코인은 원래 <b>「국가의 돈을 믿지 말자」</b>에서 출발했습니다. 그런데 지금 가장 많이 쓰이는 코인은 <b>달러에 값을 붙인 것</b>이고, <b>미국은 그것을 막지 않았습니다.</b> 왜일까요. 이 편은 <b>스테이블코인이 기존 화폐 체제와 어떤 관계인지</b>, 그리고 <b>각 나라가 여기서 무엇을 노리는지</b>를 다룹니다.</p>
+    <div class="callout">
+      <b>먼저 말해둘 것.</b> 이 편은 <b>정책과 국제 정치</b>를 다루기 때문에 <b>정답이 없고 진행 중</b>입니다. 규제는 계속 바뀌고, 전망은 사람마다 갈립니다. 그래서 이 문서는 <b>「누가 무엇을 얻고 무엇을 잃는가」라는 구조</b>를 보는 데 집중하고, <b>예측은 시나리오로만</b> 제시합니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="정책 배경과 논쟁까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#money">1. 돈은 왜 돈인가</a>
+    <a href="#layers">2. 돈의 계층</a>
+    <a href="#usa">3. 미국의 계산</a>
+    <a href="#cbdc">4. CBDC</a>
+    <a href="#countries">5. 각국의 셈법</a>
+    <a href="#banks">6. 은행에서 돈이 빠지면</a>
+    <a href="#future">7. 앞으로</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="money">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 복습</span>
+      <h2>이 종이가 왜 돈인가</h2>
+      <p class="one">01편에서 잠깐 봤던 이야기를 <b>여기서 제대로</b> 짚습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>지갑에 있는 <b>만원짜리 한 장</b>을 봐. 그냥 종이야. 그런데 왜 이걸 주면 <b>치킨을 주지?</b></p>
+      <p>옛날에는 <b>「이 종이를 가져오면 금으로 바꿔준다」</b>는 약속이 있었어. 그래서 종이가 금 대신이었지. 그런데 <b>지금은 그 약속이 없어.</b> 나라에 가서 만원 내밀고 「금 주세요」 하면 안 줘.</p>
+      <p>그런데도 왜 돈일까? 답은 조금 이상해. <b>「다른 사람들이 이걸 돈으로 받아주기 때문」</b>이야. 그리고 사람들이 받아주는 이유는 <b>「나라가 세금을 이걸로 내라고 하고」</b>, <b>「나라가 함부로 안 찍을 거라고 믿기」</b> 때문이야.</p>
+      <p>이걸 어려운 말로 <b>신용화폐</b>라고 해. <b>믿음으로 굴러가는 돈</b>이라는 뜻이야. 여기서 재밌는 게 나와 — <b>비트코인도 「사람들이 믿어서」 값이 있는 건데, 그럼 뭐가 다른 걸까?</b></p>
+    </div>
+
+    <div class="deep">
+      <h3>차이는 「누가 무엇을 강제할 수 있는가」입니다</h3>
+      <p>둘 다 <b>믿음 위에 서 있다</b>는 점은 같습니다. 그런데 뒷받침의 <b>종류</b>가 다릅니다.</p>
+      <p><b>원화·달러</b> — 국가가 <b>세금을 그 돈으로 받고</b>, <b>법정 통화로 지정</b>하며, 필요하면 <b>중앙은행이 시장에 개입</b>합니다. 즉 <b>「반드시 쓰이게 만드는 힘」</b>이 있습니다. 다만 그 힘을 가진 쪽이 <b>양을 늘릴 수도 있습니다.</b></p>
+      <p><b>비트코인</b> — 강제하는 힘이 <b>없습니다.</b> 대신 <b>양을 늘릴 수 없습니다.</b></p>
+      <p>이게 정확한 맞교환입니다. <b>「안정을 얻는 대신 발행량을 남에게 맡기느냐」</b>, <b>「발행량을 못 늘리게 하는 대신 아무도 안정을 책임지지 않느냐」.</b> 어느 쪽이 낫다기보다 <b>서로 다른 것을 포기한 것</b>입니다.</p>
+
+      <h3>통화량 이야기와 이어집니다</h3>
+      <p>주식 트랙 <b>09편(시장의 역사)</b>에서 <b>통화량이 늘면 자산 가격이 오르는 경향</b>을 봤습니다. 그 통화량을 늘리는 주체가 <b>중앙은행과 은행 시스템</b>입니다.</p>
+      <p>비트코인이 태어난 시점이 <b>2008년 금융위기 직후</b>였던 것은 우연이 아닙니다. 「위기를 만든 은행을 구제하려고 돈을 더 찍는다」는 상황에 대한 <b>반발</b>이 출발점이었습니다.</p>
+      <p>그런데 <b>15년쯤 지난 지금</b>, 코인 시장에서 가장 많이 쓰이는 것은 <b>바로 그 달러에 값을 붙인 스테이블코인</b>입니다. 이 아이러니가 이 편의 출발점입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="layers">
+    <div class="prod-head" style="--edge:var(--cb)">
+      <span class="prod-tag">02 · 구조</span>
+      <h2>돈에는 계층이 있습니다</h2>
+      <p class="one">「내 통장의 100만원」과 「지갑의 10만원」은 <b>사실 같은 돈이 아닙니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>놀이공원에 가면 <b>현금</b>도 쓰고, <b>놀이공원 코인</b>도 사서 써. 둘 다 「돈」처럼 쓰이지만 <b>같지 않아.</b></p>
+      <p>놀이공원이 망하면 <b>코인은 종이조각</b>이 돼. 하지만 <b>현금은 그대로</b>야. 왜냐면 현금은 <b>나라가 만든 거고</b>, 코인은 <b>놀이공원이 만든 거니까.</b></p>
+      <p>우리가 쓰는 돈도 이렇게 <b>층이 나뉘어 있어.</b> 맨 아래가 <b>나라(중앙은행)가 만든 돈</b>, 그 위가 <b>은행이 만든 돈(통장 잔액)</b>, 그 위가 <b>회사가 만든 돈(스테이블코인, 포인트)</b>이야.</p>
+      <p><b>위로 갈수록 편하지만, 만든 곳이 망하면 위험해져.</b> 아래로 갈수록 안전하지만 불편하고.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">LAYERS · 눌러서 확인하세요</div>
+      <p class="labsub">각 층이 <b>누가 발행하고, 누가 보증하고, 어디서 깨지는지</b>.</p>
+
+      <div class="btnrow" id="lyBtns">
+        <button data-v="0" class="on">현금</button>
+        <button data-v="1">은행 예금</button>
+        <button data-v="2">스테이블코인</button>
+        <button data-v="3">CBDC</button>
+      </div>
+
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="돈의 계층 구조 도식">
+        <g id="lyScene"></g>
+      </svg>
+
+      <div class="verdict" id="lyVerdict" style="--vc:var(--cb)">
+        <div class="vh">계층</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 이 구분이 중요한가</h3>
+      <p><b>2023년 은행 파산 사태</b>가 이 구분을 그대로 보여줬습니다. 예금자들이 <b>「내 통장 돈은 은행의 약속일 뿐」</b>이라는 사실을 갑자기 실감했고, 그래서 돈을 빼려고 몰려갔습니다.</p>
+      <p>그리고 06편에서 봤듯이, <b>그 은행에 준비금을 맡겨둔 스테이블코인도 함께 흔들렸습니다.</b> 3층이 2층에 얹혀 있으니 당연한 일입니다.</p>
+      <p><b>정리하면</b> — 층이 올라갈수록 <b>편리해지고 빨라지지만</b>, <b>아래층의 문제를 그대로 물려받고</b> 거기에 <b>자기 층의 위험이 하나 더 얹힙니다.</b></p>
+      <p class="plain"><b>실전적인 함의.</b> 스테이블코인을 <b>거래소 계좌에</b> 넣어두면 층이 하나 더 생깁니다 — <b>거래소가 나에게 진 약속</b>입니다. 그러면 은행 위험 + 발행사 위험 + 거래소 위험이 <b>전부 쌓입니다.</b> 08편에서 이 이야기를 이어갑니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="usa">
+    <div class="prod-head" style="--edge:var(--priv)">
+      <span class="prod-tag">03 · 미국</span>
+      <h2>미국은 왜 막지 않았나</h2>
+      <p class="one">달러를 위협하는 것처럼 보였는데, <b>실은 달러를 퍼뜨리는 도구</b>였습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>우리 동네에서 <b>아빠가 만든 딱지</b>가 제일 인기 있다고 해보자. 그런데 옆 동네 아이들은 아빠 딱지를 구하기가 어려워. 멀고, 번거롭거든.</p>
+      <p>그때 누가 <b>「아빠 딱지 한 장을 맡기면, 어디서든 쓸 수 있는 교환권을 주겠다」</b>고 했어. 옆 동네, 그 옆 동네까지 <b>교환권이 퍼졌지.</b></p>
+      <p>아빠 입장에선 어때? <b>손해가 아니야.</b> 오히려 아빠 딱지를 쓰는 아이가 <b>훨씬 많아졌어.</b> 게다가 교환권을 만든 사람은 <b>아빠 딱지를 계속 사 모아야</b> 해. 맡아둘 게 있어야 하니까.</p>
+      <p>스테이블코인이 딱 이거야. <b>달러를 없애는 게 아니라, 달러가 안 닿던 곳까지 달러를 퍼뜨리는 통로</b>였어.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TREASURY · 준비금은 어디로 가나</div>
+      <p class="labsub">달러 스테이블코인이 커지면 <b>미국 국채를 사는 손이 하나 더 생깁니다.</b> 규모를 직접 확인해보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="tsSize">스테이블코인 발행 규모</label>
+        <input type="range" id="tsSize" min="500" max="15000" step="100" value="2000">
+        <output id="tsSizeOut">2,000억 달러</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="tsRatio">준비금 중 국채 비중</label>
+        <input type="range" id="tsRatio" min="0" max="100" step="5" value="80">
+        <output id="tsRatioOut">80%</output>
+      </div>
+
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="스테이블코인 준비금의 국채 보유 규모 비교">
+        <g id="tsBars"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">국채로 들어가는 돈</span><span class="rv" id="tsTre">—</span></div>
+        <div><span class="rk">발행사가 얻는 연 이자 (연 4% 가정)</span><span class="rv" id="tsInt">—</span></div>
+      </div>
+
+      <div class="verdict" id="tsVerdict" style="--vc:var(--priv)">
+        <div class="vh">미국의 계산</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>수치에 대해.</b> 비교선으로 쓴 <b>「1조 달러」</b>는 <b>미국 국채를 많이 보유한 상위 해외 국가 한 곳의 대략적인 규모</b>입니다. 실제 순위와 금액은 매달 바뀝니다. 이자율 4%도 <b>가정값</b>입니다. 이 계산기의 목적은 정확한 금액이 아니라 <b>「무시할 수 없는 크기가 되었다」는 감각</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>미국이 얻는 것 세 가지</h3>
+      <p><b>① 달러 사용 범위가 넓어집니다.</b> 은행 계좌를 열기 어려운 나라의 사람도 <b>휴대폰만 있으면 달러 표시 자산</b>을 가질 수 있습니다. 달러를 쓰는 사람이 늘수록 <b>달러의 힘이 커집니다.</b></p>
+      <p><b>② 국채를 사는 손이 늘어납니다.</b> 담보형 스테이블코인은 준비금 상당 부분을 <b>미국 단기 국채</b>로 굴립니다. 발행량이 커질수록 <b>국채 수요가 자동으로 늘어납니다.</b> 정부 입장에서 <b>빚을 낮은 이자로 낼 수 있게</b> 도와주는 셈입니다.</p>
+      <p><b>③ 통제 수단이 남습니다.</b> 이게 결정적입니다. 달러 스테이블코인 발행사는 <b>미국 법의 적용을 받고</b>, 필요하면 <b>특정 지갑을 동결할 수 있습니다.</b> 즉 미국은 <b>기존 은행망에서 하던 제재를 코인 위에서도 할 수 있게</b> 됩니다.</p>
+
+      <h3>그래서 「코인 = 반정부」라는 구도는 이미 깨졌습니다</h3>
+      <p>비트코인이 태어난 이유는 <b>「국가와 은행을 거치지 않는 돈」</b>이었습니다. 그런데 실제로 가장 많이 쓰이게 된 것은 <b>「국가의 돈을 코인 위에 올린 것」</b>이었습니다.</p>
+      <p>이걸 <b>배신으로 보는 시각</b>과 <b>현실적인 진화로 보는 시각</b>이 나뉩니다. 어느 쪽이든 <b>사실 자체는 분명합니다</b> — 지금 코인 위에서 가장 많이 오가는 돈은 <b>달러</b>입니다.</p>
+
+      <h3>미국에도 부담은 있습니다</h3>
+      <p>공짜는 아닙니다. <b>① 대형 발행사가 무너지면</b> 그 준비금이 국채 시장에 한꺼번에 쏟아져 <b>국채 시장이 흔들릴 수 있습니다.</b> ② 은행 예금이 스테이블코인으로 빠지면 <b>은행의 대출 여력이 줍니다</b>(6장). ③ 규제를 잘못 짜면 <b>06편 같은 사고를 미국 법 안에서 겪게</b> 됩니다.</p>
+      <p>그래서 미국의 방향은 <b>「금지」가 아니라 「조건부 허용」</b>이었습니다 — <b>준비금을 안전 자산으로만, 공시를 정기적으로, 발행 자격을 제한</b>하는 식입니다. 요약하면 <b>스테이블코인을 은행 비슷한 규제 아래로 끌고 들어오는</b> 방향입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="cbdc">
+    <div class="prod-head" style="--edge:var(--cbdc)">
+      <span class="prod-tag">04 · CBDC</span>
+      <h2>그럼 나라가 직접 만들면 되지 않나 — CBDC</h2>
+      <p class="one">여러 나라가 그렇게 생각했습니다. 그런데 <b>생각보다 잘 안 되고 있습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>지금 우리가 쓰는 통장 잔액은 <b>은행이 만든 돈</b>이야. 그럼 <b>나라가 직접 「디지털 현금」을 만들면</b> 어떨까?</p>
+      <p>좋은 점이 많아. <b>은행이 망해도 안전하고</b>, 송금이 빠르고, 은행 계좌가 없는 사람도 쓸 수 있어. 이걸 <b>CBDC(중앙은행 디지털화폐)</b>라고 해.</p>
+      <p>그런데 문제가 두 개 있어. <b>첫째, 나라가 내가 무엇을 샀는지 다 볼 수 있어.</b> 현금은 안 그런데. <b>둘째, 사람들이 은행 통장 돈을 전부 여기로 옮기면 은행이 돈을 빌려줄 재원이 없어져.</b></p>
+      <p>그래서 많은 나라가 <b>연구는 열심히 하는데 실제로 도입은 조심스러워.</b></p>
+    </div>
+
+    <h3>스테이블코인과 CBDC, 무엇이 다른가</h3>
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th></th><th>스테이블코인</th><th>CBDC</th><th>은행 예금</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>발행 주체</th><td>민간 회사</td><td>중앙은행</td><td>시중 은행</td></tr>
+          <tr><th>망하면</th><td>준비금 회수 절차 · 보장 없음</td><td>망하지 않음 (국가의 부채)</td><td>예금자 보호 한도까지</td></tr>
+          <tr><th>사생활</th><td>거래는 공개 · 신원은 별개</td><td>당국이 볼 수 있음 (설계에 따라)</td><td>은행과 당국이 볼 수 있음</td></tr>
+          <tr><th>국경을 넘을 때</th><td>매우 쉬움</td><td>대개 제한됨</td><td>느리고 비쌈</td></tr>
+          <tr><th>이자</th><td>보통 없음 (발행사가 가져감)</td><td>설계에 따라 · 대개 없음</td><td>있음</td></tr>
+          <tr><th>은행에 미치는 영향</th><td>예금이 빠져나갈 수 있음</td><td>더 크게 빠져나갈 수 있음</td><td>—</td></tr>
+          <tr><th>현재 상태</th><td>이미 널리 쓰임</td><td>대부분 시범 단계</td><td>기존 체제</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <div class="deep">
+      <h3>CBDC가 어려운 진짜 이유</h3>
+      <p><b>① 사생활 문제.</b> 중앙은행이 모든 거래를 볼 수 있는 시스템은 <b>정치적으로 받아들여지기 어렵습니다.</b> 현금은 익명인데 CBDC는 그렇지 않을 수 있다는 점이 <b>여러 나라에서 큰 반대에 부딪혔습니다.</b></p>
+      <p><b>② 은행이 반대합니다.</b> 사람들이 예금을 CBDC로 옮기면 <b>은행의 자금 조달 기반이 흔들립니다.</b> 그래서 대부분의 설계안이 <b>보유 한도</b>를 두는 식으로 타협하고 있습니다.</p>
+      <p><b>③ 위기 때 오히려 위험할 수 있습니다.</b> 은행이 불안하다는 소문이 돌면 사람들이 <b>버튼 몇 번으로 전액을 CBDC로 옮길 수 있습니다.</b> 즉 <b>뱅크런이 더 빨라집니다.</b> 이걸 「디지털 뱅크런」이라고 부릅니다.</p>
+      <p><b>④ 지금 이미 불편하지 않습니다.</b> 계좌이체와 간편결제가 이미 빠르고 싼 나라에서는 <b>「그래서 뭐가 좋아지나」에 답하기 어렵습니다.</b> 반대로 <b>금융 인프라가 부족한 나라</b>에서는 도입 동기가 훨씬 큽니다.</p>
+
+      <h3>도매용 CBDC는 이야기가 다릅니다</h3>
+      <p>흔히 CBDC라 하면 <b>일반인이 쓰는 것</b>을 떠올리지만, 실제로 진도가 빠른 쪽은 <b>은행끼리 결제에 쓰는 도매용</b>입니다.</p>
+      <p>이쪽은 사생활 문제가 거의 없고, <b>국제 송금의 속도와 비용을 실제로 줄일 수 있어</b> 여러 중앙은행이 공동 실험을 진행해왔습니다. <b>04편의 리플이 노렸던 문제를 국가들이 직접 풀려는 시도</b>로 볼 수 있습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="countries">
+    <div class="prod-head" style="--edge:var(--cb)">
+      <span class="prod-tag">05 · 각국</span>
+      <h2>나라마다 셈법이 다릅니다</h2>
+      <p class="one">같은 기술을 두고 <b>정반대 방향</b>으로 가는 이유는 <b>각자 처지가 다르기 때문</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COUNTRIES · 누가 무엇을 노리나</div>
+      <p class="labsub">각 나라를 눌러 <b>가진 것, 두려운 것, 그래서 택한 방향</b>을 확인하세요.</p>
+
+      <div class="flagrow" id="cnBtns">
+        <button data-v="0" class="on">🇺🇸 미국</button>
+        <button data-v="1">🇪🇺 유럽</button>
+        <button data-v="2">🇨🇳 중국</button>
+        <button data-v="3">🇯🇵 일본</button>
+        <button data-v="4">🇰🇷 한국</button>
+        <button data-v="5">신흥국</button>
+      </div>
+
+      <div class="verdict" id="cnVerdict" style="--vc:var(--cb)">
+        <div class="vh">국가</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>⚠️ 규제는 계속 바뀝니다.</b> 위 내용은 <b>각국이 어떤 이해관계에서 어떤 방향을 택했는가</b>를 설명하기 위한 것이며, <b>구체적인 법령·시행 시기·허용 범위는 반드시 최신 자료로 확인하세요.</b> 특히 한국의 원화 스테이블코인 관련 논의는 <b>이 문서를 읽는 시점에 이미 달라져 있을 가능성이 큽니다.</b></p>
+    </div>
+
+    <div class="deep">
+      <h3>한 문장으로 요약하면</h3>
+      <p><b>기축통화를 가진 나라</b>는 스테이블코인이 <b>자기 통화를 퍼뜨리는 도구</b>라서 조건부로 허용합니다.</p>
+      <p><b>기축통화가 아닌 나라</b>는 스테이블코인이 <b>자국 통화를 밀어내는 도구</b>가 될 수 있어 경계합니다.</p>
+      <p><b>통화가 불안정한 나라</b>는 국민이 <b>이미 달러 스테이블코인으로 도망가고 있어서</b> 막을 수도 없고 놔둘 수도 없습니다.</p>
+      <p>같은 물건이 <b>어디에 서 있느냐에 따라 무기가 되기도 하고 위협이 되기도</b> 합니다. 이게 이 장의 핵심입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="banks">
+    <div class="prod-head" style="--edge:var(--bank)">
+      <span class="prod-tag">06 · 은행</span>
+      <h2>은행에서 돈이 빠지면 무슨 일이 생기나</h2>
+      <p class="one">여기서 <b>흔한 오해 하나</b>를 풀고 갑니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>은행은 우리가 맡긴 돈을 <b>금고에 그대로 쌓아두지 않아.</b> 대부분을 <b>다른 사람에게 빌려줘.</b> 집 사는 사람, 가게 여는 사람한테.</p>
+      <p>그래서 우리가 예금을 빼서 스테이블코인으로 옮기면, 은행은 <b>빌려줄 돈이 줄어들어.</b> 그러면 집을 사려던 사람이 <b>대출을 못 받거나 이자를 더 내야</b> 해.</p>
+      <p>그런데 여기서 헷갈리기 쉬운 게 있어. <b>그 돈이 사라진 건 아니야.</b> 스테이블코인 회사가 그 돈으로 <b>국채를 사거나 다시 은행에 넣거든.</b></p>
+      <p>즉 돈이 없어지는 게 아니라 <b>「누구에게 가느냐」가 바뀌는 거야.</b> 아래에서 직접 움직여보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DISINTERMEDIATION · 돈은 어디로 가나</div>
+      <p class="labsub">예금이 스테이블코인으로 옮겨갈 때, <b>그 돈이 다시 은행으로 돌아오는 비율</b>에 따라 결과가 크게 달라집니다.</p>
+
+      <div class="ctrl-row">
+        <label for="bkOut">예금 이탈률</label>
+        <input type="range" id="bkOut" min="0" max="30" step="1" value="10">
+        <output id="bkOutOut">10%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="bkBack">준비금 중 은행 예금 비중</label>
+        <input type="range" id="bkBack" min="0" max="100" step="5" value="20">
+        <output id="bkBackOut">20%</output>
+      </div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="예금 이탈 시 자금의 흐름 도식">
+        <g id="bkScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">순 예금 감소</span><span class="rv" id="bkNet">—</span></div>
+        <div><span class="rk">줄어드는 대출 여력</span><span class="rv" id="bkLoan">—</span></div>
+      </div>
+
+      <div class="verdict" id="bkVerdict" style="--vc:var(--bank)">
+        <div class="vh">자금 흐름</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>단순화했습니다.</b> 예금 총액을 <b>1,000조원</b>으로 가정하고, 지급준비율은 <b>3%</b>로 두었습니다. 실제 은행 시스템은 이보다 훨씬 복잡하며(자기자본 규제, 예대율 규제, 다른 조달 수단), 대출 여력이 예금에만 비례하지도 않습니다. <b>「돈이 사라지는 게 아니라 경로가 바뀐다」는 점을 보는 것</b>이 목적입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>그래서 무엇이 문제인가</h3>
+      <p>돈의 총량은 그대로인데도 문제가 생기는 이유는 <b>「그 돈이 무엇에 쓰이느냐」가 바뀌기 때문</b>입니다.</p>
+      <p><b>은행 예금</b>은 <b>기업 대출·주택담보대출</b>로 흘러갑니다. <b>스테이블코인 준비금</b>은 대개 <b>단기 국채</b>로 갑니다. 즉 <b>민간 신용에서 정부 재정으로 자금의 방향이 옮겨갑니다.</b></p>
+      <p>여기에 하나 더 — 은행은 예금을 붙잡으려고 <b>예금 금리를 올려야</b> 합니다. 조달 비용이 오르면 <b>대출 금리도 오릅니다.</b> 결국 <b>돈을 빌리는 쪽의 비용이 커집니다.</b></p>
+
+      <h3>반대 시각도 있습니다</h3>
+      <p>「은행이 예금에 이자를 거의 안 주면서 그 돈으로 이익을 내왔는데, 경쟁이 생기는 게 뭐가 나쁘냐」는 반론이 있습니다. <b>일리가 있습니다.</b></p>
+      <p>또 <b>「스테이블코인 발행사가 준비금 이자를 다 가져가는 것도 똑같은 문제」</b>라는 지적도 있습니다. 실제로 대형 발행사의 주 수입원이 <b>고객 돈을 굴려 얻는 이자</b>입니다. 사용자는 이자를 받지 못합니다.</p>
+      <p>즉 이 논쟁은 <b>「은행이냐 코인이냐」가 아니라 「누가 남의 돈을 굴린 이익을 가져가느냐」</b>에 가깝습니다. <b>사용자 입장에서는 어느 쪽도 딱히 유리하지 않습니다.</b></p>
+
+      <h3>통화주권 문제</h3>
+      <p>자국 통화가 불안정한 나라에서는 이야기가 훨씬 심각합니다. 사람들이 <b>자국 통화 대신 달러 스테이블코인을 쓰기 시작하면</b> —</p>
+      <p><b>중앙은행이 금리를 조절해도 효과가 줄어듭니다.</b> 사람들이 이미 다른 통화를 쓰고 있으니까요. 이걸 <b>사실상의 달러화</b>라고 부릅니다.</p>
+      <p>과거에도 이런 일은 있었지만, <b>차이는 속도와 문턱</b>입니다. 예전에는 달러 현찰을 구해야 했지만 지금은 <b>휴대폰 앱 하나면 됩니다.</b> 그래서 여러 신흥국이 <b>스테이블코인 사용 자체를 강하게 규제</b>하려 합니다. 다만 <b>막기가 매우 어렵다</b>는 것이 현실입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7 ══════════ -->
+  <section id="future">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 전망</span>
+      <h2>앞으로 어떻게 될까 — 네 갈래</h2>
+      <p class="one">예측 대신 <b>시나리오</b>로 봅니다. 그리고 <b>어느 쪽으로 가는지 확인할 지표</b>도 함께.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SCENARIOS · 네 가지 갈림길</div>
+      <p class="labsub">각 시나리오에는 <b>「이렇게 되고 있다면 보이는 신호」</b>가 붙어 있습니다. 예측보다 <b>확인 방법</b>이 중요합니다.</p>
+
+      <div class="btnrow" id="scBtns">
+        <button data-v="0" class="on">① 달러의 확장</button>
+        <button data-v="1">② 블록별 분화</button>
+        <button data-v="2">③ 은행화</button>
+        <button data-v="3">④ 사고와 후퇴</button>
+      </div>
+
+      <div class="verdict" id="scVerdict" style="--vc:var(--neutral)">
+        <div class="vh">시나리오</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>이 넷은 배타적이지 않습니다</h3>
+      <p>실제로는 <b>섞여서 일어날 가능성</b>이 큽니다. ③(은행화)이 진행되면서 동시에 ①(달러 확장)이 일어나고, 중간에 ④(사고)가 한 번 끼어드는 식입니다.</p>
+      <p>그리고 <b>이 시리즈에서 가장 정직한 말</b>을 여기서 해야겠습니다 — <b>아무도 모릅니다.</b> 화폐 제도의 변화는 <b>기술이 아니라 정치가 결정</b>하고, 정치는 예측하기 어렵습니다.</p>
+      <p>그래서 <b>투자자에게 실용적인 태도</b>는 이것입니다 — <b>어느 시나리오가 맞든 버틸 수 있는 크기로만</b> 하는 것. 그리고 <b>시나리오가 바뀌는 신호를 미리 정해두고 관찰</b>하는 것. 08편에서 그 방법을 다룹니다.</p>
+    </div>
+
+    <ul class="check" id="mfCheck">
+      <li><b>내가 쓰는 스테이블코인은 어느 층에 있나?</b> 발행사 위험 + 은행 위험 + (거래소에 뒀다면) 거래소 위험.</li>
+      <li><b>그 발행사는 어느 나라 규제를 받나?</b> 문제가 생겼을 때 기댈 곳의 문제입니다.</li>
+      <li><b>내 지갑이 동결될 수 있다는 것을 알고 있나?</b> 대부분 가능합니다.</li>
+      <li><b>준비금 이자는 누가 가져가나?</b> 대개 나는 아닙니다.</li>
+      <li><b>내가 사는 나라의 규제가 바뀌면 무엇이 달라지나?</b> 거래소 상장, 세금, 송금 한도.</li>
+      <li><b>「달러가 곧 무너진다」는 이야기를 근거로 삼고 있지는 않나?</b> 그 예측은 수십 년째 반복됐습니다.</li>
+      <li><b>시나리오가 바뀌는 신호를 미리 정해두었나?</b> 사후에 정하면 이미 늦습니다.</li>
+    </ul>
+    <div class="checkcount" id="mfCount">0 / 7 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 스테이블코인은 <b>달러를 없애는 것이 아니라 퍼뜨리는 통로</b>였고, 그래서 미국은 <b>조건부로 허용</b>했습니다. 다른 나라들은 각자 처지에 따라 <b>정반대 방향</b>으로 갈립니다. CBDC는 <b>기술보다 사생활과 은행 문제</b>에서 막혀 있습니다.</p>
+      <p>그리고 돈에는 <b>층</b>이 있습니다. 위로 갈수록 편하지만 <b>아래층의 위험을 물려받고 자기 층의 위험이 하나 더 얹힙니다.</b> 이것이 다음 편에서 <b>「거래소에 맡긴 코인은 내 코인이 아니다」</b>로 이어집니다.</p>
+      <p>다음이 <b>코인 트랙의 마지막 편</b>입니다. 보관, 레버리지, 사기 패턴, 세금, 그리고 <b>「코인은 정말 디지털 금인가」</b> — 다른 자산과의 상관성을 실제로 확인해봅니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 코인 07 · 화폐의 미래<br>
+    <a href="index.html#coin">← 코인 목록으로</a> · <a href="coin-stablecoin.html">06 · 스테이블코인</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 특정 국가의 정책을 지지하거나 비판하려는 의도가 없습니다.<br>
+    각국 규제·법령·시행 시기는 계속 변합니다. 국채 보유 규모와 이자율은 가정값이며, 시뮬레이터는 구조를 보여주는 개념 모형입니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 2. 돈의 계층 ══════════ */
+var LY = [
+  { color:'#3A5A8E', row:0,
+    t:'현금 — 중앙은행이 직접 발행한 돈',
+    p:'가장 아래층입니다. <b>중앙은행의 부채</b>이고, 그 위에 아무것도 얹혀 있지 않습니다.<br><br><b>망할 곳이 없습니다.</b> 은행이 무너져도, 카드사가 무너져도 지갑 속 현금은 그대로입니다.<br><br><b>대신 불편합니다.</b> 들고 다녀야 하고, 잃어버리면 끝이고, 멀리 보낼 수 없습니다.<br><br>그리고 <b>양이 늘면 가치가 줄어듭니다.</b> 이건 위험이 아니라 <b>설계</b>입니다 — 중앙은행이 그 양을 조절하는 것이 통화 정책입니다.' },
+  { color:'#4C7A6D', row:1,
+    t:'은행 예금 — 은행이 나에게 한 약속',
+    p:'통장의 숫자는 <b>현금이 아닙니다.</b> <b>「달라고 하면 현금으로 주겠다」는 은행의 약속</b>입니다.<br><br>평소에는 구분할 필요가 없습니다. 그런데 <b>은행이 흔들릴 때 이 구분이 갑자기 중요해집니다.</b> 2023년 은행 파산 사태 때 사람들이 이것을 실감했습니다.<br><br><b>보완 장치</b> — 예금자 보호 제도가 <b>일정 한도까지</b> 국가가 대신 갚아줍니다. 즉 한도 안에서는 사실상 아래층 수준의 안전성을 빌려 씁니다.<br><br><b>그리고 이 층에서 돈이 만들어집니다.</b> 은행이 대출을 실행하면 그만큼 예금이 새로 생깁니다. 시중 통화량 대부분이 <b>현금이 아니라 이 층</b>입니다.' },
+  { color:'#9E7A2E', row:2,
+    t:'스테이블코인 — 회사가 나에게 한 약속',
+    p:'또 한 층 위입니다. <b>「1달러로 바꿔주겠다」는 민간 회사의 약속</b>입니다.<br><br><b>아래층의 위험을 그대로 물려받습니다.</b> 준비금을 은행에 맡겨두면 <b>그 은행의 위험</b>이 따라옵니다. 06편의 USDC 사례가 정확히 이것이었습니다.<br><br><b>여기에 자기 층의 위험이 더해집니다</b> — 발행사가 준비금을 제대로 갖고 있는지, 상환을 해줄 능력과 의지가 있는지, 규제 조치를 받지는 않는지.<br><br><b>보호 장치는 없습니다.</b> 예금자 보호 같은 제도가 적용되지 않습니다. 대신 <b>빠르고, 국경이 없고, 24시간 돌아갑니다.</b> 이 맞교환을 이해하고 쓰는 것이 전부입니다.' },
+  { color:'#7A5C9E', row:3,
+    t:'CBDC — 중앙은행이 직접 만든 디지털 돈',
+    p:'층 구조를 <b>건너뛰려는 시도</b>입니다. 은행이나 회사를 거치지 않고 <b>중앙은행이 직접 개인에게</b> 디지털 화폐를 발행합니다.<br><br>안전성은 <b>현금과 같은 맨 아래층</b>이면서 편리함은 <b>맨 위층</b>입니다. 그래서 매력적으로 보입니다.<br><br><b>그런데 두 가지가 걸립니다.</b><br><br><b>① 사생활</b> — 중앙은행이 모든 거래를 볼 수 있는 구조가 될 수 있습니다. 현금에는 없던 문제입니다.<br><br><b>② 은행 무력화</b> — 사람들이 예금을 전부 여기로 옮기면 <b>은행의 대출 재원이 사라집니다.</b> 위기 때는 <b>버튼 한 번으로 뱅크런</b>이 일어날 수 있습니다.<br><br>그래서 대부분의 나라가 <b>보유 한도를 두거나, 개인용은 미루고 은행 간 결제용부터</b> 진행하고 있습니다.' }
+];
+function lyScene(active){
+  var rows = [
+    { y:150, w:520, c:'#3A5A8E', name:'중앙은행 (현금·지급준비금)', sub:'맨 아래 · 망할 곳 없음' },
+    { y:112, w:430, c:'#4C7A6D', name:'은행 예금', sub:'은행의 약속 · 예금자 보호 한도까지' },
+    { y:74,  w:330, c:'#9E7A2E', name:'스테이블코인', sub:'회사의 약속 · 보호 장치 없음' },
+    { y:36,  w:230, c:'#7A5C9E', name:'CBDC (중앙은행 직접)', sub:'층을 건너뛰려는 시도' }
+  ];
+  var g = '';
+  rows.forEach(function(r, i){
+    var on = (i === active);
+    var x = 60;
+    g += '<rect x="' + x + '" y="' + r.y + '" width="' + r.w + '" height="30" rx="3" fill="' + r.c +
+         '" fill-opacity="' + (on ? '.5' : '.16') + '" stroke="' + r.c +
+         '" stroke-width="' + (on ? '1.8' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (x + 12) + '" y="' + (r.y + 19) + '"' +
+         (on ? ' fill="' + r.c + '"' : '') + '>' + r.name + '</text>';
+    if(on) g += '<text class="axt" x="' + (x + r.w + 10) + '" y="' + (r.y + 19) + '">' + r.sub + '</text>';
+  });
+  g += '<text class="axt" x="60" y="192">아래로 갈수록 안전하고 불편하며, 위로 갈수록 편리하고 위험이 쌓입니다.</text>';
+  g += '<text class="axt" x="' + (60 + 530) + '" y="' + 165 + '" text-anchor="end">↑ 위층은 아래층에 얹혀 있습니다</text>';
+  document.getElementById('lyScene').innerHTML = g;
+}
+bindBtnRow('#lyBtns', function(v){
+  var l = LY[+v];
+  lyScene(l.row);
+  document.getElementById('lyVerdict').querySelector('.vh').textContent = '계층 ' + (l.row + 1);
+  verdict('lyVerdict', l.color, l.t, l.p);
+});
+
+/* ══════════ 3. 국채 수요 ══════════ */
+var TS_REF = 10000;   // 비교선: 상위 해외 보유국 한 곳의 대략적 규모 (억 달러)
+function tsDraw(){
+  var size = +document.getElementById('tsSize').value;
+  var ratio = +document.getElementById('tsRatio').value;
+  document.getElementById('tsSizeOut').textContent = size.toLocaleString() + '억 달러';
+  document.getElementById('tsRatioOut').textContent = ratio + '%';
+
+  var tre = size * ratio / 100;
+  var interest = tre * 0.04;
+
+  document.getElementById('tsTre').textContent = Math.round(tre).toLocaleString() + '억 달러';
+  document.getElementById('tsInt').textContent = Math.round(interest).toLocaleString() + '억 달러 / 년';
+
+  var X0 = 150, W = 430, ymax = Math.max(TS_REF, tre) * 1.05;
+  var g = '';
+  function bar(y, v, color, label, valtext){
+    var w = Math.max(2, v / ymax * W);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="30" rx="2" fill="' + color +
+         '" fill-opacity=".45" stroke="' + color + '" stroke-width="1.3"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 19) + '" text-anchor="end">' + label + '</text>';
+    g += '<text class="lblb" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 19) + '" fill="' + color + '">' + valtext + '</text>';
+  }
+  g += '<text class="axt" x="' + X0 + '" y="30">미국 국채를 얼마나 사게 되나 (억 달러)</text>';
+  bar(46, tre, '#9E7A2E', '스테이블코인 준비금', Math.round(tre).toLocaleString());
+  bar(94, TS_REF, '#5B5648', '상위 해외 보유국 한 곳', '약 10,000 (대략)');
+  var rel = tre / TS_REF * 100;
+  g += '<text class="axt" x="' + X0 + '" y="152">비교선 대비 ' + rel.toFixed(0) + '% 수준입니다. ' +
+       (rel >= 100 ? '이미 상위 보유국과 맞먹는 규모입니다.' : '아직 작지만 늘어나는 속도가 빠릅니다.') + '</text>';
+  document.getElementById('tsBars').innerHTML = g;
+
+  if(rel < 20){
+    verdict('tsVerdict', '#5B5648',
+      '아직은 국채 시장에서 작은 손입니다',
+      '이 규모라면 <b>국채 시장 전체에서 차지하는 비중이 크지 않습니다.</b> 미국 국채 시장은 <b>수십조 달러 규모</b>이기 때문입니다.<br><br>그래도 미국 입장에서 <b>싫어할 이유는 없습니다.</b> 국채를 사주는 손은 <b>많을수록 좋고</b>, 이 손은 <b>정치적 사정으로 갑자기 팔지 않습니다.</b><br><br>슬라이더를 올려보세요. <b>이 규모가 커지면 이야기가 달라집니다.</b>');
+  } else if(rel < 100){
+    verdict('tsVerdict', '#9E7A2E',
+      '무시할 수 없는 크기가 되었습니다',
+      '이 정도면 <b>웬만한 국가 하나에 맞먹는 국채 수요</b>입니다. 미국 입장에서는 <b>달러가 더 널리 쓰이고, 국채를 사줄 손도 늘어나는</b> 일석이조입니다.<br><br>그리고 그 대가로 <b>발행사는 이 준비금에서 나오는 이자를 가져갑니다.</b> 연 4%라면 연간 <b>' + Math.round(interest).toLocaleString() + '억 달러</b>입니다. <b>사용자는 이 이자를 받지 못합니다.</b><br><br>이것이 대형 발행사의 주 수입원이고, 스테이블코인 사업이 <b>왜 그렇게 매력적인 사업인지</b>의 답입니다.');
+  } else {
+    verdict('tsVerdict', '#8E4B3A',
+      '이 크기가 되면 위험도 함께 커집니다',
+      '상위 보유국과 맞먹는 규모라면 <b>미국 입장에서 좋기만 한 것이 아닙니다.</b><br><br><b>대형 발행사에 상환이 몰리면</b> 준비금을 마련하려고 <b>국채를 한꺼번에 팔아야</b> 합니다. 그 규모가 크면 <b>국채 시장 자체가 흔들립니다.</b><br><br>즉 스테이블코인이 커질수록 <b>코인 시장의 사고가 국채 시장으로 옮겨붙을 통로</b>가 넓어집니다.<br><br>그래서 각국 규제 당국이 <b>준비금을 초단기 국채와 현금으로만 제한</b>하고 <b>공시를 요구</b>하는 방향으로 가고 있습니다. <b>「금지」가 아니라 「연결 고리를 관리」</b>하는 접근입니다.');
+  }
+}
+['tsSize', 'tsRatio'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', tsDraw);
+});
+
+/* ══════════ 5. 각국 ══════════ */
+var CN = [
+  { h:'🇺🇸 미국', color:'#3A5A8E',
+    t:'가진 것: 기축통화 — 그래서 퍼뜨리는 편이 이득',
+    p:'<b>가진 것</b> — 세계가 쓰는 통화. 스테이블코인의 <b>거의 전부가 달러 표시</b>입니다.<br><br><b>두려운 것</b> — 통제 밖에서 달러가 유통되는 것, 대형 발행사 붕괴가 <b>국채 시장으로 번지는 것</b>, 그리고 은행 예금이 빠져나가는 것.<br><br><b>택한 방향</b> — <b>금지가 아니라 조건부 허용.</b> 준비금을 안전 자산으로 제한하고, 정기 공시를 요구하고, 발행 자격을 규제 대상 기관으로 좁히는 방식입니다. <b>스테이블코인을 은행 규제 우산 안으로 끌어들이는</b> 접근입니다.<br><br>개인용 CBDC에는 <b>정치적 반대가 강합니다</b> — 「정부가 개인의 모든 거래를 본다」는 우려 때문입니다. 그래서 <b>민간 스테이블코인을 규제해서 쓰는 쪽</b>을 택했다고 볼 수 있습니다.' },
+  { h:'🇪🇺 유럽', color:'#4C7A6D',
+    t:'가진 것: 큰 시장 — 그래서 규칙으로 승부',
+    p:'<b>가진 것</b> — 유로라는 큰 통화권과 <b>규제를 만들어 세계 표준으로 만드는 힘.</b><br><br><b>두려운 것</b> — 유로존 안에서 <b>달러 스테이블코인이 결제 수단으로 자리잡는 것.</b> 그러면 통화 정책의 힘이 약해집니다.<br><br><b>택한 방향</b> — 코인 전반을 다루는 <b>포괄적인 규제 체계</b>를 비교적 이른 시기에 만들었습니다. 스테이블코인에 <b>준비금·상환 의무·발행 한도</b>를 정하고, 특히 <b>유로가 아닌 통화 표시 스테이블코인이 역내 결제에 과도하게 쓰이는 것을 제한</b>하는 조항을 두었습니다.<br><br>동시에 <b>디지털 유로</b>를 준비해왔지만, <b>은행권의 반대와 사생활 논쟁</b>으로 진도가 빠르지는 않습니다.<br><br><b>한 줄 요약</b> — 「우리 마당에서는 우리 규칙대로」.' },
+  { h:'🇨🇳 중국', color:'#8E4B3A',
+    t:'가진 것: 통제력 — 그래서 민간은 막고 국가가 직접',
+    p:'<b>가진 것</b> — 강력한 자본 통제와 <b>이미 발달한 모바일 결제 인프라.</b><br><br><b>두려운 것</b> — 자본이 코인을 통해 <b>국경 밖으로 빠져나가는 것</b>, 그리고 민간 결제 회사에 <b>결제 데이터가 집중되는 것.</b><br><br><b>택한 방향</b> — <b>민간 코인 거래와 채굴을 강하게 금지</b>하고, 대신 <b>디지털 위안</b>을 국가가 직접 만들어 대규모로 시범 운영해왔습니다. 세계에서 <b>가장 앞서 나간 개인용 CBDC</b>에 속합니다.<br><br>다만 <b>사용이 기대만큼 늘지는 않았다</b>는 평가가 많습니다. 이미 민간 간편결제가 너무 편해서 <b>「굳이 왜」</b>가 되기 때문입니다.<br><br><b>국제적으로는</b> 위안화 결제망과 도매용 CBDC 협력을 통해 <b>달러를 거치지 않는 결제 경로</b>를 넓히려는 시도를 이어가고 있습니다.<br><br><b>한 줄 요약</b> — 「민간에 맡기지 않는다」.' },
+  { h:'🇯🇵 일본', color:'#7A5C9E',
+    t:'가진 것: 신뢰받는 통화 — 그래서 법으로 먼저 자리를 만듦',
+    p:'<b>가진 것</b> — 안정적인 통화와 <b>과거의 사고 경험.</b> 일본은 대형 거래소 해킹 사고를 여러 차례 겪었고, 그 결과 <b>비교적 이른 시기에 코인 규제 체계를 갖췄습니다.</b><br><br><b>두려운 것</b> — 이용자 자산 사고의 재발.<br><br><b>택한 방향</b> — <b>스테이블코인을 법적으로 정의하고 발행 주체를 제한</b>하는 방식입니다. 은행·신탁회사 등 <b>이미 규제받는 기관</b>만 발행할 수 있게 하고, <b>이용자 자산을 분리 보관</b>하도록 했습니다.<br><br>즉 <b>「코인이니까 예외」가 아니라 「기존 금융 규제를 그대로 적용」</b>하는 쪽에 가깝습니다.<br><br><b>한 줄 요약</b> — 「사고를 먼저 겪었기 때문에 먼저 규칙을 만들었다」.' },
+  { h:'🇰🇷 한국', color:'#9E7A2E',
+    t:'가진 것: 활발한 시장 — 그래서 이용자 보호가 먼저',
+    p:'<b>가진 것</b> — 인구 대비 <b>매우 활발한 코인 거래</b>와 잘 갖춰진 디지털 금융 인프라.<br><br><b>두려운 것</b> — 이용자 피해(테라·루나 사태에서 <b>한국인 피해가 특히 컸습니다</b>), 자금 세탁, 그리고 <b>원화의 역할이 줄어드는 것.</b><br><br><b>택한 방향</b> — 먼저 <b>이용자 보호와 거래소 규제</b>를 중심으로 제도를 만들었습니다. 실명 계좌 연동, 예치금 보호, 시세 조종 처벌 같은 항목들입니다.<br><br><b>원화 스테이블코인</b>에 대해서는 논의가 활발하지만 <b>방향이 확정되지 않았습니다.</b> 찬성 쪽은 <b>「어차피 쓸 거면 원화로」</b>, 반대 쪽은 <b>「통화 정책과 은행 시스템에 미칠 영향이 크다」</b>고 봅니다.<br><br><b>⚠️ 이 항목은 특히 빨리 바뀝니다.</b> 반드시 최신 자료를 확인하세요.' },
+  { h:'신흥국', color:'#5B5648',
+    t:'가진 것: 별로 없음 — 그래서 가장 어려운 처지',
+    p:'<b>처한 상황</b> — 자국 통화의 <b>가치가 빠르게 떨어지는</b> 나라들이 있습니다. 물가가 한 해에 몇 배씩 오르면 <b>월급을 받자마자 가치가 줄어듭니다.</b><br><br>이런 나라에서 <b>달러 스테이블코인은 생활 도구</b>입니다. 투기가 아니라 <b>저축을 지키는 수단</b>입니다. 휴대폰만 있으면 되니 <b>달러 현찰을 구하는 것보다 훨씬 쉽습니다.</b><br><br><b>정부의 딜레마</b> — 막으면 <b>국민의 저축을 지킬 수단을 뺏는 것</b>이고, 놔두면 <b>자국 통화가 밀려나 통화 정책이 무력해집니다.</b> 이걸 <b>사실상의 달러화</b>라고 합니다.<br><br>그리고 <b>막기도 어렵습니다.</b> 거래소를 막아도 개인 지갑끼리 주고받는 것은 통제하기 힘듭니다.<br><br><b>이 이야기가 중요한 이유</b> — 코인 논쟁이 대개 <b>「투자로 돈 벌기」</b>에 머무는데, 세계 어딘가에서는 <b>「생활을 지키는 도구」</b>로 쓰이고 있다는 점입니다. 같은 물건이 <b>서 있는 자리에 따라 완전히 다른 것</b>이 됩니다.' }
+];
+(function(){
+  var btns = document.querySelectorAll('#cnBtns button');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var v = +b.getAttribute('data-v');
+      btns.forEach(function(o, i){ o.classList.toggle('on', i === v); });
+      document.getElementById('cnVerdict').querySelector('.vh').textContent = CN[v].h;
+      verdict('cnVerdict', CN[v].color, CN[v].t, CN[v].p);
+    });
+  });
+})();
+
+/* ══════════ 6. 은행 탈중개화 ══════════ */
+var BK_DEPOSIT = 1000;    // 조원 (가정)
+var BK_RESERVE = 0.03;    // 지급준비율 가정
+function bkDraw(){
+  var outPct = +document.getElementById('bkOut').value;
+  var backPct = +document.getElementById('bkBack').value;
+  document.getElementById('bkOutOut').textContent = outPct + '%';
+  document.getElementById('bkBackOut').textContent = backPct + '%';
+
+  var moved = BK_DEPOSIT * outPct / 100;            // 스테이블코인으로 옮겨간 돈
+  var back = moved * backPct / 100;                 // 준비금으로 다시 은행 예금이 된 돈
+  var toBond = moved - back;                        // 국채 등으로 간 돈
+  var net = moved - back;                           // 순 예금 감소
+  var loan = net * (1 - BK_RESERVE);                // 줄어드는 대출 여력
+
+  document.getElementById('bkNet').textContent = net.toFixed(0) + '조원';
+  document.getElementById('bkLoan').textContent = '-' + loan.toFixed(0) + '조원';
+  signColor(document.getElementById('bkNet'), -net);
+  signColor(document.getElementById('bkLoan'), -loan);
+
+  var X0 = 40, W = 560, ymax = BK_DEPOSIT;
+  function w(v){ return Math.max(1, v / ymax * W); }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="26">예금 ' + BK_DEPOSIT + '조원 중 ' + outPct + '%가 스테이블코인으로 옮겨갈 때</text>';
+  // 1행: 원래 예금
+  g += '<rect x="' + X0 + '" y="38" width="' + w(BK_DEPOSIT).toFixed(1) + '" height="26" rx="2" fill="#4C7A6D" fill-opacity=".3" stroke="#4C7A6D" stroke-width="1.2"/>';
+  g += '<text class="axt" x="' + (X0 + 8) + '" y="55">처음 은행 예금 ' + BK_DEPOSIT + '조원</text>';
+  // 2행: 남은 예금 + 옮겨간 돈
+  var rest = BK_DEPOSIT - moved;
+  g += '<rect x="' + X0 + '" y="80" width="' + w(rest).toFixed(1) + '" height="26" rx="2" fill="#4C7A6D" fill-opacity=".45" stroke="#4C7A6D" stroke-width="1.2"/>';
+  g += '<rect x="' + (X0 + w(rest)).toFixed(1) + '" y="80" width="' + w(moved).toFixed(1) + '" height="26" rx="2" fill="#9E7A2E" fill-opacity=".45" stroke="#9E7A2E" stroke-width="1.2"/>';
+  g += '<text class="axt" x="' + (X0 + 8) + '" y="97">은행에 남은 예금</text>';
+  if(moved > 30) g += '<text class="axt" x="' + (X0 + w(rest) + 8).toFixed(1) + '" y="97">옮겨감 ' + moved.toFixed(0) + '</text>';
+  // 3행: 옮겨간 돈이 어디로 가나
+  g += '<text class="axt" x="' + X0 + '" y="132">옮겨간 ' + moved.toFixed(0) + '조원은 준비금이 되어 이렇게 나뉩니다</text>';
+  var bx = X0 + w(rest);
+  g += '<rect x="' + bx.toFixed(1) + '" y="142" width="' + w(back).toFixed(1) + '" height="26" rx="2" fill="#4C7A6D" fill-opacity=".45" stroke="#4C7A6D" stroke-width="1.2"/>';
+  g += '<rect x="' + (bx + w(back)).toFixed(1) + '" y="142" width="' + w(toBond).toFixed(1) + '" height="26" rx="2" fill="#3A5A8E" fill-opacity=".45" stroke="#3A5A8E" stroke-width="1.2"/>';
+  g += '<text class="axt" x="' + X0 + '" y="159">→ 은행으로 돌아옴 ' + back.toFixed(0) + ' · 국채 등으로 ' + toBond.toFixed(0) + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="190">돈이 사라지는 게 아니라, 대출로 가던 돈이 국채로 방향을 바꿉니다.</text>';
+  document.getElementById('bkScene').innerHTML = g;
+
+  if(outPct === 0){
+    verdict('bkVerdict', '#4C7A6D',
+      '아무 일도 일어나지 않습니다',
+      '예금 이탈이 없으면 은행의 대출 여력도 그대로입니다.<br><br><b>이탈률 슬라이더를 올려보세요.</b> 그리고 그다음에 <b>「준비금 중 은행 예금 비중」</b>도 함께 움직여보면, <b>같은 이탈률인데도 결과가 크게 달라지는 것</b>을 볼 수 있습니다.');
+  } else if(backPct >= 80){
+    verdict('bkVerdict', '#4C7A6D',
+      '돈은 거의 돌아오지만, 예금자가 바뀝니다',
+      '옮겨간 ' + moved.toFixed(0) + '조원 중 <b>' + back.toFixed(0) + '조원이 은행 예금으로 돌아옵니다.</b> 그래서 순 예금 감소는 <b>' + net.toFixed(0) + '조원</b>뿐입니다.<br><br><b>그런데 중요한 변화가 있습니다.</b> 예금자가 <b>수많은 개인에서 소수의 발행사로</b> 바뀌었습니다.<br><br>이게 왜 문제냐면 — <b>개인 예금은 잘 안 움직이지만, 대형 기관 예금은 한꺼번에 움직입니다.</b> 은행 입장에서 <b>불안정한 자금</b>이 됩니다. 그래서 은행은 그만큼 <b>여유 자금을 더 쌓아두어야</b> 하고, 결국 <b>대출에 쓸 수 있는 돈은 줄어듭니다.</b><br><br>숫자로는 별일 아닌 것처럼 보여도 <b>자금의 성격이 바뀐 것</b>입니다.');
+  } else if(backPct <= 30){
+    verdict('bkVerdict', '#8E4B3A',
+      '민간 대출에서 정부 재정으로 방향이 바뀝니다',
+      '옮겨간 ' + moved.toFixed(0) + '조원 중 <b>' + toBond.toFixed(0) + '조원이 국채로</b> 갑니다. 순 예금은 <b>' + net.toFixed(0) + '조원</b> 줄고, 은행의 대출 여력은 <b>약 ' + loan.toFixed(0) + '조원</b> 줄어듭니다.<br><br><b>돈이 사라진 것은 아닙니다.</b> 다만 <b>집을 사려는 사람과 가게를 여는 사람에게 가던 돈</b>이 <b>정부에게 가는 돈</b>으로 바뀌었습니다.<br><br>그리고 은행은 예금을 붙잡으려고 <b>예금 금리를 올려야</b> 합니다. 조달 비용이 오르면 <b>대출 금리도 오릅니다.</b> 결국 <b>빌리는 쪽의 비용이 커집니다.</b><br><br>이것이 각국 규제 당국이 스테이블코인을 <b>「그냥 새로운 결제 수단」으로만 보지 않는 이유</b>입니다.');
+  } else {
+    verdict('bkVerdict', '#9E7A2E',
+      '절반쯤 돌아오고 절반쯤 국채로 갑니다',
+      '옮겨간 ' + moved.toFixed(0) + '조원 중 <b>' + back.toFixed(0) + '조원은 은행으로</b>, <b>' + toBond.toFixed(0) + '조원은 국채 등으로</b> 갑니다. 순 예금 감소는 <b>' + net.toFixed(0) + '조원</b>, 대출 여력 감소는 <b>약 ' + loan.toFixed(0) + '조원</b>입니다.<br><br><b>여기서 알 수 있는 것</b> — 같은 이탈률이어도 <b>준비금을 어디에 두느냐에 따라 은행에 미치는 충격이 완전히 달라집니다.</b><br><br>그래서 규제 논의에서 <b>「준비금을 무엇으로 보유하게 할 것인가」</b>가 핵심 쟁점입니다. 안전성만 보면 <b>국채가 낫고</b>, 은행 시스템 영향만 보면 <b>예금이 낫습니다.</b> <b>둘을 동시에 만족시키는 답은 없습니다.</b>');
+  }
+}
+['bkOut', 'bkBack'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', bkDraw);
+});
+
+/* ══════════ 7. 시나리오 ══════════ */
+var SC = [
+  { color:'#9E7A2E',
+    t:'① 달러의 확장 — 스테이블코인이 국제 결제의 한 축이 됨',
+    p:'달러 스테이블코인이 <b>국경 간 송금과 기업 결제에서 자리를 잡는</b> 경로입니다. 은행망보다 빠르고 싸다는 장점이 그대로 힘을 발휘합니다.<br><br><b>결과</b> — 달러의 영향력이 <b>오히려 커집니다.</b> 미국은 국채 수요와 제재 수단을 함께 얻습니다. 통화가 약한 나라들은 <b>사실상의 달러화</b>가 빨라집니다.<br><br><b>이렇게 되고 있다면 보이는 신호</b><br>· 스테이블코인 발행 총량이 <b>꾸준히 증가</b><br>· 코인 거래가 아니라 <b>실제 송금·결제 사용</b> 비중 증가<br>· 대형 결제·핀테크 기업의 <b>스테이블코인 결제 도입</b><br>· 비달러 스테이블코인의 비중이 <b>여전히 미미</b>' },
+  { color:'#3A5A8E',
+    t:'② 블록별 분화 — 진영마다 다른 디지털 화폐',
+    p:'각 통화권이 <b>자기 진영의 디지털 결제망</b>을 만들고, 서로 연결은 하되 <b>주도권은 나누지 않는</b> 경로입니다.<br><br><b>결과</b> — 국제 결제가 <b>여러 갈래로 쪼개집니다.</b> 효율은 떨어지지만 각국의 <b>통화주권은 지켜집니다.</b> 지정학적 긴장이 높을수록 이 방향의 힘이 커집니다.<br><br><b>이렇게 되고 있다면 보이는 신호</b><br>· 유로·엔·위안 표시 스테이블코인 또는 CBDC의 <b>실제 사용 증가</b><br>· 중앙은행 간 <b>도매용 CBDC 연결 프로젝트</b>의 상용화<br>· 달러를 거치지 않는 <b>양자 간 결제 협정</b> 확대<br>· 특정 통화 표시 스테이블코인의 <b>역내 사용 제한 규제</b> 강화' },
+  { color:'#4C7A6D',
+    t:'③ 은행화 — 규제를 받으며 평범해짐',
+    p:'스테이블코인이 <b>은행과 거의 같은 규제</b>를 받게 되는 경로입니다. 준비금 규제, 자본 규제, 검사, 예금자 보호 비슷한 장치까지.<br><br><b>결과</b> — <b>훨씬 안전해지지만 특별할 것이 없어집니다.</b> 「국경 없고 24시간」이라는 장점 일부도 규제로 깎입니다. 결국 <b>「빠른 은행 송금」</b> 정도로 수렴합니다.<br><br>기존 은행들이 <b>직접 발행에 뛰어들면</b> 이 방향이 빨라집니다. 그러면 지금의 발행사들은 <b>경쟁에서 밀릴 수 있습니다.</b><br><br><b>이렇게 되고 있다면 보이는 신호</b><br>· 대형 은행·금융지주가 <b>직접 스테이블코인 발행</b><br>· 발행 자격이 <b>규제받는 기관으로 제한</b>되는 입법<br>· 준비금 구성과 감사 요건이 <b>은행 수준으로 강화</b><br>· 개인 간 자유로운 이전에 대한 <b>신원 확인 의무 확대</b>' },
+  { color:'#8E4B3A',
+    t:'④ 사고와 후퇴 — 큰 붕괴가 방향을 되돌림',
+    p:'대형 발행사나 대형 거래소에서 <b>또 한 번 큰 사고</b>가 나는 경로입니다. 06편의 테라·루나보다 큰 규모라면 파장이 훨씬 넓습니다.<br><br><b>결과</b> — 규제가 <b>급격히 강해지고</b>, 일부 나라는 <b>사실상 금지</b>로 갑니다. 준비금 국채가 한꺼번에 풀리며 <b>국채 시장까지 흔들릴</b> 수 있습니다.<br><br><b>이렇게 되고 있다면 보이는 신호</b><br>· 대형 발행사의 <b>준비금 공시 지연이나 회계 이슈</b><br>· 준비금에 <b>즉시 현금화 어려운 자산</b> 비중 증가<br>· 특정 스테이블코인의 <b>지속적인 미세 디페깅</b><br>· 발행사에 대한 <b>규제 조사 착수</b><br><br><b>이 시나리오가 알려주는 것</b> — 위 신호들은 <b>사고 전에 관찰 가능</b>합니다. 06편의 두 사례 모두 <b>사전에 경고가 있었습니다.</b> 문제는 그때 대부분이 <b>수익률을 보고 있었다는 것</b>입니다.' }
+];
+bindBtnRow('#scBtns', function(v){
+  var s = SC[+v];
+  document.getElementById('scVerdict').querySelector('.vh').textContent = '시나리오 ' + (+v + 1) + ' / 4';
+  verdict('scVerdict', s.color, s.t, s.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#mfCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#mfCheck li.done').length;
+      document.getElementById('mfCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 항목이 가장 어렵습니다. 신호는 미리 정해두어야 신호입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#lyBtns button[data-v="0"]').click();
+tsDraw();
+document.querySelector('#cnBtns button[data-v="0"]').click();
+bkDraw();
+document.querySelector('#scBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
