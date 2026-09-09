@@ -1,0 +1,922 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>수익률곡선과 금리 스프레드</title>
+<meta name="description" content="만기별 금리를 한 줄로 이으면 곡선이 됩니다. 곡선의 모양과 네 가지 변화 유형, 장단기 역전의 의미와 한계를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --curve:#4C6B7A;--bull:#5F7A52;--bear:#8E4B3A;--flat:#7A5C9E;--warn2:#8E6B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:680px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--curve));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--curve));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--curve));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .quad{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 0;}
+  .quad > div{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--qc);border-radius:3px;padding:14px 16px;}
+  .quad h4{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--qc);margin:0 0 7px;}
+  .quad p{font-size:13.5px;color:var(--ink-soft);margin:0 0 6px;max-width:none;}
+  .quad p:last-child{margin-bottom:0;}
+  .quad p b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .quad{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">채권 05 · 곡선 · 투자 공부 노트</div>
+    <h1>수익률곡선과<br>금리 스프레드</h1>
+    <p class="lede">04편에서는 만기 두세 개만 봤습니다. <b>모든 만기의 금리를 한 줄로 이으면 곡선</b>이 되고, 그 <b>모양과 모양의 변화</b>가 훨씬 많은 것을 말해줍니다.</p>
+    <div class="callout">
+      <p><b>이 편에서 뒤집을 통념 하나.</b></p>
+      <p><b>「장단기 금리 역전이 풀리면 장기채가 오른다」</b> — 성립하지 않습니다.</p>
+      <p>역전이 풀리는 길은 <b>둘</b>입니다. <b>단기금리가 내려와서</b> 풀릴 수도 있고, <b>장기금리가 올라가서</b> 풀릴 수도 있습니다. <b>앞쪽이면 장기채는 제자리</b>이고, <b>뒤쪽이면 장기채는 크게 떨어집니다.</b></p>
+      <p>같은 <b>「역전 해소」</b>라는 헤드라인 아래 <b>정반대의 결과</b>가 숨어 있습니다. 3장에서 계산합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#shape">1. 곡선의 모양</a>
+    <a href="#move">2. 네 가지 변화</a>
+    <a href="#inv">3. 역전</a>
+    <a href="#kinds">4. 스프레드의 종류</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="shape">
+    <div class="prod-head" style="--edge:var(--curve)">
+      <span class="prod-tag">01 · 모양</span>
+      <h2>만기별 금리를 한 줄로 이으면</h2>
+      <p class="one">보통은 <b>우상향</b>입니다. 그런데 <b>가끔 뒤집힙니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>친구한테 돈을 빌려줄 때, <b>1년 뒤에 갚는 것</b>과 <b>30년 뒤에 갚는 것</b> 중에 어느 쪽이 이자를 더 받아야 할까?</p>
+      <p>당연히 <b>30년</b>이지. 오래 기다려야 하고, 그동안 무슨 일이 생길지 모르니까. 그래서 보통은 <b>기간이 길수록 이자가 높아.</b> 이걸 그림으로 그리면 <b>오른쪽으로 올라가는 선</b>이 돼. 이게 <b>정상</b>이야.</p>
+      <p>그런데 <b>가끔 뒤집혀.</b> <b>1년짜리 이자가 30년짜리보다 높아지는</b> 거야. 이상하지?</p>
+      <p>왜 그럴까? 사람들이 <b>「지금은 이자가 높지만 곧 크게 내려갈 거야」</b>라고 생각하면 그래. <b>앞으로 낮아질 걸 아니까 지금 길게 묶어두려고</b> 하거든. 그럼 긴 쪽 이자가 내려가.</p>
+      <p>그리고 <b>「곧 크게 내려간다」는 건 보통 「경기가 나빠진다」는 뜻</b>이야. 그래서 이 뒤집힘을 사람들이 <b>불황 신호</b>로 봐. 3장에서 자세히 볼게.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CURVE · 만기별 금리를 움직여보세요</div>
+      <p class="labsub">네 점을 이으면 <b>수익률곡선</b>입니다. 모양이 자동으로 판정됩니다.</p>
+
+      <div class="ctrl-row">
+        <label for="cv3m">3개월</label>
+        <input type="range" id="cv3m" min="0" max="90" step="1" value="53">
+        <output id="cv3mOut">5.3%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cv2y">2년</label>
+        <input type="range" id="cv2y" min="0" max="90" step="1" value="50">
+        <output id="cv2yOut">5.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cv10y">10년</label>
+        <input type="range" id="cv10y" min="0" max="90" step="1" value="43">
+        <output id="cv10yOut">4.3%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cv30y">30년</label>
+        <input type="range" id="cv30y" min="0" max="90" step="1" value="44">
+        <output id="cv30yOut">4.4%</output>
+      </div>
+
+      <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="만기별 금리를 이은 수익률곡선">
+        <g id="cvScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">10년 − 2년</span><span class="rv" id="cvSp102">—</span></div>
+        <div><span class="rk">10년 − 3개월</span><span class="rv" id="cvSp103">—</span></div>
+      </div>
+
+      <div class="verdict" id="cvVerdict" style="--vc:var(--curve)">
+        <div class="vh">모양</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>기본값은 「역전」 상태</b>로 두었습니다 — 짧은 쪽이 긴 쪽보다 높은 모양입니다. 슬라이더를 움직여 <b>정상·평탄·험프</b>도 만들어보세요.<br><br>
+        <b>가장 널리 쓰이는 두 스프레드</b> — <b>10년 − 2년</b>과 <b>10년 − 3개월</b>입니다. 둘이 다른 신호를 줄 때도 있어 <b>함께 보는 것</b>이 보통입니다.<br><br>
+        <b>이 곡선은 실제 시장 데이터가 아니라 직접 입력한 값</b>입니다. 실제 곡선은 <b>미국 재무부와 각국 중앙은행이 매일 공개</b>하며 무료로 볼 수 있습니다.
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">기억할 한 줄</div>
+      <div class="kb">곡선의 <b>높이</b>는 금리 수준이고,<br>곡선의 <b>기울기</b>는 앞으로의 전망입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="move">
+    <div class="prod-head" style="--edge:var(--bull)">
+      <span class="prod-tag">02 · 변화</span>
+      <h2>곡선이 움직이는 네 가지 방식</h2>
+      <p class="one">이 분류가 <b>장기채를 들고 있다면 가장 실용적</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SHIFT · 짧은 쪽과 긴 쪽을 따로 움직여보세요</div>
+      <p class="labsub">둘이 <b>얼마나 다르게</b> 움직이느냐로 네 가지가 갈립니다.</p>
+
+      <div class="ctrl-row">
+        <label for="shShort">짧은 쪽(2년) 금리 변화</label>
+        <input type="range" id="shShort" min="-30" max="30" step="1" value="-5">
+        <output id="shShortOut">−0.5%p</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="shLong">긴 쪽(30년) 금리 변화</label>
+        <input type="range" id="shLong" min="-30" max="30" step="1" value="-15">
+        <output id="shLongOut">−1.5%p</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="shY">현재 금리 수준</label>
+        <input type="range" id="shY" min="5" max="80" step="1" value="43">
+        <output id="shYOut">4.3%</output>
+      </div>
+
+      <div class="steps-out" id="shSteps"></div>
+
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="곡선 변화 네 유형과 가격 영향">
+        <g id="shScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">2년채 / 30년채</span><span class="rv" id="shBoth">—</span></div>
+        <div><span class="rk">기울기 변화</span><span class="rv" id="shSlope">—</span></div>
+      </div>
+
+      <div class="verdict" id="shVerdict" style="--vc:var(--bull)">
+        <div class="vh">변화 유형</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="quad">
+      <div style="--qc:var(--bull)">
+        <h4>불 플래트닝 — 장기채 최고</h4>
+        <p><b>긴 쪽이 더 크게 내려감.</b> 곡선이 눕습니다.</p>
+        <p>침체 우려가 <b>장기 전망에 반영</b>될 때 나타납니다.</p>
+        <p><b>장기채를 들고 있다면 기다리는 그림</b>입니다.</p>
+      </div>
+      <div style="--qc:var(--warn2)">
+        <h4>불 스티프닝 — 나쁘진 않음</h4>
+        <p><b>짧은 쪽이 더 크게 내려감.</b> 곡선이 가팔라집니다.</p>
+        <p>중앙은행이 <b>인하를 시작</b>했지만 장기는 덜 반응할 때.</p>
+        <p>장기채도 오르지만 <b>기대만큼은 아닙니다.</b></p>
+      </div>
+      <div style="--qc:var(--bear)">
+        <h4>베어 스티프닝 — 장기채 최악</h4>
+        <p><b>긴 쪽이 더 크게 올라감.</b></p>
+        <p><b>인플레이션 재발</b>이나 <b>국채 공급 급증</b> 우려일 때.</p>
+        <p><b>2022년과 그 이후 구간에서 반복해서 나타난 모양</b>입니다.</p>
+      </div>
+      <div style="--qc:var(--flat)">
+        <h4>베어 플래트닝 — 긴축 국면</h4>
+        <p><b>짧은 쪽이 더 크게 올라감.</b></p>
+        <p>중앙은행이 <b>금리를 올리는</b> 국면입니다.</p>
+        <p>여기가 계속되면 <b>역전</b>으로 갑니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「불」과 「베어」가 뜻하는 것</h3>
+      <p>이름이 헷갈리기 쉬운데 규칙은 단순합니다.</p>
+      <p><b>· 불(bull)</b> = <b>금리가 내려가는</b> 것 = <b>채권 가격이 오르는</b> 것<br>
+         <b>· 베어(bear)</b> = <b>금리가 올라가는</b> 것 = <b>채권 가격이 떨어지는</b> 것</p>
+      <p>주식에서 쓰는 뜻과 같습니다 — <b>채권 가격 기준</b>으로 붙인 이름입니다. 금리 기준으로 보면 방향이 반대라 헷갈리기 쉽습니다.</p>
+      <p><b>· 스티프닝(steepening)</b> = 곡선이 <b>가팔라지는</b> 것 = 장단기 차이가 <b>벌어지는</b> 것<br>
+         <b>· 플래트닝(flattening)</b> = 곡선이 <b>눕는</b> 것 = 장단기 차이가 <b>좁혀지는</b> 것</p>
+      <p class="plain"><b>장기채 보유자에게 가장 중요한 것.</b> <b>「불」이면 무조건 좋은 것이 아닙니다.</b> <b>불 스티프닝</b>은 짧은 쪽만 크게 내려가는 것이라 <b>장기채는 별로 안 오릅니다.</b> 진짜로 원하는 것은 <b>불 플래트닝</b> — <b>긴 쪽이 더 크게 내려가는</b> 것입니다.<br><br>계산기에서 두 경우를 비교해보세요. <b>같은 「불」인데 30년채 결과가 세 배 가까이 차이</b> 납니다.</p>
+
+      <h3>실제로는 이 넷이 순서대로 돌아갑니다</h3>
+      <p>경기 사이클을 따라 <b>대략 이런 순서</b>로 움직이는 경향이 있습니다.</p>
+      <p><b>① 경기 과열 · 물가 상승</b> → 중앙은행이 인상 → <b>베어 플래트닝</b> (짧은 쪽이 급등)<br>
+         <b>② 긴축이 계속됨</b> → <b>역전</b>까지 진행<br>
+         <b>③ 침체 신호가 나옴</b> → 인하 기대가 형성 → <b>불 플래트닝</b> 또는 <b>불 스티프닝</b><br>
+         <b>④ 실제 인하 · 회복 기대</b> → <b>불 스티프닝</b>이 이어짐<br>
+         <b>⑤ 회복이 확인되고 물가가 다시 오름</b> → <b>베어 스티프닝</b> → ①로 돌아감</p>
+      <p class="plain"><b>다만 이 순서가 항상 그대로 오지는 않습니다.</b> 표본이 적고, 매번 원인이 다르며, <b>단계를 건너뛰거나 되돌아가는</b> 경우도 많습니다. <b>「지금 몇 단계인가」를 맞히려는 시도 자체가 06편에서 경계할 함정</b>입니다.<br><br><b>이 순환에서 실제로 쓸 만한 것은 예측이 아니라 분류</b>입니다. <b>지금 벌어진 일이 넷 중 무엇인지</b>를 알면 <b>내 자산에 무슨 일이 일어났는지는 정확히</b> 설명됩니다. 그것만으로도 충분히 유용합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="inv">
+    <div class="prod-head" style="--edge:var(--bear)">
+      <span class="prod-tag">03 · 역전</span>
+      <h2>장단기 금리 역전</h2>
+      <p class="one">유명한 신호입니다. 그런데 <b>장기채 투자자에게는 다른 이야기</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">INVERSION · 역전이 어떻게 풀리는지 골라보세요</div>
+      <p class="labsub">같은 <b>「역전 해소」</b>인데 <b>어느 쪽이 움직이느냐</b>로 결과가 갈립니다.</p>
+
+      <div class="ctrl-row">
+        <label for="ivS0">지금 2년 금리</label>
+        <input type="range" id="ivS0" min="5" max="90" step="1" value="50">
+        <output id="ivS0Out">5.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ivL0">지금 10년 금리</label>
+        <input type="range" id="ivL0" min="5" max="90" step="1" value="43">
+        <output id="ivL0Out">4.3%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ivS1">나중에 2년 금리</label>
+        <input type="range" id="ivS1" min="5" max="90" step="1" value="30">
+        <output id="ivS1Out">3.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ivL1">나중에 10년 금리</label>
+        <input type="range" id="ivL1" min="5" max="90" step="1" value="43">
+        <output id="ivL1Out">4.3%</output>
+      </div>
+
+      <div class="steps-out" id="ivSteps"></div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="역전 해소 전후의 곡선과 가격 영향">
+        <g id="ivScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">스프레드 변화</span><span class="rv" id="ivSp">—</span></div>
+        <div><span class="rk">10년채 / 30년채 가격</span><span class="rv" id="ivPx">—</span></div>
+      </div>
+
+      <div class="verdict" id="ivVerdict" style="--vc:var(--bear)">
+        <div class="vh">역전</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 10년채와 30년채 모두 <b>10년 금리의 변화만큼 움직인다</b>고 단순화하고, 각자의 듀레이션을 곱했습니다. 실제로는 <b>30년 금리가 따로 움직입니다.</b><br><br>
+        <b>핵심은 숫자가 아니라 구조</b>입니다 — <b>2년 금리가 아무리 내려가도 10년 금리가 그대로면 장기채는 오르지 않습니다.</b> 슬라이더로 직접 확인해보세요.
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">HISTORY · 역전 이후 침체까지 걸린 시간</div>
+      <p class="labsub">미국 10년−2년 기준의 <b>과거 사례</b>입니다. <b>표본이 여섯 개뿐</b>입니다.</p>
+
+      <svg viewBox="0 0 640 245" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="역전 이후 침체까지의 시차">
+        <g id="hsScene"></g>
+      </svg>
+
+      <div class="btnrow" id="hsBtns">
+        <button data-v="0" class="on">왜 신호가 되나</button>
+        <button data-v="1">시차의 문제</button>
+        <button data-v="2">표본이 너무 적다</button>
+        <button data-v="3">그래도 볼 값어치</button>
+      </div>
+
+      <div class="verdict" id="hsVerdict" style="--vc:var(--warn2)">
+        <div class="vh">역전과 침체</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 위 숫자는 근사치</b>입니다. <b>역전의 시작 시점</b>과 <b>침체의 시작 시점</b>을 어떻게 정의하느냐에 따라 몇 달씩 달라집니다. 자료마다 다른 값을 씁니다.<br><br>
+        <b>그리고 2019년 사례는 팬데믹이 겹쳐</b> 인과를 말하기 어렵습니다. 사실상 <b>쓸 수 있는 표본은 다섯 개 남짓</b>입니다.<br><br>
+        <b>이 정도 표본으로 「법칙」을 말할 수는 없습니다.</b> 코인 트랙에서 <b>반감기 표본 세 개</b>를 두고 했던 이야기와 같습니다. <b>패턴처럼 보이는 것과 법칙은 다릅니다.</b>
+      </div>
+    </div>
+    <div class="deep">
+      <h3>역전은 「짧은 채권이 이자를 더 준다」는 뜻이기도 합니다</h3>
+      <p>역전을 <b>침체 신호</b>로만 읽으면 놓치는 것이 있습니다. 역전 상태에서는 <b>짧은 채권의 이자가 긴 채권보다 높습니다.</b></p>
+      <p>즉 <b>3개월·1년짜리를 굴리면 30년짜리보다 더 받는다</b>는 뜻입니다. 위험은 훨씬 작은데 말입니다.</p>
+      <p>그러면 <b>그 상황에서 왜 장기채를 드나</b> — 이유는 하나뿐입니다. <b>「앞으로 장기금리가 내려가서 가격이 오를 것」</b>이라는 기대입니다. <b>이자 때문이 아닙니다.</b></p>
+      <p class="plain"><b>여기서 스스로 확인할 것.</b> 역전 상태에서 장기채를 드는 것은 <b>「지금 이자를 덜 받는 것을 감수하고 가격 상승에 거는」</b> 선택입니다. 01편 5장에서 정리한 <b>③ 금리 하락 베팅</b>이 정확히 이것입니다.<br><br><b>나쁜 선택이라는 뜻이 아닙니다.</b> 다만 <b>「안전자산을 담았다」와는 전혀 다른 성격</b>이라는 것을 알고 있어야 합니다. 그리고 <b>기다리는 동안 이자에서도 손해를 보고 있다는 것</b>까지 계산에 넣어야 합니다.</p>
+
+      <h3>실제 곡선은 어디서 보고, 무엇을 확인하나</h3>
+      <p>이 편의 계산기는 <b>직접 입력한 숫자</b>로 그린 것입니다. <b>실제 곡선은 무료로 공개</b>되어 있습니다.</p>
+      <p><b>· 미국</b> — 재무부가 매일 만기별 금리를 발표합니다. <b>10년물·30년물</b>이 가장 많이 인용됩니다.<br>
+         <b>· 한국</b> — 금융투자협회 채권정보센터와 한국은행 통계에서 국고채 만기별 금리를 볼 수 있습니다.<br>
+         <b>· 스프레드</b> — 미국 세인트루이스 연준의 통계 사이트(FRED)에서 <b>10년−2년</b>, <b>10년−3개월</b>, 각종 신용 스프레드를 그래프로 제공합니다.</p>
+      <p><b>장기채를 들고 있다면 확인 목록은 짧습니다.</b></p>
+      <p><b>① 내 만기의 금리</b> — 30년채라면 <b>30년물 금리</b>입니다. 이것만이 내 가격을 정합니다.<br>
+         <b>② 기대 인플레이션(브레이크이븐)</b> — 이게 오르면 장기채에 나쁜 소식입니다(03편).<br>
+         <b>③ 곡선의 변화 유형</b> — 2장의 네 가지 중 무엇인지. <b>불 플래트닝인지 베어 스티프닝인지</b>가 결정적입니다.</p>
+      <p class="plain"><b>보지 않아도 되는 것</b> — <b>기준금리 발표 그 자체</b>입니다(04편). 그리고 <b>「역전 해소」 같은 헤드라인</b>입니다. 둘 다 <b>내 자산에 무슨 일이 일어나는지 알려주지 않습니다.</b><br><br><b>그리고 매일 볼 필요도 없습니다.</b> 장기채는 <b>몇 년 단위의 이야기</b>입니다. 매일 확인하면 <b>버티기만 어려워집니다.</b> 06편에서 이 이야기를 이어갑니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="kinds">
+    <div class="prod-head" style="--edge:var(--flat)">
+      <span class="prod-tag">04 · 종류</span>
+      <h2>「스프레드」라고 불리는 것들</h2>
+      <p class="one">전부 <b>두 금리의 차이</b>인데, <b>무엇에서 무엇을 빼느냐</b>가 다릅니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SPREADS · 눌러서 확인하세요</div>
+      <p class="labsub">각각 <b>무엇을 재는 것</b>이고 <b>벌어지면 무슨 뜻</b>인지입니다.</p>
+
+      <div class="btnrow" id="spBtns">
+        <button data-v="0" class="on">장단기 스프레드</button>
+        <button data-v="1">신용 스프레드</button>
+        <button data-v="2">기대 인플레이션</button>
+        <button data-v="3">국가 간 금리차</button>
+        <button data-v="4">스왑·자금시장</button>
+      </div>
+
+      <div class="verdict" id="spVerdict" style="--vc:var(--flat)">
+        <div class="vh">스프레드</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">모양보다 <b>모양의 변화</b>가 중요합니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>변화 유형</th><th>짧은 쪽</th><th>긴 쪽</th><th>흔한 배경</th><th>장기채에게</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>불 플래트닝</th><td>하락</td><td><b>더 크게 하락</b></td><td>침체 우려가 장기에 반영</td><td><b>가장 좋음</b></td></tr>
+          <tr><th>불 스티프닝</th><td><b>더 크게 하락</b></td><td>하락</td><td>인하 시작 · 회복 기대</td><td>보통</td></tr>
+          <tr><th>베어 스티프닝</th><td>상승</td><td><b>더 크게 상승</b></td><td>인플레 재발 · 국채 공급</td><td><b>가장 나쁨</b></td></tr>
+          <tr><th>베어 플래트닝</th><td><b>더 크게 상승</b></td><td>상승</td><td>중앙은행 긴축</td><td>나쁨 (덜 나쁨)</td></tr>
+          <tr><th>평행 하락</th><td>하락</td><td>같이 하락</td><td>전반적 금리 하락</td><td>좋음</td></tr>
+          <tr><th>평행 상승</th><td>상승</td><td>같이 상승</td><td>전반적 금리 상승</td><td>나쁨</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 경향이며 예외가 있습니다</p>
+
+    <ul class="check" id="bcCheck">
+      <li><b>수익률곡선은 만기별 금리를 이은 선</b>이라는 것.</li>
+      <li><b>보통은 우상향(정상)</b>이고 <b>가끔 뒤집힌다(역전)</b>는 것.</li>
+      <li><b>「불」은 금리 하락, 「베어」는 금리 상승</b>이라는 것.</li>
+      <li><b>「스티프닝」은 벌어짐, 「플래트닝」은 좁혀짐</b>이라는 것.</li>
+      <li><b>장기채가 가장 좋아하는 것은 불 플래트닝</b>이라는 것.</li>
+      <li><b>장기채가 가장 싫어하는 것은 베어 스티프닝</b>이라는 것.</li>
+      <li><b>「불」이라고 다 좋은 게 아니다</b> — 불 스티프닝은 장기채에 효과가 작습니다.</li>
+      <li><b>역전 해소가 장기채 상승을 뜻하지 않는다</b>는 것 — 어느 쪽이 움직이느냐에 달렸습니다.</li>
+      <li><b>역전 → 침체의 시차가 6~22개월로 크게 벌어진다</b>는 것.</li>
+      <li><b>표본이 여섯 개뿐이라 「법칙」이라 부를 수 없다</b>는 것.</li>
+      <li><b>내가 봐야 할 것은 곡선 전체가 아니라 「내 만기」의 금리</b>라는 것.</li>
+    </ul>
+    <div class="checkcount" id="bcCount">0 / 11 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 곡선의 <b>모양</b>보다 <b>모양이 어떻게 변하는가</b>가 내 자산과 직결됩니다. 그리고 그 변화는 <b>네 가지</b>로 정리됩니다 — <b>불·베어 × 스티프닝·플래트닝.</b></p>
+      <p><b>장기채를 들고 있다면 원하는 것은 하나입니다 — 불 플래트닝.</b> <b>긴 쪽 금리가 짧은 쪽보다 더 크게 내려가는</b> 것입니다. 그냥 <b>「금리 인하」</b>가 아닙니다. 인하가 <b>짧은 쪽만 내리면</b> 내 장기채는 거의 안 움직입니다(04편).</p>
+      <p>그리고 <b>이 편에서 가장 중요한 반전</b> — <b>「역전이 풀린다」는 헤드라인은 장기채에 좋은 소식이라는 보장이 전혀 없습니다.</b> <b>단기가 내려와서 풀리면</b> 장기채는 제자리, <b>장기가 올라가서 풀리면</b> 장기채는 크게 떨어집니다. <b>헤드라인이 아니라 어느 쪽이 움직였는지</b>를 봐야 합니다.</p>
+      <p><b>다음 편은 06편 — 채권금리가 말하는 경기와 예측의 한계</b>입니다. 이 편에서 본 신호들이 <b>얼마나 자주 맞았고 얼마나 자주 틀렸는지</b>, 그리고 <b>「방향은 맞고 시점은 틀리는」 문제</b>를 다룹니다. 장기채를 들고 기다리는 입장이라면 <b>가장 마음에 관련된 편</b>이 될 것입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 채권 05 · 곡선<br>
+    <a href="index.html#bond">← 채권 목록으로</a> · <a href="bond-maturity.html">04 · 단기채와 장기채</a> · 06 · 경기와 예측 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    역전 이후 침체까지의 시차는 <b>근사치</b>이며 정의에 따라 달라집니다. 표본이 매우 적어 통계적 결론을 내리기 어렵습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return (r >= 0 ? '+' : '') + r.toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+function P(cpn, y, n){
+  var p = 0;
+  for(var t = 1; t <= n; t++) p += 100 * cpn / Math.pow(1 + y, t);
+  return p + 100 / Math.pow(1 + y, n);
+}
+function macaulay(cpn, y, n){
+  var pr = P(cpn, y, n), s = 0;
+  for(var t = 1; t <= n; t++) s += t * (100 * cpn / Math.pow(1 + y, t));
+  s += n * 100 / Math.pow(1 + y, n);
+  return s / pr;
+}
+function modDur(cpn, y, n){ return macaulay(cpn, y, n) / (1 + y); }
+
+/* ══════════ 1. 곡선 모양 ══════════ */
+var CV_PTS = [{ n:'3개월', x:0.25 }, { n:'2년', x:2 }, { n:'10년', x:10 }, { n:'30년', x:30 }];
+function cvDraw(){
+  var v = [+document.getElementById('cv3m').value / 10, +document.getElementById('cv2y').value / 10,
+           +document.getElementById('cv10y').value / 10, +document.getElementById('cv30y').value / 10];
+  ['cv3m', 'cv2y', 'cv10y', 'cv30y'].forEach(function(id, i){
+    document.getElementById(id + 'Out').textContent = num(v[i], 1) + '%';
+  });
+
+  var sp102 = v[2] - v[1], sp103 = v[2] - v[0];
+  document.getElementById('cvSp102').textContent = sgn(sp102, 2) + '%p';
+  document.getElementById('cvSp102').style.color = sp102 < -0.005 ? 'var(--neg)' : (sp102 > 0.005 ? 'var(--pos)' : '');
+  document.getElementById('cvSp103').textContent = sgn(sp103, 2) + '%p';
+  document.getElementById('cvSp103').style.color = sp103 < -0.005 ? 'var(--neg)' : (sp103 > 0.005 ? 'var(--pos)' : '');
+
+  var X0 = 70, W = 500, TOP = 36, H = 120;
+  var lo = Math.min.apply(null, v), hi = Math.max.apply(null, v);
+  var pad = Math.max(0.4, (hi - lo) * 0.35);
+  var vlo = lo - pad, vhi = hi + pad;
+  var span = Math.max(0.5, vhi - vlo);
+  function sx(i){ return X0 + Math.log(CV_PTS[i].x / 0.25) / Math.log(30 / 0.25) * W; }
+  function sy(val){ return TOP + H - (val - vlo) / span * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">수익률곡선 — 가로는 만기(로그), 세로는 금리</text>';
+  var d = '';
+  v.forEach(function(val, i){ d += (i === 0 ? 'M' : 'L') + sx(i).toFixed(1) + ',' + sy(val).toFixed(1); });
+  g += '<path d="' + d + '" fill="none" stroke="#4C6B7A" stroke-width="2.2"/>';
+  v.forEach(function(val, i){
+    g += '<circle cx="' + sx(i).toFixed(1) + '" cy="' + sy(val).toFixed(1) + '" r="4.5" fill="#4C6B7A"/>';
+    g += '<text class="lblb" x="' + sx(i).toFixed(1) + '" y="' + Math.max(TOP + 10, sy(val) - 10).toFixed(1) +
+         '" text-anchor="middle" fill="#4C6B7A">' + num(val, 1) + '</text>';
+    g += '<text class="axt" x="' + sx(i).toFixed(1) + '" y="' + (TOP + H + 16) + '" text-anchor="middle">' + CV_PTS[i].n + '</text>';
+  });
+  g += '<line x1="' + X0 + '" y1="' + (TOP + H) + '" x2="' + (X0 + W) + '" y2="' + (TOP + H) + '" stroke="#D9D2C0" stroke-width="1"/>';
+  // 수평 기준선 (2년 금리)
+  g += '<line x1="' + X0 + '" y1="' + sy(v[1]).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + sy(v[1]).toFixed(1) +
+       '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  var shapeColor, shapeName;
+  // 앞은 올라가고 뒤는 내려가면 「험프」 — 역전보다 먼저 판정한다
+  var humped = (v[1] > v[0] + 0.15) && (v[2] < v[1] - 0.05);
+  if(humped){ shapeName = '험프'; shapeColor = '#8E6B3A'; }
+  else if(sp102 < -0.05 || sp103 < -0.05){ shapeName = '역전'; shapeColor = '#8E4B3A'; }
+  else if(Math.abs(sp102) <= 0.15 && Math.abs(sp103) <= 0.25){ shapeName = '평탄'; shapeColor = '#7A5C9E'; }
+  else { shapeName = '정상'; shapeColor = '#5F7A52'; }
+  g += '<text class="lblb" x="' + (X0 + W) + '" y="' + (TOP + H + 40) + '" text-anchor="end" fill="' + shapeColor +
+       '">모양: ' + shapeName + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 40) + '">10년−2년 ' + sgn(sp102, 2) + '%p · 10년−3개월 ' + sgn(sp103, 2) + '%p</text>';
+  document.getElementById('cvScene').innerHTML = g;
+
+  var VD = {
+    '정상': ['#5F7A52', '정상 곡선 — 기간이 길수록 금리가 높습니다',
+      '<b>가장 흔한 모양</b>입니다. 오래 빌려줄수록 <b>더 받아야</b> 하니 자연스럽습니다.<br><br>' +
+      '<b>여기에 담긴 뜻</b> — 시장이 <b>「앞으로 금리가 지금보다 낮아질 이유가 딱히 없다」</b>고 보거나, <b>기간 프리미엄</b>이 정상적으로 붙어 있는 상태입니다(04편).<br><br>' +
+      '<b>기울기가 가파를수록</b> — 시장이 <b>앞으로 금리가 오를 것</b>으로 보거나 <b>먼 미래가 불확실하다</b>고 보는 것입니다. 경기 <b>회복 초입</b>에 자주 나타납니다.<br><br>' +
+      '<b>장기채 보유자에게</b> — 정상 곡선 자체는 좋지도 나쁘지도 않습니다. 중요한 것은 <b>여기서 어디로 움직이느냐</b>입니다. 2장에서 봅니다.'],
+    '역전': ['#8E4B3A', '역전 — 짧은 쪽이 긴 쪽보다 높습니다',
+      '<b>비정상적인 모양</b>입니다. <b>1년 빌려주는 것이 30년 빌려주는 것보다 이자가 높다</b>는 뜻이니까요.<br><br>' +
+      '<b>왜 생기나</b> — 시장이 <b>「지금 금리가 높지만 앞으로 크게 내려갈 것」</b>으로 볼 때입니다. 그러면 <b>지금 긴 금리를 확보하려는 수요</b>가 몰려 긴 쪽 금리가 내려갑니다.<br><br>' +
+      '<b>그리고 「크게 내려간다」는 대체로 「경기가 나빠진다」는 뜻</b>이라, 역전이 <b>침체 신호</b>로 읽힙니다. 3장에서 자세히 봅니다.<br><br>' +
+      '<b>⚠️ 그런데 장기채 투자자에게는 다른 이야기</b>입니다. <b>역전 상태에서는 짧은 채권이 이자를 더 줍니다.</b> 장기채를 드는 것은 <b>「지금 이자를 덜 받는 대신 나중에 가격으로 벌겠다」</b>는 선택입니다. <b>그 선택이 맞으려면 장기금리가 실제로 내려가야</b> 합니다.'],
+    '평탄': ['#7A5C9E', '평탄 — 만기가 달라도 금리가 비슷합니다',
+      '곡선이 <b>거의 수평</b>입니다. 정상과 역전 사이의 <b>전환 구간</b>인 경우가 많습니다.<br><br>' +
+      '<b>담긴 뜻</b> — 시장이 <b>「앞으로 금리가 지금과 비슷할 것」</b>으로 보거나, <b>방향에 대한 확신이 없는</b> 상태입니다.<br><br>' +
+      '<b>실전에서의 의미</b> — <b>긴 채권을 들 이유가 약해지는</b> 구간입니다. 이자를 더 주지도 않는데 <b>위험(듀레이션)은 훨씬 크기</b> 때문입니다.<br><br>' +
+      '<b>그럼에도 장기채를 드는 경우</b> — <b>앞으로 금리가 내려갈 것으로 보기 때문</b>입니다. 즉 <b>「이자 때문」이 아니라 「가격 상승 때문」</b>입니다. 01편 5장의 <b>③ 금리 하락 베팅</b>입니다.'],
+    '험프': ['#8E6B3A', '험프 — 중간이 볼록 튀어나온 모양',
+      '중간 만기(2~5년)가 <b>양쪽보다 높은</b> 모양입니다. 상대적으로 드뭅니다.<br><br>' +
+      '<b>어떻게 만들어지나</b> — <b>단기적으로 금리가 더 오를 것</b>으로 보면서 동시에 <b>그 뒤에는 크게 내려갈 것</b>으로 볼 때 나타납니다. <b>「지금부터 한동안 올렸다가 꺾는다」</b>는 기대입니다.<br><br>' +
+      '<b>또는 특정 만기에 수급이 몰릴 때</b>도 생깁니다. 예를 들어 <b>중앙은행이 특정 구간을 사거나 팔면</b> 그 부분만 눌리거나 튑니다.<br><br>' +
+      '<b>부분 역전을 동반하는 경우가 많습니다</b> — 앞쪽은 올라가는데 <b>중간에서 뒤로는 내려가므로</b>, <b>10년−2년 스프레드는 마이너스</b>가 되기 쉽습니다. 위 숫자가 지금 그런 상태라면 <b>「부분적으로 역전된 험프」</b>입니다.<br><br>' +
+      '<b>실전에서의 의미</b> — <b>곡선이 매끄럽지 않다</b>는 것은 <b>모든 만기가 같이 움직이지 않는다</b>는 뜻입니다. 04편에서 본 <b>듀레이션 근사의 한계</b>가 여기서 드러납니다.']
+  };
+  var vd = VD[shapeName];
+  document.getElementById('cvVerdict').querySelector('.vh').textContent = shapeName;
+  verdict('cvVerdict', vd[0], vd[1], vd[2]);
+}
+['cv3m', 'cv2y', 'cv10y', 'cv30y'].forEach(function(id){ document.getElementById(id).addEventListener('input', cvDraw); });
+
+/* ══════════ 2. 네 가지 변화 ══════════ */
+function shDraw(){
+  var ds = +document.getElementById('shShort').value / 10;
+  var dl = +document.getElementById('shLong').value / 10;
+  var y = +document.getElementById('shY').value / 10;
+  document.getElementById('shShortOut').textContent = ds === 0 ? '변화 없음' : sgn(ds, 1) + '%p';
+  document.getElementById('shLongOut').textContent = dl === 0 ? '변화 없음' : sgn(dl, 1) + '%p';
+  document.getElementById('shYOut').textContent = num(y, 1) + '%';
+
+  var y0 = y / 100;
+  var D2 = modDur(y0, y0, 2), D30 = modDur(y0, y0, 30);
+  var p2 = -D2 * ds, p30 = -D30 * dl;
+  var slope = dl - ds;
+
+  // 유형 분류
+  var avg = (ds + dl) / 2;
+  var kind, kc, kname;
+  if(Math.abs(ds) < 0.05 && Math.abs(dl) < 0.05){ kname = '변화 없음'; kc = '#5B5648'; kind = 'none'; }
+  else if(Math.abs(slope) < 0.05){ kname = avg < 0 ? '평행 하락' : '평행 상승'; kc = avg < 0 ? '#5F7A52' : '#8E4B3A'; kind = 'parallel'; }
+  else if(avg <= 0 && slope < 0){ kname = '불 플래트닝'; kc = '#5F7A52'; kind = 'bullflat'; }
+  else if(avg <= 0 && slope > 0){ kname = '불 스티프닝'; kc = '#8E6B3A'; kind = 'bullsteep'; }
+  else if(avg > 0 && slope > 0){ kname = '베어 스티프닝'; kc = '#8E4B3A'; kind = 'bearsteep'; }
+  else { kname = '베어 플래트닝'; kc = '#7A5C9E'; kind = 'bearflat'; }
+
+  steps('shSteps', [
+    { k:'짧은 쪽(2년) 금리', v:sgn(ds, 1) + '%p → 가격 ' + sgn(p2, 1) + '%' },
+    { k:'긴 쪽(30년) 금리', v:sgn(dl, 1) + '%p → 가격 ' + sgn(p30, 1) + '%' },
+    { k:'듀레이션 (2년 / 30년)', v:num(D2, 2) + ' / ' + num(D30, 2) },
+    { k:'기울기 변화 (긴 쪽 − 짧은 쪽)', v:sgn(slope, 1) + '%p' },
+    { k:'변화 유형', v:kname, total:true }
+  ]);
+
+  document.getElementById('shBoth').textContent = sgn(p2, 1) + '% / ' + sgn(p30, 1) + '%';
+  document.getElementById('shBoth').style.color = p30 > 0.05 ? 'var(--pos)' : (p30 < -0.05 ? 'var(--neg)' : '');
+  document.getElementById('shSlope').textContent = sgn(slope, 1) + '%p (' + kname + ')';
+
+  var X0 = 70, W = 480, TOP = 34, H = 96;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">곡선의 변화 — ' + kname + '</text>';
+  var before = [y, y + 0.4], after = [y + ds, y + 0.4 + dl];
+  var allv = before.concat(after);
+  var lo = Math.min.apply(null, allv), hi = Math.max.apply(null, allv);
+  var pad = Math.max(0.3, (hi - lo) * 0.25);
+  var vlo = lo - pad, vhi = hi + pad, span = Math.max(0.5, vhi - vlo);
+  function sy(v){ return TOP + H - (v - vlo) / span * H; }
+  var xA = X0 + 60, xB = X0 + W - 60;
+  g += '<line x1="' + xA + '" y1="' + sy(before[0]).toFixed(1) + '" x2="' + xB + '" y2="' + sy(before[1]).toFixed(1) +
+       '" stroke="#8A8474" stroke-width="1.6" stroke-dasharray="5 4"/>';
+  g += '<line x1="' + xA + '" y1="' + sy(after[0]).toFixed(1) + '" x2="' + xB + '" y2="' + sy(after[1]).toFixed(1) +
+       '" stroke="' + kc + '" stroke-width="2.4"/>';
+  [[xA, before[0], after[0], '2년'], [xB, before[1], after[1], '30년']].forEach(function(pt){
+    g += '<circle cx="' + pt[0] + '" cy="' + sy(pt[1]).toFixed(1) + '" r="3.4" fill="#8A8474"/>';
+    g += '<circle cx="' + pt[0] + '" cy="' + sy(pt[2]).toFixed(1) + '" r="4.6" fill="' + kc + '"/>';
+    g += '<text class="axt" x="' + pt[0] + '" y="' + (TOP + H + 16) + '" text-anchor="middle">' + pt[3] + '</text>';
+    g += '<text class="lblb" x="' + pt[0] + '" y="' + Math.max(TOP + 10, sy(pt[2]) - 10).toFixed(1) +
+         '" text-anchor="middle" fill="' + kc + '">' + num(pt[2], 1) + '%</text>';
+  });
+  g += '<line x1="' + X0 + '" y1="' + (TOP + H) + '" x2="' + (X0 + W) + '" y2="' + (TOP + H) + '" stroke="#D9D2C0" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 40) + '">점선이 변화 전, 실선이 변화 후입니다.</text>';
+  g += '<text class="lblb" x="' + (X0 + W) + '" y="' + (TOP + H + 40) + '" text-anchor="end" fill="' + kc +
+       '">2년채 ' + sgn(p2, 1) + '% · 30년채 ' + sgn(p30, 1) + '%</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 62) + '">듀레이션 차이(' + num(D2, 1) + ' vs ' + num(D30, 1) +
+       ') 때문에 같은 금리 변화도 가격에서는 크게 벌어집니다.</text>';
+  document.getElementById('shScene').innerHTML = g;
+
+  var TXT = {
+    none: ['변화가 없습니다', '<b>두 슬라이더를 움직여보세요.</b><br><br><b>네 가지 유형을 다 만들어보는 것</b>이 이 장의 목적입니다.<br><br>' +
+      '· <b>둘 다 마이너스, 긴 쪽이 더 크게</b> → 불 플래트닝 (장기채 최고)<br>· <b>둘 다 마이너스, 짧은 쪽이 더 크게</b> → 불 스티프닝<br>' +
+      '· <b>둘 다 플러스, 긴 쪽이 더 크게</b> → 베어 스티프닝 (장기채 최악)<br>· <b>둘 다 플러스, 짧은 쪽이 더 크게</b> → 베어 플래트닝'],
+    bullflat: ['불 플래트닝 — 장기채가 가장 좋아하는 모양입니다',
+      '<b>긴 쪽 금리가 짧은 쪽보다 더 크게 내려갔습니다.</b> 곡선이 <b>눕습니다.</b><br><br>' +
+      '<b>30년채 ' + sgn(p30, 1) + '%</b> vs <b>2년채 ' + sgn(p2, 1) + '%</b> — 장기채가 <b>압도적으로</b> 유리합니다.<br><br>' +
+      '<b>이런 일이 언제 생기나</b> — <b>침체 우려가 장기 전망에 반영</b>될 때입니다. 시장이 <b>「앞으로 오랫동안 금리가 낮을 것」</b>으로 보면 긴 쪽이 먼저 내려갑니다.<br><br>' +
+      '<b>중요한 점</b> — 이건 <b>중앙은행이 인하하기 전에도</b> 일어납니다. <b>기대가 먼저 움직이기</b> 때문입니다(04편). <b>발표를 보고 사면 이미 늦는</b> 이유입니다.<br><br>' +
+      '<b>장기채를 들고 기다린다면 바로 이 그림을 기다리는 것</b>입니다. <b>「금리 인하」가 아니라 「긴 쪽 금리의 하락」</b>이 조건입니다.'],
+    bullsteep: ['불 스티프닝 — 「불」이지만 장기채에는 효과가 작습니다',
+      '<b>짧은 쪽이 긴 쪽보다 더 크게 내려갔습니다.</b> 곡선이 <b>가팔라집니다.</b><br><br>' +
+      '<b>2년채 ' + sgn(p2, 1) + '%</b>, <b>30년채 ' + sgn(p30, 1) + '%</b>입니다. 장기채도 오르긴 하지만, <b>불 플래트닝일 때만큼은 아닙니다.</b><br><br>' +
+      '<b>언제 생기나</b> — <b>중앙은행이 실제로 인하를 시작</b>했지만 장기 전망은 크게 안 바뀔 때입니다. 또는 <b>경기 회복 기대</b>가 함께 생겨 긴 쪽이 덜 내려갈 때입니다.<br><br>' +
+      '<b>여기가 이 장의 핵심 함정</b>입니다 — <b>「금리를 내렸다」는 뉴스만 보면 좋아 보이는데</b>, 정작 <b>내 장기채는 기대보다 훨씬 덜 오릅니다.</b><br><br>' +
+      '<b>짧은 쪽 슬라이더를 그대로 두고 긴 쪽만 더 내려보세요.</b> <b>불 플래트닝으로 바뀌면서 30년채 결과가 크게 달라집니다.</b>'],
+    bearsteep: ['베어 스티프닝 — 장기채에 가장 나쁜 조합입니다',
+      '<b>긴 쪽 금리가 짧은 쪽보다 더 크게 올라갔습니다.</b> <b>30년채 ' + sgn(p30, 1) + '%</b>로 <b>2년채(' + sgn(p2, 1) +
+      '%)보다 훨씬 크게</b> 떨어집니다.<br><br>' +
+      '<b>왜 이런 일이</b> — 셋 중 하나입니다(04편).<br>· <b>인플레이션 재발 우려</b><br>· <b>국채 공급 급증</b> — 재정 적자<br>· <b>기간 프리미엄 확대</b> — 먼 미래가 불확실<br><br>' +
+      '<b>이 셋의 공통점</b> — <b>중앙은행이 해결할 수 없습니다.</b> 오히려 <b>인하가 이 상황을 악화시킬 수도</b> 있습니다. 인하가 인플레 우려를 키우면 <b>긴 쪽 금리가 더 오릅니다.</b><br><br>' +
+      '<b>2022년 이후 여러 차례 나타난 모양</b>이고, <b>장기채 보유자가 가장 답답해하는 국면</b>입니다. <b>「인하했는데 왜 내 채권은 떨어지지」</b>의 정답이 여기 있습니다.'],
+    bearflat: ['베어 플래트닝 — 긴축 국면의 전형입니다',
+      '<b>짧은 쪽이 긴 쪽보다 더 크게 올라갔습니다.</b> 곡선이 <b>눕습니다.</b><br><br>' +
+      '<b>2년채 ' + sgn(p2, 1) + '%</b>, <b>30년채 ' + sgn(p30, 1) + '%</b>입니다. 둘 다 손실이지만 <b>' +
+      (Math.abs(p2) > Math.abs(p30) ? '짧은 쪽이 더 크게' : '긴 쪽이 더 크게') + '</b> 맞았습니다.<br><br>' +
+      '<b>언제 생기나</b> — <b>중앙은행이 금리를 올리는</b> 국면입니다. 짧은 쪽은 정책을 그대로 따라가고, 긴 쪽은 <b>「이 긴축이 경기를 꺾을 것」</b>으로 봐서 덜 오릅니다.<br><br>' +
+      '<b>이것이 계속되면 역전</b>이 됩니다 — 짧은 쪽이 긴 쪽을 넘어섭니다. 3장의 주제입니다.<br><br>' +
+      '<b>장기채 입장에서는</b> — 나쁘긴 하지만 <b>베어 스티프닝보다는 낫습니다.</b> 긴 쪽이 덜 오르기 때문입니다.'],
+    parallel: [avg < 0 ? '평행 하락 — 모든 만기가 함께 내려갔습니다' : '평행 상승 — 모든 만기가 함께 올라갔습니다',
+      '기울기는 그대로이고 <b>곡선 전체가 위아래로</b> 움직였습니다.<br><br>' +
+      '<b>2년채 ' + sgn(p2, 1) + '%</b>, <b>30년채 ' + sgn(p30, 1) + '%</b>입니다. <b>금리 변화는 같은데 가격 결과가 ' +
+      num(Math.abs(p30 / Math.max(0.01, Math.abs(p2))), 0) + '배 넘게</b> 벌어집니다.<br><br>' +
+      '<b>이유는 듀레이션</b>입니다 — 2년채 <b>' + num(D2, 2) + '</b> vs 30년채 <b>' + num(D30, 2) +
+      '</b>. 02편에서 본 그대로입니다.<br><br>' +
+      '<b>평행 이동은 실제로는 드뭅니다.</b> 대부분의 경우 <b>짧은 쪽과 긴 쪽이 다르게</b> 움직입니다. 그래서 <b>기울기 변화까지 함께 봐야</b> 합니다.<br><br>' +
+      '<b>슬라이더 하나만 조금 바꿔보세요.</b> 곧바로 네 유형 중 하나로 분류됩니다.']
+  };
+  var t = TXT[kind];
+  document.getElementById('shVerdict').querySelector('.vh').textContent = kname;
+  verdict('shVerdict', kc, t[0], t[1]);
+}
+['shShort', 'shLong', 'shY'].forEach(function(id){ document.getElementById(id).addEventListener('input', shDraw); });
+
+/* ══════════ 3. 역전 ══════════ */
+function ivDraw(){
+  var s0 = +document.getElementById('ivS0').value / 10;
+  var l0 = +document.getElementById('ivL0').value / 10;
+  var s1 = +document.getElementById('ivS1').value / 10;
+  var l1 = +document.getElementById('ivL1').value / 10;
+  [['ivS0', s0], ['ivL0', l0], ['ivS1', s1], ['ivL1', l1]].forEach(function(p){
+    document.getElementById(p[0] + 'Out').textContent = num(p[1], 1) + '%';
+  });
+
+  var sp0 = l0 - s0, sp1 = l1 - s1;
+  var dl = l1 - l0, ds = s1 - s0;
+  var y0 = l0 / 100;
+  var D10 = modDur(y0, y0, 10), D30 = modDur(y0, y0, 30);
+  var p10 = -D10 * dl, p30 = -D30 * dl;
+
+  steps('ivSteps', [
+    { k:'지금 스프레드 (10년 − 2년)', v:sgn(sp0, 2) + '%p' + (sp0 < -0.005 ? ' (역전)' : '') },
+    { k:'나중 스프레드', v:sgn(sp1, 2) + '%p' + (sp1 < -0.005 ? ' (역전)' : '') },
+    { k:'2년 금리 변화', v:sgn(ds, 1) + '%p' },
+    { k:'10년 금리 변화', v:sgn(dl, 1) + '%p' },
+    { k:'10년채 가격 (듀레이션 ' + num(D10, 1) + ')', v:sgn(p10, 1) + '%' },
+    { k:'30년채 가격 (듀레이션 ' + num(D30, 1) + ')', v:sgn(p30, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('ivSp').textContent = sgn(sp0, 2) + ' → ' + sgn(sp1, 2) + '%p';
+  document.getElementById('ivPx').textContent = sgn(p10, 1) + '% / ' + sgn(p30, 1) + '%';
+  document.getElementById('ivPx').style.color = p30 > 0.05 ? 'var(--pos)' : (p30 < -0.05 ? 'var(--neg)' : '');
+
+  var X0 = 80, W = 460, TOP = 34, H = 90;
+  var allv = [s0, l0, s1, l1];
+  var lo = Math.min.apply(null, allv), hi = Math.max.apply(null, allv);
+  var pad = Math.max(0.3, (hi - lo) * 0.25);
+  var vlo = lo - pad, vhi = hi + pad, span = Math.max(0.5, vhi - vlo);
+  function sy(v){ return TOP + H - (v - vlo) / span * H; }
+  var xA = X0 + 50, xB = X0 + W - 50;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">역전이 어떻게 풀리는가 — 점선(지금) → 실선(나중)</text>';
+  g += '<line x1="' + xA + '" y1="' + sy(s0).toFixed(1) + '" x2="' + xB + '" y2="' + sy(l0).toFixed(1) +
+       '" stroke="#8A8474" stroke-width="1.6" stroke-dasharray="5 4"/>';
+  var lc = dl < -0.05 ? '#5F7A52' : (dl > 0.05 ? '#8E4B3A' : '#7A5C9E');
+  g += '<line x1="' + xA + '" y1="' + sy(s1).toFixed(1) + '" x2="' + xB + '" y2="' + sy(l1).toFixed(1) +
+       '" stroke="' + lc + '" stroke-width="2.4"/>';
+  [[xA, s0, s1, '2년'], [xB, l0, l1, '10년']].forEach(function(pt){
+    g += '<circle cx="' + pt[0] + '" cy="' + sy(pt[1]).toFixed(1) + '" r="3.4" fill="#8A8474"/>';
+    g += '<circle cx="' + pt[0] + '" cy="' + sy(pt[2]).toFixed(1) + '" r="4.6" fill="' + lc + '"/>';
+    g += '<text class="axt" x="' + pt[0] + '" y="' + (TOP + H + 16) + '" text-anchor="middle">' + pt[3] + '</text>';
+    g += '<text class="lblb" x="' + pt[0] + '" y="' + Math.max(TOP + 10, sy(pt[2]) - 10).toFixed(1) +
+         '" text-anchor="middle" fill="' + lc + '">' + num(pt[2], 1) + '%</text>';
+  });
+  g += '<line x1="' + X0 + '" y1="' + (TOP + H) + '" x2="' + (X0 + W) + '" y2="' + (TOP + H) + '" stroke="#D9D2C0" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 40) + '">10년 금리가 ' + sgn(dl, 1) +
+       '%p 움직였고, 그것만이 장기채 가격을 정합니다.</text>';
+  g += '<text class="lblb" x="' + (X0 + W) + '" y="' + (TOP + H + 40) + '" text-anchor="end" fill="' + lc +
+       '">30년채 ' + sgn(p30, 1) + '%</text>';
+  document.getElementById('ivScene').innerHTML = g;
+
+  if(sp0 >= -0.005){
+    verdict('ivVerdict', '#5B5648',
+      '지금이 역전 상태가 아닙니다',
+      '<b>「지금 2년 금리」를 「지금 10년 금리」보다 높게</b> 올려보세요. 그러면 역전 상태가 됩니다.<br><br>' +
+      '<b>기본값</b>은 2년 <b>5.0%</b>, 10년 <b>4.3%</b>으로 <b>−0.7%p 역전</b>입니다.<br><br>' +
+      '<b>그다음 「나중에」 쪽 두 슬라이더를 각각 움직여</b> 역전이 어떻게 풀리는지 비교해보세요.');
+  } else if(Math.abs(dl) < 0.05){
+    verdict('ivVerdict', '#8E6B3A',
+      '역전이 ' + (sp1 >= -0.005 ? '풀렸는데' : '완화됐는데') + ' 장기채는 제자리입니다',
+      '스프레드가 <b>' + sgn(sp0, 2) + '%p → ' + sgn(sp1, 2) + '%p</b>로 바뀌었습니다. 그런데 <b>10년채도 30년채도 거의 0%</b>입니다.<br><br>' +
+      '<b>왜 그런가</b> — <b>2년 금리만 ' + sgn(ds, 1) + '%p 움직였고 10년 금리는 그대로</b>이기 때문입니다. <b>장기채 가격을 정하는 것은 장기금리뿐</b>입니다.<br><br>' +
+      '<b>이것이 이 장의 핵심</b>입니다. <b>「역전이 풀렸다」는 헤드라인은 장기채에 아무 의미가 없을 수 있습니다.</b><br><br>' +
+      '<b>확인해보세요</b> — <b>「나중에 10년 금리」를 내려보면</b> 그때 비로소 장기채가 오릅니다. <b>「나중에 10년 금리」를 올려보면</b> 역전은 더 빨리 풀리는데 <b>장기채는 크게 떨어집니다.</b><br><br>' +
+      '<b>즉 봐야 할 것은 스프레드가 아니라 「내 만기의 금리」</b>입니다.');
+  } else if(dl > 0){
+    verdict('ivVerdict', '#8E4B3A',
+      '장기금리가 올라서 풀리는 경우 — 30년채 ' + sgn(p30, 1) + '%',
+      '10년 금리가 <b>' + sgn(dl, 1) + '%p 올라</b> 스프레드가 <b>' + sgn(sp0, 2) + ' → ' + sgn(sp1, 2) + '%p</b>가 됐습니다.<br><br>' +
+      '<b>역전은 해소됐지만 장기채는 크게 손해</b>입니다 — 10년채 <b>' + sgn(p10, 1) + '%</b>, 30년채 <b>' + sgn(p30, 1) + '%</b>.<br><br>' +
+      '<b>이것이 「베어 스티프닝」에 의한 역전 해소</b>입니다(2장). <b>인플레이션 재발</b>이나 <b>국채 공급 급증</b>이 원인인 경우가 많습니다.<br><br>' +
+      '<b>여기서 이 편의 가장 중요한 교훈이 나옵니다</b> — <b>「역전이 풀린다」는 뉴스는 장기채에 좋은 소식이라는 보장이 전혀 없습니다.</b> <b>어느 쪽이 움직여서 풀렸는지</b>가 전부입니다.<br><br>' +
+      '<b>「나중에 2년 금리」를 내려보세요.</b> 같은 역전 해소인데 <b>장기채 결과가 완전히 달라집니다.</b>');
+  } else {
+    verdict('ivVerdict', '#5F7A52',
+      '장기금리가 내려가 장기채가 ' + sgn(p30, 1) + ' 올랐습니다',
+      '10년 금리가 <b>' + sgn(dl, 1) + '%p 내려갔습니다.</b> 그래서 10년채 <b>' + sgn(p10, 1) + '%</b>, 30년채 <b>' +
+      sgn(p30, 1) + '%</b>입니다.<br><br>' +
+      '<b>장기채 보유자가 기다리는 것은 정확히 이것</b>입니다 — <b>스프레드가 어떻게 되든 「긴 쪽 금리가 내려가는 것」</b>입니다.<br><br>' +
+      (sp1 < sp0
+        ? '<b>참고로 지금 설정은 역전이 더 깊어지는 방향</b>입니다(스프레드 ' + sgn(sp0, 2) + ' → ' + sgn(sp1, 2) +
+          '%p). <b>역전이 깊어지는데도 장기채는 오릅니다.</b> 스프레드와 장기채 수익이 <b>직접 연결되어 있지 않다</b>는 증거입니다.'
+        : '<b>스프레드도 ' + sgn(sp0, 2) + ' → ' + sgn(sp1, 2) + '%p로 개선</b>됐습니다.') + '<br><br>' +
+      '<b>다시 강조하면</b> — 봐야 할 것은 <b>「역전이 풀렸나」가 아니라 「10년·30년 금리가 내려갔나」</b>입니다.');
+  }
+}
+['ivS0', 'ivL0', 'ivS1', 'ivL1'].forEach(function(id){ document.getElementById(id).addEventListener('input', ivDraw); });
+
+/* ══════════ 3-2. 역사 ══════════ */
+var HIST = [
+  { inv:'1978년', rec:'1980년', m:18 },
+  { inv:'1980년', rec:'1981년', m:10 },
+  { inv:'1988~89년', rec:'1990년', m:18 },
+  { inv:'2000년', rec:'2001년', m:12 },
+  { inv:'2006년', rec:'2007~08년', m:22 },
+  { inv:'2019년', rec:'2020년', m:6 }
+];
+function hsScene(){
+  var X0 = 130, W = 400;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">역전 시작부터 침체까지 (개월 · 근사치)</text>';
+  var maxM = 24;
+  HIST.forEach(function(h, i){
+    var y = 30 + i * 24;
+    var w = h.m / maxM * W;
+    var c = h.m <= 8 ? '#8E4B3A' : (h.m >= 20 ? '#7A5C9E' : '#8E6B3A');
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="16" rx="1.5" fill="' + c +
+         '" fill-opacity=".38" stroke="' + c + '" stroke-width="1"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 12) + '" text-anchor="end">' + h.inv + ' → ' + h.rec + '</text>';
+    g += '<text class="axt" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 12) + '">' + h.m + '개월</text>';
+  });
+  var by = 30 + HIST.length * 24 + 6;
+  var ms = HIST.map(function(h){ return h.m; });
+  var avg = ms.reduce(function(a, b){ return a + b; }, 0) / ms.length;
+  g += '<line x1="' + X0 + '" y1="' + by + '" x2="' + (X0 + W) + '" y2="' + by + '" stroke="#D9D2C0" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (by + 20) + '">범위 ' + Math.min.apply(null, ms) + '~' +
+       Math.max.apply(null, ms) + '개월 · 평균 ' + avg.toFixed(1) + '개월 · 표본 ' + ms.length + '개뿐</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (by + 40) + '">시차가 6개월부터 22개월까지 벌어집니다 — 「언제」는 알 수 없습니다.</text>';
+  document.getElementById('hsScene').innerHTML = g;
+}
+var HS = [
+  { h:'왜 신호가 되나', color:'#8E6B3A',
+    t:'역전은 「곧 크게 내릴 것」이라는 시장의 예상입니다',
+    p:'04편에서 봤듯 <b>장기금리는 앞으로의 단기금리 평균에 대한 예상</b>입니다.<br><br>' +
+      '<b>그 예상이 지금보다 훨씬 낮다면</b> — 장기금리가 단기금리 아래로 내려갑니다. 이것이 <b>역전</b>입니다.<br><br>' +
+      '<b>그리고 「곧 크게 내린다」는 대체로 「경기가 나빠져서 내릴 수밖에 없다」</b>는 뜻입니다. 중앙은행은 <b>경기가 좋을 때 금리를 내리지 않습니다.</b><br><br>' +
+      '<b>그래서 역전은 「시장이 침체를 예상하고 있다」는 표시</b>가 됩니다. 예측 도구라기보다 <b>시장 참가자들의 집단적 예상을 읽는 창</b>에 가깝습니다.<br><br>' +
+      '<b>추가로 실물 경로도 있습니다</b> — 역전 상태에서는 <b>은행이 돈 벌기 어려워집니다.</b> 짧게 빌려 길게 빌려주는 것이 은행의 사업인데, <b>짧은 쪽이 더 비싸면</b> 대출을 줄이게 됩니다. 그러면 <b>실제로 경기가 나빠집니다.</b> <b>예상이 원인이 되는</b> 부분입니다.' },
+  { h:'시차의 문제', color:'#8E4B3A',
+    t:'방향은 자주 맞았지만 시점은 6~22개월로 벌어집니다',
+    p:'표를 보세요. 역전 이후 침체까지 <b>가장 짧은 것이 6개월, 가장 긴 것이 22개월</b>입니다. <b>거의 네 배</b> 차이입니다.<br><br>' +
+      '<b>투자에서는 이 차이가 전부</b>입니다. <b>「1~2년 안에 온다」</b>는 정보로는 <b>지금 무엇을 해야 할지 정할 수 없습니다.</b><br><br>' +
+      '<b>구체적으로 왜 문제인가</b> — 역전을 보고 장기채를 샀다고 해봅시다. 그 뒤 <b>1년 반 동안</b> 금리가 <b>더 오를 수도</b> 있습니다. 02편에서 봤듯 <b>장기채는 금리 1%p에 15~20%</b>가 움직입니다. <b>기다리는 동안 크게 잃을 수</b> 있습니다.<br><br>' +
+      '<b>그리고 「그 사이에 팔게 되는 것」이 실제 손실의 대부분</b>입니다. 방향이 맞아도 <b>버티지 못하면 소용이 없습니다.</b><br><br>' +
+      '<b>이것이 06편의 주제</b>입니다 — <b>채권 시장은 방향은 자주 맞히면서 시점은 거의 못 맞힙니다.</b>' },
+  { h:'표본이 너무 적다', color:'#7A5C9E',
+    t:'여섯 개로는 법칙을 말할 수 없습니다',
+    p:'<b>사례가 여섯 개</b>입니다. 그중 <b>2019년은 팬데믹이 겹쳐</b> 인과를 말하기 어렵습니다. <b>사실상 다섯 개 남짓</b>입니다.<br><br>' +
+      '<b>다섯 개로 무엇을 말할 수 있나</b> — <b>거의 없습니다.</b> 동전을 다섯 번 던져 다섯 번 앞면이 나와도 <b>「이 동전은 항상 앞면」</b>이라고 할 수 없는 것과 같습니다.<br><br>' +
+      '<b>그리고 정의의 문제도 큽니다</b> — <b>「역전의 시작」</b>을 언제로 볼지, <b>10년−2년</b>을 볼지 <b>10년−3개월</b>을 볼지, <b>침체의 시작</b>을 언제로 볼지에 따라 숫자가 <b>몇 달씩 달라집니다.</b> 자료마다 다른 값을 씁니다.<br><br>' +
+      '<b>거짓 신호도 있었습니다</b> — 잠깐 역전됐다가 <b>침체 없이 지나간</b> 경우가 있습니다.<br><br>' +
+      '<b>코인 트랙에서 반감기 표본 세 개</b>를 두고 했던 이야기와 같습니다. <b>패턴처럼 보이는 것과 법칙은 다릅니다.</b> 그리고 <b>표본이 적을수록 「이번엔 다르다」가 실제로 맞을 확률이 큽니다.</b>' },
+  { h:'그래도 볼 값어치', color:'#5F7A52',
+    t:'예측이 아니라 「시장이 무엇을 예상하는지」 읽는 용도',
+    p:'한계를 다 말했지만, <b>곡선을 볼 값어치는 분명히 있습니다.</b> 다만 <b>쓰는 방법이 달라야</b> 합니다.<br><br>' +
+      '<b>이렇게 쓰면 안 됩니다</b> — <b>「역전됐으니 곧 침체다, 장기채를 사자」</b>. 시점을 모르므로 <b>버티지 못할 위험</b>이 큽니다.<br><br>' +
+      '<b>이렇게 쓰면 좋습니다</b><br>' +
+      '· <b>시장의 예상을 읽는다</b> — <b>「지금 시장은 금리가 내려갈 것으로 보고 있구나」</b>. 내 생각과 <b>얼마나 다른지</b> 확인하는 용도입니다.<br>' +
+      '· <b>이미 가격에 반영된 정도를 안다</b> — 역전이 깊다는 것은 <b>인하 기대가 이미 많이 반영됐다</b>는 뜻입니다. 그러면 <b>실제 인하가 와도 추가 상승이 작습니다.</b><br>' +
+      '· <b>내 만기를 정하는 데 참고한다</b> — 역전 상태에서는 <b>짧은 채권이 이자를 더 줍니다.</b> 굳이 긴 것을 들 이유가 <b>가격 상승 기대뿐</b>이라는 것을 인식하게 됩니다.<br><br>' +
+      '<b>정리하면</b> — <b>곡선은 예언이 아니라 온도계</b>입니다. <b>지금 상태를 읽는 데는 유용하고, 미래를 맞히는 데는 약합니다.</b>' }
+];
+bindBtnRow('#hsBtns', function(v){
+  document.getElementById('hsVerdict').querySelector('.vh').textContent = HS[+v].h;
+  verdict('hsVerdict', HS[+v].color, HS[+v].t, HS[+v].p);
+});
+
+/* ══════════ 4. 스프레드 종류 ══════════ */
+var SP = [
+  { h:'장단기 스프레드', color:'#4C6B7A',
+    t:'같은 발행자, 다른 만기 — 경기 전망을 읽습니다',
+    p:'<b>10년 − 2년</b> 또는 <b>10년 − 3개월</b>이 대표적입니다. <b>같은 나라 국채끼리</b> 빼는 것이라 <b>신용 위험은 빠지고 기간에 대한 전망만</b> 남습니다.<br><br>' +
+      '<b>벌어지면(스티프닝)</b> — 앞으로 금리가 오를 것으로 보거나, 경기 회복을 기대하거나, 먼 미래가 불확실해진 것입니다.<br><br>' +
+      '<b>좁혀지면(플래트닝)</b> — 앞으로 금리가 내려갈 것으로 보거나, 긴축이 진행 중이거나, 성장 기대가 낮아진 것입니다.<br><br>' +
+      '<b>둘 중 어느 것을 볼까</b> — <b>10년−3개월</b>이 침체 예측력이 더 낫다는 연구가 있고, <b>10년−2년</b>이 언론에서 더 자주 인용됩니다. <b>둘이 다른 신호를 줄 때가 있어</b> 함께 보는 것이 보통입니다. 1장 계산기에 둘 다 표시됩니다.' },
+  { h:'신용 스프레드', color:'#8E4B3A',
+    t:'같은 만기, 다른 발행자 — 부도 걱정을 읽습니다',
+    p:'<b>회사채 금리 − 같은 만기 국채 금리</b>입니다. 03편의 주제였습니다.<br><br>' +
+      '<b>벌어지면</b> — 시장이 <b>부도 위험이 커졌다</b>고 보는 것입니다. <b>경기 악화의 가장 빠른 신호</b> 중 하나로 쓰입니다.<br><br>' +
+      '<b>좁혀지면</b> — 위험 선호가 돌아온 것입니다. 주식이 오를 때 함께 좁혀지는 경향이 있습니다.<br><br>' +
+      '<b>장단기 스프레드와의 결정적 차이</b> — <b>장단기는 「전망」이고 신용은 「걱정」</b>입니다. 그래서 <b>장단기 스프레드가 좁혀지는데 신용 스프레드가 벌어지는</b> 조합이 나옵니다. 이때가 <b>가장 위험한 국면</b>입니다 — 성장 기대는 낮아지는데 부도 걱정은 커지는 것이니까요.<br><br>' +
+      '<b>특히 하이일드 스프레드</b>는 <b>주식 시장보다 먼저 움직이는</b> 경우가 있어 널리 관찰됩니다.' },
+  { h:'기대 인플레이션', color:'#8E6B3A',
+    t:'일반 국채 − 물가연동국채 = 시장이 보는 물가',
+    p:'<b>같은 만기의 일반 국채 금리에서 물가연동국채 금리를 뺀 것</b>입니다. <b>브레이크이븐</b>이라고 부릅니다.<br><br>' +
+      '<b>왜 이것이 기대 인플레이션인가</b> — 물가연동국채는 <b>물가만큼 원금이 조정</b>됩니다. 그래서 그 금리는 <b>물가를 뺀 실질금리</b>에 가깝습니다. 일반 국채 금리에서 그것을 빼면 <b>남는 것이 물가 기대</b>입니다.<br><br>' +
+      '<b>04편의 3분해와 연결됩니다</b> — <b>장기금리 = 실질금리 + 기대 인플레 + 기간 프리미엄</b>이었습니다. 이 스프레드가 <b>가운데 조각을 직접 관찰할 수 있게</b> 해줍니다.<br><br>' +
+      '<b>⚠️ 장기채 보유자에게 가장 중요한 지표일 수 있습니다.</b> 03편에서 봤듯 <b>인플레이션이 장기채의 진짜 위험</b>입니다. 이 숫자가 <b>올라가면 장기채에 나쁜 소식</b>입니다.<br><br>' +
+      '<b>다만 완벽하지는 않습니다</b> — 물가연동국채의 <b>유동성</b>과 <b>보험 수요</b>가 섞여 있어 순수한 기대치는 아닙니다.' },
+  { h:'국가 간 금리차', color:'#5F7A52',
+    t:'같은 만기, 다른 나라 — 환율과 얽힙니다',
+    p:'<b>미국 10년물 − 한국 10년물</b> 같은 것입니다. <b>어느 쪽에 돈을 두는 것이 유리한가</b>를 재는 셈입니다.<br><br>' +
+      '<b>벌어지면</b> — 금리가 높은 쪽으로 <b>돈이 이동하는 압력</b>이 생깁니다. 그러면 그 나라 <b>통화가 강해지는</b> 경향이 있습니다.<br><br>' +
+      '<b>그런데 그렇게 단순하지 않습니다</b> — 금리가 높은 데는 <b>이유</b>가 있습니다. <b>물가가 높거나 위험이 크기</b> 때문일 수 있습니다. 그러면 <b>통화가 오히려 약해집니다.</b><br><br>' +
+      '<b>해외 채권에 투자한다면 이것이 결정적</b>입니다 — <b>금리차만큼 벌어도 환율이 반대로 가면 전부 사라집니다.</b> 그리고 <b>환헤지 비용은 대체로 이 금리차만큼</b> 듭니다.<br><br>' +
+      '<b>즉 「미국 금리가 높으니 미국 채권이 유리하다」는 헤지하면 대체로 사라집니다.</b> <b>08편에서 이 계산을 직접</b> 해봅니다. 지금 미국 장기채를 들고 있다면 <b>08편이 매우 중요</b>합니다.' },
+  { h:'스왑·자금시장', color:'#7A5C9E',
+    t:'금융 시스템의 스트레스를 재는 지표들',
+    p:'<b>은행끼리 빌려주는 금리와 국채 금리의 차이</b>를 보는 것들입니다. 예전에는 <b>TED 스프레드</b>가 유명했고, 지금은 다른 지표들이 쓰입니다.<br><br>' +
+      '<b>무엇을 재나</b> — <b>「은행들이 서로를 얼마나 믿는가」</b>입니다. 평시에는 차이가 아주 작습니다. 그런데 <b>위기가 오면 급격히 벌어집니다.</b> 서로 못 믿어서 <b>돈을 안 빌려주기</b> 때문입니다.<br><br>' +
+      '<b>2008년 금융위기 때 이 지표들이 급등</b>했습니다. 그래서 <b>시스템 스트레스의 조기 경보</b>로 쓰입니다.<br><br>' +
+      '<b>개인 투자자에게 실용적인가</b> — <b>직접 거래할 일은 거의 없습니다.</b> 다만 <b>「지금 금융 시스템이 정상인가」</b>를 확인하는 데는 유용합니다. 이 지표들이 튀면 <b>국채로 돈이 몰리고(가격 상승)</b> <b>회사채는 무너집니다.</b><br><br>' +
+      '<b>기억할 것</b> — <b>이런 국면에서는 「국채」와 「채권」을 구분하는 것이 특히 중요</b>합니다. 03편의 주제로 돌아갑니다.' }
+];
+bindBtnRow('#spBtns', function(v){
+  document.getElementById('spVerdict').querySelector('.vh').textContent = SP[+v].h;
+  verdict('spVerdict', SP[+v].color, SP[+v].t, SP[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#bcCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#bcCheck li.done').length;
+      document.getElementById('bcCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 여덟째가 이 편의 가장 중요한 반전입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+cvDraw();
+shDraw();
+ivDraw();
+hsScene();
+document.querySelector('#hsBtns button[data-v="0"]').click();
+document.querySelector('#spBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
