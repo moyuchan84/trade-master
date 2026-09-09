@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>단기채와 장기채</title>
+<meta name="description" content="기준금리를 내려도 장기금리는 안 내려갈 수 있습니다. 두 금리를 움직이는 힘의 차이와 전달 계수, 목적에 만기를 맞추는 법을 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --shortb:#5F7A52;--longb:#4C6B7A;--base:#7A5C9E;--prem:#8E6B3A;--warn:#8E4B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:660px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--longb));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--longb));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--longb));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 0;}
+  .pair > div{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--pc);border-radius:3px;padding:15px 17px;}
+  .pair h4{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--pc);margin:0 0 8px;}
+  .pair p{font-size:13.8px;color:var(--ink-soft);margin:0 0 7px;max-width:none;}
+  .pair p:last-child{margin-bottom:0;}
+  .pair p b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .pair{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">채권 04 · 기간 · 투자 공부 노트</div>
+    <h1>단기채와 장기채는<br>왜 다르게 움직이나</h1>
+    <p class="lede">둘은 <b>같은 「금리」라는 단어를 쓰지만 움직이는 힘이 다릅니다.</b> 그래서 <b>기준금리를 내려도 장기금리는 안 내려갈 수</b> 있습니다.</p>
+    <div class="callout">
+      <p><b>장기채를 들고 있다면 이 편이 가장 실용적입니다.</b></p>
+      <p>흔한 기대는 이렇습니다 — <b>「중앙은행이 금리를 내리면 내 장기채가 오르겠지.」</b> 절반만 맞습니다.</p>
+      <p><b>중앙은행이 직접 정하는 것은 「단기」 금리</b>입니다. 장기금리는 <b>시장이 따로 정합니다.</b> 그래서 <b>기준금리 인하가 장기금리에 거의 전달되지 않거나, 심지어 반대로 갈 수도</b> 있습니다.</p>
+      <p><b>실제로 그런 국면이 여러 번 있었습니다.</b> 중앙은행이 인하를 시작했는데 <b>장기금리는 오히려 올라간</b> 경우입니다. 이 편에서는 <b>왜 그런 일이 생기는지</b>와 <b>그때 무엇을 봐야 하는지</b>를 다룹니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#force">1. 움직이는 힘</a>
+    <a href="#pass">2. 얼마나 전달되나</a>
+    <a href="#parts">3. 장기금리의 분해</a>
+    <a href="#match">4. 목적에 만기 맞추기</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="force">
+    <div class="prod-head" style="--edge:var(--longb)">
+      <span class="prod-tag">01 · 힘</span>
+      <h2>단기금리는 정해지고, 장기금리는 예상됩니다</h2>
+      <p class="one">이 한 문장이 <b>둘의 차이 전부</b>입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>내일 날씨</b>랑 <b>10년 뒤 날씨</b>는 아는 방법이 완전히 다르지?</p>
+      <p>내일 날씨는 <b>지금 하늘을 보면</b> 거의 맞아. 단기금리도 그래 — <b>중앙은행이 「이번 달은 3%」라고 정하면</b> 그게 거의 그대로야.</p>
+      <p>그런데 <b>10년 뒤 날씨</b>는 아무도 못 정해. <b>「대충 이럴 것 같다」고 예상</b>할 뿐이지. 장기금리도 그래.</p>
+      <p>장기금리는 <b>「앞으로 10년 동안 단기금리가 평균 얼마쯤 될까」</b>를 사람들이 <b>예상해서</b> 만든 숫자야. 여기에 <b>「오래 묶이는 게 불안하니까 조금 더 달라」</b>는 몫이 더해져.</p>
+      <p>그래서 이런 일이 생겨. 중앙은행이 <b>이번 달 금리를 내렸는데</b>, 사람들이 <b>「그래도 앞으로 10년 평균은 비슷하겠는데?」</b>라고 생각하면 <b>장기금리는 안 내려가.</b></p>
+      <p>심지어 <b>「금리를 너무 내려서 나중에 물가가 오르겠는데」</b>라고 생각하면 <b>장기금리가 오히려 올라가.</b> 진짜로 일어나는 일이야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">FORCES · 눌러서 확인하세요</div>
+      <p class="labsub">두 금리를 <b>움직이는 힘</b>이 어떻게 다른지입니다.</p>
+
+      <div class="btnrow" id="fcBtns">
+        <button data-v="0" class="on">단기금리</button>
+        <button data-v="1">장기금리</button>
+        <button data-v="2">기간 프리미엄</button>
+        <button data-v="3">따로 노는 이유</button>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="단기금리와 장기금리를 움직이는 힘">
+        <g id="fcScene"></g>
+      </svg>
+
+      <div class="verdict" id="fcVerdict" style="--vc:var(--longb)">
+        <div class="vh">힘</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 편의 첫 문장</div>
+      <div class="kb">중앙은행은 <b>단기금리를 정하고</b>,<br>장기금리는 <b>시장이 예상합니다.</b></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="pass">
+    <div class="prod-head" style="--edge:var(--base)">
+      <span class="prod-tag">02 · 전달</span>
+      <h2>기준금리를 내리면 내 채권은 얼마나 오르나</h2>
+      <p class="one">답은 <b>「전달되는 만큼」</b>이고, 그 정도는 <b>만기마다 다릅니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">PASS-THROUGH · 전달 계수를 움직여보세요</div>
+      <p class="labsub">기준금리가 움직였을 때 <b>각 만기의 금리가 얼마나 따라가는지</b>가 전달 계수입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="psBase">기준금리 변화</label>
+        <input type="range" id="psBase" min="-30" max="30" step="1" value="-10">
+        <output id="psBaseOut">−1.0%p</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="psBeta">장기(30년)에 전달되는 비율</label>
+        <input type="range" id="psBeta" min="-60" max="120" step="5" value="20">
+        <output id="psBetaOut">0.20</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="psY">현재 시장금리 수준</label>
+        <input type="range" id="psY" min="5" max="80" step="1" value="40">
+        <output id="psYOut">4.0%</output>
+      </div>
+
+      <svg viewBox="0 0 640 245" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="만기별 금리 전달과 가격 변화">
+        <g id="psScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">30년채 금리 변화 / 가격</span><span class="rv" id="ps30">—</span></div>
+        <div><span class="rk">2년채와 비교</span><span class="rv" id="ps2">—</span></div>
+      </div>
+
+      <div class="verdict" id="psVerdict" style="--vc:var(--base)">
+        <div class="vh">전달</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>전달 계수(베타)란.</b> 기준금리가 <b>1%p</b> 움직일 때 그 만기의 시장금리가 <b>몇 %p</b> 움직이는지입니다. <b>1.0이면 그대로</b>, <b>0.2면 5분의 1만</b>, <b>0이면 전혀 안 따라가고</b>, <b>음수면 반대로</b> 갑니다.<br><br>
+        <b>중간 만기의 계수는 단기(1.0)와 장기 사이를 부드럽게 잇도록</b> 모형에서 만들었습니다. 실제 곡선의 모양은 국면마다 다르며, <b>여기 값은 구조를 보기 위한 것</b>입니다.<br><br>
+        <b>⚠️ 그리고 이 계수는 미리 알 수 없습니다.</b> <b>같은 인하라도 시장이 어떻게 해석하느냐에 따라 완전히 달라집니다.</b> <b>「인하 = 장기채 상승」이 자동이 아니라는 것</b>이 이 장의 요점입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>인하했는데 장기금리가 오르는 세 가지 경로</h3>
+      <p>계산기에서 <b>전달 계수를 음수로</b> 놓아보세요. <b>기준금리는 내렸는데 장기금리는 올라 장기채가 떨어지는</b> 상황이 나옵니다. 실제로 일어나는 일이고, 원인은 대체로 셋 중 하나입니다.</p>
+      <p><b>① 인플레이션 재발 우려.</b> 시장이 <b>「너무 일찍, 너무 많이 내렸다」</b>고 보면 <b>앞으로의 물가가 더 높아질 것</b>으로 예상합니다. 장기금리에는 <b>기대 인플레이션</b>이 들어 있으므로(3장) 그만큼 올라갑니다.</p>
+      <p><b>② 국채 공급 증가.</b> 정부가 <b>빚을 많이 내면</b> 시장에 국채가 쏟아집니다. 사는 쪽 입장에서는 <b>더 높은 금리를 요구</b>하게 됩니다. 이건 중앙은행이 통제하는 부분이 아닙니다.</p>
+      <p><b>③ 경기가 생각보다 좋을 때.</b> 인하를 했는데 경제 지표가 <b>예상보다 강하게</b> 나오면, 시장은 <b>「인하가 곧 멈추거나 되돌려질 것」</b>으로 봅니다. 그러면 장기금리는 <b>오히려 오릅니다.</b></p>
+      <p class="plain"><b>여기서 실전 결론이 나옵니다.</b> 장기채를 들고 있다면 <b>기준금리 발표를 보는 것보다 「장기금리 자체」를 보는 편</b>이 정확합니다. 내 자산의 가격을 정하는 것은 <b>기준금리가 아니라 그 만기의 시장금리</b>이기 때문입니다.<br><br><b>확인하는 법</b> — <b>미국 10년물·30년물 국채 금리</b>는 무료로 공개되어 있습니다. <b>기준금리 뉴스보다 이 숫자가 내 계좌와 직결</b>됩니다.</p>
+
+      <h3>반대로, 인하 없이도 장기금리가 내려가는 경우</h3>
+      <p>대칭적으로 <b>기준금리가 그대로인데 장기금리만 내려가는</b> 경우도 있습니다.</p>
+      <p><b>· 침체 신호가 나올 때</b> — 시장이 <b>「곧 크게 내릴 수밖에 없을 것」</b>으로 보면, 인하가 실제로 일어나기 <b>전에</b> 장기금리가 먼저 내려갑니다.</p>
+      <p><b>· 안전자산 수요가 몰릴 때</b> — 위기 국면에서 국채로 돈이 몰리면 가격이 오르고 금리가 내려갑니다.</p>
+      <p><b>· 물가 기대가 낮아질 때</b> — 인플레이션이 잡히고 있다는 신호가 나오면 장기금리의 <b>기대 인플레이션 부분</b>이 줄어듭니다.</p>
+      <p class="plain"><b>그래서 장기채의 상승은 「인하 발표」가 아니라 「인하 기대의 형성」에서 옵니다.</b> 그리고 <b>기대는 발표보다 훨씬 먼저</b> 움직입니다. <b>발표를 보고 사면 이미 늦는</b> 경우가 많은 이유입니다. 06편에서 이 시차를 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="parts">
+    <div class="prod-head" style="--edge:var(--prem)">
+      <span class="prod-tag">03 · 분해</span>
+      <h2>장기금리는 세 조각으로 되어 있습니다</h2>
+      <p class="one">어느 조각이 움직였는지 알면 <b>다음에 무엇을 볼지</b>가 정해집니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DECOMPOSE · 조각을 따로 움직여보세요</div>
+      <p class="labsub">세 조각의 <b>합</b>이 장기금리입니다. 어느 것이 움직여도 <b>가격에는 똑같이</b> 반영됩니다.</p>
+
+      <div class="ctrl-row">
+        <label for="dcReal">실질금리 (경제 성장의 몫)</label>
+        <input type="range" id="dcReal" min="-20" max="50" step="1" value="18">
+        <output id="dcRealOut">1.8%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dcInf">기대 인플레이션</label>
+        <input type="range" id="dcInf" min="0" max="80" step="1" value="23">
+        <output id="dcInfOut">2.3%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dcPrem">기간 프리미엄 (오래 묶이는 값)</label>
+        <input type="range" id="dcPrem" min="-20" max="40" step="1" value="4">
+        <output id="dcPremOut">0.4%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dcDur">내 장기채의 듀레이션</label>
+        <input type="range" id="dcDur" min="1" max="25" step="1" value="17">
+        <output id="dcDurOut">17</output>
+      </div>
+
+      <div class="steps-out" id="dcSteps"></div>
+
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="장기금리의 세 구성요소">
+        <g id="dcScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">장기금리 합계</span><span class="rv" id="dcTotal">—</span></div>
+        <div><span class="rk">기준선(4.0%) 대비 가격</span><span class="rv" id="dcPrice">—</span></div>
+      </div>
+
+      <div class="verdict" id="dcVerdict" style="--vc:var(--prem)">
+        <div class="vh">분해</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>장기금리 = 실질금리 + 기대 인플레이션 + 기간 프리미엄</b>입니다. 가격 변화는 <b>기준선 4.0% 대비</b> 듀레이션을 곱해 근사했습니다.<br><br>
+        <b>세 조각은 직접 관측되지 않습니다.</b> 실제로는 <b>모형으로 추정</b>하며, 기관마다 결과가 다릅니다. 특히 <b>기간 프리미엄은 추정 방법에 따라 부호까지 달라지기도</b> 합니다. <b>여기 값은 구조를 이해하기 위한 예시</b>입니다.<br><br>
+        <b>실제로 관측 가능한 것</b> — <b>물가연동국채와 일반 국채의 금리 차이</b>가 <b>시장의 기대 인플레이션</b>에 대한 대략적인 지표로 쓰입니다. 이 숫자는 공개되어 있어 직접 확인할 수 있습니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="match">
+    <div class="prod-head" style="--edge:var(--shortb)">
+      <span class="prod-tag">04 · 맞추기</span>
+      <h2>목적에 만기를 맞추면 결과가 확정됩니다</h2>
+      <p class="one">채권에서 <b>가장 강력하면서 가장 덜 알려진</b> 사실입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>채권에는 <b>서로 반대인 위험이 두 개</b> 있어.</p>
+      <p><b>① 값이 떨어질 위험</b> — 금리가 오르면 값이 떨어져. 이건 아까부터 계속 본 거야.</p>
+      <p><b>② 이자를 낮게 굴려야 할 위험</b> — 금리가 내리면 받은 이자를 <b>낮은 금리로만</b> 다시 넣을 수 있어. 이것도 손해야.</p>
+      <p>그런데 이 둘은 <b>정반대 방향</b>이지? 금리가 오르면 ①은 손해인데 ②는 이득이야. 내리면 반대고.</p>
+      <p>그래서 신기한 일이 생겨. <b>내가 돈을 쓸 시점과 채권의 「무게중심(듀레이션)」을 맞추면</b>, 두 위험이 <b>서로를 지워버려.</b> 금리가 어떻게 되든 <b>결과가 거의 똑같아져.</b></p>
+      <p>반대로 <b>5년 뒤에 쓸 돈으로 30년짜리를 사면</b> 두 위험이 <b>안 지워져.</b> 금리에 따라 결과가 <b>엄청나게 달라져.</b> 아래에서 확인해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MATCHING · 목표 기간과 만기를 따로 정해보세요</div>
+      <p class="labsub">같은 금리 변화인데 <b>만기를 어떻게 골랐느냐로 결과가 완전히 달라집니다.</b></p>
+
+      <div class="ctrl-row">
+        <label for="mtH">돈을 쓸 시점 (목표 기간)</label>
+        <input type="range" id="mtH" min="1" max="20" step="1" value="5">
+        <output id="mtHOut">5년 뒤</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mtN">산 채권의 만기</label>
+        <input type="range" id="mtN" min="1" max="30" step="1" value="30">
+        <output id="mtNOut">30년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mtY">현재 금리 (= 표면금리)</label>
+        <input type="range" id="mtY" min="5" max="80" step="1" value="40">
+        <output id="mtYOut">4.0%</output>
+      </div>
+
+      <div class="steps-out" id="mtSteps"></div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="금리 변화에 따른 목표 시점 연환산 수익률">
+        <g id="mtScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">금리 ±2%p일 때 연환산 범위</span><span class="rv" id="mtRange">—</span></div>
+        <div><span class="rk">듀레이션 / 목표 기간</span><span class="rv" id="mtDur">—</span></div>
+      </div>
+
+      <div class="verdict" id="mtVerdict" style="--vc:var(--shortb)">
+        <div class="vh">만기 맞추기</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 표면금리 = 현재 금리인 <b>액면가 채권</b>을 사서, <b>목표 시점에 남은 만기를 시장에 매도</b>한다고 가정했습니다. 받은 이자는 <b>변경된 금리로 재투자</b>합니다. 금리는 <b>매수 직후 한 번 변하고 그대로</b> 유지된다고 두었습니다.<br><br>
+        <b>만기가 목표 기간보다 짧으면</b> 원금을 받은 뒤 <b>남은 기간은 변경된 금리로 굴린다</b>고 계산했습니다.<br><br>
+        <b>단순화한 부분</b> — 실제로는 금리가 계속 오르내리고, <b>모든 만기가 똑같이 움직이지도 않습니다</b>(2장). 그래서 완벽한 면역화는 <b>이론적인 이야기</b>에 가깝습니다. <b>다만 방향은 분명합니다 — 목표 기간과 듀레이션이 가까울수록 결과가 안정적입니다.</b>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div style="--pc:var(--shortb)">
+        <h4>단기채가 잘하는 것</h4>
+        <p><b>가격이 거의 안 흔들립니다.</b> 듀레이션이 짧아 금리가 움직여도 손실이 작습니다.</p>
+        <p><b>금리 상승기에 유리합니다.</b> 만기가 금방 돌아와 <b>높아진 금리로 다시</b> 넣을 수 있습니다.</p>
+        <p><b>가까운 시점에 쓸 돈</b>에 맞습니다.</p>
+        <p><b>대신</b> — 금리가 내려가면 <b>재투자 수익률이 계속 낮아집니다.</b></p>
+      </div>
+      <div style="--pc:var(--longb)">
+        <h4>장기채가 잘하는 것</h4>
+        <p><b>금리 하락에서 크게 오릅니다.</b> 듀레이션이 길어 보상이 큽니다.</p>
+        <p><b>높은 금리를 오래 고정</b>합니다. 지금 4~5%를 <b>30년 동안</b> 확정할 수 있습니다.</p>
+        <p><b>침체 국면에서 방어</b>합니다 — 인플레이션이 원인이 아닐 때(03편).</p>
+        <p><b>대신</b> — 금리가 오르면 <b>주식만큼 떨어집니다.</b> 그리고 <b>인플레이션에 가장 취약</b>합니다.</p>
+      </div>
+    </div>
+    <div class="deep">
+      <h3>단기채를 계속 굴리는 것과 장기채를 드는 것 — 무엇이 다른가</h3>
+      <p>같은 돈을 <b>10년 동안</b> 채권에 둔다고 해봅시다. 방법이 둘입니다.</p>
+      <p><b>① 1년물을 열 번 굴리기</b> — 매년 만기가 돌아오면 <b>그때의 금리로</b> 다시 넣습니다.<br>
+         <b>② 10년물을 한 번 사서 들고 있기</b> — 지금의 금리를 <b>10년 동안 고정</b>합니다.</p>
+      <p><b>금리가 그대로라면 결과가 같습니다.</b> 갈리는 것은 <b>금리가 움직일 때</b>입니다.</p>
+      <p>· <b>금리가 오르면</b> → ①이 유리합니다. 매년 <b>높아진 금리로</b> 갈아탑니다.<br>
+         · <b>금리가 내리면</b> → ②가 유리합니다. <b>높았던 금리를 이미 고정</b>해뒀습니다.</p>
+      <p>4장의 계산기에서 <b>목표 20년, 만기 1년</b>으로 놓으면 ①에 가까운 그림이 나옵니다. <b>금리가 오를수록 결과가 좋아지는</b> 우상향 선입니다. 반대로 <b>목표 5년, 만기 30년</b>은 <b>금리가 내릴수록 좋아지는</b> 정반대 선입니다.</p>
+      <p class="plain"><b>여기서 중요한 것.</b> <b>①이 「안전」하고 ②가 「위험」한 것이 아닙니다.</b> 둘은 <b>반대 방향의 위험</b>을 집니다. ①은 <b>금리 하락 위험</b>(재투자), ②는 <b>금리 상승 위험</b>(가격)입니다. <b>어느 쪽도 위험이 없지 않습니다.</b><br><br><b>위험을 정말로 줄이려면 「목표 기간에 듀레이션을 맞추는 것」</b>이고, 그것이 4장의 결론입니다.</p>
+
+      <h3>사다리(래더) — 둘 사이의 실용적인 타협</h3>
+      <p>실전에서 흔히 쓰는 방법이 <b>사다리</b>입니다. 돈을 <b>여러 만기에 나눠</b> 담는 것입니다.</p>
+      <p>예를 들어 <b>1·2·3·4·5년물에 5분의 1씩</b> 넣습니다. 그러면 <b>매년 하나씩 만기가 돌아오고</b>, 그 돈을 <b>다시 5년물로</b> 넣습니다.</p>
+      <p><b>장점</b><br>· <b>매년 현금이 돌아옵니다</b> — 필요하면 쓰고, 아니면 굴립니다<br>
+         · <b>금리 방향을 맞힐 필요가 없습니다</b> — 오르면 새로 넣는 돈이 이득, 내리면 이미 넣은 돈이 이득<br>
+         · <b>평균 듀레이션이 중간</b>이라 가격 변동이 극단적이지 않습니다<br>
+         · <b>「언제 사야 하나」를 고민하지 않아도</b> 됩니다 — 시점 분산이 자동입니다</p>
+      <p><b>단점</b> — <b>어느 방향이든 최고 성적은 못 냅니다.</b> 금리가 크게 내려가면 <b>장기채를 몰빵한 쪽</b>이 훨씬 낫습니다.</p>
+      <p class="plain"><b>어느 쪽이 맞나.</b> 이 트랙에서 반복한 질문으로 돌아갑니다 — <b>「나는 어느 게임을 하고 있는가」</b>(01편 5장)입니다.<br><br><b>금리 방향에 걸겠다</b>면 장기채를 몰아서 드는 것이 맞습니다. 대신 <b>그것이 베팅이라는 것을 인정</b>하고, <b>버틸 수 있는 크기</b>로 해야 합니다.<br><br><b>그냥 안정적으로 이자를 받겠다</b>면 사다리나 만기 매칭이 맞습니다. <b>맞힐 필요가 없다는 것이 가장 큰 장점</b>입니다.<br><br><b>둘을 섞는 것도 됩니다</b> — 예를 들어 <b>대부분은 사다리로, 일부만 장기채로.</b> 그러면 <b>방향이 맞으면 이득을 보고, 틀려도 전체가 흔들리지 않습니다.</b> 부동산·주식 트랙에서 반복한 <b>「버티는 힘」</b>과 같은 이야기입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">장기채를 들고 있다면 <b>볼 곳이 바뀝니다.</b></p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>이럴 때</th><th>단기금리</th><th>장기금리</th><th>장기채 가격</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>중앙은행 인하 · 시장도 동의</th><td><b>하락</b></td><td>하락</td><td><b>상승</b></td></tr>
+          <tr><th>중앙은행 인하 · 인플레 우려</th><td><b>하락</b></td><td><b>상승 가능</b></td><td><b>하락 가능</b></td></tr>
+          <tr><th>인하 없이 침체 신호만</th><td>그대로</td><td><b>하락</b></td><td><b>상승</b></td></tr>
+          <tr><th>국채 공급 급증</th><td>그대로</td><td><b>상승</b></td><td><b>하락</b></td></tr>
+          <tr><th>경기 지표 예상보다 강함</th><td>그대로</td><td><b>상승</b></td><td>하락</td></tr>
+          <tr><th>물가 기대 하락</th><td>그대로</td><td><b>하락</b></td><td><b>상승</b></td></tr>
+          <tr><th>내가 봐야 할 숫자</th><td>—</td><td><b>10년·30년물 금리</b></td><td>—</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 경향이며 예외가 있습니다</p>
+
+    <ul class="check" id="bmCheck">
+      <li><b>중앙은행은 단기금리를 정하고 장기금리는 시장이 예상한다</b>는 것.</li>
+      <li><b>장기금리 = 앞으로의 단기금리 기대 평균 + 기간 프리미엄</b>이라는 것.</li>
+      <li><b>기준금리 인하가 장기금리에 자동으로 전달되지 않는다</b>는 것.</li>
+      <li><b>인하했는데 장기금리가 오를 수도 있다</b>는 것 — 세 가지 경로를 확인했나?</li>
+      <li><b>내 장기채 가격을 정하는 건 기준금리가 아니라 그 만기의 시장금리</b>라는 것.</li>
+      <li><b>장기금리는 실질금리·기대인플레·기간프리미엄 세 조각</b>이라는 것.</li>
+      <li><b>어느 조각이 움직였는지에 따라 다음 전망이 달라진다</b>는 것.</li>
+      <li><b>가격 위험과 재투자 위험은 서로 반대</b>라는 것.</li>
+      <li><b>듀레이션을 목표 기간에 맞추면 결과가 안정된다</b>는 것.</li>
+      <li><b>5년 뒤 쓸 돈으로 30년물을 사면 결과가 금리에 완전히 좌우된다</b>는 것.</li>
+      <li><b>내가 든 장기채는 「언제 쓸 돈」인가?</b> 이 질문에 답했나?</li>
+    </ul>
+    <div class="checkcount" id="bmCount">0 / 11 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> <b>기준금리와 장기금리는 다른 숫자</b>입니다. 중앙은행은 앞의 것을 정하고, 뒤의 것은 <b>시장이 「앞으로 어떻게 될까」를 예상해서</b> 만듭니다. 그래서 <b>둘은 자주 따로 움직이고, 가끔 반대로도</b> 갑니다.</p>
+      <p><b>장기채를 들고 있다면 봐야 할 것이 바뀝니다.</b> <b>기준금리 인하 뉴스가 아니라 10년·30년물 금리 자체</b>입니다. 그 숫자가 <b>내 계좌와 직결</b>됩니다.</p>
+      <p>그리고 <b>4장이 이 트랙에서 가장 실용적인 부분</b>일 수 있습니다. <b>「이 돈을 언제 쓸 것인가」</b>에 <b>만기를 맞추면</b> 금리가 어떻게 되든 결과가 거의 확정됩니다. 반대로 <b>목표 기간보다 훨씬 긴 채권을 사면</b> 그건 <b>저축이 아니라 금리 방향에 대한 베팅</b>입니다. 어느 쪽인지 <b>스스로 분명히 아는 것</b>이 중요합니다.</p>
+      <p><b>다음 편은 05편 — 수익률곡선과 금리 스프레드</b>입니다. 지금까지는 만기 두세 개만 봤지만, <b>모든 만기의 금리를 한 줄로 이으면 「곡선」</b>이 되고 그 <b>모양</b>이 경기에 대해 말해줍니다. <b>장단기 금리 역전</b>이 왜 그렇게 주목받는지도 거기서 다룹니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 채권 04 · 기간<br>
+    <a href="index.html#bond">← 채권 목록으로</a> · <a href="bond-types.html">03 · 국채와 회사채</a> · 05 · 수익률곡선 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    전달 계수·기간 프리미엄은 관측값이 아니라 <b>추정·가정</b>입니다. 계산기는 구조를 보기 위한 단순 모형이며 실제 시장과 다릅니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return (r >= 0 ? '+' : '') + r.toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+function P(cpn, y, n){
+  var p = 0;
+  for(var t = 1; t <= n; t++) p += 100 * cpn / Math.pow(1 + y, t);
+  return p + 100 / Math.pow(1 + y, n);
+}
+function macaulay(cpn, y, n){
+  var pr = P(cpn, y, n), s = 0;
+  for(var t = 1; t <= n; t++) s += t * (100 * cpn / Math.pow(1 + y, t));
+  s += n * 100 / Math.pow(1 + y, n);
+  return s / pr;
+}
+function modDur(cpn, y, n){ return macaulay(cpn, y, n) / (1 + y); }
+
+/* ══════════ 1. 힘 ══════════ */
+var FC = [
+  { h:'단기금리', color:'#5F7A52', mode:0,
+    t:'중앙은행이 사실상 정합니다',
+    p:'<b>만기가 짧은 금리</b>는 중앙은행의 <b>기준금리에 거의 붙어</b> 움직입니다. <b>3개월물, 1년물</b>이 대표적입니다.<br><br>' +
+      '<b>왜 그런가</b> — 기간이 짧으면 <b>「그동안 무슨 일이 있을까」를 예상할 여지가 적기</b> 때문입니다. 3개월 뒤 기준금리는 거의 <b>지금과 비슷하거나 다음 회의 결과</b>일 뿐입니다.<br><br>' +
+      '<b>그래서 단기채는</b><br>· <b>가격이 거의 안 흔들립니다</b> — 듀레이션이 짧습니다<br>· <b>금리 변화를 거의 그대로</b> 받습니다 — 전달 계수가 1에 가깝습니다<br>· 하지만 <b>가격 변동이 작아 이익도 작습니다</b><br><br>' +
+      '<b>정리하면</b> — 단기채를 든다는 것은 <b>「중앙은행이 정하는 금리를 그대로 받겠다」</b>는 뜻입니다. <b>예상이 개입할 여지가 거의 없습니다.</b>' },
+  { h:'장기금리', color:'#4C6B7A', mode:1,
+    t:'앞으로의 단기금리를 평균낸 「예상치」입니다',
+    p:'<b>10년물 금리</b>는 대략 이런 뜻입니다 — <b>「앞으로 10년 동안 단기금리가 평균 몇 %일 것 같은가」</b> + <b>「오래 묶이는 대가로 얼마를 더 받아야 하는가」</b>.<br><br>' +
+      '<b>여기서 결정적인 성질이 나옵니다.</b> 오늘 기준금리를 <b>1%p 내려도</b>, 그것이 <b>10년 평균에 미치는 영향은 작을 수</b> 있습니다. <b>「지금 한 번 내린 것」이 10년 내내 유지될 이유가 없기</b> 때문입니다.<br><br>' +
+      '<b>그래서 이런 계산이 성립합니다</b> — 시장이 <b>「6개월 뒤 다시 올릴 것」</b>으로 본다면, 오늘의 인하는 <b>10년 평균을 거의 못 바꿉니다.</b> 장기금리는 <b>거의 안 움직입니다.</b><br><br>' +
+      '<b>반대로 시장이 「이번 인하가 긴 사이클의 시작」이라고 보면</b> 장기금리는 <b>인하 폭보다 더 크게</b> 내려갈 수도 있습니다.<br><br>' +
+      '<b>즉 장기금리를 움직이는 것은 「오늘의 결정」이 아니라 「앞으로에 대한 해석」</b>입니다.' },
+  { h:'기간 프리미엄', color:'#8E6B3A', mode:2,
+    t:'오래 묶이는 대가로 더 받는 몫',
+    p:'장기금리에는 <b>기대만으로 설명되지 않는 부분</b>이 있습니다. <b>「30년이나 묶어두는 위험을 지는 대가」</b>입니다. 이것을 <b>기간 프리미엄</b>이라고 합니다.<br><br>' +
+      '<b>왜 필요한가</b> — 30년 동안 무슨 일이 생길지 모릅니다. <b>물가가 튈 수도</b>, <b>정부가 빚을 잔뜩 낼 수도</b> 있습니다. 그 <b>불확실성을 감수하는 값</b>입니다.<br><br>' +
+      '<b>이것이 커지면 장기금리가 오릅니다</b> — 기대 인플레이션이 그대로여도, <b>「불확실해서 더 받아야겠다」</b>는 심리만으로 금리가 오를 수 있습니다.<br><br>' +
+      '<b>무엇이 이것을 키우나</b><br>· <b>국채 발행량 증가</b> — 사줄 사람을 더 많이 찾아야 합니다<br>· <b>중앙은행의 보유 축소</b> — 가장 큰 매수자가 빠집니다<br>· <b>물가의 변동성</b> — 예측이 어려울수록 커집니다<br><br>' +
+      '<b>⚠️ 그런데 이것은 직접 관측되지 않습니다.</b> 모형으로 <b>추정</b>할 뿐이고, 기관마다 값이 다르며 <b>부호가 반대로 나오기도</b> 합니다. <b>「기간 프리미엄이 올라서 금리가 올랐다」는 설명은 사후 해석인 경우가 많습니다.</b> 개념으로 이해하되 숫자를 맹신하지 마세요.' },
+  { h:'따로 노는 이유', color:'#8E4B3A', mode:3,
+    t:'짧은 쪽은 「정책」, 긴 쪽은 「전망」이 지배합니다',
+    p:'두 금리가 <b>따로 움직이는 근본 이유</b>는 <b>지배하는 힘이 다르기</b> 때문입니다.<br><br>' +
+      '<b>단기</b> — <b>정책</b>이 지배합니다. 중앙은행이 정하면 그대로 갑니다.<br>' +
+      '<b>장기</b> — <b>전망과 수급</b>이 지배합니다. 성장·물가에 대한 예상, 국채 공급, 안전자산 수요가 섞입니다.<br><br>' +
+      '<b>그래서 이런 조합이 전부 가능합니다</b><br>' +
+      '· 단기 <b>하락</b> + 장기 <b>하락</b> — 시장이 인하에 동의 (장기채에 유리)<br>' +
+      '· 단기 <b>하락</b> + 장기 <b>보합</b> — 인하가 오래 안 갈 것으로 봄 (장기채에 무의미)<br>' +
+      '· 단기 <b>하락</b> + 장기 <b>상승</b> — 인플레 재발·공급 우려 (<b>장기채에 손해</b>)<br>' +
+      '· 단기 <b>보합</b> + 장기 <b>하락</b> — 침체 신호가 먼저 (장기채에 유리)<br><br>' +
+      '<b>이 네 조합이 05편에서 볼 「수익률곡선의 모양 변화」</b>입니다.<br><br>' +
+      '<b>그리고 여기서 이 편의 실전 결론이 나옵니다</b> — <b>장기채를 들고 있다면 기준금리 뉴스가 아니라 장기금리를 봐야</b> 합니다. <b>둘은 같은 방향으로 간다는 보장이 없습니다.</b>' }
+];
+function fcScene(mode){
+  var g = '';
+  var X0 = 60, W = 500, MID = 96;
+  var titles = ['단기금리 — 기준금리를 거의 그대로 따라갑니다',
+                '장기금리 — 앞으로의 경로를 평균낸 예상치입니다',
+                '기간 프리미엄 — 기대만으로 설명되지 않는 몫',
+                '네 가지 조합이 모두 가능합니다'];
+  g += '<text class="axt" x="' + X0 + '" y="22">' + titles[mode] + '</text>';
+
+  if(mode === 0 || mode === 1){
+    var isShort = (mode === 0);
+    // 기준금리 계단
+    var steps2 = [3.5, 3.5, 3.25, 3.0, 3.0, 2.75, 2.75, 2.5];
+    var sw = W / steps2.length;
+    var d1 = '';
+    steps2.forEach(function(v, i){
+      var x1 = X0 + i * sw, x2 = X0 + (i + 1) * sw;
+      var yy = MID + (3.5 - v) * 22;
+      d1 += (i === 0 ? 'M' : 'L') + x1.toFixed(1) + ',' + yy.toFixed(1) + 'L' + x2.toFixed(1) + ',' + yy.toFixed(1);
+    });
+    g += '<path d="' + d1 + '" fill="none" stroke="#7A5C9E" stroke-width="1.8"/>';
+    g += '<text class="lblb" x="' + X0 + '" y="' + (MID - 12) + '" fill="#7A5C9E">기준금리 (계단)</text>';
+    // 대상 금리
+    var d2 = '';
+    steps2.forEach(function(v, i){
+      var x = X0 + (i + 0.5) * sw;
+      var val = isShort ? v - 0.03 : 3.35;
+      var yy = MID + (3.5 - val) * 22;
+      d2 += (i === 0 ? 'M' : 'L') + x.toFixed(1) + ',' + yy.toFixed(1);
+    });
+    var c = isShort ? '#5F7A52' : '#4C6B7A';
+    g += '<path d="' + d2 + '" fill="none" stroke="' + c + '" stroke-width="2.2"/>';
+    g += '<text class="lblb" x="' + (X0 + W) + '" y="' + (MID + (3.5 - (isShort ? 2.47 : 3.35)) * 22 - 8).toFixed(1) +
+         '" text-anchor="end" fill="' + c + '">' + (isShort ? '1년물 — 거의 붙어 움직임' : '30년물 — 거의 안 움직임') + '</text>';
+    g += '<text class="axt" x="' + X0 + '" y="166">' +
+         (isShort ? '기준금리가 내려가면 단기금리도 그대로 따라갑니다 — 전달 계수 1에 가깝습니다.'
+                  : '기준금리가 내려가도 장기금리는 거의 그대로일 수 있습니다 — 10년 평균이 잘 안 바뀌기 때문입니다.') + '</text>';
+  } else if(mode === 2){
+    // 누적 막대
+    var parts = [{ n:'실질금리', v:1.8, c:'#5F7A52' }, { n:'기대 인플레', v:2.3, c:'#4C6B7A' }, { n:'기간 프리미엄', v:0.4, c:'#8E6B3A' }];
+    var tot = 4.5, cx = X0;
+    parts.forEach(function(p){
+      var w = p.v / tot * W;
+      g += '<rect x="' + cx.toFixed(1) + '" y="46" width="' + w.toFixed(1) + '" height="34" fill="' + p.c +
+           '" fill-opacity=".42" stroke="' + p.c + '" stroke-width="1.2"/>';
+      g += '<text class="axt" x="' + (cx + w / 2).toFixed(1) + '" y="66" text-anchor="middle">' + p.v.toFixed(1) + '</text>';
+      g += '<text class="lblb" x="' + (cx + w / 2).toFixed(1) + '" y="98" text-anchor="middle" fill="' + p.c + '">' + p.n + '</text>';
+      cx += w;
+    });
+    g += '<text class="lblb" x="' + X0 + '" y="' + 38 + '" fill="#5B5648">장기금리 4.5% = 세 조각의 합</text>';
+    g += '<text class="axt" x="' + X0 + '" y="130">기간 프리미엄만 커져도 장기금리가 오르고 채권값이 떨어집니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="152">국채 공급이 늘거나 물가가 불안정해지면 이 조각이 커집니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="174">다만 직접 관측되지 않고 모형으로 추정하는 값입니다.</text>';
+  } else {
+    var combos = [
+      { s:'하락', l:'하락', r:'장기채 유리', c:'#5F7A52' },
+      { s:'하락', l:'보합', r:'효과 없음', c:'#8A8474' },
+      { s:'하락', l:'상승', r:'장기채 손해', c:'#8E4B3A' },
+      { s:'보합', l:'하락', r:'장기채 유리', c:'#5F7A52' }
+    ];
+    var cw = W / 4;
+    combos.forEach(function(k, i){
+      var x = X0 + i * cw;
+      g += '<rect x="' + (x + 4).toFixed(1) + '" y="40" width="' + (cw - 10).toFixed(1) +
+           '" height="66" rx="4" fill="' + k.c + '" fill-opacity=".16" stroke="' + k.c + '" stroke-width="1.3"/>';
+      g += '<text class="axt" x="' + (x + cw / 2).toFixed(1) + '" y="60" text-anchor="middle">단기 ' + k.s + '</text>';
+      g += '<text class="axt" x="' + (x + cw / 2).toFixed(1) + '" y="78" text-anchor="middle">장기 ' + k.l + '</text>';
+      g += '<text class="lblb" x="' + (x + cw / 2).toFixed(1) + '" y="98" text-anchor="middle" fill="' + k.c + '">' + k.r + '</text>';
+    });
+    g += '<text class="axt" x="' + X0 + '" y="134">단기는 정책이, 장기는 전망과 수급이 지배하므로 넷 다 실제로 일어납니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="156">그래서 「인하 = 장기채 상승」은 자동이 아닙니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="178">장기채를 들고 있다면 기준금리가 아니라 장기금리를 보세요.</text>';
+  }
+  document.getElementById('fcScene').innerHTML = g;
+}
+bindBtnRow('#fcBtns', function(v){
+  fcScene(FC[+v].mode);
+  document.getElementById('fcVerdict').querySelector('.vh').textContent = FC[+v].h;
+  verdict('fcVerdict', FC[+v].color, FC[+v].t, FC[+v].p);
+});
+
+/* ══════════ 2. 전달 ══════════ */
+var PS_MATS = [0.25, 1, 2, 5, 10, 30];
+function betaOf(mat, betaLong){
+  if(mat <= 0.25) return 1;
+  // 만기가 길수록 1에서 betaLong으로 부드럽게 이동 (로그 보간)
+  var t = Math.log(mat / 0.25) / Math.log(30 / 0.25);
+  return 1 + (betaLong - 1) * t;
+}
+function psDraw(){
+  var dBase = +document.getElementById('psBase').value / 10;
+  var betaLong = +document.getElementById('psBeta').value / 100;
+  var y = +document.getElementById('psY').value / 10;
+  document.getElementById('psBaseOut').textContent = dBase === 0 ? '변화 없음' : sgn(dBase, 1) + '%p';
+  document.getElementById('psBetaOut').textContent = num(betaLong, 2);
+  document.getElementById('psYOut').textContent = num(y, 1) + '%';
+
+  var rows = PS_MATS.map(function(m){
+    var b = betaOf(m, betaLong);
+    var dY = dBase * b;
+    var dur = m <= 1 ? m / (1 + y / 100) : modDur(y / 100, y / 100, Math.round(m));
+    return { m:m, beta:b, dY:dY, dur:dur, chg:-dur * dY };
+  });
+  var r30 = rows[rows.length - 1], r2 = rows[2];
+
+  document.getElementById('ps30').textContent = sgn(r30.dY, 2) + '%p / ' + sgn(r30.chg, 1) + '%';
+  document.getElementById('ps30').style.color = r30.chg > 0.05 ? 'var(--pos)' : (r30.chg < -0.05 ? 'var(--neg)' : '');
+  document.getElementById('ps2').textContent = sgn(r2.chg, 1) + '% (2년채)';
+
+  var X0 = 160, W = 360;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">기준금리 ' + (dBase === 0 ? '변화 없음' : sgn(dBase, 1) + '%p') +
+       ' → 만기별 금리와 가격</text>';
+  var maxAbs = Math.max(0.5, Math.max.apply(null, rows.map(function(r){ return Math.abs(r.chg); })));
+  var ZERO = X0 + W / 2;
+  var scale = (W / 2 - 44) / maxAbs;
+  rows.forEach(function(r, i){
+    var yy = 32 + i * 29;
+    var w = Math.abs(r.chg) * scale;
+    var x = r.chg >= 0 ? ZERO : ZERO - w;
+    var c = r.chg >= 0 ? '#5F7A52' : '#8E4B3A';
+    var on = (r.m === 30);
+    g += '<rect x="' + x.toFixed(1) + '" y="' + yy + '" width="' + Math.max(0.6, w).toFixed(1) +
+         '" height="19" rx="1.5" fill="' + c + '" fill-opacity="' + (on ? '.5' : '.2') + '" stroke="' + c +
+         '" stroke-width="' + (on ? '1.6' : '1') + '"/>';
+    var name = r.m < 1 ? '3개월' : (r.m + '년');
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (yy + 9) + '" text-anchor="end"' +
+         (on ? ' fill="' + c + '"' : '') + '>' + name + ' · 전달 ' + num(r.beta, 2) + '</text>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (yy + 22) + '" text-anchor="end">금리 ' + sgn(r.dY, 2) + '%p</text>';
+    var tx = r.chg >= 0 ? (x + w + 6) : (x - 6);
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + Math.max(X0 + 2, Math.min(tx, X0 + W - 2)).toFixed(1) +
+         '" y="' + (yy + 14) + '" text-anchor="' + (r.chg >= 0 ? 'start' : 'end') + '"' + (on ? ' fill="' + c + '"' : '') +
+         '>' + sgn(r.chg, 1) + '%</text>';
+  });
+  g += '<line x1="' + ZERO.toFixed(1) + '" y1="26" x2="' + ZERO.toFixed(1) + '" y2="' + (32 + rows.length * 29) +
+       '" stroke="#8A8474" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (32 + rows.length * 29 + 22) +
+       '">전달 계수가 낮으면 기준금리가 크게 움직여도 장기채는 조금밖에 안 움직입니다.</text>';
+  document.getElementById('psScene').innerHTML = g;
+
+  if(dBase === 0){
+    verdict('psVerdict', '#5B5648',
+      '기준금리를 움직여보세요',
+      '<b>기준금리 변화</b> 슬라이더를 <b>마이너스</b>로 밀면 인하 국면입니다.<br><br>' +
+      '<b>그다음 「전달되는 비율」을 바꿔보세요.</b><br>· <b>1.0</b> — 장기금리가 <b>그대로</b> 따라갑니다 (드문 경우)<br>' +
+      '· <b>0.2~0.4</b> — 일부만 전달됩니다 (흔한 경우)<br>· <b>0</b> — <b>전혀 전달되지 않습니다</b><br>' +
+      '· <b>음수</b> — <b>반대로 갑니다</b> (인하했는데 장기금리 상승)<br><br>' +
+      '<b>같은 인하인데 결과가 완전히 달라지는 것</b>이 이 장의 요점입니다.');
+  } else if(betaLong <= 0.001 && betaLong >= -0.001){
+    verdict('psVerdict', '#8E6B3A',
+      '기준금리가 ' + sgn(dBase, 1) + '%p 움직여도 30년채는 그대로입니다',
+      '전달 계수가 <b>0</b>이면 <b>장기금리가 전혀 반응하지 않습니다.</b> 30년채 가격 변화는 <b>' + sgn(r30.chg, 1) + '%</b>입니다.<br><br>' +
+      '<b>이런 일이 실제로 생기나</b> — 생깁니다. 시장이 <b>「이번 조정은 오래 안 갈 것」</b>으로 보면 <b>10년·30년 평균 기대가 거의 안 바뀝니다.</b><br><br>' +
+      '<b>반면 짧은 쪽은 그대로 반응합니다</b> — 3개월물은 <b>' + sgn(rows[0].dY, 2) + '%p</b>, 2년채는 <b>' +
+      sgn(r2.chg, 1) + '%</b>입니다.<br><br>' +
+      '<b>여기서 나오는 실전 교훈</b> — <b>「인하했으니 내 장기채가 오르겠지」는 성립하지 않을 수 있습니다.</b> 확인할 것은 <b>기준금리가 아니라 30년물 금리 자체</b>입니다.');
+  } else if(betaLong < 0){
+    verdict('psVerdict', '#8E4B3A',
+      '기준금리는 ' + sgn(dBase, 1) + '%p인데 장기금리는 반대로 — 30년채 ' + sgn(r30.chg, 1) + '%',
+      '전달 계수가 <b>' + num(betaLong, 2) + '</b>로 음수입니다. <b>기준금리와 장기금리가 반대로 움직이는</b> 상황입니다.<br><br>' +
+      '<b>' + (dBase < 0 ? '인하했는데 장기금리가 오르는' : '인상했는데 장기금리가 내리는') + '</b> 경우이고, <b>30년채는 ' +
+      sgn(r30.chg, 1) + '%</b>가 됩니다. <b>2년채(' + sgn(r2.chg, 1) + '%)와 방향이 갈립니다.</b><br><br>' +
+      (dBase < 0
+        ? '<b>왜 이런 일이 생기나</b> — 셋 중 하나입니다.<br>· <b>인플레이션 재발 우려</b> — 「너무 일찍 내렸다」<br>· <b>국채 공급 급증</b> — 사줄 사람을 더 찾아야 함<br>· <b>경기 지표가 예상보다 강함</b> — 인하가 곧 멈출 것<br><br>' +
+          '<b>이것이 장기채 투자자가 가장 실망하는 시나리오</b>입니다. <b>기다리던 인하가 왔는데 내 자산은 떨어집니다.</b><br><br>'
+        : '<b>인상했는데 장기금리가 내려가는</b> 것은 시장이 <b>「이 인상이 경기를 꺾을 것」</b>으로 볼 때 나타납니다. <b>장기채에는 오히려 유리</b>합니다.<br><br>') +
+      '<b>「자세히 보기」에서 세 경로를 자세히</b> 다룹니다.');
+  } else if(betaLong >= 0.9){
+    verdict('psVerdict', '#5F7A52',
+      '전달이 거의 완전해 30년채가 ' + sgn(r30.chg, 1) + '% 움직입니다',
+      '전달 계수 <b>' + num(betaLong, 2) + '</b>는 <b>장기금리가 기준금리를 거의 그대로 따라가는</b> 경우입니다. 그러면 <b>듀레이션이 긴 장기채가 압도적으로 크게</b> 움직입니다.<br><br>' +
+      '· 3개월물 <b>' + sgn(rows[0].chg, 1) + '%</b><br>· 2년채 <b>' + sgn(r2.chg, 1) + '%</b><br>· <b>30년채 ' + sgn(r30.chg, 1) + '%</b><br><br>' +
+      '<b>이것이 장기채를 사는 사람이 그리는 그림</b>입니다. 다만 <b>전달 계수가 이렇게 높은 경우는 흔하지 않습니다.</b><br><br>' +
+      '<b>슬라이더를 0.2~0.4로 내려보세요.</b> 훨씬 현실적인 범위이고, <b>기대했던 것보다 결과가 작다</b>는 것을 보게 됩니다.<br><br>' +
+      '<b>그리고 음수로도 내려보세요.</b> <b>인하가 오히려 손해가 되는</b> 경우가 나옵니다.');
+  } else {
+    verdict('psVerdict', '#7A5C9E',
+      '전달 ' + num(betaLong, 2) + ' — 30년채 금리는 ' + sgn(r30.dY, 2) + '%p만 움직입니다',
+      '기준금리가 <b>' + sgn(dBase, 1) + '%p</b> 움직였지만, 30년물 금리는 <b>' + sgn(r30.dY, 2) +
+      '%p</b>만 따라갑니다. 그래도 <b>듀레이션이 ' + num(r30.dur, 1) + '</b>이라 가격은 <b>' + sgn(r30.chg, 1) + '%</b> 움직입니다.<br><br>' +
+      '<b>여기서 두 힘이 부딪칩니다</b><br>· <b>전달이 약해서</b> 금리가 조금밖에 안 움직입니다 (불리)<br>· <b>듀레이션이 길어서</b> 그 조금이 크게 증폭됩니다 (유리)<br><br>' +
+      '<b>결과적으로 2년채(' + sgn(r2.chg, 1) + '%)보다 30년채(' + sgn(r30.chg, 1) + '%)가 ' +
+      (Math.abs(r30.chg) > Math.abs(r2.chg) ? '더 크게' : '오히려 덜') + ' 움직입니다.</b><br><br>' +
+      '<b>전달 계수를 0 근처와 음수로도 옮겨보세요.</b> 그 지점에서 <b>「인하가 장기채에 도움이 안 되거나 해가 되는」</b> 구간이 나옵니다. <b>이것이 실제로 자주 벌어지는 일</b>입니다.');
+  }
+}
+['psBase', 'psBeta', 'psY'].forEach(function(id){ document.getElementById(id).addEventListener('input', psDraw); });
+
+/* ══════════ 3. 분해 ══════════ */
+function dcDraw(){
+  var real = +document.getElementById('dcReal').value / 10;
+  var inf = +document.getElementById('dcInf').value / 10;
+  var prem = +document.getElementById('dcPrem').value / 10;
+  var dur = +document.getElementById('dcDur').value;
+  document.getElementById('dcRealOut').textContent = num(real, 1) + '%';
+  document.getElementById('dcInfOut').textContent = num(inf, 1) + '%';
+  document.getElementById('dcPremOut').textContent = num(prem, 1) + '%';
+  document.getElementById('dcDurOut').textContent = dur;
+
+  var total = real + inf + prem;
+  var BASE = 4.0;
+  var chg = -dur * (total - BASE);
+  var dcCaveat = Math.abs(chg) > 40
+    ? '<br><br><b>⚠️ 지금 값은 근사가 깨지는 범위입니다.</b> <b>가격 ≈ −듀레이션 × 금리변화</b>는 <b>변화가 작을 때만</b> 맞습니다(02편). ' +
+      '큰 변화에서는 <b>손실을 과대평가하고 이익을 과소평가</b>하며, <b>가격은 −100%보다 아래로 갈 수 없습니다.</b> ' +
+      '<b>슬라이더를 기준선 4.0% 근처로</b> 되돌리면 계산이 현실적인 범위로 들어옵니다.'
+    : '';
+
+  steps('dcSteps', [
+    { k:'실질금리', v:num(real, 1) + '%' },
+    { k:'기대 인플레이션', v:'+ ' + num(inf, 1) + '%' },
+    { k:'기간 프리미엄', v:(prem >= 0 ? '+ ' : '− ') + num(Math.abs(prem), 1) + '%' },
+    { k:'장기금리 합계', v:num(total, 1) + '%' },
+    { k:'기준선 4.0% 대비', v:sgn(total - BASE, 1) + '%p' },
+    { k:'듀레이션 ' + dur + ' 적용 시 가격', v:sgn(chg, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('dcTotal').textContent = num(total, 1) + '%';
+  document.getElementById('dcPrice').textContent = sgn(chg, 1) + '%';
+  document.getElementById('dcPrice').style.color = chg > 0.05 ? 'var(--pos)' : (chg < -0.05 ? 'var(--neg)' : '');
+
+  var X0 = 60, W = 500;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">장기금리 ' + num(total, 1) + '% = 세 조각의 합</text>';
+  // 음수 조각이 있어도 전부 화면 안에 들어오도록 공통 좌표계를 먼저 잡는다
+  var segs = [{ n:'실질금리', v:real, c:'#5F7A52' }, { n:'기대 인플레', v:inf, c:'#4C6B7A' }, { n:'기간 프리미엄', v:prem, c:'#8E6B3A' }];
+  var cum = [0];
+  segs.forEach(function(p){ cum.push(cum[cum.length - 1] + p.v); });
+  var vmin = Math.min(0, BASE, Math.min.apply(null, cum));
+  var vmax = Math.max(0, BASE, Math.max.apply(null, cum));
+  var pad = Math.max(0.3, (vmax - vmin) * 0.08);
+  vmin -= pad; vmax += pad;
+  var vspan = Math.max(0.5, vmax - vmin);
+  function vx(v){ return X0 + (v - vmin) / vspan * W; }
+  segs.forEach(function(p, i){
+    if(Math.abs(p.v) < 0.01) return;
+    var xa = vx(cum[i]), xb = vx(cum[i + 1]);
+    var x = Math.min(xa, xb), w = Math.abs(xb - xa);
+    g += '<rect x="' + x.toFixed(1) + '" y="36" width="' + w.toFixed(1) + '" height="32" fill="' + p.c +
+         '" fill-opacity="' + (p.v >= 0 ? '.42' : '.18') + '" stroke="' + p.c + '" stroke-width="1.2"' +
+         (p.v < 0 ? ' stroke-dasharray="3 3"' : '') + '/>';
+    if(w > 44){
+      g += '<text class="axt" x="' + (x + w / 2).toFixed(1) + '" y="56" text-anchor="middle">' + num(p.v, 1) + '</text>';
+    }
+    var lx = Math.max(X0 + 26, Math.min(x + w / 2, X0 + W - 26));
+    g += '<text class="lblb" x="' + lx.toFixed(1) + '" y="' + (84 + (i % 2) * 15) + '" text-anchor="middle" fill="' + p.c + '">' +
+         p.n + '</text>';
+  });
+  // 0선
+  if(vmin < 0){
+    g += '<line x1="' + vx(0).toFixed(1) + '" y1="32" x2="' + vx(0).toFixed(1) + '" y2="72" stroke="#8A8474" stroke-width="1"/>';
+  }
+  var bx = vx(BASE);
+  g += '<line x1="' + bx.toFixed(1) + '" y1="30" x2="' + bx.toFixed(1) + '" y2="74" stroke="#8E4B3A" stroke-width="1.4" stroke-dasharray="4 3"/>';
+  g += '<text class="axt" x="' + (bx + 6).toFixed(1) + '" y="' + 26 + '">기준선 4.0%</text>';
+  g += '<text class="axt" x="' + X0 + '" y="126">어느 조각이 움직여도 가격에는 똑같이 반영됩니다 — 시장금리의 합만 중요합니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="146">그러나 「어느 조각이 움직였는지」는 다음 전망을 다르게 만듭니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="166">세 조각은 직접 관측되지 않고 모형으로 추정하는 값입니다.</text>';
+  document.getElementById('dcScene').innerHTML = g;
+
+  var maxPart = Math.max(real, inf, prem);
+  var driver = (maxPart === inf) ? 'inf' : ((maxPart === prem) ? 'prem' : 'real');
+
+  if(Math.abs(total - BASE) < 0.05){
+    verdict('dcVerdict', '#5B5648',
+      '기준선과 같아 가격 변화가 없습니다',
+      '세 조각의 합이 <b>기준선 4.0%와 거의 같습니다.</b> 슬라이더를 움직여 <b>어느 조각이 커지면 어떻게 되는지</b> 확인해보세요.<br><br>' +
+      '<b>주목할 점</b> — <b>어느 조각이 움직이든 가격에 미치는 영향은 똑같습니다.</b> 실질금리가 0.5%p 오르든 기간 프리미엄이 0.5%p 오르든 <b>가격 결과는 같습니다.</b><br><br>' +
+      '<b>그런데 「다음에 무엇이 일어날까」는 완전히 다릅니다.</b> 그래서 분해가 필요합니다.' + dcCaveat);
+  } else if(inf >= 4.0){
+    verdict('dcVerdict', '#8E4B3A',
+      '기대 인플레이션이 ' + num(inf, 1) + '%까지 올라 장기금리가 ' + num(total, 1) + '%입니다',
+      '장기채에 <b>가장 나쁜 조합</b>입니다. 가격은 <b>' + sgn(chg, 1) + '%</b>가 됩니다.<br><br>' +
+      '<b>왜 인플레이션이 특히 나쁜가</b> — 03편에서 봤듯 채권은 <b>받을 금액이 고정</b>입니다. 물가가 오르면 <b>그 금액의 가치가 깎입니다.</b> 게다가 <b>물가를 잡으려고 금리를 올리면 가격도 떨어집니다.</b> <b>두 번 손해</b>입니다.<br><br>' +
+      '<b>그리고 이때는 중앙은행이 도와줄 수 없습니다.</b> 오히려 <b>기준금리를 올려야</b> 하는 상황입니다. <b>「인하 기대」가 아예 성립하지 않습니다.</b><br><br>' +
+      '<b>2022년이 이 국면</b>이었습니다. 그리고 <b>장기채가 가장 크게 무너진 이유</b>입니다.<br><br>' +
+      '<b>장기채를 들고 있다면 이것이 가장 중요한 감시 대상</b>입니다. 물가 지표와 <b>물가연동국채와 일반국채의 금리 차이</b>를 함께 보세요.' + dcCaveat);
+  } else if(driver === 'prem' || prem >= 1.5){
+    verdict('dcVerdict', '#8E6B3A',
+      '기간 프리미엄이 ' + num(prem, 1) + '%로 커져 장기금리를 밀어올렸습니다',
+      '기대 인플레이션이나 실질금리가 아니라 <b>「오래 묶이는 대가」가 커진</b> 경우입니다. 장기금리 <b>' + num(total, 1) +
+      '%</b>, 가격 <b>' + sgn(chg, 1) + '%</b>입니다.<br><br>' +
+      '<b>무엇이 이것을 키우나</b><br>· <b>국채 발행량 증가</b> — 재정 적자가 커지면 국채가 쏟아집니다<br>' +
+      '· <b>중앙은행의 보유 축소</b> — 가장 큰 매수자가 빠집니다<br>· <b>물가의 변동성</b> — 예측이 어려울수록 더 요구합니다<br><br>' +
+      '<b>이 경우가 특히 곤란한 이유</b> — <b>중앙은행이 기준금리를 내려도 해결되지 않습니다.</b> 원인이 <b>정책이 아니라 수급과 불확실성</b>이기 때문입니다. 2장의 <b>「전달 계수가 낮거나 음수인」</b> 상황이 바로 이것입니다.<br><br>' +
+      '<b>⚠️ 다만 기간 프리미엄은 관측값이 아니라 추정값</b>입니다. <b>「기간 프리미엄이 올라서」라는 설명은 사후 해석인 경우가 많습니다.</b> 개념으로 이해하되 숫자를 맹신하지 마세요.' + dcCaveat);
+  } else if(total < BASE){
+    verdict('dcVerdict', '#5F7A52',
+      '장기금리가 ' + num(total, 1) + '%로 내려가 가격이 ' + sgn(chg, 1) + '% 올랐습니다',
+      '세 조각의 합이 기준선보다 <b>' + num(BASE - total, 1) + '%p</b> 낮습니다. 듀레이션 <b>' + dur +
+      '</b>이 곱해져 가격이 <b>' + sgn(chg, 1) + '%</b>가 됩니다.<br><br>' +
+      '<b>어느 조각이 내려갔는지가 중요합니다</b><br>' +
+      '· <b>기대 인플레이션이 내려간 것</b> → <b>가장 건강한 상승</b>입니다. 물가가 잡히면 중앙은행도 인하할 여지가 생겨 <b>추가 상승 여지</b>가 있습니다.<br>' +
+      '· <b>실질금리가 내려간 것</b> → 성장 둔화 신호일 수 있습니다. 채권에는 좋지만 <b>주식에는 나쁜</b> 소식입니다.<br>' +
+      '· <b>기간 프리미엄이 내려간 것</b> → 수급이 좋아진 것으로, <b>되돌아갈 수도</b> 있습니다.<br><br>' +
+      '<b>슬라이더를 하나씩 움직여보세요.</b> 가격 결과는 같아도 <b>다음에 볼 것이 달라집니다.</b>' + dcCaveat);
+  } else {
+    verdict('dcVerdict', '#7A5C9E',
+      '장기금리 ' + num(total, 1) + '% — 기준선 대비 가격 ' + sgn(chg, 1) + '%',
+      '<b>실질금리 ' + num(real, 1) + '% + 기대 인플레 ' + num(inf, 1) + '% + 기간 프리미엄 ' + num(prem, 1) +
+      '%</b>가 지금의 장기금리입니다.<br><br>' +
+      '<b>이 분해가 왜 필요한가</b> — <b>가격에 미치는 영향은 합만으로 정해지지만, 「다음에 무엇이 일어날까」는 어느 조각이 움직였느냐에 달렸기</b> 때문입니다.<br><br>' +
+      '· <b>인플레 기대가 원인이라면</b> → 중앙은행이 <b>인상</b>해야 합니다. 장기채에 <b>최악</b>입니다.<br>' +
+      '· <b>실질금리가 원인이라면</b> → 경기가 강하다는 뜻입니다. 시간이 지나면 <b>완화될 수</b> 있습니다.<br>' +
+      '· <b>기간 프리미엄이 원인이라면</b> → <b>정책으로 해결되지 않습니다.</b> 수급이 개선돼야 합니다.<br><br>' +
+      '<b>슬라이더를 하나씩 크게 움직여보며</b> 각 경우의 판정을 읽어보세요. <b>세 시나리오가 서로 다른 대응을 요구합니다.</b>' + dcCaveat);
+  }
+}
+['dcReal', 'dcInf', 'dcPrem', 'dcDur'].forEach(function(id){ document.getElementById(id).addEventListener('input', dcDraw); });
+
+/* ══════════ 4. 만기 맞추기 ══════════ */
+function horizonResult(y0, dy, H, N){
+  // 표면금리 = y0 인 액면가 채권. H년 뒤 총액 (쿠폰은 변경된 금리로 재투자)
+  var cpn = y0, buy = P(cpn, y0, N);
+  var reinv = Math.max(0.0001, y0 + dy);
+  if(N <= H){
+    // 만기까지 받고, 남은 기간은 변경된 금리로 굴린다
+    var acc = 0;
+    for(var t = 1; t <= N; t++) acc += 100 * cpn * Math.pow(1 + reinv, H - t);
+    acc += 100 * Math.pow(1 + reinv, H - N);
+    return acc / buy;
+  }
+  var sell = P(cpn, reinv, N - H);
+  var coup = 0;
+  for(var t = 1; t <= H; t++) coup += 100 * cpn * Math.pow(1 + reinv, H - t);
+  return (sell + coup) / buy;
+}
+function mtDraw(){
+  var H = +document.getElementById('mtH').value;
+  var N = +document.getElementById('mtN').value;
+  var y = +document.getElementById('mtY').value / 10;
+  document.getElementById('mtHOut').textContent = H + '년 뒤';
+  document.getElementById('mtNOut').textContent = N + '년';
+  document.getElementById('mtYOut').textContent = num(y, 1) + '%';
+
+  var y0 = y / 100;
+  var dur = modDur(y0, y0, N);
+  var scen = [-0.02, -0.01, 0, 0.01, 0.02].map(function(dy){
+    var r = horizonResult(y0, dy, H, N);
+    return { dy:dy, ann:(Math.pow(r, 1 / H) - 1) * 100 };
+  });
+  var anns = scen.map(function(s){ return s.ann; });
+  var lo = Math.min.apply(null, anns), hi = Math.max.apply(null, anns);
+  var spread = hi - lo;
+
+  steps('mtSteps', [
+    { k:'목표 기간', v:H + '년' },
+    { k:'산 채권의 만기', v:N + '년' },
+    { k:'그 채권의 듀레이션', v:num(dur, 2) },
+    { k:'듀레이션 − 목표 기간', v:sgn(dur - H, 2) },
+    { k:'금리 ±2%p일 때 연환산 범위', v:num(lo, 2) + '% ~ ' + num(hi, 2) + '%' },
+    { k:'범위의 폭 (작을수록 확정적)', v:num(spread, 2) + '%p', total:true }
+  ]);
+
+  document.getElementById('mtRange').textContent = num(lo, 2) + '% ~ ' + num(hi, 2) + '%';
+  document.getElementById('mtRange').style.color = spread < 0.5 ? 'var(--pos)' : (spread > 3 ? 'var(--neg)' : '');
+  document.getElementById('mtDur').textContent = num(dur, 2) + ' / ' + H;
+
+  var X0 = 90, W = 470, TOP = 36, HH = 96;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">금리 변화에 따른 ' + H + '년 연환산 수익률 (만기 ' + N + '년)</text>';
+  var vlo = Math.min(lo, y - 1), vhi = Math.max(hi, y + 1);
+  var vspan = Math.max(1, vhi - vlo);
+  function sy(v){ return TOP + HH - (v - vlo) / vspan * HH; }
+  var d = '';
+  scen.forEach(function(s, i){
+    var px = X0 + i / (scen.length - 1) * W;
+    d += (i === 0 ? 'M' : 'L') + px.toFixed(1) + ',' + sy(s.ann).toFixed(1);
+  });
+  g += '<path d="' + d + '" fill="none" stroke="#5F7A52" stroke-width="2"/>';
+  scen.forEach(function(s, i){
+    var px = X0 + i / (scen.length - 1) * W;
+    g += '<circle cx="' + px.toFixed(1) + '" cy="' + sy(s.ann).toFixed(1) + '" r="3.6" fill="#5F7A52"/>';
+    g += '<text class="axt" x="' + px.toFixed(1) + '" y="' + (TOP + HH + 15) + '" text-anchor="middle">' +
+         sgn(s.dy * 100, 0) + '%p</text>';
+    g += '<text class="axt" x="' + px.toFixed(1) + '" y="' + Math.max(TOP + 10, sy(s.ann) - 8).toFixed(1) +
+         '" text-anchor="middle">' + num(s.ann, 1) + '</text>';
+  });
+  g += '<line x1="' + X0 + '" y1="' + sy(y).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + sy(y).toFixed(1) +
+       '" stroke="#8A8474" stroke-width="1" stroke-dasharray="4 3"/>';
+  g += '<text class="axt" x="' + (X0 + W) + '" y="' + (sy(y) - 6).toFixed(1) + '" text-anchor="end">매수 시 금리 ' + num(y, 1) + '%</text>';
+  g += '<line x1="' + X0 + '" y1="' + (TOP + HH) + '" x2="' + (X0 + W) + '" y2="' + (TOP + HH) + '" stroke="#D9D2C0" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (TOP + HH + 42) + '">선이 평평할수록 「금리가 어떻게 되든 결과가 같다」는 뜻입니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (TOP + HH + 62) + '">듀레이션 ' + num(dur, 2) + ' vs 목표 ' + H +
+       '년 — 가까울수록 평평해집니다.</text>';
+  document.getElementById('mtScene').innerHTML = g;
+
+  var diff = Math.abs(dur - H);
+  if(spread < 0.5){
+    verdict('mtVerdict', '#5F7A52',
+      '금리가 어떻게 되든 연 ' + num(lo, 2) + '~' + num(hi, 2) + '% — 사실상 확정입니다',
+      '듀레이션 <b>' + num(dur, 2) + '</b>이 목표 기간 <b>' + H + '년</b>과 가까워, <b>가격 위험과 재투자 위험이 서로를 상쇄</b>합니다.<br><br>' +
+      '<b>어떻게 상쇄되나</b><br>· <b>금리가 오르면</b> — 팔 때 가격은 손해지만, <b>받은 이자를 높은 금리로</b> 굴려 만회합니다<br>' +
+      '· <b>금리가 내리면</b> — 재투자는 손해지만, <b>팔 때 가격이 올라</b> 만회합니다<br><br>' +
+      '<b>그래서 금리가 ±2%p 움직여도 결과가 ' + num(spread, 2) + '%p밖에 안 벌어집니다.</b> 이것을 <b>면역화</b>라고 합니다.<br><br>' +
+      '<b>이것이 채권의 가장 강력한 쓰임</b>입니다 — <b>「몇 년 뒤 얼마가 필요하다」가 정해져 있으면</b> 채권으로 <b>거의 확정</b>할 수 있습니다. 주식으로는 불가능한 일입니다.<br><br>' +
+      '<b>만기 슬라이더를 30년으로 올려보세요.</b> 같은 목표 기간인데 <b>결과가 얼마나 벌어지는지</b> 보입니다.');
+  } else if(dur > H + 2){
+    verdict('mtVerdict', '#8E4B3A',
+      '듀레이션(' + num(dur, 2) + ')이 목표(' + H + '년)보다 훨씬 길어 결과가 ' + num(spread, 2) + '%p나 벌어집니다',
+      '금리가 ±2%p 움직이면 연환산 수익률이 <b>' + num(lo, 2) + '%에서 ' + num(hi, 2) + '%까지</b> 갈립니다. <b>결과가 금리에 좌우됩니다.</b><br><br>' +
+      '<b>왜 그런가</b> — 목표 시점에 <b>아직 ' + (N - H) + '년이 남은 채권을 팔아야</b> 합니다. 그때의 <b>시장 가격</b>이 결과를 정합니다. <b>「만기까지 들면 확정」이라는 안전장치를 쓰지 못하는</b> 것입니다.<br><br>' +
+      '<b>이것이 중요한 이유</b> — <b>목표 기간보다 훨씬 긴 채권을 사는 것은 저축이 아니라 금리 방향에 대한 베팅</b>입니다. 나쁜 것이 아니라 <b>다른 것</b>입니다. 다만 <b>어느 쪽을 하고 있는지 스스로 알아야</b> 합니다.<br><br>' +
+      '<b>지금 30년 장기채를 들고 있다면 이 자리에 서 있는 것</b>입니다. 01편 5장의 <b>「③ 금리 하락 베팅」</b>과 같은 이야기입니다.<br><br>' +
+      '<b>만기를 ' + Math.max(1, Math.round(H * 1.15)) + '년 근처로 내려보세요.</b> 선이 <b>평평해지는 것</b>이 보입니다.');
+  } else if(dur < H - 1){
+    verdict('mtVerdict', '#8E6B3A',
+      '듀레이션(' + num(dur, 2) + ')이 목표(' + H + '년)보다 짧아 재투자 위험이 남습니다',
+      '만기가 목표보다 짧아 <b>중간에 원금이 돌아오고, 남은 기간을 그때의 금리로 굴려야</b> 합니다. 그래서 <b>금리가 내려가면 불리</b>합니다.<br><br>' +
+      '<b>선의 방향을 보세요</b> — 금리가 <b>오를수록 결과가 좋아집니다</b>(' + num(scen[4].ann, 2) + '%). 반대로 <b>내려가면 나빠집니다</b>(' +
+      num(scen[0].ann, 2) + '%). 장기채와 <b>정반대 방향</b>입니다.<br><br>' +
+      '<b>이것이 「재투자 위험」</b>입니다. 가격 위험만큼 눈에 띄지 않지만 <b>실제로 존재하는 손해</b>입니다.<br><br>' +
+      '<b>단기채를 계속 굴리는 전략의 약점</b>이 여기 있습니다 — <b>안전해 보이지만 금리가 계속 내려가면 수익률이 계속 깎입니다.</b><br><br>' +
+      '<b>만기 슬라이더를 올려 듀레이션을 ' + H + '년에 맞춰보세요.</b> 양쪽 위험이 상쇄되는 지점이 나옵니다.');
+  } else {
+    verdict('mtVerdict', '#5F7A52',
+      '듀레이션 ' + num(dur, 2) + '이 목표 ' + H + '년에 가까워 결과가 비교적 안정적입니다',
+      '금리가 ±2%p 움직여도 연환산이 <b>' + num(lo, 2) + '% ~ ' + num(hi, 2) + '%</b>로 <b>' + num(spread, 2) +
+      '%p 안에</b> 들어옵니다.<br><br>' +
+      '<b>가격 위험과 재투자 위험이 상당 부분 상쇄</b>되고 있습니다. 듀레이션과 목표 기간의 차이가 <b>' + num(diff, 2) +
+      '</b>이라 완전히 지워지지는 않았지만, <b>충분히 실용적인 범위</b>입니다.<br><br>' +
+      '<b>실전에서는 이 정도면 됩니다.</b> 완벽한 면역화는 <b>모든 만기의 금리가 똑같이 움직인다</b>는 가정을 필요로 하는데, 2장에서 봤듯 <b>실제로는 그렇지 않습니다.</b><br><br>' +
+      '<b>그래서 실전 규칙은 간단합니다</b> — <b>「이 돈을 쓸 시점과 비슷한 듀레이션을 고른다.」</b> 그것만으로 대부분의 사고를 피할 수 있습니다.');
+  }
+}
+['mtH', 'mtN', 'mtY'].forEach(function(id){ document.getElementById(id).addEventListener('input', mtDraw); });
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#bmCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#bmCheck li.done').length;
+      document.getElementById('bmCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 질문이 가장 중요합니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#fcBtns button[data-v="0"]').click();
+psDraw();
+dcDraw();
+mtDraw();
+</script>
+</body>
+</html>
