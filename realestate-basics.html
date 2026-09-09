@@ -1,0 +1,889 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>집은 어떤 자산인가 — 부동산의 구조</title>
+<meta name="description" content="집이 주식·코인과 구조적으로 무엇이 다른지, 사는 순간 드는 돈은 얼마인지, 그리고 자가와 전세 중 무엇이 유리한지를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --re:#6B7A52;
+    --eq:#3A5A8E;
+    --coin:#B8860B;
+    --bad:#8E4B3A;
+    --neutral:#5B5648;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  .subnote{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);}
+
+  /* 네 가지 결정 카드 */
+  .four{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0 0;}
+  .four > div{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--fc);
+    border-radius:3px;
+    padding:16px 18px;
+  }
+  .four h4{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--fc);
+    margin:0 0 8px;
+  }
+  .four p{font-size:13.8px;color:var(--ink-soft);margin:0;max-width:none;}
+  .four p b{color:var(--ink);font-weight:600;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .four{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">부동산 01 · 기초 · 투자 공부 노트</div>
+    <h1>집은 어떤 자산인가</h1>
+    <p class="lede">대부분의 가정에서 집은 <b>가장 큰 자산이자 가장 큰 빚</b>입니다. 그런데 주식이나 코인과는 <b>구조 자체가 다릅니다.</b> 이 편은 그 차이부터 짚습니다 — <b>파는 데 몇 달이 걸리고, 사는 순간 수천만원이 나가고, 빌려서 사는 것이 기본값</b>이라는 세 가지가 모든 것을 바꿔놓습니다.</p>
+    <div class="callout">
+      <b>이 트랙의 입장.</b> 특정 지역이나 단지를 <b>추천하지 않습니다.</b> 집은 되돌리기 어려운 결정이라, <b>「어디가 오를까」보다 「무엇을 확인하고 얼마를 빌릴까」</b>가 훨씬 중요하다고 보기 때문입니다. 이 편에서는 <b>계산기 네 개</b>로 그 감각을 잡습니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 배경까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#diff">1. 무엇이 다른가</a>
+    <a href="#four">2. 네 가지 결정</a>
+    <a href="#cost">3. 사는 순간 드는 돈</a>
+    <a href="#lev">4. 레버리지가 기본값</a>
+    <a href="#rent">5. 자가냐 전세냐</a>
+    <a href="#sum">6. 정리</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="diff">
+    <div class="prod-head" style="--edge:var(--re)">
+      <span class="prod-tag">01 · 성질</span>
+      <h2>주식·코인과 무엇이 다른가</h2>
+      <p class="one">같은 「투자 자산」인데 <b>다루는 방식이 완전히 달라야 하는 이유</b>가 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>주식은 <b>버튼 하나로 1초 만에</b> 살 수 있고, <b>1초 만에 팔 수도</b> 있어. 5만원어치만 살 수도 있고.</p>
+      <p>그런데 집은 어때? <b>몇 억이 있어야</b> 살 수 있고, 사려면 <b>계약하고 잔금 치르고 몇 달</b>이 걸려. 팔 때도 <b>사줄 사람이 나타날 때까지 기다려야</b> 해. 몇 달, 길면 몇 년.</p>
+      <p>그리고 아주 중요한 차이가 하나 더 있어. <b>주식은 내 돈으로 사지만, 집은 대부분 빌려서 사.</b> 그래서 값이 오르면 크게 벌고, 떨어지면 <b>빚만 남을 수도</b> 있어.</p>
+      <p>마지막으로 — <b>집은 살면서 쓰는 물건이기도 해.</b> 주식은 갖고 있어도 쓸 수 없지만, 집은 <b>거기서 자고 밥 먹고 아이를 키워.</b> 그래서 「얼마 벌었나」로만 따질 수 없어.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COMPARE · 세 자산을 나란히</div>
+      <p class="labsub">항목을 눌러 <b>어떤 차이가 실제로 무엇을 바꾸는지</b> 확인하세요.</p>
+
+      <div class="btnrow" id="cpBtns">
+        <button data-v="0" class="on">환금성</button>
+        <button data-v="1">거래비용</button>
+        <button data-v="2">최소 단위</button>
+        <button data-v="3">레버리지</button>
+        <button data-v="4">정보</button>
+        <button data-v="5">사용 가치</button>
+      </div>
+
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주식·코인·부동산의 항목별 비교">
+        <g id="cpScene"></g>
+      </svg>
+
+      <div class="verdict" id="cpVerdict" style="--vc:var(--re)">
+        <div class="vh">비교</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>이 차이들이 만드는 결론</h3>
+      <p><b>① 「일단 사보고 아니면 판다」가 안 됩니다.</b> 거래비용이 수천만원이고 파는 데 몇 달이 걸립니다. 그래서 <b>사기 전에 확인하는 것의 값어치가 주식보다 훨씬 큽니다.</b></p>
+      <p><b>② 분산이 거의 불가능합니다.</b> 주식은 500개 회사에 나눠 담을 수 있지만, 집은 대부분 <b>딱 하나</b>입니다. 그것도 전 재산의 대부분을 걸고요. <b>「계란을 한 바구니에」의 극단</b>입니다.</p>
+      <p><b>③ 그런데도 사람들이 집으로 돈을 번 이유는 대개 레버리지와 시간</b>입니다. 자기 돈 3억으로 10억짜리를 사서 15억이 되면 <b>자기 돈 기준으로는 두 배가 넘습니다.</b> 4장에서 계산해봅니다.</p>
+      <p><b>④ 그리고 안 팔았기 때문입니다.</b> 주식은 오르면 팔고 싶어지지만, 집은 <b>살고 있어서 못 팝니다.</b> 역설적으로 그게 장기 보유를 만들었습니다. 「부동산으로 돈 벌었다」는 이야기에는 <b>이 우연이 크게 작용했습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="four">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">02 · 구조</span>
+      <h2>「집을 산다」는 네 가지 결정입니다</h2>
+      <p class="one">한 번에 하니까 헷갈립니다. <b>나눠서 보면 훨씬 명확해집니다.</b></p>
+    </div>
+
+    <div class="four">
+      <div style="--fc:var(--re)">
+        <h4>① 거주 결정</h4>
+        <p>어디서 <b>몇 년을 살 것인가.</b> 출퇴근, 아이 학교, 부모님과의 거리. <b>돈으로 환산되지 않지만 삶을 가장 크게 바꾸는</b> 부분입니다.</p>
+      </div>
+      <div style="--fc:var(--eq)">
+        <h4>② 투자 결정</h4>
+        <p>이 자산이 <b>값이 오를 것인가.</b> 그리고 <b>다른 데 넣었을 때보다 나은가.</b> 여기까지가 흔히 「부동산 투자」라 부르는 부분입니다.</p>
+      </div>
+      <div style="--fc:var(--bad)">
+        <h4>③ 대출 결정</h4>
+        <p><b>얼마를 빌리고 어떻게 갚을 것인가.</b> 사실상 <b>수익과 위험을 결정하는 가장 큰 변수</b>인데 가장 대충 정해지는 부분이기도 합니다. (05편)</p>
+      </div>
+      <div style="--fc:var(--coin)">
+        <h4>④ 시점 결정</h4>
+        <p><b>지금인가 나중인가.</b> 그리고 이건 <b>대개 내가 고르는 게 아닙니다</b> — 결혼, 아이 입학, 전세 만기가 시점을 정해버립니다.</p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 나눠서 봐야 하나</h3>
+      <p>네 가지를 뭉뚱그리면 <b>이상한 결론</b>이 나옵니다.</p>
+      <p>예를 들어 <b>「집값이 오를 것 같으니 무리해서라도 산다」</b>는 ②를 근거로 ③을 결정한 것입니다. 그런데 ②는 <b>맞을 수도 틀릴 수도</b> 있는 예측이고, ③은 <b>틀렸을 때 회복이 매우 어려운</b> 결정입니다. <b>비대칭</b>입니다.</p>
+      <p>반대로 <b>「집값이 떨어질 것 같으니 계속 전세」</b>는 ②를 근거로 ①을 미룬 것입니다. 그런데 ①에는 <b>2년마다 이사할 위험</b>과 <b>아이 학교 문제</b> 같은 비용이 있는데 그게 계산에 안 들어가 있습니다.</p>
+      <p><b>실용적인 방법</b> — ①은 <b>내 삶의 조건</b>으로 먼저 정하고, ③은 <b>최악의 경우에도 버틸 수 있는 선</b>으로 제한하고, 그다음에 ②를 봅니다. ②가 가장 불확실한데 <b>가장 먼저 결정하는</b> 것이 흔한 실수입니다.</p>
+      <p class="plain"><b>주식 트랙과 이어집니다.</b> 10편에서 <b>「수익률보다 먼저 정할 것은 감당 가능한 손실」</b>이라고 했습니다. 부동산에서는 그 원칙이 <b>③ 대출 결정</b>에 해당합니다. 그리고 레버리지가 기본이라 <b>주식보다 더 중요합니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="cost">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">03 · 비용</span>
+      <h2>사는 순간 나가는 돈</h2>
+      <p class="one">집값 말고도 <b>수천만원</b>이 듭니다. 그리고 이게 <b>「본전」의 기준을 바꿉니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>10억짜리 집을 사면 <b>10억만 있으면 될까?</b> 아니야.</p>
+      <p>나라에 내는 세금(<b>취득세</b>), 부동산 아저씨한테 주는 돈(<b>중개보수</b>), 등기 해주는 분께 드리는 돈(<b>법무사</b>), 그리고 <b>이사비와 고치는 값</b>까지. 다 합치면 <b>수천만원</b>이 더 들어.</p>
+      <p>그러니까 집값이 조금 올랐다고 <b>번 게 아니야.</b> 그 수천만원을 먼저 메워야 <b>겨우 본전</b>이거든. 게다가 <b>팔 때도 중개보수를 또 내야</b> 해.</p>
+      <p>아래에서 직접 계산해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CLOSING COST · 총 초기비용과 본전 상승률</div>
+      <p class="labsub">집값을 바꿔가며 <b>실제로 얼마가 더 드는지</b>, 그리고 <b>몇 % 올라야 본전인지</b> 확인하세요.</p>
+
+      <div class="ctrl-row">
+        <label for="ccPrice">집값</label>
+        <input type="range" id="ccPrice" min="1" max="30" step="0.5" value="8">
+        <output id="ccPriceOut">8.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ccMove">이사·수리·가전</label>
+        <input type="range" id="ccMove" min="0" max="5000" step="100" value="1500">
+        <output id="ccMoveOut">1,500만원</output>
+      </div>
+
+      <div class="stack" id="ccStack"></div>
+
+      <div class="readout two">
+        <div><span class="rk">집값 외 총 초기비용</span><span class="rv" id="ccTotal">—</span></div>
+        <div><span class="rk">본전이 되는 상승률</span><span class="rv" id="ccBreak">—</span></div>
+      </div>
+
+      <div class="verdict" id="ccVerdict" style="--vc:var(--bad)">
+        <div class="vh">거래비용</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 취득세는 <b>1주택·조정대상지역 아님</b>을 가정한 표준 세율(6억 이하 1%, 6~9억 구간 누진, 9억 초과 3%)에 <b>지방교육세(취득세의 10%)</b>를 더했고, <b>농어촌특별세와 다주택·법인 중과는 뺐습니다.</b> 중개보수는 <b>법정 상한요율</b> 기준이며 실제로는 협의로 낮아지는 경우가 많습니다. 법무사 비용은 <b>60만원</b>으로 가정했습니다. 본전 계산에는 <b>팔 때 중개보수</b>까지 넣었고 <b>양도세는 1주택 비과세를 가정해 제외</b>했습니다. <b>정확한 세액은 06편과 최신 자료로 확인하세요.</b>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="lev">
+    <div class="prod-head" style="--edge:var(--coin)">
+      <span class="prod-tag">04 · 레버리지</span>
+      <h2>부동산은 레버리지가 기본값입니다</h2>
+      <p class="one">이게 <b>부동산으로 크게 번 이유</b>이자 <b>크게 잃는 이유</b>입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>내 돈 <b>3억</b>에 은행에서 <b>5억</b>을 빌려서 <b>8억짜리 집</b>을 샀다고 해보자.</p>
+      <p>집값이 <b>10% 올라 8억 8천</b>이 되면? 빚은 그대로 5억이니까 내 몫은 <b>3억 8천</b>이야. <b>내 돈 기준으로는 27% 벌었어.</b> 집값은 10%밖에 안 올랐는데.</p>
+      <p>그런데 반대도 똑같아. 집값이 <b>10% 떨어져 7억 2천</b>이 되면 내 몫은 <b>2억 2천</b>. <b>내 돈 기준 27% 손해.</b></p>
+      <p>이게 레버리지야. <b>집값 변화가 내 돈 기준으로는 몇 배로 커져.</b> 코인 08편의 그 이야기랑 똑같아 — 다만 부동산은 <b>이걸 안 쓰는 사람이 거의 없다</b>는 게 다르지.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">LEVERAGE · 집값 변화가 내 돈에는 몇 배로</div>
+      <p class="labsub">자기자본 비율을 바꿔가며 <b>증폭 배수</b>와 <b>자본이 다 사라지는 하락률</b>을 확인하세요.</p>
+
+      <div class="ctrl-row">
+        <label for="lvPrice">집값</label>
+        <input type="range" id="lvPrice" min="2" max="30" step="0.5" value="8">
+        <output id="lvPriceOut">8.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="lvOwn">내 돈 (자기자본)</label>
+        <input type="range" id="lvOwn" min="5" max="100" step="5" value="40">
+        <output id="lvOwnOut">40% · 3.2억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="lvMove">집값 변동</label>
+        <input type="range" id="lvMove" min="-40" max="40" step="1" value="10">
+        <output id="lvMoveOut">+10%</output>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="레버리지에 따른 자기자본 수익률 변화">
+        <g id="lvScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">내 돈 기준 수익률</span><span class="rv" id="lvRoe">—</span></div>
+        <div><span class="rk">자기자본이 사라지는 하락률</span><span class="rv" id="lvWipe">—</span></div>
+      </div>
+
+      <div class="verdict" id="lvVerdict" style="--vc:var(--coin)">
+        <div class="vh">레버리지</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>단순화했습니다.</b> 대출이자, 거래비용, 세금, 원금 상환을 뺀 <b>집값 변동만의 효과</b>입니다. 실제로는 이자를 계속 내야 하므로 <b>같은 상승률이어도 실제 수익은 더 낮습니다.</b> 이자까지 넣은 계산은 <b>05편</b>에서 다룹니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>주식·코인의 레버리지와 결정적으로 다른 점</h3>
+      <p>코인 08편에서 <b>10배 레버리지는 9.5%만 떨어져도 전액 청산</b>이라고 했습니다. 부동산은 다릅니다 — <b>집값이 떨어졌다고 은행이 바로 집을 팔아버리지 않습니다.</b></p>
+      <p>이게 <b>부동산 레버리지가 상대적으로 덜 위험해 보이는 이유</b>이고, 실제로 중요한 차이입니다. <b>버틸 수 있으면 회복을 기다릴 수 있습니다.</b></p>
+      <p><b>그런데 조건이 있습니다</b> — <b>「이자를 계속 낼 수 있는 동안만」</b>입니다. 소득이 끊기거나 금리가 크게 오르면 <b>버티지 못하고 팔아야 합니다.</b> 그리고 그때는 대개 <b>집값이 떨어져 있고 사겠다는 사람도 없는 시기</b>입니다.</p>
+      <p>그래서 부동산에서 진짜 위험은 <b>가격 하락 자체가 아니라 「하락 + 소득 충격」이 겹치는 것</b>입니다. 그리고 이 둘은 <b>대개 같이 옵니다</b> — 경기가 나빠지면 집값도 떨어지고 일자리도 위태로워지니까요.</p>
+
+      <h3>그래서 실전 원칙</h3>
+      <p><b>① 「얼마까지 빌릴 수 있나」가 아니라 「얼마까지 갚을 수 있나」로 정합니다.</b> 은행이 승인하는 한도는 <b>내가 감당할 수 있는 금액이 아닙니다.</b></p>
+      <p><b>② 금리가 오른 상황을 미리 계산합니다.</b> 지금 금리가 아니라 <b>2~3%p 높은 금리</b>에서도 낼 수 있는지. 규제 당국이 <b>스트레스 DSR</b>을 도입한 이유가 이것입니다(05편).</p>
+      <p><b>③ 소득이 몇 달 끊겨도 버틸 현금을 남깁니다.</b> 자기자본을 <b>전부 계약금에 넣지 않는 것</b>이 중요합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="rent">
+    <div class="prod-head" style="--edge:var(--eq)">
+      <span class="prod-tag">05 · 비교</span>
+      <h2>자가냐 전세냐 — 손익분기 상승률</h2>
+      <p class="one">감이 아니라 <b>계산으로</b> 답할 수 있는 부분이 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>집을 사면 <b>이자</b>를 내고 <b>세금</b>을 내. 대신 집값이 오르면 <b>그 이익은 내 것</b>이야.</p>
+      <p>전세로 살면 이자도 세금도 안 내. 대신 <b>보증금이 묶여서 그 돈으로 다른 걸 못 해.</b> 그리고 집값이 올라도 <b>내 것이 아니야.</b></p>
+      <p>그럼 어느 쪽이 이득일까? 답은 <b>「집값이 얼마나 오르느냐」에 달려 있어.</b> 조금만 올라도 자가가 이기는 지점이 있는데, 그걸 <b>손익분기 상승률</b>이라고 해.</p>
+      <p>아래에서 그 지점을 직접 찾아보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">BUY vs RENT · 연 몇 % 오르면 자가가 유리한가</div>
+      <p class="labsub">
+        같은 돈을 <b>전세보증금으로 묶어둘 때</b>와 <b>집을 살 때</b>의 <b>연간 순비용</b>을 비교합니다.
+      </p>
+
+      <div class="ctrl-row">
+        <label for="brPrice">집값</label>
+        <input type="range" id="brPrice" min="2" max="30" step="0.5" value="8">
+        <output id="brPriceOut">8.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="brRatio">전세가율 (집값 대비 전세금)</label>
+        <input type="range" id="brRatio" min="30" max="90" step="1" value="60">
+        <output id="brRatioOut">60% · 4.8억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="brRate">주택담보대출 금리</label>
+        <input type="range" id="brRate" min="1" max="9" step="0.1" value="4.0">
+        <output id="brRateOut">4.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="brYears">보유 기간</label>
+        <input type="range" id="brYears" min="2" max="20" step="1" value="7">
+        <output id="brYearsOut">7년</output>
+      </div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="자가와 전세의 연간 순비용 비교">
+        <g id="brScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">손익분기 연 상승률</span><span class="rv" id="brBreak">—</span></div>
+        <div><span class="rk">자가의 연간 추가 비용</span><span class="rv" id="brExtra">—</span></div>
+      </div>
+
+      <div class="verdict" id="brVerdict" style="--vc:var(--eq)">
+        <div class="vh">자가 vs 전세</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 방식.</b> 전세보증금과 같은 금액을 자기자본으로 넣고 <b>나머지를 대출</b>받는다고 가정했습니다. 자가의 연간 비용은 <b>대출이자 + 보유·관리비(집값의 0.3% 가정) + 거래비용을 보유기간으로 나눈 값</b>이고, 전세와 자가 모두 <b>같은 자기자본이 묶이므로 그 기회비용은 상쇄</b>됩니다. <b>전세대출 이자, 전세금 인상, 이사 비용, 양도세, 소득공제는 빼고 단순화</b>했습니다. 실제 판단에는 <b>거주 안정성처럼 돈으로 환산되지 않는 항목</b>이 더 중요할 수 있습니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>이 계산이 알려주는 것</h3>
+      <p>손익분기 상승률은 <b>대체로 생각보다 낮게</b> 나옵니다. 전세가율이 높고 금리가 낮을수록 더 낮아집니다.</p>
+      <p>이유는 간단합니다 — <b>전세보증금도 묶인 돈</b>이기 때문입니다. 전세는 「공짜로 사는 것」이 아니라 <b>수억원을 이자 없이 맡겨두는 것</b>입니다. 자가와 비교할 때 <b>이 기회비용을 빼먹으면 전세가 실제보다 유리해 보입니다.</b></p>
+      <p>반대로 <b>전세가율이 낮으면(집값에 비해 전세가 쌀수록)</b> 자가의 부담이 커져 손익분기 상승률이 <b>올라갑니다.</b> 즉 <b>전세가율은 「자가로 갈아탈 때의 문턱」</b>을 알려주는 숫자이기도 합니다. 07편에서 이 숫자가 <b>갭투자와 전세 위험</b>에서 어떻게 쓰이는지 봅니다.</p>
+
+      <h3>계산에 안 들어간 것들</h3>
+      <p>이 계산기가 <b>일부러 뺀 항목</b>들이 있습니다. 실제 판단에서는 이것들이 결정적일 수 있습니다.</p>
+      <p><b>① 거주 안정성.</b> 전세는 <b>2년마다 재계약</b>이고, 집주인 사정으로 나가야 할 수도 있습니다. 아이가 학교에 다닌다면 이건 <b>돈으로 환산하기 어려운 비용</b>입니다.</p>
+      <p><b>② 전세금 인상 위험.</b> 계약 갱신 때 <b>보증금을 더 요구받을 수</b> 있습니다. 그 돈을 어디서 구할지가 문제가 됩니다.</p>
+      <p><b>③ 보증금을 못 받을 위험.</b> 07편의 주제입니다. <b>전세는 「위험이 없는 선택」이 아닙니다.</b></p>
+      <p><b>④ 강제 저축 효과.</b> 원리금을 갚아나가면 <b>싫어도 저축이 됩니다.</b> 전세 살면서 그 차액을 실제로 투자하는 사람은 <b>생각보다 적습니다.</b></p>
+      <p><b>⑤ 반대로, 이동의 자유.</b> 직장을 옮기거나 다른 도시로 가야 할 때 <b>집이 있으면 발이 묶입니다.</b> 젊고 커리어가 유동적이라면 이건 실제 비용입니다.</p>
+      <p class="plain"><b>정리하면</b> — 이 계산기는 <b>「금전적으로 어느 쪽이 유리한가」의 절반</b>만 답합니다. 나머지 절반은 <b>내 삶의 조건</b>이고, 그건 2장의 <b>① 거주 결정</b>에 속합니다. <b>계산이 먼저가 아니라 조건이 먼저</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">06 · 정리</span>
+      <h2>이 트랙을 시작하며</h2>
+      <p class="one">앞으로 열 편에서 무엇을 다루는지, 그리고 <b>지금 확인할 것</b>.</p>
+    </div>
+
+    <ul class="check" id="reCheck">
+      <li><b>내가 지금 하려는 것이 「거주」인가 「투자」인가?</b> 둘 다여도 괜찮지만 <b>구분해서 계산해야</b> 합니다.</li>
+      <li><b>집값 외에 얼마가 더 드는지 계산해봤나?</b> 3장 계산기로 확인하세요.</li>
+      <li><b>금리가 2~3%p 올라도 매달 낼 수 있나?</b> 지금 금리 기준으로만 보면 안 됩니다.</li>
+      <li><b>소득이 6개월 끊겨도 버틸 현금이 남아 있나?</b> 자기자본을 전부 넣으면 안 됩니다.</li>
+      <li><b>몇 년을 살 계획인가?</b> 거래비용 때문에 <b>짧게 살 거면 사는 게 불리합니다.</b></li>
+      <li><b>이 집을 팔아야 할 때 사줄 사람이 있을까?</b> 환금성이 부동산의 가장 큰 약점입니다.</li>
+      <li><b>전세라면 보증금을 지킬 장치를 확인했나?</b> 07편의 주제입니다.</li>
+    </ul>
+    <div class="checkcount" id="reCount">0 / 7 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 집은 <b>환금성이 낮고, 거래비용이 크고, 레버리지가 기본</b>인 자산입니다. 이 셋 때문에 <b>사기 전에 확인하는 것의 값어치가 다른 자산보다 훨씬 큽니다.</b></p>
+      <p>그리고 「집을 산다」는 <b>거주·투자·대출·시점 네 가지 결정</b>입니다. 가장 불확실한 <b>투자 판단</b>을 근거로 가장 되돌리기 어려운 <b>대출 결정</b>을 하는 것이 흔한 실수입니다.</p>
+      <p>다음 편에서는 <b>「아파트·빌라·단독·다가구」가 법적으로 어떻게 갈리는지</b>를 봅니다. 이 구분이 <b>등기·대출·세금·전세 안전성</b>을 전부 바꿉니다 — 특히 <b>다가구와 다세대의 차이</b>는 전세 사고와 직결됩니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 부동산 01 · 집은 어떤 자산인가<br>
+    <a href="index.html#realestate">← 부동산 목록으로</a> · <a href="realestate-types.html">02 · 주택의 종류와 구분법</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 특정 지역·단지의 매수를 권하지 않습니다.<br>
+    세율·중개보수 요율·대출 규제는 계속 바뀝니다. 계산기의 값은 가정에 기반한 근사치이며 세무·법률 조언이 아닙니다. 실제 판단 전에 최신 자료로 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 1. 세 자산 비교 ══════════ */
+var CP = [
+  { h:'환금성', color:'#8E4B3A',
+    bars:[{ n:'주식', v:98, c:'#3A5A8E', l:'1~2일' },
+          { n:'코인', v:100, c:'#B8860B', l:'즉시·24시간' },
+          { n:'부동산', v:8, c:'#6B7A52', l:'몇 달~몇 년' }],
+    t:'파는 데 걸리는 시간이 압도적으로 다릅니다',
+    p:'주식은 팔면 <b>이틀 안에</b> 현금이 되고 코인은 <b>몇 분</b>이면 됩니다. 부동산은 <b>사겠다는 사람이 나타나야</b> 하고, 계약부터 잔금까지 <b>또 몇 달</b>이 걸립니다.<br><br><b>이게 왜 중요한가</b> — 급하게 돈이 필요할 때 <b>제값을 못 받습니다.</b> 빨리 팔려면 시세보다 낮춰야 하고, 그래도 몇 달이 걸립니다.<br><br>그래서 부동산에서는 <b>「팔아야 하는 상황을 만들지 않는 것」</b>이 전략의 절반입니다. 4장의 <b>현금 여유</b> 이야기가 여기서 나옵니다.' },
+  { h:'거래비용', color:'#8E4B3A',
+    bars:[{ n:'주식', v:3, c:'#3A5A8E', l:'0.2% 안팎' },
+          { n:'코인', v:8, c:'#B8860B', l:'0.1~0.5%' },
+          { n:'부동산', v:100, c:'#6B7A52', l:'왕복 3~5%' }],
+    t:'한 번 사고파는 데 집값의 몇 %가 사라집니다',
+    p:'주식은 수수료와 세금이 <b>0.2% 안팎</b>입니다. 부동산은 <b>취득세·중개보수·법무사</b>만 해도 살 때 <b>2~4%</b>, 팔 때 중개보수까지 하면 <b>왕복 3~5%</b>가 나갑니다. 여기에 <b>이사·수리비</b>가 더 붙습니다.<br><br>8억짜리 집이면 <b>거래비용만 2천 4백만원 안팎</b>이고, 이사·수리까지 하면 <b>4천만원</b>에 가까워집니다.<br><br><b>결론</b> — <b>「일단 사보고 아니면 판다」가 성립하지 않습니다.</b> 그리고 <b>짧게 살 거면 사는 것이 불리합니다.</b> 3장에서 직접 계산해봅니다.' },
+  { h:'최소 단위', color:'#3A5A8E',
+    bars:[{ n:'주식', v:2, c:'#3A5A8E', l:'몇 만원' },
+          { n:'코인', v:1, c:'#B8860B', l:'몇 천원' },
+          { n:'부동산', v:100, c:'#6B7A52', l:'몇 억원' }],
+    t:'나눠 담을 수가 없습니다',
+    p:'주식은 <b>500개 회사에 나눠</b> 담을 수 있습니다. 코인도 <b>몇 천원어치</b>씩 살 수 있습니다.<br><br>부동산은 <b>딱 하나</b>입니다. 그것도 <b>전 재산의 대부분</b>을 걸고요. 「계란을 한 바구니에 담지 말라」의 <b>정반대</b>입니다.<br><br>그래서 <b>「그 하나를 잘못 고르면 회복이 어렵다」</b>는 것이 부동산의 성질입니다. 이 트랙이 <b>「무엇을 확인할 것인가」에 무게를 두는 이유</b>입니다.<br><br><b>참고</b> — 부동산 펀드나 리츠(REITs)는 이 문제를 부분적으로 풀어줍니다. 다만 그건 <b>부동산이라기보다 부동산에 투자하는 주식</b>에 가깝습니다.' },
+  { h:'레버리지', color:'#B8860B',
+    bars:[{ n:'주식', v:15, c:'#3A5A8E', l:'대개 안 씀' },
+          { n:'코인', v:60, c:'#B8860B', l:'쓰면 매우 위험' },
+          { n:'부동산', v:100, c:'#6B7A52', l:'거의 항상 씀' }],
+    t:'부동산만 「빌려 사는 것」이 정상입니다',
+    p:'주식을 <b>빌린 돈으로 사는 것</b>은 위험한 행동으로 취급됩니다. 코인에서 레버리지는 <b>거의 도박</b>에 가깝습니다(코인 08편).<br><br>그런데 부동산은 <b>거의 모두가 빌려서 삽니다.</b> 그게 이상한 게 아니라 <b>제도가 그렇게 설계</b>돼 있습니다 — 주택담보대출은 정책적으로 지원되고, 금리도 신용대출보다 낮습니다.<br><br><b>이유</b> — 담보가 확실하고 <b>가격이 천천히 움직이기</b> 때문입니다. 코인처럼 하루에 20%씩 움직이면 대출이 성립하지 않습니다.<br><br><b>그래서 부동산 수익의 상당 부분은 사실 레버리지 효과</b>입니다. 4장에서 계산해봅니다.' },
+  { h:'정보', color:'#4C7A6D',
+    bars:[{ n:'주식', v:95, c:'#3A5A8E', l:'공시·감사 있음' },
+          { n:'코인', v:35, c:'#B8860B', l:'공시 없음' },
+          { n:'부동산', v:60, c:'#6B7A52', l:'실거래가 공개' }],
+    t:'실거래가는 공개되지만, 물건마다 다릅니다',
+    p:'주식은 <b>같은 회사의 주식은 전부 똑같습니다.</b> 그래서 가격 하나면 충분합니다.<br><br>부동산은 <b>같은 단지 같은 평형이어도 동·층·향·수리 상태가 다릅니다.</b> 실거래가가 공개돼도 <b>그 집이 이 집은 아닙니다.</b><br><br><b>그래서 남는 정보 격차</b> — 하자, 누수 이력, 소음, 주차 사정, 관리 상태, 이웃, 재건축 진행 상황 같은 것들은 <b>공개 자료로 알 수 없습니다.</b> 발로 확인해야 합니다.<br><br>반대로 <b>주식보다 나은 점</b>도 있습니다 — 실거래가와 등기부는 <b>누구나 열람</b>할 수 있고, 소유·권리 관계가 <b>법적으로 등록</b>돼 있습니다. 코인에는 없는 안전장치입니다.' },
+  { h:'사용 가치', color:'#6B7A52',
+    bars:[{ n:'주식', v:0, c:'#3A5A8E', l:'없음' },
+          { n:'코인', v:0, c:'#B8860B', l:'없음' },
+          { n:'부동산', v:100, c:'#6B7A52', l:'살 수 있음' }],
+    t:'집만이 「쓰면서 갖는」 자산입니다',
+    p:'주식과 코인은 <b>갖고 있어도 쓸 수 없습니다.</b> 값이 오르기를 기다리는 것뿐입니다.<br><br>집은 다릅니다. <b>거기서 자고, 밥 먹고, 아이를 키웁니다.</b> 값이 안 올라도 <b>그 사용 가치는 매년 받고 있습니다.</b><br><br><b>이게 계산을 바꿉니다</b> — 자가는 「집값이 오르는가」만이 아니라 <b>「전세로 살 때 묶였을 보증금의 기회비용을 아끼고 있는가」</b>도 함께 봐야 합니다. 5장의 계산기가 이 관점입니다.<br><br><b>그리고 함정도 만듭니다</b> — 살고 있으니 <b>값이 떨어져도 잘 안 팝니다.</b> 결과적으로 장기 보유가 되어 <b>이익을 본 경우가 많았지만</b>, 그건 <b>전략이 아니라 구조가 만든 결과</b>였습니다.' }
+];
+function cpScene(idx){
+  var c = CP[idx];
+  var X0 = 110, W = 420;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="28">' + c.h + ' — 상대적 크기 (개념도)</text>';
+  c.bars.forEach(function(b, i){
+    var y = 44 + i * 40;
+    var w = Math.max(3, b.v / 100 * W);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="24" rx="2" fill="' + b.c +
+         '" fill-opacity=".45" stroke="' + b.c + '" stroke-width="1.3"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 16) + '" text-anchor="end">' + b.n + '</text>';
+    g += '<text class="lblb" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 16) + '" fill="' + b.c + '">' + b.l + '</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="176">막대 길이는 정확한 비율이 아니라 차이의 크기를 보여주기 위한 것입니다.</text>';
+  document.getElementById('cpScene').innerHTML = g;
+}
+bindBtnRow('#cpBtns', function(v){
+  cpScene(+v);
+  document.getElementById('cpVerdict').querySelector('.vh').textContent = CP[+v].h;
+  verdict('cpVerdict', CP[+v].color, CP[+v].t, CP[+v].p);
+});
+
+/* ══════════ 3. 거래비용 ══════════ */
+function acqRate(eok){
+  // 1주택 표준 취득세율 (조정지역·다주택 중과 제외)
+  if(eok <= 6) return 0.01;
+  if(eok <= 9) return Math.round((eok * 2 / 3 - 3) * 100) / 10000;   // % → 소수
+  return 0.03;
+}
+function brokerRate(eok){
+  // 주택 매매 법정 상한요율
+  var man = eok * 10000;                    // 만원
+  if(man < 5000) return 0.006;
+  if(man < 20000) return 0.005;
+  if(man < 90000) return 0.004;
+  if(man < 120000) return 0.005;
+  if(man < 150000) return 0.006;
+  return 0.007;
+}
+function brokerFee(eok){
+  var man = eok * 10000, r = brokerRate(eok), fee = man * r;
+  if(man < 5000) fee = Math.min(fee, 25);
+  else if(man < 20000) fee = Math.min(fee, 80);
+  return fee;                               // 만원
+}
+function ccDraw(){
+  var eok = +document.getElementById('ccPrice').value;
+  var move = +document.getElementById('ccMove').value;
+  document.getElementById('ccPriceOut').textContent = eok.toFixed(1) + '억원';
+  document.getElementById('ccMoveOut').textContent = move.toLocaleString() + '만원';
+
+  var priceMan = eok * 10000;
+  var aRate = acqRate(eok);
+  var acq = priceMan * aRate;               // 취득세
+  var edu = acq * 0.1;                      // 지방교육세 = 취득세의 10%
+  var brk = brokerFee(eok);
+  var law = 60;
+  var total = acq + edu + brk + law + move;
+
+  var sellRate = brokerRate(eok);
+  // 매도가 P' 에서 P'(1-중개요율) = 집값 + 초기비용
+  var need = (priceMan + total) / (1 - sellRate);
+  var breakPct = (need / priceMan - 1) * 100;
+
+  var items = [
+    { n:'취득세 (' + (aRate * 100).toFixed(2) + '%)', v:acq, c:'#8E4B3A' },
+    { n:'지방교육세', v:edu, c:'#8E6B3A' },
+    { n:'중개보수 (상한 ' + (brokerRate(eok) * 100).toFixed(1) + '%)', v:brk, c:'#3A5A8E' },
+    { n:'법무사 등', v:law, c:'#7A5C9E' },
+    { n:'이사·수리·가전', v:move, c:'#6B7A52' }
+  ];
+  var max = Math.max.apply(null, items.map(function(i){ return i.v; })) || 1;
+  var html = '';
+  items.forEach(function(i){
+    html += '<div class="srow"><span class="sname">' + i.n + '</span>' +
+            '<span class="strack"><span class="sfill" style="width:' + (i.v / max * 100).toFixed(1) +
+            '%;background:' + i.c + '"></span></span>' +
+            '<span class="sval">' + Math.round(i.v).toLocaleString() + '만원</span></div>';
+  });
+  document.getElementById('ccStack').innerHTML = html;
+
+  var tEl = document.getElementById('ccTotal');
+  tEl.textContent = Math.round(total).toLocaleString() + '만원 (집값의 ' + (total / priceMan * 100).toFixed(1) + '%)';
+  tEl.style.color = 'var(--neg)';
+  var bEl = document.getElementById('ccBreak');
+  bEl.textContent = '+' + breakPct.toFixed(1) + '%';
+  bEl.style.color = 'var(--neg)';
+
+  var years3 = breakPct / 3;
+  verdict('ccVerdict', '#8E4B3A',
+    '집값이 ' + breakPct.toFixed(1) + '% 올라야 겨우 본전입니다',
+    '집값 <b>' + eok.toFixed(1) + '억원</b>을 사는 데 <b>' + Math.round(total).toLocaleString() +
+    '만원</b>이 더 듭니다. 그리고 팔 때 <b>중개보수를 또</b> 냅니다.<br><br>그래서 <b>' + breakPct.toFixed(1) +
+    '% 오른 가격에 팔아야</b> 겨우 원금입니다. 금액으로는 <b>' +
+    Math.round(need - priceMan).toLocaleString() + '만원</b>이 올라야 합니다.<br><br><b>여기서 나오는 실전 결론</b> — 3년만 살 계획이라면 <b>연 ' +
+    years3.toFixed(1) + '%씩</b> 올라야 본전입니다. 그보다 짧게 살 거라면 <b>거래비용만으로도 사는 게 불리</b>할 수 있습니다.<br><br>주식이라면 0.2%면 끝날 일이 <b>여기서는 ' + breakPct.toFixed(1) +
+    '%</b>입니다. 이것이 부동산에서 <b>「사기 전에 확인하는 것」의 값어치가 큰 이유</b>입니다.');
+}
+['ccPrice', 'ccMove'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', ccDraw);
+});
+
+/* ══════════ 4. 레버리지 ══════════ */
+function lvDraw(){
+  var eok = +document.getElementById('lvPrice').value;
+  var ownPct = +document.getElementById('lvOwn').value;
+  var move = +document.getElementById('lvMove').value;
+
+  var own = eok * ownPct / 100;
+  var debt = eok - own;
+  document.getElementById('lvPriceOut').textContent = eok.toFixed(1) + '억원';
+  document.getElementById('lvOwnOut').textContent = ownPct + '% · ' + own.toFixed(2) + '억원';
+  document.getElementById('lvMoveOut').textContent = (move >= 0 ? '+' : '') + move + '%';
+
+  var after = eok * (1 + move / 100);
+  var equityAfter = after - debt;
+  var roe = (equityAfter - own) / own * 100;
+  var mult = 100 / ownPct;
+  var wipe = ownPct;                        // 자기자본이 0이 되는 하락률 = 자기자본 비율
+
+  var rEl = document.getElementById('lvRoe');
+  rEl.textContent = pct(roe, 1);
+  signColor(rEl, roe);
+  var wEl = document.getElementById('lvWipe');
+  if(ownPct >= 100){
+    wEl.textContent = '없음 (빚 없음)';
+    wEl.style.color = 'var(--pos)';
+  } else {
+    wEl.textContent = '-' + wipe + '%';
+    wEl.style.color = 'var(--neg)';
+  }
+
+  var X0 = 60, W = 500, ymax = Math.max(eok, after) * 1.15;
+  function w(v){ return Math.max(0, v / ymax * W); }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="26">산 시점</text>';
+  g += '<rect x="' + X0 + '" y="34" width="' + w(own).toFixed(1) + '" height="26" rx="2" fill="#6B7A52" fill-opacity=".5" stroke="#6B7A52" stroke-width="1.3"/>';
+  g += '<rect x="' + (X0 + w(own)).toFixed(1) + '" y="34" width="' + w(debt).toFixed(1) + '" height="26" rx="2" fill="#8E4B3A" fill-opacity=".25" stroke="#8E4B3A" stroke-width="1.2"/>';
+  if(own / ymax > 0.12) g += '<text class="axt" x="' + (X0 + 8) + '" y="51">내 돈 ' + own.toFixed(1) + '억</text>';
+  if(debt / ymax > 0.12) g += '<text class="axt" x="' + (X0 + w(own) + 8).toFixed(1) + '" y="51">빚 ' + debt.toFixed(1) + '억</text>';
+
+  g += '<text class="axt" x="' + X0 + '" y="92">' + (move >= 0 ? '+' : '') + move + '% 뒤</text>';
+  var eqA = Math.max(0, equityAfter);
+  g += '<rect x="' + X0 + '" y="100" width="' + w(eqA).toFixed(1) + '" height="26" rx="2" fill="' +
+       (equityAfter >= own ? '#4C7A6D' : '#8E4B3A') + '" fill-opacity=".5" stroke="' +
+       (equityAfter >= own ? '#4C7A6D' : '#8E4B3A') + '" stroke-width="1.3"/>';
+  g += '<rect x="' + (X0 + w(eqA)).toFixed(1) + '" y="100" width="' + w(Math.min(debt, after)).toFixed(1) +
+       '" height="26" rx="2" fill="#8E4B3A" fill-opacity=".25" stroke="#8E4B3A" stroke-width="1.2"/>';
+  g += '<text class="lblb" x="' + (X0 + w(after) + 10).toFixed(1) + '" y="117" fill="' +
+       (roe >= 0 ? '#4C7A6D' : '#8E4B3A') + '">내 몫 ' + Math.max(0, equityAfter).toFixed(2) + '억 (' + pct(roe, 0) + ')</text>';
+
+  g += '<line class="axis" x1="' + X0 + '" y1="140" x2="' + (X0 + W) + '" y2="140"/>';
+  g += '<text class="axt" x="' + X0 + '" y="160">집값은 ' + (move >= 0 ? '+' : '') + move +
+       '% 움직였는데, 내 돈 기준으로는 ' + pct(roe, 0) + ' — 약 ' + mult.toFixed(1) + '배로 증폭됩니다.</text>';
+  if(equityAfter < 0){
+    g += '<text class="lblb" x="' + X0 + '" y="180" fill="#8E4B3A">집을 팔아도 빚이 ' +
+         Math.abs(equityAfter).toFixed(2) + '억 남습니다.</text>';
+  }
+  document.getElementById('lvScene').innerHTML = g;
+
+  if(ownPct >= 100){
+    verdict('lvVerdict', '#4C7A6D',
+      '빚 없이 샀다면 증폭이 없습니다',
+      '내 돈으로만 샀으므로 <b>집값이 오른 만큼만 내 수익</b>입니다. ' + pct(move, 0) + ' 오르면 ' + pct(roe, 0) + '입니다.<br><br>대신 <b>같은 돈으로 훨씬 작은 집</b>밖에 못 삽니다. 이게 레버리지를 쓰는 이유입니다.<br><br>슬라이더를 내려서 <b>빌리는 비중을 늘려보세요.</b> 수익률과 위험이 <b>같은 비율로</b> 커지는 것을 볼 수 있습니다.');
+  } else if(equityAfter <= 0.0001){
+    var restLine = equityAfter < -0.0001
+      ? '집을 팔아도 <b>' + Math.abs(equityAfter).toFixed(2) + '억원의 빚이 남습니다.</b>'
+      : '집을 팔면 빚을 갚고 <b>정확히 0원</b>이 남습니다. 내 돈은 전부 사라졌습니다.';
+    verdict('lvVerdict', '#8E4B3A',
+      equityAfter < -0.0001 ? '자기자본이 사라지고 빚이 남았습니다' : '내 돈이 정확히 전부 사라지는 지점입니다',
+      '집값이 <b>' + move + '%</b> 떨어져 <b>' + after.toFixed(2) + '억원</b>이 됐는데 빚은 그대로 <b>' +
+      debt.toFixed(2) + '억원</b>입니다. ' + restLine + '<br><br>이 상태를 <b>깡통</b>이라고 부릅니다. 자기자본 비율이 <b>' + ownPct +
+      '%</b>였으므로 집값이 <b>' + wipe + '% 넘게</b> 떨어지면 이렇게 됩니다.<br><br><b>다만 코인과 다른 점</b> — 은행이 <b>즉시 팔아버리지는 않습니다.</b> 이자를 계속 낼 수 있으면 <b>버티면서 회복을 기다릴 수 있습니다.</b><br><br>문제는 <b>이런 시기에 소득도 위태로워지는 경우가 많다</b>는 것입니다. 그래서 <b>현금 여유</b>가 결정적입니다.');
+  } else if(roe >= 0){
+    verdict('lvVerdict', '#4C7A6D',
+      '집값 ' + pct(move, 0) + '가 내 돈 기준 ' + pct(roe, 0) + '가 됩니다',
+      '자기자본이 <b>' + ownPct + '%</b>이므로 <b>약 ' + mult.toFixed(1) + '배로 증폭</b>됩니다. 집값은 ' +
+      pct(move, 0) + ' 움직였는데 내 돈 기준으로는 ' + pct(roe, 0) + '입니다.<br><br><b>이게 부동산으로 큰돈을 번 구조</b>입니다. 그런데 <b>같은 배수로 반대 방향도 작동합니다.</b><br><br><b>집값 변동 슬라이더를 왼쪽으로</b> 옮겨보세요. 그리고 <b>-' + wipe +
+      '%</b>를 지나면 어떻게 되는지 확인하세요.<br><br><b>주의</b> — 이 계산에는 <b>대출이자가 빠져 있습니다.</b> 실제로는 매년 이자를 내므로 <b>실제 수익은 이보다 낮습니다.</b>');
+  } else {
+    verdict('lvVerdict', '#9E7A2E',
+      '집값 ' + pct(move, 0) + '가 내 돈 기준 ' + pct(roe, 0) + '가 됩니다',
+      '아직 자기자본이 남아 있지만 <b>손실도 ' + mult.toFixed(1) + '배로 증폭</b>됐습니다. 내 몫이 <b>' +
+      own.toFixed(2) + '억 → ' + equityAfter.toFixed(2) + '억</b>으로 줄었습니다.<br><br><b>' + wipe +
+      '%</b>까지 떨어지면 자기자본이 <b>전부 사라집니다.</b> 지금은 <b>' + (wipe + move).toFixed(0) +
+      '%p</b>가 남아 있습니다.<br><br>여기서 중요한 것은 <b>「팔지 않으면 확정되지 않는다」</b>는 점입니다. 부동산은 강제 청산이 없으니 <b>버틸 수 있으면 기다릴 수 있습니다.</b><br><br>그래서 질문은 하나입니다 — <b>「이자를 계속 낼 수 있는가?」</b>');
+  }
+}
+['lvPrice', 'lvOwn', 'lvMove'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', lvDraw);
+});
+
+/* ══════════ 5. 자가 vs 전세 ══════════ */
+var BR_HOLD = 0.003;    // 연 보유·관리 비용 (집값 대비 가정)
+function brDraw(){
+  var eok = +document.getElementById('brPrice').value;
+  var ratio = +document.getElementById('brRatio').value / 100;
+  var rate = +document.getElementById('brRate').value / 100;
+  var years = +document.getElementById('brYears').value;
+
+  var jeonse = eok * ratio;
+  document.getElementById('brPriceOut').textContent = eok.toFixed(1) + '억원';
+  document.getElementById('brRatioOut').textContent = (ratio * 100).toFixed(0) + '% · ' + jeonse.toFixed(2) + '억원';
+  document.getElementById('brRateOut').textContent = (rate * 100).toFixed(1) + '%';
+  document.getElementById('brYearsOut').textContent = years + '년';
+
+  var priceMan = eok * 10000;
+  var debt = eok - jeonse;                       // 전세보증금만큼을 자기자본으로 넣는다고 가정
+  var interest = debt * rate * 10000;            // 만원/년
+  var hold = priceMan * BR_HOLD;                 // 만원/년
+  var closing = priceMan * acqRate(eok) * 1.1 + brokerFee(eok) + 60 + priceMan * brokerRate(eok);
+  var closingPerYear = closing / years;
+
+  var extra = interest + hold + closingPerYear;  // 자가의 연간 추가 비용 (만원)
+  var breakPct = extra / priceMan * 100;         // 손익분기 연 상승률
+
+  document.getElementById('brExtra').textContent = Math.round(extra).toLocaleString() + '만원 / 년';
+  document.getElementById('brExtra').style.color = 'var(--neg)';
+  document.getElementById('brBreak').textContent = '연 +' + breakPct.toFixed(2) + '%';
+  document.getElementById('brBreak').style.color = breakPct < 2 ? 'var(--pos)' : 'var(--neg)';
+
+  var X0 = 150, W = 400;
+  var items = [
+    { n:'대출이자', v:interest, c:'#8E4B3A' },
+    { n:'보유·관리비', v:hold, c:'#8E6B3A' },
+    { n:'거래비용 ÷ ' + years + '년', v:closingPerYear, c:'#7A5C9E' }
+  ];
+  var max = extra || 1;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="26">자가가 전세보다 매년 더 내는 돈 (만원)</text>';
+  var acc = 0;
+  items.forEach(function(it, i){
+    var y = 40 + i * 34;
+    var w = it.v / max * W;
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="24" rx="2" fill="' + it.c +
+         '" fill-opacity=".45" stroke="' + it.c + '" stroke-width="1.3"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 16) + '" text-anchor="end">' + it.n + '</text>';
+    g += '<text class="lblb" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 16) + '" fill="' + it.c + '">' +
+         Math.round(it.v).toLocaleString() + '</text>';
+    acc += it.v;
+  });
+  g += '<line class="axis" x1="' + X0 + '" y1="146" x2="' + (X0 + W) + '" y2="146"/>';
+  g += '<rect x="' + X0 + '" y="152" width="' + W + '" height="24" rx="2" fill="#3A5A8E" fill-opacity=".45" stroke="#3A5A8E" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="168" text-anchor="end">합계</text>';
+  g += '<text class="lblb" x="' + (X0 + W + 8) + '" y="168" fill="#3A5A8E">' + Math.round(extra).toLocaleString() + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="194">이만큼을 집값 상승이 메워주면 자가가 유리해집니다.</text>';
+  document.getElementById('brScene').innerHTML = g;
+
+  if(breakPct < 1.5){
+    verdict('brVerdict', '#4C7A6D',
+      '연 ' + breakPct.toFixed(2) + '%만 올라도 자가가 유리합니다',
+      '전세가율이 <b>' + (ratio * 100).toFixed(0) + '%</b>로 높아서 <b>빌릴 돈이 ' + debt.toFixed(2) +
+      '억원</b>밖에 안 됩니다. 그래서 이자 부담이 작습니다.<br><br>손익분기가 <b>연 ' + breakPct.toFixed(2) +
+      '%</b>라는 것은 <b>물가상승률 정도만 올라도 자가가 낫다</b>는 뜻입니다.<br><br><b>왜 이렇게 낮게 나오나</b> — 전세도 <b>공짜가 아니기 때문</b>입니다. 보증금 <b>' + jeonse.toFixed(2) +
+      '억원</b>이 <b>이자 없이 묶여 있습니다.</b> 이 기회비용을 빼먹으면 전세가 실제보다 유리해 보입니다.<br><br><b>다만</b> — 이 계산에 <b>전세금 인상 위험, 이사 비용, 보증금을 못 받을 위험</b>은 안 들어 있습니다. 그리고 반대로 <b>이동의 자유</b>도 계산에 없습니다.');
+  } else if(breakPct < 3){
+    verdict('brVerdict', '#9E7A2E',
+      '연 ' + breakPct.toFixed(2) + '%는 올라야 자가가 유리합니다',
+      '자가는 매년 <b>' + Math.round(extra).toLocaleString() + '만원</b>을 더 냅니다. 집값이 <b>연 ' +
+      breakPct.toFixed(2) + '%</b> 이상 오르면 그걸 메우고 남습니다.<br><br>이 정도면 <b>애매한 구간</b>입니다. 장기 물가상승률 수준이라 <b>「오를 것 같으면 자가, 아니면 전세」</b>로 갈리는 지점입니다.<br><br><b>이럴 때 판단 기준</b> — 금전 계산이 비슷하다면 <b>돈으로 환산 안 되는 항목</b>이 결정합니다. <b>몇 년을 살 것인가, 아이 학교는, 직장이 바뀔 가능성은.</b> 2장의 <b>① 거주 결정</b>이 여기서 답을 냅니다.<br><br><b>보유 기간 슬라이더를 늘려보세요.</b> 거래비용이 나눠지면서 손익분기가 내려갑니다.');
+  } else {
+    verdict('brVerdict', '#8E4B3A',
+      '연 ' + breakPct.toFixed(2) + '%나 올라야 본전입니다',
+      '자가의 연간 추가 부담이 <b>' + Math.round(extra).toLocaleString() + '만원</b>으로 큽니다. 집값이 <b>연 ' +
+      breakPct.toFixed(2) + '%</b> 넘게 올라야 전세보다 나아집니다.<br><br><b>왜 이렇게 높나</b> — 전세가율이 <b>' +
+      (ratio * 100).toFixed(0) + '%</b>로 낮거나(집값에 비해 전세가 쌈) 금리가 <b>' + (rate * 100).toFixed(1) +
+      '%</b>로 높아서, <b>빌려야 할 돈이 ' + debt.toFixed(2) + '억원</b>이나 됩니다.<br><br>이런 국면에서는 <b>전세로 사는 것이 금전적으로 합리적</b>일 수 있습니다. 실제로 <b>전세가율이 낮을 때는 집값 대비 전세가 싸다</b>는 뜻이고, 시장이 <b>「앞으로 오를 것」을 이미 가격에 반영</b>했다는 신호로 읽히기도 합니다.<br><br><b>다만</b> — 전세가율이 낮다는 것은 <b>07편의 관점에서는 보증금이 상대적으로 안전하다</b>는 뜻이기도 합니다. 같은 숫자가 <b>사는 쪽과 빌리는 쪽에 정반대 의미</b>입니다.');
+  }
+}
+['brPrice', 'brRatio', 'brRate', 'brYears'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', brDraw);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#reCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#reCheck li.done').length;
+      document.getElementById('reCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 셋째·넷째 항목에 답할 수 없다면, 나머지가 다 좋아도 무리한 것입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#cpBtns button[data-v="0"]').click();
+ccDraw();
+lvDraw();
+brDraw();
+</script>
+</body>
+</html>
