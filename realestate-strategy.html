@@ -1,0 +1,1003 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 상황에서의 판단 — 부동산 트랙 정리</title>
+<meta name="description" content="무주택·1주택·다주택은 셈법이 완전히 다릅니다. 열 편의 계산을 하나로 모아 감당 가능성과 자산 집중도를 확인하고, 가족과 함께 결정하는 법까지.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --map:#5B5648;
+    --sit:#3A5A8E;
+    --afford:#6B7A52;
+    --conc:#7A5C9E;
+    --myth:#8E6B3A;
+    --bad:#8E4B3A;
+    --neutral:#5B5648;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:660px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  .subnote{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);}
+
+  .keyline{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--edge2,var(--neutral));
+    border-radius:3px;
+    padding:22px 24px;
+    margin:26px 0;
+    text-align:center;
+  }
+  .keyline .kt{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--edge2,var(--neutral));
+    margin-bottom:12px;
+  }
+  .keyline .kb{
+    font-family:'Newsreader',serif;
+    font-size:20px;
+    line-height:1.5;
+    color:var(--ink);
+  }
+  .keyline .kb b{color:var(--edge2,var(--neutral));}
+
+  /* 트랙 맵 */
+  .maplist{margin:20px 0 0;}
+  .maprow{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    padding:11px 14px;
+    border-left:3px solid var(--mc);
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left-width:3px;
+    border-radius:3px;
+    margin-bottom:7px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .maprow:hover{border-color:#C8BFA8;border-left-color:var(--mc);}
+  .maprow.on{background:#F3EFE5;box-shadow:0 2px 10px rgba(35,32,25,.06);}
+  .maprow .mn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--mc);
+    flex:0 0 68px;
+  }
+  .maprow .mt{font-size:14.2px;color:var(--ink);flex:1 1 auto;}
+  .maprow.on .mt{font-weight:600;}
+
+  .steps-out{margin:16px 0 0;}
+  .steprow{
+    display:flex;align-items:baseline;gap:10px;
+    padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;
+  }
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .maprow{flex-direction:column;gap:3px;}
+    .maprow .mn{flex:none;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">부동산 11 · 정리 · 투자 공부 노트</div>
+    <h1>내 상황에서의 판단</h1>
+    <p class="lede">열 편 동안 <b>구조와 계산</b>을 봤습니다. 이 마지막 편은 그것을 <b>내 상황에 적용</b>합니다. 무주택·1주택·다주택은 <b>셈법이 완전히 다르고</b>, 부동산은 <b>레버리지가 기본</b>이라 포지션 사이징이 다른 자산보다 중요합니다.</p>
+    <div class="callout">
+      <p><b>이 트랙이 계속 말해온 한 가지.</b> 부동산에서 사람이 무너지는 것은 <b>값이 떨어져서가 아니라 버티지 못해서</b>입니다. 값은 몇 년 뒤 회복되지만, <b>그때 그들은 이미 팔린 뒤</b>였습니다.</p>
+      <p>그래서 이 편의 핵심 계산기는 <b>「얼마를 벌 수 있나」가 아니라 「최악의 경우에도 버틸 수 있나」</b>입니다. <b>3장</b>입니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 배경까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#map">1. 열 편을 한 장으로</a>
+    <a href="#situation">2. 상황별 셈법</a>
+    <a href="#afford">3. 감당 가능성</a>
+    <a href="#conc">4. 자산 집중도</a>
+    <a href="#myth">5. 자주 틀리는 생각</a>
+    <a href="#family">6. 함께 결정하기</a>
+    <a href="#final">7. 마지막 목록</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="map">
+    <div class="prod-head" style="--edge:var(--map)">
+      <span class="prod-tag">01 · 지도</span>
+      <h2>열 편을 한 장으로</h2>
+      <p class="one">각 편에서 <b>단 하나만 기억한다면</b> 이것입니다. 눌러보세요.</p>
+    </div>
+
+    <div class="maplist" id="mapList"></div>
+
+    <div class="verdict" id="mapVerdict" style="--vc:var(--map)">
+      <div class="vh">요약</div>
+      <div class="vt">—</div>
+      <p></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="situation">
+    <div class="prod-head" style="--edge:var(--sit)">
+      <span class="prod-tag">02 · 상황</span>
+      <h2>같은 시장, 다른 셈법</h2>
+      <p class="one">「지금 사야 하나」의 답은 <b>내가 어디 서 있느냐</b>에 따라 다릅니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>집값이 오르면 <b>모두에게 좋은 일</b>일까? 아니야. <b>사람마다 달라.</b></p>
+      <p><b>집이 없는 사람</b>은 손해야. 사야 할 것이 비싸졌으니까.<br>
+      <b>집이 하나 있고 계속 살 사람</b>은 사실 <b>별 상관없어.</b> 팔아도 다른 집을 사야 하니까. 숫자만 커진 거야.<br>
+      <b>집이 여러 채 있는 사람</b>은 이득이야. 팔 수 있는 게 많으니까.</p>
+      <p>떨어질 때도 마찬가지로 <b>정반대</b>야.</p>
+      <p>그러니까 뉴스에서 <b>「집값이 올랐다」</b>고 할 때, <b>그게 나한테 좋은 소식인지 나쁜 소식인지</b>부터 생각해야 해. 그게 이 장의 이야기야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SITUATION · 나는 어디에 있나</div>
+      <p class="labsub">각 상황에서 <b>무엇이 유리하고 무엇을 조심할지</b>가 다릅니다.</p>
+
+      <div class="btnrow" id="stBtns">
+        <button data-v="0" class="on">무주택</button>
+        <button data-v="1">1주택 실거주</button>
+        <button data-v="2">갈아타기</button>
+        <button data-v="3">다주택·임대</button>
+      </div>
+
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="상황별로 집값 변동이 미치는 영향">
+        <g id="stScene"></g>
+      </svg>
+
+      <div class="verdict" id="stVerdict" style="--vc:var(--sit)">
+        <div class="vh">상황</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="keyline" style="--edge2:var(--sit)">
+      <div class="kt">가장 자주 오해되는 것</div>
+      <div class="kb"><b>1주택 실거주자</b>는 집값이 올라도<br>실제로 <b>부자가 되지 않습니다.</b></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="afford">
+    <div class="prod-head" style="--edge:var(--afford)">
+      <span class="prod-tag">03 · 계산기</span>
+      <h2>최악의 경우에도 버틸 수 있나</h2>
+      <p class="one">이 트랙의 <b>모든 계산을 하나로</b> 모은 것입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">AFFORDABILITY · 종합 판정</div>
+      <p class="labsub">
+        지금 조건이 아니라 <b>「금리가 오르고 소득이 줄어도」</b>를 기준으로 판정합니다.
+      </p>
+
+      <div class="ctrl-row">
+        <label for="afPrice">사려는 집값</label>
+        <input type="range" id="afPrice" min="10000" max="250000" step="5000" value="70000">
+        <output id="afPriceOut">7.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="afCash">보유 현금 (전부)</label>
+        <input type="range" id="afCash" min="2000" max="200000" step="1000" value="30000">
+        <output id="afCashOut">3.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="afKeep">남겨둘 비상금</label>
+        <input type="range" id="afKeep" min="0" max="20000" step="500" value="3000">
+        <output id="afKeepOut">3,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="afRate">대출 금리</label>
+        <input type="range" id="afRate" min="2" max="9" step="0.1" value="4.0">
+        <output id="afRateOut">4.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="afYears">대출 기간</label>
+        <input type="range" id="afYears" min="10" max="40" step="5" value="30">
+        <output id="afYearsOut">30년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="afIncome">세후 월소득 (가구 합산)</label>
+        <input type="range" id="afIncome" min="150" max="2000" step="10" value="500">
+        <output id="afIncomeOut">500만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="afLiving">월 필수 생활비 (상환 제외)</label>
+        <input type="range" id="afLiving" min="50" max="800" step="10" value="250">
+        <output id="afLivingOut">250만원</output>
+      </div>
+
+      <div class="steps-out" id="afSteps"></div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="세 가지 시나리오에서의 상환 부담">
+        <g id="afScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">최악 시나리오 부담률</span><span class="rv" id="afWorst">—</span></div>
+        <div><span class="rk">비상금으로 버틸 기간</span><span class="rv" id="afMonths">—</span></div>
+      </div>
+
+      <div class="verdict" id="afVerdict" style="--vc:var(--afford)">
+        <div class="vh">감당 가능성</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 방식.</b> 거래비용은 <b>01편의 취득세 공식</b>을 그대로 써서 자동 계산합니다(1주택 표준세율 + 지방교육세 + 중개보수 상한요율 + 법무사 60만원). 대출은 <b>필요 자금에서 투입 현금을 뺀 금액</b>이고, 상환은 <b>원리금균등</b>입니다.<br><br>
+        <b>세 가지 시나리오</b> — ① 지금 금리, ② <b>금리 +3%p</b>, ③ <b>금리 +3%p이면서 소득 −20%</b>. 세 번째가 <b>최악 시나리오</b>이고, 이 트랙이 반복해서 말한 <b>「하락과 소득 충격은 대개 함께 온다」</b>는 상황입니다.<br><br>
+        <b>주의</b> — 이 계산은 <b>LTV·DSR 규제 한도를 확인하지 않습니다.</b> 실제로 그만큼 빌릴 수 있는지는 <b>05편 계산기</b>로 별도 확인하세요. 그리고 보유세·관리비는 생활비에 포함했다고 가정했습니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 하필 「+3%p, 소득 −20%」인가</h3>
+      <p>임의로 고른 숫자가 아닙니다. <b>실제로 일어난 일의 크기</b>입니다.</p>
+      <p><b>+3%p</b> — 04편에서 봤듯 2022년에 대출 금리가 <b>그 정도로</b> 올랐습니다. 그리고 05편의 <b>스트레스 DSR</b>도 비슷한 가산을 적용합니다. <b>규제 당국이 요구하는 계산과 같은 것</b>을 여기서 하는 셈입니다.</p>
+      <p><b>소득 −20%</b> — 상여금이 줄거나, 맞벌이 한쪽이 쉬게 되거나, 자영업 매출이 빠지는 정도입니다. <b>드문 일이 아닙니다.</b></p>
+      <p><b>그리고 둘을 함께 가정하는 이유</b> — 이 트랙이 반복한 문장입니다. <b>금리 상승과 경기 둔화는 대개 함께 옵니다.</b> 금리를 올리는 이유가 물가를 잡기 위해서이고, 그 과정에서 경기가 식기 때문입니다. <b>따로 오는 것으로 가정하면 위험을 과소평가</b>하게 됩니다.</p>
+
+      <h3>「비상금으로 버틸 기간」이 부담률보다 중요한 이유</h3>
+      <p>부담률이 조금 높아도 <b>버틸 현금이 있으면</b> 넘어갈 수 있습니다. 반대로 부담률이 낮아도 <b>현금이 하나도 없으면</b> 작은 사고 하나에 무너집니다.</p>
+      <p>왜냐하면 <b>부동산의 손실은 「팔아야 할 때」 확정</b>되기 때문입니다. 01편에서 본 대로 값이 떨어져도 <b>안 팔면 확정되지 않습니다.</b> 그리고 안 팔려면 <b>그 기간을 버틸 현금</b>이 필요합니다.</p>
+      <p>그래서 <b>「자기자본을 최대한 넣어 대출을 줄이는 것」이 항상 최선은 아닙니다.</b> 대출을 5천만원 줄이는 것과 비상금 5천만원을 남기는 것 중, <b>후자가 나은 경우가 많습니다.</b></p>
+      <p class="plain"><b>기준 하나.</b> <b>최악 시나리오에서 최소 12개월</b>을 버틸 수 있어야 합니다. 소득이 회복되거나, 집이 팔리거나, 금리가 내려가거나 — <b>무언가 바뀌려면 시간이 필요</b>하기 때문입니다. 6개월은 너무 짧습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="conc">
+    <div class="prod-head" style="--edge:var(--conc)">
+      <span class="prod-tag">04 · 집중도</span>
+      <h2>내 재산의 몇 %가 집 한 채에 있나</h2>
+      <p class="one">01편에서 본 <b>「분산이 거의 불가능한 자산」</b>의 실제 모습입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>주식 트랙에서 <b>「계란을 한 바구니에 담지 말라」</b>고 배웠지? 그런데 집을 사면 <b>거의 모든 계란이 한 바구니</b>에 들어가.</p>
+      <p>그리고 <b>빌려서 사니까 더 심해져.</b> 내 돈 3억으로 7억짜리를 사면, 집값이 <b>10% 움직일 때 내 돈은 23%</b>가 움직여.</p>
+      <p>이게 나쁘다는 게 아니야. <b>대부분의 사람이 그렇게 살아.</b> 다만 <b>그 사실을 알고 있어야</b> 해. 「나는 안전하게 살고 있다」고 생각하는데 실제로는 <b>한 자산에 몰빵한 상태</b>일 수 있거든.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CONCENTRATION · 집중도와 증폭</div>
+      <p class="labsub">집값이 움직일 때 <b>내 순자산이 몇 배로</b> 움직이는지 봅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="ccHome">집 시세</label>
+        <input type="range" id="ccHome" min="10000" max="250000" step="5000" value="70000">
+        <output id="ccHomeOut">7.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ccLoan">주택 대출 잔액</label>
+        <input type="range" id="ccLoan" min="0" max="200000" step="1000" value="40000">
+        <output id="ccLoanOut">4.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ccOther">그 밖의 자산 (예금·주식·연금)</label>
+        <input type="range" id="ccOther" min="0" max="100000" step="1000" value="5000">
+        <output id="ccOtherOut">5,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ccMove">집값 변동</label>
+        <input type="range" id="ccMove" min="-40" max="40" step="1" value="-20">
+        <output id="ccMoveOut">-20%</output>
+      </div>
+
+      <div class="stack" id="ccStack"></div>
+
+      <div class="readout two">
+        <div><span class="rk">순자산 중 집의 비중</span><span class="rv" id="ccShare">—</span></div>
+        <div><span class="rk">순자산 변동 (증폭 배수)</span><span class="rv" id="ccAmp">—</span></div>
+      </div>
+
+      <div class="verdict" id="ccVerdict" style="--vc:var(--conc)">
+        <div class="vh">집중도</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「집이 있으니 노후는 괜찮다」의 문제</h3>
+      <p>집중도가 높은 상태에서 은퇴하면 <b>구체적인 문제</b>가 생깁니다. <b>자산은 있는데 쓸 수 있는 돈이 없는</b> 상태입니다.</p>
+      <p>집은 <b>쪼개서 팔 수 없습니다.</b> 생활비가 부족해도 <b>「집의 3%만 팔기」</b>가 안 됩니다. 주식이나 예금이라면 필요한 만큼 꺼내 쓸 수 있는데, 집은 <b>전부 팔거나 아무것도 안 하거나</b>입니다.</p>
+      <p>그리고 <b>보유세와 관리비는 계속 나갑니다</b>(06편). 소득이 없어도요.</p>
+      <p><b>선택지가 있기는 합니다</b> — 더 싼 곳으로 옮기거나, 주택연금 같은 제도를 쓰거나, 일부를 임대로 돌리는 방법입니다. 다만 <b>전부 큰 결정</b>이고, <b>준비 없이 급하게 하면 불리한 조건</b>이 됩니다.</p>
+      <p class="plain"><b>그래서 실용적인 결론.</b> 집을 사는 것과 별개로 <b>「집이 아닌 자산」을 조금씩 쌓아두는 것</b>이 필요합니다. 그게 <b>노후의 유동성</b>이자 <b>지금의 버티는 힘</b>입니다. 주식 트랙 11편의 <b>적립식</b>이 그 방법이고, 금액이 작아도 <b>시간이 채워줍니다.</b></p>
+
+      <h3>한국 가계가 유독 집중도가 높은 이유</h3>
+      <p>한국 가계의 자산 중 <b>부동산 비중이 다른 선진국보다 높은 편</b>이라는 통계가 자주 인용됩니다. 이유가 몇 가지 있습니다.</p>
+      <p><b>① 전세 제도</b>(07편) — 무주택자도 <b>목돈을 부동산 관련 자산에 묶어두게</b> 됩니다. 전세보증금은 통계상 금융자산이지만 <b>실질적으로는 주거에 묶인 돈</b>입니다.</p>
+      <p><b>② 세제</b>(06편) — 1주택 비과세 혜택이 커서 <b>「좋은 집 한 채」에 자산을 몰아넣는 것</b>이 합리적 선택이 됐습니다.</p>
+      <p><b>③ 경험</b>(03편) — 지난 수십 년간 부동산이 실제로 잘 작동했습니다. 그 경험이 <b>다른 자산을 덜 보게</b> 만들었습니다.</p>
+      <p>이건 <b>개인이 비합리적이어서가 아니라 제도와 경험이 그 방향으로 유도</b>한 결과입니다. 그래서 <b>스스로를 탓할 일은 아니지만</b>, <b>그 상태를 인식하고 조금씩 조정하는 것</b>은 각자의 몫입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="myth">
+    <div class="prod-head" style="--edge:var(--myth)">
+      <span class="prod-tag">05 · 오해</span>
+      <h2>자주 틀리는 생각들</h2>
+      <p class="one">대부분 <b>한 조각의 사실</b>에서 출발해 <b>잘못된 결론</b>에 도착합니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MYTHS · 어디서 어긋나나</div>
+      <p class="labsub">각각 <b>맞는 부분</b>과 <b>틀린 부분</b>을 나눠 봅니다.</p>
+
+      <div class="btnrow" id="myBtns">
+        <button data-v="0" class="on">「집값은 결국 오른다」</button>
+        <button data-v="1">「지금 안 사면 못 산다」</button>
+        <button data-v="2">「인구 줄어 폭락한다」</button>
+        <button data-v="3">「전세가 안전하다」</button>
+        <button data-v="4">「대출은 무조건 적게」</button>
+        <button data-v="5">「좋은 곳이면 오른다」</button>
+      </div>
+
+      <div class="verdict" id="myVerdict" style="--vc:var(--myth)">
+        <div class="vh">오해</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="family">
+    <div class="prod-head" style="--edge:var(--sit)">
+      <span class="prod-tag">06 · 대화</span>
+      <h2>함께 결정하기</h2>
+      <p class="one">집은 <b>혼자 하는 결정이 아닙니다.</b></p>
+    </div>
+
+    <div class="deep">
+      <h3>왜 부동산 결정에서 가족이 자주 다투나</h3>
+      <p>금액이 커서만은 아닙니다. <b>서로 다른 것을 재고 있기 때문</b>입니다.</p>
+      <p>08편의 <b>가중치 계산기</b>를 기억하시나요. 같은 세 후보인데 <b>가중치만 바꾸면 1위가 바뀌었습니다.</b> 부부가 다른 답을 내는 것은 <b>한쪽이 틀려서가 아니라 가중치가 다르기 때문</b>인 경우가 많습니다.</p>
+      <p>그런데 대화는 대개 <b>결론</b>에서 시작합니다 — 「A가 좋아」 「아니 B가 좋아」. 그러면 <b>왜 그렇게 생각하는지가 안 드러나고</b> 취향 싸움이 됩니다.</p>
+
+      <h3>순서를 바꾸면 대화가 달라집니다</h3>
+      <p><b>① 각자 08편 계산기의 가중치를 따로 매깁니다.</b> 상의하지 말고 각자요. 그리고 <b>결과를 비교</b>합니다. 대개 <b>「학군」과 「출퇴근」에서 크게 갈립니다.</b></p>
+      <p><b>② 「절대 못 참는 것」을 각자 하나씩 말합니다.</b> 점수는 평균이라 <b>치명적인 단점을 가립니다.</b> 「출퇴근 90분은 못 견딘다」 같은 것은 <b>점수가 아니라 조건</b>으로 다뤄야 합니다.</p>
+      <p><b>③ 3장 계산기를 함께 돌립니다.</b> 여기서 중요한 것은 <b>「최악 시나리오를 함께 본다」</b>는 것입니다. 한 사람만 계산하고 다른 사람은 결과만 들으면, <b>나중에 상황이 나빠졌을 때 「네가 하자고 했잖아」가 됩니다.</b></p>
+      <p><b>④ 금액의 상한을 먼저 합의합니다.</b> 물건을 보기 전에요. 집을 보고 나서 정하면 <b>마음에 든 집에 맞춰 한도가 올라갑니다.</b></p>
+
+      <h3>아이와 이야기할 것</h3>
+      <p>이 시리즈를 아이와 함께 보고 계시다면, 부동산 트랙에서 <b>아이가 가져갈 것</b>은 집값 전망이 아닙니다.</p>
+      <p><b>① 큰 결정에는 계산이 필요하다는 것.</b> 감이 아니라 숫자로 확인하는 습관입니다.</p>
+      <p><b>② 「좋은 것」은 이미 값이 비싸다는 것.</b> 08편의 결론이고, 이건 부동산 밖에서도 계속 쓰입니다.</p>
+      <p><b>③ 최악의 경우를 먼저 생각하는 것.</b> 「얼마 벌까」보다 「잘못되면 어떻게 되나」를 먼저 묻는 습관입니다.</p>
+      <p><b>④ 그리고 이사와 학교 이야기는 아이에게도 큰일입니다.</b> 결정 전에 <b>설명하고 의견을 듣는 것</b>만으로도 다릅니다.</p>
+    </div>
+
+    <div class="note">
+      <p><b>한 가지 더 — 부모님이나 형제와 돈이 얽힐 때.</b> 자금을 빌리거나 명의를 나누는 상황이 생기면 <b>반드시 문서로 남기세요.</b> 차용증, 이자, 상환 계획을요.</p>
+      <p><b>「가족끼리 무슨」</b>이 가장 위험한 말입니다. 06편에서 봤듯 <b>증여로 판정되면 세금 문제</b>가 되고, 나중에 <b>기억이 서로 다르면 관계가 상합니다.</b> 그리고 <b>명의 대여는 절대 하지 마세요</b>(05편).</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7 ══════════ -->
+  <section id="final">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 마무리</span>
+      <h2>마지막 목록</h2>
+      <p class="one">이 트랙 전체를 <b>열두 줄</b>로 압축했습니다.</p>
+    </div>
+
+    <ul class="check" id="fnCheck">
+      <li><b>이건 「거주」인가 「투자」인가?</b> 둘 다여도 좋지만 나눠서 계산해야 합니다. (01편)</li>
+      <li><b>몇 년을 살 계획인가?</b> 짧으면 거래비용만으로 불리합니다. (01편)</li>
+      <li><b>이 건물이 법적으로 무슨 종류인가?</b> 「빌라」로는 알 수 없습니다. (02편)</li>
+      <li><b>3장에서 최악 시나리오를 통과했나?</b> 금리 +3%p에 소득 −20%.</li>
+      <li><b>비상금을 남겼나?</b> 최악 시나리오에서 <b>12개월</b>은 버틸 수 있어야 합니다.</li>
+      <li><b>거래비용과 세금을 자금 계획에 넣었나?</b> (01·06편)</li>
+      <li><b>고정인지 변동인지, 왜 그걸 골랐는지 말할 수 있나?</b> (05편)</li>
+      <li><b>전세라면 5장 절차를 순서대로 밟았나?</b> 특히 잔금일 당일. (07편)</li>
+      <li><b>이 지역의 향후 2~3년 입주 물량을 확인했나?</b> 유일하게 확실한 정보입니다. (09편)</li>
+      <li><b>4장에서 내 순자산 집중도를 확인했나?</b> 생각보다 높을 것입니다.</li>
+      <li><b>가족과 각자 가중치를 매기고 비교했나?</b> (08편·6장)</li>
+      <li><b>「지금 안 사면 못 산다」는 마음으로 결정하고 있지는 않나?</b></li>
+    </ul>
+    <div class="checkcount" id="fnCount">0 / 12 확인함</div>
+
+    <div class="keyline" style="--edge2:var(--afford)">
+      <div class="kt">이 트랙 전체의 한 줄</div>
+      <div class="kb">부동산에서 손실은 <b>값이 떨어져서가 아니라</b><br><b>버티지 못해서</b> 확정됩니다.</div>
+    </div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>부동산 트랙을 마치며.</b> 열한 편 동안 <b>집이라는 자산의 구조</b>(01·02), <b>값을 움직이는 힘</b>(03·04), <b>실무</b>(05·06·07), <b>고르는 눈</b>(08·09), <b>넓은 시야</b>(10), 그리고 <b>내 상황</b>(11)을 봤습니다.</p>
+      <p>이 트랙이 하지 않은 것이 하나 있습니다 — <b>「지금 사야 하는가」에 답하지 않았습니다.</b> 그건 <b>답할 수 없기 때문</b>입니다. 03편에서 봤듯 전문가도 자주 틀렸고, 04편에서 봤듯 금리 예측은 빗나갔습니다.</p>
+      <p>대신 이 트랙이 한 것은 <b>「예측이 필요 없는 부분」을 최대한 넓히는</b> 것이었습니다 — 거래비용은 계산됩니다. 스트레스 테스트는 계산됩니다. 입주 물량은 이미 정해져 있습니다. 등기부는 확인됩니다. <b>이것들만 제대로 해도 큰 실수는 대부분 피합니다.</b></p>
+      <p>그리고 마지막으로 — <b>「사지 않는 것」도 정당한 결론</b>입니다. 3장 계산기가 통과되지 않는다면, 그건 <b>겁이 많은 게 아니라 계산이 맞는 것</b>입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 부동산 11 · 내 상황에서의 판단<br>
+    <a href="index.html#realestate">← 부동산 목록으로</a> · <a href="realestate-global.html">10 · 전 세계 집값과 해외 부동산</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 금융·세무·법률 조언이 아닙니다.<br>
+    계산기는 규제 한도를 확인하지 않는 단순 모형이며, 실제 대출 가능 금액과 세액은 다를 수 있습니다. 중요한 결정 전에는 금융기관·세무 전문가와 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function won(man){ return Math.round(man).toLocaleString() + '만원'; }
+function eok(man){ return (man / 10000).toFixed(2) + '억원'; }
+function paymentFromLoan(P, rate, years){
+  var i = rate / 100 / 12, n = years * 12;
+  if(P <= 0) return 0;
+  if(i <= 0) return P / n;
+  return P * i / (1 - Math.pow(1 + i, -n));
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+/* 01편의 취득세·중개보수 공식 재사용 */
+function acqRate(eokV){
+  if(eokV <= 6) return 0.01;
+  if(eokV <= 9) return Math.round((eokV * 2 / 3 - 3) * 100) / 10000;
+  return 0.03;
+}
+function brokerRate(eokV){
+  var man = eokV * 10000;
+  if(man < 5000) return 0.006;
+  if(man < 20000) return 0.005;
+  if(man < 90000) return 0.004;
+  if(man < 120000) return 0.005;
+  if(man < 150000) return 0.006;
+  return 0.007;
+}
+function brokerFee(eokV){
+  var man = eokV * 10000, fee = man * brokerRate(eokV);
+  if(man < 5000) fee = Math.min(fee, 25);
+  else if(man < 20000) fee = Math.min(fee, 80);
+  return fee;
+}
+function closingCost(priceMan){
+  var e = priceMan / 10000;
+  var acq = priceMan * acqRate(e);
+  return acq * 1.1 + brokerFee(e) + 60;
+}
+
+/* ══════════ 1. 트랙 맵 ══════════ */
+var MAP = [
+  { n:'01 기초', c:'#6B7A52', t:'집은 환금성이 낮고 거래비용이 크며 레버리지가 기본입니다',
+    p:'이 세 가지가 나머지 전부를 결정합니다.<br><br><b>환금성이 낮으니</b> 급할 때 제값을 못 받습니다. <b>거래비용이 크니</b> 「일단 사보고 아니면 판다」가 안 됩니다. <b>레버리지가 기본이니</b> 값의 움직임이 내 돈 기준으로 몇 배가 됩니다.<br><br>그리고 <b>「집을 산다」는 거주·투자·대출·시점 네 가지 결정</b>입니다. 가장 불확실한 <b>투자 판단</b>으로 가장 되돌리기 어려운 <b>대출 결정</b>을 하는 것이 흔한 실수입니다.' },
+  { n:'02 종류', c:'#6B7A52', t:'다가구는 등기 하나, 다세대는 호실마다',
+    p:'「빌라」는 <b>법에 없는 말</b>입니다. 그 한마디로는 위험도를 알 수 없습니다.<br><br><b>다가구</b>는 건물 전체가 등기 하나라, <b>다른 세입자들의 보증금이 내 앞에 있는데 등기부에 안 나옵니다.</b> 확정일자 부여 현황을 따로 확인해야 합니다.<br><br>그리고 <b>아파트만 잘 오르는 이유</b>는 표준화 → 시세 투명 → 대출 → 환금성의 <b>자기강화 고리</b> 때문입니다. 그래서 금리와 대출 규제가 집값에 크게 작용합니다.' },
+  { n:'03 역사', c:'#8E6B3A', t:'정책은 타이밍과 방향을, 크기는 금리와 공급이 정했습니다',
+    p:'정책 도구는 <b>규제·공급·세제</b> 셋이고, 앞의 둘은 <b>빠르지만 오래 안 가고</b> 공급은 <b>확실하지만 늦게</b> 옵니다.<br><br>그 시차가 사이클을 <b>증폭</b>시킵니다. 지금 안 지은 것이 <b>3년 뒤 부족</b>으로 돌아옵니다.<br><br>그리고 반복 관찰된 것 — <b>규제는 수요를 없애지 않고 옮깁니다.</b> 옮겨간 곳이 다음 상승 지역이 되곤 했습니다. 그래서 대책이 나오면 <b>「돈이 어디로 흘러갈까」</b>를 물어야 합니다.' },
+  { n:'04 금리', c:'#8E6B3A', t:'금리는 「구매력」을 통해 작동합니다',
+    p:'매달 낼 수 있는 돈이 같아도 <b>금리가 3% → 6%면 빌릴 수 있는 금액이 30% 가까이 줄어듭니다.</b> 월 150만원·30년 기준으로 <b>3.56억 → 2.50억</b>입니다.<br><br>그리고 이미 빌린 사람에게는 <b>월 상환액 증가</b>로 반대 방향에서 옵니다. 2022년에는 <b>이 둘이 동시에</b> 왔습니다.<br><br>그래서 결론은 <b>「예측 대신 스트레스 테스트」</b>입니다. 금리가 어떻게 될지는 모르지만, <b>3%p 올라도 버틸 수 있는지</b>는 지금 계산할 수 있습니다.' },
+  { n:'05 대출', c:'#3A5A8E', t:'「빌릴 수 있는 금액」과 「빌려도 되는 금액」은 다릅니다',
+    p:'한도는 <b>LTV·DTI·DSR 중 가장 낮은 것</b>으로 정해지고, 요즘은 대체로 <b>DSR</b>이 실질적인 제약입니다.<br><br>가장 실용적인 발견 하나 — <b>신용대출을 먼저 갚으면 주담대 한도가 크게 늘어납니다.</b> 신용대출 1억이 있으면 연간 원리금 2,320만원이 잡혀, 주담대 한도가 <b>4.19억에서 0.14억으로</b> 무너집니다.<br><br>그리고 <b>한도가 모자란 것은 대개 「집이 비싸다」는 뜻</b>입니다. 한도를 늘리는 방법을 찾는 대신 <b>예산에 맞는 집</b>을 찾는 것이 답인 경우가 많습니다.' },
+  { n:'06 세금', c:'#3A5A8E', t:'세 세금이 서로 다른 방향으로 밉니다',
+    p:'취득세는 <b>사지 말라</b>, 보유세는 <b>갖고 있지 말라</b>, 양도세는 <b>팔지 말라</b>고 합니다.<br><br>그래서 보유세와 양도세를 동시에 올리면 <b>사람들은 대개 버팁니다.</b> 보유세는 매년 조금씩이지만 양도세는 <b>한 번에 크게</b> 나가고, <b>안 팔면 안 내기</b> 때문입니다. 03편의 「매물 잠김」이 이 계산에서 나옵니다.<br><br>그리고 <b>1세대 1주택 요건</b> 하나로 세금이 <b>0.5%와 33%</b>로 갈립니다. 「며칠 차이」로 수천만원이 오갑니다.' },
+  { n:'07 전세', c:'#3A5A8E', t:'전세는 은행을 거치지 않는 레버리지입니다',
+    p:'전세가율 <b>90%면 실효 10배</b> 레버리지이고, <b>10%만 떨어져도 자기자본이 사라집니다.</b> 코인 선물의 10배와 숫자가 거의 같습니다.<br><br>다른 점은 <b>손실이 어디로 가느냐</b>입니다. 대출이면 은행이 위험을 계산해 조건을 정하지만, <b>전세는 세입자가 그 위험을 지면서 대개 모릅니다.</b><br><br>그리고 사고가 난 뒤의 대응은 <b>전부 느리고 불완전합니다.</b> 그래서 <b>계약 전 몇 시간</b>이 전부입니다 — 등기부, 건축물대장, 확정일자 현황, 그리고 잔금일 당일 처리.' },
+  { n:'08 선택', c:'#7A5C9E', t:'「좋은 아파트」와 「좋은 투자」는 다릅니다',
+    p:'좋은 조건은 <b>이미 값에 들어 있습니다.</b> 모두가 아니까요. 그래서 좋은 곳을 고르면 <b>「덜 잃고 잘 팔리지만」 「더 버는 것」은 별개</b>입니다.<br><br>그리고 <b>사람마다 답이 다릅니다.</b> 가중치를 바꾸면 같은 세 후보의 1위가 전부 바뀝니다. <b>「어디가 좋냐」보다 「나에게 무엇이 중요하냐」가 먼저</b>입니다.<br><br>재건축은 <b>용적률 여유</b>가 사업성을 결정합니다. 그리고 <b>기대만 있고 숫자가 없는 재건축</b>이 가장 위험합니다.' },
+  { n:'09 지역', c:'#7A5C9E', t:'부동산의 지도는 거리가 아니라 시간으로 그려집니다',
+    p:'서울은 <b>중심이 여럿</b>이고, 수도권은 <b>축</b>으로 자랐으며, 지방은 <b>수요가 있는지부터 확인해야 하는</b> 다른 게임입니다.<br><br>그리고 이 트랙에서 <b>거의 유일하게 예측이 아닌 정보</b>가 여기 있습니다 — <b>입주 물량</b>입니다. 이미 착공된 것은 <b>2~3년 뒤 반드시 나옵니다.</b><br><br>다만 <b>공급 부족이 곧 호재는 아닙니다.</b> <b>「지을 땅이 없어서」</b>와 <b>「지을 이유가 없어서」</b>는 정반대 신호입니다. 미분양과 인구 흐름을 함께 봐야 구분됩니다.' },
+  { n:'10 세계', c:'#8E4B3A', t:'방향은 금리가, 크기는 제도가 정했습니다',
+    p:'2020~21년 대부분의 나라가 함께 올랐고 2022~23년 함께 꺾였습니다. <b>정책은 전부 달랐는데도요.</b><br><br>그런데 <b>크기는 제도가 갈랐습니다.</b> 30년 고정금리 국가는 기존 대출자가 덜 다쳤고, 변동금리 비중이 높은 국가는 충격이 빨랐습니다.<br><br>인구는 <b>「줄면 떨어진다」가 아니라 「줄면 격차가 벌어진다」</b>입니다.<br><br>해외 부동산은 <b>비용 구조가 매우 불리합니다.</b> 현지에서 16% 올라도 원화로는 손실일 수 있고, <b>환율 하나로 14%p가 갈립니다.</b> 목적이 투자뿐이라면 <b>리츠나 펀드가 대부분 낫습니다.</b>' }
+];
+(function(){
+  var html = '';
+  MAP.forEach(function(m, i){
+    html += '<div class="maprow" data-v="' + i + '" style="--mc:' + m.c + '" tabindex="0" role="button">' +
+            '<span class="mn">' + m.n + '</span><span class="mt">' + m.t + '</span></div>';
+  });
+  document.getElementById('mapList').innerHTML = html;
+  var rows = document.querySelectorAll('.maprow');
+  rows.forEach(function(el){
+    function open(){
+      var i = +el.getAttribute('data-v');
+      rows.forEach(function(o, j){ o.classList.toggle('on', j === i); });
+      document.getElementById('mapVerdict').querySelector('.vh').textContent = MAP[i].n;
+      verdict('mapVerdict', MAP[i].c, MAP[i].t, MAP[i].p);
+    }
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); } });
+  });
+})();
+
+/* ══════════ 2. 상황별 ══════════ */
+var ST = [
+  { h:'무주택', color:'#8E4B3A', up:-1, down:1,
+    t:'집값이 오르면 손해, 떨어지면 이득입니다',
+    p:'<b>가장 자주 잊히는 사실</b> — 무주택자는 <b>집값 상승의 피해자</b>입니다. 사야 할 것이 비싸졌으니까요.<br><br>그런데 심리는 반대로 작동합니다. 값이 오르면 <b>「지금이라도 사야 한다」</b>는 압박을 느끼고, 값이 떨어지면 <b>「더 떨어질 것」</b> 같아 못 삽니다. <b>비쌀 때 사고 쌀 때 못 사는</b> 구조입니다.<br><br><b>실전 원칙 세 가지</b><br><b>①</b> <b>가격 전망이 아니라 감당 가능성으로</b> 결정합니다. 3장 계산기가 통과되면 사고, 아니면 안 삽니다. 이건 예측이 필요 없습니다.<br><b>②</b> <b>「지금 안 사면 못 산다」는 마음을 경계</b>합니다. 03편에서 봤듯 그 말은 <b>매 사이클마다</b> 있었고, 그 뒤에 하락도 있었습니다.<br><b>③</b> <b>전세라면 07편을 먼저</b> 읽으세요. 무주택 기간의 가장 큰 위험은 집값이 아니라 <b>보증금</b>입니다.<br><br><b>그리고 시간은 대체로 내 편이 아닙니다</b> — 무주택으로 오래 있으면 <b>집값 상승에 계속 노출</b>됩니다. 그래서 <b>「언젠가는 사야 한다면 감당 가능한 선에서 일찍」</b>이 대체로 합리적입니다.' },
+  { h:'1주택 실거주', color:'#6B7A52', up:0, down:0,
+    t:'집값이 올라도 실제로는 부자가 되지 않습니다',
+    p:'이 트랙에서 <b>가장 자주 오해되는 부분</b>입니다.<br><br><b>왜 그런가</b> — 집값이 2배가 되면 <b>내 집도 2배지만 이사 갈 집도 2배</b>입니다. 팔아도 비슷한 집을 다시 사야 하니 <b>실질적으로 달라지는 게 없습니다.</b> 숫자만 커집니다.<br><br>오히려 <b>보유세가 늘어납니다</b>(06편). 그리고 <b>더 좋은 곳으로 갈아타려면 격차가 벌어져 더 어려워집니다</b>(다음 항목).<br><br><b>실제로 이득을 보는 경우</b>는 <b>더 싼 곳으로 옮기거나</b>(은퇴 후 지방 이주 등) <b>집을 팔고 임차로 가는</b> 경우입니다.<br><br><b>그럼 1주택은 의미가 없나</b> — 아닙니다. <b>「집값 변동에 중립」이 되는 것</b>이 그 값어치입니다. 무주택은 상승에 노출되고 다주택은 하락에 노출되는데, <b>1주택 실거주는 어느 쪽에도 크게 흔들리지 않습니다.</b><br><br>그래서 1주택자에게 중요한 것은 <b>가격 전망이 아니라 대출 부담</b>입니다. 04편의 스트레스 테스트가 <b>여전히 유효한 유일한 계산</b>입니다.' },
+  { h:'갈아타기', color:'#3A5A8E', up:-1, down:1,
+    t:'상승기에는 격차가 벌어지고, 하락기에는 좁혀집니다',
+    p:'더 좋은 집으로 옮기려는 경우입니다. 여기서 중요한 것은 <b>「내 집값」이 아니라 「격차」</b>입니다.<br><br><b>계산</b> — 지금 5억 집에서 8억 집으로 가려면 <b>3억</b>이 필요합니다. 둘 다 20% 오르면 6억과 9.6억이 되어 <b>필요한 돈이 3.6억</b>이 됩니다. <b>내 집이 1억 올랐는데 필요한 돈은 6천만원 늘어난</b> 것입니다.<br><br>즉 <b>상승기에는 갈아타기가 어려워지고, 하락기에는 쉬워집니다.</b> 무주택자와 방향이 같습니다.<br><br><b>실전에서 어려운 점</b><br>· <b>순서 문제</b> — 먼저 팔면 갈 곳이 없고, 먼저 사면 2주택이 됩니다. 06편의 <b>일시적 2주택 특례</b>가 이걸 위한 제도인데 <b>기한을 놓치면 비과세를 잃습니다.</b><br>· <b>거래비용이 두 배</b>로 듭니다. 파는 비용과 사는 비용 모두요.<br>· <b>하락기에는 내 집도 안 팔립니다.</b> 격차는 좁혀졌는데 <b>거래 자체가 안 되는</b> 상황이 생깁니다.<br><br><b>그래서 준비할 것</b> — 세금 요건 확인(06편), 자금 계획에 <b>두 번의 거래비용</b> 반영(01편), 그리고 <b>순서와 기한</b>을 미리 정해두는 것입니다.' },
+  { h:'다주택·임대', color:'#7A5C9E', up:1, down:-1,
+    t:'수익도 위험도 채수만큼 곱해집니다',
+    p:'집값 변동의 영향을 <b>가장 크게</b> 받는 위치입니다. 오를 때 이득이 크고 <b>떨어질 때 손실도 큽니다.</b><br><br><b>이 트랙에서 다주택에 관해 반복한 것들</b><br>· <b>세제가 불리합니다</b>(06편). 취득세 중과, 종부세, 양도세 중과. 그리고 <b>1세대 1주택 비과세를 못 받습니다.</b><br>· <b>전세를 끼면 레버리지가 매우 높아집니다</b>(07편). 그리고 <b>역전세는 채수만큼 곱해집니다.</b> 5억 전세가 20% 떨어지면 10채면 <b>10억</b>입니다.<br>· <b>「똘똘한 한 채」로 몰리는 흐름</b>이 세제에서 나왔습니다(06·09편).<br><br><b>가장 중요한 위험</b> — <b>여러 채의 만기가 비슷한 시기에 몰리는 것</b>입니다. 09편의 <b>입주 물량</b>이 그 지역에 몰리는 시기와 겹치면 특히 위험합니다. <b>이건 미리 확인할 수 있습니다.</b><br><br><b>그리고 현금</b> — 다주택에서 무너지는 이유는 대부분 <b>「자산이 부족해서」가 아니라 「그 시점에 현금이 없어서」</b>입니다. 자산은 있는데 <b>팔리지 않고 보증금은 돌려줘야 하는</b> 상황입니다.' }
+];
+function stScene(idx){
+  var s = ST[idx];
+  var g = '';
+  var X0 = 60, W = 520, cy = 78;
+  g += '<text class="axt" x="' + X0 + '" y="26">집값이 오를 때 / 떨어질 때, 나에게 미치는 방향</text>';
+  var cases = [
+    { n:'집값 상승', v:s.up, x:X0 + 60 },
+    { n:'집값 하락', v:s.down, x:X0 + 320 }
+  ];
+  cases.forEach(function(c){
+    var col = c.v > 0 ? '#4C7A6D' : (c.v < 0 ? '#8E4B3A' : '#8A8474');
+    var label = c.v > 0 ? '유리' : (c.v < 0 ? '불리' : '중립');
+    g += '<rect x="' + (c.x - 60) + '" y="' + (cy - 26) + '" width="160" height="52" rx="4" fill="' + col +
+         '" fill-opacity=".3" stroke="' + col + '" stroke-width="1.5"/>';
+    g += '<text class="axt" x="' + (c.x + 20) + '" y="' + (cy - 6) + '" text-anchor="middle">' + c.n + '</text>';
+    g += '<text class="lblb" x="' + (c.x + 20) + '" y="' + (cy + 14) + '" text-anchor="middle" fill="' + col + '">' + label + '</text>';
+  });
+  g += '<line class="axis" x1="' + X0 + '" y1="126" x2="' + (X0 + W) + '" y2="126"/>';
+  var caps = [
+    '사야 할 것이 비싸지므로 상승은 불리합니다. 심리는 반대로 작동합니다.',
+    '내 집도 이사 갈 집도 함께 움직이므로 실질적으로는 중립입니다.',
+    '격차가 벌어지므로 상승기에는 갈아타기가 어려워집니다.',
+    '변동의 영향을 가장 크게 받습니다. 채수만큼 곱해집니다.'
+  ];
+  g += '<text class="axt" x="' + X0 + '" y="148">' + caps[idx] + '</text>';
+  document.getElementById('stScene').innerHTML = g;
+}
+bindBtnRow('#stBtns', function(v){
+  stScene(+v);
+  document.getElementById('stVerdict').querySelector('.vh').textContent = ST[+v].h;
+  verdict('stVerdict', ST[+v].color, ST[+v].t, ST[+v].p);
+});
+
+/* ══════════ 3. 감당 가능성 ══════════ */
+function afCalc(){
+  var price = +document.getElementById('afPrice').value;
+  var cash = +document.getElementById('afCash').value;
+  var keep = +document.getElementById('afKeep').value;
+  var rate = +document.getElementById('afRate').value;
+  var years = +document.getElementById('afYears').value;
+  var income = +document.getElementById('afIncome').value;
+  var living = +document.getElementById('afLiving').value;
+
+  document.getElementById('afPriceOut').textContent = (price / 10000).toFixed(1) + '억원';
+  document.getElementById('afCashOut').textContent = (cash / 10000).toFixed(1) + '억원';
+  document.getElementById('afKeepOut').textContent = keep.toLocaleString() + '만원';
+  document.getElementById('afRateOut').textContent = rate.toFixed(1) + '%';
+  document.getElementById('afYearsOut').textContent = years + '년';
+  document.getElementById('afIncomeOut').textContent = income.toLocaleString() + '만원';
+  document.getElementById('afLivingOut').textContent = living.toLocaleString() + '만원';
+
+  var closing = closingCost(price);
+  var needed = price + closing;
+  var invest = Math.max(0, cash - keep);
+  var loan = Math.max(0, needed - invest);
+  var ltv = loan / price * 100;
+
+  var pay1 = paymentFromLoan(loan, rate, years);
+  var pay2 = paymentFromLoan(loan, rate + 3, years);
+  var inc3 = income * 0.8;
+  var burden1 = pay1 / income * 100;
+  var burden2 = pay2 / income * 100;
+  var burden3 = pay2 / inc3 * 100;
+  var surplus3 = inc3 - pay2 - living;
+  var months = surplus3 >= 0 ? Infinity : (surplus3 < 0 ? keep / (-surplus3) : Infinity);
+
+  steps('afSteps', [
+    { k:'집값', v:won(price) },
+    { k:'+ 거래비용 (취득세·중개보수·법무사)', v:won(closing) },
+    { k:'= 필요 자금', v:won(needed) },
+    { k:'− 투입 현금 (보유 − 비상금)', v:won(invest) },
+    { k:'= 대출', v:won(loan) + ' (집값의 ' + ltv.toFixed(0) + '%)', total:true }
+  ]);
+
+  var wEl = document.getElementById('afWorst');
+  wEl.textContent = burden3.toFixed(0) + '%';
+  wEl.style.color = burden3 >= 50 ? 'var(--neg)' : (burden3 >= 35 ? '' : 'var(--pos)');
+  var mEl = document.getElementById('afMonths');
+  if(surplus3 >= 0){
+    mEl.textContent = '적자 없음';
+    mEl.style.color = 'var(--pos)';
+  } else {
+    mEl.textContent = (months >= 60 ? '5년 이상' : Math.floor(months) + '개월') +
+                      ' (월 ' + Math.round(-surplus3).toLocaleString() + '만원 적자)';
+    mEl.style.color = months < 12 ? 'var(--neg)' : '';
+  }
+
+  var X0 = 150, W = 380, maxV = Math.max(income, pay2) * 1.15 || 1;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="22">시나리오별 월 상환액과 소득 (만원)</text>';
+  function row(y, pay, inc, label, col){
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + (inc / maxV * W).toFixed(1) + '" height="24" rx="2" fill="#8A8474" fill-opacity=".16" stroke="#8A8474" stroke-width="1"/>';
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + (pay / maxV * W).toFixed(1) + '" height="24" rx="2" fill="' + col +
+         '" fill-opacity=".45" stroke="' + col + '" stroke-width="1.3"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 16) + '" text-anchor="end">' + label + '</text>';
+    g += '<text class="lblb" x="' + (X0 + inc / maxV * W + 8).toFixed(1) + '" y="' + (y + 16) + '" fill="' + col + '">' +
+         Math.round(pay).toLocaleString() + ' / ' + Math.round(inc).toLocaleString() + ' = ' + (pay / inc * 100).toFixed(0) + '%</text>';
+  }
+  row(30, pay1, income, '지금 (' + rate.toFixed(1) + '%)', '#6B7A52');
+  row(66, pay2, income, '금리 +3%p', '#8E6B3A');
+  row(102, pay2, inc3, '+3%p & 소득 −20%', '#8E4B3A');
+  g += '<text class="axt" x="' + X0 + '" y="150">회색 막대가 소득, 색 막대가 상환액입니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="170">세 번째가 최악 시나리오이고, 이것이 판정 기준입니다.</text>';
+  document.getElementById('afScene').innerHTML = g;
+
+  if(loan <= 0){
+    verdict('afVerdict', '#4C7A6D',
+      '대출 없이 살 수 있습니다',
+      '보유 현금으로 <b>거래비용까지 충당</b>됩니다. 대출이 없으니 <b>금리 위험도 없습니다.</b><br><br>' +
+      '<b>그래도 확인할 것</b> — <b>비상금 ' + won(keep) + '</b>이 충분한가입니다. 01편에서 봤듯 부동산은 <b>환금성이 낮아</b> 급할 때 팔 수 없습니다. <b>현금을 남기는 것이 곧 버티는 힘</b>입니다.<br><br>' +
+      '그리고 <b>4장</b>에서 <b>자산 집중도</b>를 확인해보세요. 대출이 없어도 <b>재산 대부분이 집 한 채에 들어가 있다면</b> 그 자체가 위험입니다.');
+  } else if(burden3 >= 60 || (surplus3 < 0 && months < 12)){
+    verdict('afVerdict', '#8E4B3A',
+      '최악 시나리오에서 버티지 못합니다',
+      '금리가 <b>' + (rate + 3).toFixed(1) + '%</b>가 되고 소득이 <b>20%</b> 줄면 월 상환액이 <b>' +
+      Math.round(pay2).toLocaleString() + '만원</b>, 소득의 <b>' + burden3.toFixed(0) + '%</b>가 됩니다.' +
+      (surplus3 < 0 ? ' 생활비까지 더하면 <b>매달 ' + Math.round(-surplus3).toLocaleString() + '만원이 부족</b>하고, 비상금으로 <b>' +
+       (months >= 60 ? '5년 이상' : Math.floor(months) + '개월') + '</b>을 버팁니다 — <b>최소 12개월</b>은 필요합니다.' : '') + '<br><br>' +
+      '<b>이 트랙이 반복해서 말한 상황</b>이 이것입니다 — 값이 떨어져서가 아니라 <b>버티지 못해서</b> 팔아야 하는 경우입니다. 그리고 그때는 <b>값이 떨어져 있고 사겠다는 사람도 없습니다.</b><br><br>' +
+      '<b>바꿀 수 있는 것 세 가지</b><br>· <b>집값을 낮추기</b> — 가장 확실합니다<br>· <b>비상금을 늘리기</b> — 버티는 기간이 길어집니다<br>· <b>기간을 늘리기</b> — 월 부담이 줄지만 총이자가 늘고, <b>기간을 늘려야만 되는 상황 자체가 신호</b>입니다(05편)<br><br>' +
+      '<b>슬라이더를 움직여</b> 이 화면이 통과되는 지점을 찾아보세요. 거기가 <b>내 실제 예산</b>입니다.');
+  } else if(burden3 >= 45){
+    verdict('afVerdict', '#9E7A2E',
+      '빠듯합니다 — 여유가 거의 없습니다',
+      '최악 시나리오에서 부담률이 <b>' + burden3.toFixed(0) + '%</b>입니다.' +
+      (surplus3 >= 0 ? ' 생활비를 빼고도 <b>' + Math.round(surplus3).toLocaleString() + '만원</b>이 남긴 하지만 여유가 작습니다.'
+                     : ' 생활비까지 더하면 <b>매달 ' + Math.round(-surplus3).toLocaleString() + '만원 적자</b>이고, 비상금으로 <b>' + (months >= 60 ? '5년 이상' : Math.floor(months) + '개월') + '</b>을 버팁니다.') +
+      '<br><br><b>이 구간에서 확인할 것</b><br>' +
+      '· <b>다른 대출이 있나요?</b> 신용대출·자동차 할부가 있으면 이 계산보다 <b>더 빠듯합니다.</b><br>' +
+      '· <b>생활비 추정이 현실적인가요?</b> 아이가 크면 교육비가 늘어납니다. 실제 지출 내역으로 확인해보세요.<br>' +
+      '· <b>보유세와 관리비</b>를 생활비에 넣으셨나요? 06편 계산기로 확인할 수 있습니다.<br><br>' +
+      '<b>가능하다면 비상금을 늘리세요.</b> 이 구간에서는 <b>부담률을 몇 %p 낮추는 것보다 버틸 개월 수를 늘리는 것</b>이 실질적으로 더 안전합니다.');
+  } else {
+    verdict('afVerdict', '#4C7A6D',
+      '최악 시나리오에서도 버틸 수 있습니다',
+      '금리가 <b>' + (rate + 3).toFixed(1) + '%</b>로 오르고 소득이 <b>20%</b> 줄어도 부담률이 <b>' +
+      burden3.toFixed(0) + '%</b>입니다.' +
+      (surplus3 >= 0 ? ' 생활비를 빼고도 <b>매달 ' + Math.round(surplus3).toLocaleString() + '만원</b>이 남습니다.' : '') +
+      '<br><br><b>이게 이 트랙이 말하는 「감당 가능」</b>입니다. 지금 금리가 아니라 <b>나빠진 상황에서도</b> 버틸 수 있다는 뜻입니다.<br><br>' +
+      '<b>이제 남은 확인</b><br>' +
+      '· <b>05편</b>에서 <b>실제로 이만큼 대출이 나오는지</b>(LTV·DSR 한도) 확인하세요. 이 계산기는 규제를 보지 않습니다.<br>' +
+      '· <b>4장</b>에서 <b>자산 집중도</b>를 확인하세요.<br>' +
+      '· <b>09편</b>에서 그 지역의 <b>입주 물량</b>을 확인하세요.<br><br>' +
+      '<b>그리고 이 화면을 배우자와 함께 보세요</b>(6장). 최악 시나리오를 <b>같이 본 것</b>과 결과만 전해 들은 것은 나중에 크게 다릅니다.');
+  }
+}
+['afPrice', 'afCash', 'afKeep', 'afRate', 'afYears', 'afIncome', 'afLiving'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', afCalc);
+});
+
+/* ══════════ 4. 집중도 ══════════ */
+function ccCalc(){
+  var home = +document.getElementById('ccHome').value;
+  var loan = +document.getElementById('ccLoan').value;
+  var other = +document.getElementById('ccOther').value;
+  var move = +document.getElementById('ccMove').value;
+
+  document.getElementById('ccHomeOut').textContent = (home / 10000).toFixed(1) + '억원';
+  document.getElementById('ccLoanOut').textContent = (loan / 10000).toFixed(1) + '억원';
+  document.getElementById('ccOtherOut').textContent = other.toLocaleString() + '만원';
+  document.getElementById('ccMoveOut').textContent = (move >= 0 ? '+' : '') + move + '%';
+
+  var totalAsset = home + other;
+  var net = totalAsset - loan;
+  var homeEquity = home - loan;
+  var share = net > 0 ? homeEquity / net * 100 : (net < 0 ? 100 : 0);
+
+  var home2 = home * (1 + move / 100);
+  var net2 = home2 + other - loan;
+  var netChange = net !== 0 ? (net2 - net) / Math.abs(net) * 100 : 0;
+  var amp = move !== 0 ? netChange / move : 0;
+
+  var rows = [
+    { n:'집 (순수 내 몫)', v:Math.max(0, homeEquity), c:'#7A5C9E' },
+    { n:'그 밖의 자산', v:other, c:'#6B7A52' }
+  ];
+  var maxV = Math.max(Math.abs(net), 1);
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="srow"><span class="sname">' + r.n + '</span>' +
+            '<span class="strack"><span class="sfill" style="width:' + Math.min(100, r.v / maxV * 100).toFixed(1) +
+            '%;background:' + r.c + '"></span></span>' +
+            '<span class="sval">' + eok(r.v) + '</span></div>';
+  });
+  html += '<div class="srow"><span class="sname">순자산 합계</span>' +
+          '<span class="strack"><span class="sfill" style="width:100%;background:#5B5648"></span></span>' +
+          '<span class="sval">' + eok(net) + '</span></div>';
+  document.getElementById('ccStack').innerHTML = html;
+
+  var sEl = document.getElementById('ccShare');
+  sEl.textContent = share.toFixed(0) + '%';
+  sEl.style.color = share >= 85 ? 'var(--neg)' : (share >= 70 ? '' : 'var(--pos)');
+  var aEl = document.getElementById('ccAmp');
+  aEl.textContent = pct(netChange, 1) + ' (' + Math.abs(amp).toFixed(1) + '배)';
+  signColor(aEl, netChange);
+
+  if(net <= 0){
+    verdict('ccVerdict', '#8E4B3A',
+      '순자산이 0 이하입니다',
+      '집 시세 <b>' + eok(home) + '</b>에 대출이 <b>' + eok(loan) + '</b>이고 다른 자산이 <b>' + eok(other) +
+      '</b>이라, 순자산이 <b>' + eok(net) + '</b>입니다.<br><br>' +
+      '<b>이 상태에서 가장 중요한 것은 현금흐름</b>입니다. 자산 가치가 아니라 <b>「이자를 계속 낼 수 있는가」</b>가 전부입니다. 01편에서 본 대로 <b>버틸 수 있으면 회복을 기다릴 수 있습니다.</b><br><br>' +
+      '<b>3장 계산기</b>로 최악 시나리오를 확인하고, <b>비상금을 최대한 확보</b>하세요. 그리고 <b>급하게 팔아야 하는 상황을 만들지 않는 것</b>이 최우선입니다.');
+  } else if(share >= 85){
+    verdict('ccVerdict', '#8E4B3A',
+      '순자산의 ' + share.toFixed(0) + '%가 집 한 채에 있습니다',
+      '순자산 <b>' + eok(net) + '</b> 중 <b>' + eok(homeEquity) + '</b>이 집입니다. 그 밖의 자산은 <b>' + eok(other) + '</b>뿐입니다.<br><br>' +
+      '집값이 <b>' + move + '%</b> 움직이면 순자산은 <b>' + pct(netChange, 1) + '</b> 움직입니다. <b>약 ' +
+      Math.abs(amp).toFixed(1) + '배로 증폭</b>됩니다. 대출이 있기 때문입니다.<br><br>' +
+      '<b>이게 나쁘다는 뜻은 아닙니다.</b> 대부분의 가정이 이 상태이고, 실거주라면 어쩔 수 없는 면도 있습니다.<br><br>' +
+      '<b>다만 알고 있어야 합니다</b> — <b>「나는 안전하게 살고 있다」고 생각하지만 실제로는 한 자산에 집중된 상태</b>입니다. 주식 트랙에서 <b>「한 종목에 몰빵하지 말라」</b>고 한 그 상황이, 부동산에서는 <b>거의 모두에게</b> 일어납니다.<br><br>' +
+      '<b>현실적인 대응</b> — 집을 줄이기는 어려우니, <b>그 밖의 자산을 조금씩 늘리는 것</b>이 유일한 방법입니다. 그리고 <b>비상금</b>이 그 시작입니다.');
+  } else if(share >= 65){
+    verdict('ccVerdict', '#9E7A2E',
+      '순자산의 ' + share.toFixed(0) + '%가 집입니다 — 흔한 수준입니다',
+      '순자산 <b>' + eok(net) + '</b> 중 집이 <b>' + eok(homeEquity) + '</b>, 그 밖이 <b>' + eok(other) + '</b>입니다.<br><br>' +
+      '집값 <b>' + move + '%</b> 변동이 순자산 <b>' + pct(netChange, 1) + '</b>로 나타납니다(<b>' +
+      Math.abs(amp).toFixed(1) + '배</b>).<br><br>' +
+      '<b>이 정도가 실거주 가구의 흔한 수준</b>입니다. 완전히 분산된 상태는 아니지만 <b>다른 자산이 어느 정도 있어</b> 급한 일에 대응할 수 있습니다.<br><br>' +
+      '<b>여기서 목표로 삼을 것</b> — 비중을 줄이려 무리하기보다, <b>「그 밖의 자산」을 꾸준히 늘려</b> 시간이 지나면서 자연스럽게 균형이 잡히게 하는 것입니다. 주식 트랙 11편의 <b>적립식</b>이 그 방법입니다.');
+  } else {
+    verdict('ccVerdict', '#4C7A6D',
+      '순자산의 ' + share.toFixed(0) + '% — 비교적 분산되어 있습니다',
+      '순자산 <b>' + eok(net) + '</b> 중 집이 <b>' + eok(homeEquity) + '</b>, 그 밖의 자산이 <b>' + eok(other) + '</b>입니다.<br><br>' +
+      '집값 <b>' + move + '%</b> 변동에 순자산은 <b>' + pct(netChange, 1) + '</b> 움직입니다. 증폭이 <b>' +
+      Math.abs(amp).toFixed(1) + '배</b>로 비교적 완만합니다.<br><br>' +
+      '<b>이 상태의 장점</b> — 집값이 떨어져도 <b>다른 자산으로 버틸 수 있고</b>, 급한 일에 <b>집을 팔지 않고 대응</b>할 수 있습니다. 01편에서 본 <b>부동산의 낮은 환금성</b> 문제를 다른 자산이 메워줍니다.<br><br>' +
+      '<b>부동산에서 이 상태를 유지하기는 쉽지 않습니다.</b> 집값이 오르면 자연히 비중이 커지니까요. 그래서 <b>의식적으로 다른 자산을 함께 쌓아야</b> 유지됩니다.');
+  }
+}
+['ccHome', 'ccLoan', 'ccOther', 'ccMove'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', ccCalc);
+});
+
+/* ══════════ 5. 오해 ══════════ */
+var MY = [
+  { h:'「집값은 결국 오른다」', color:'#8E6B3A',
+    t:'맞는 부분과 틀린 부분이 섞여 있습니다',
+    p:'<b>맞는 부분</b> — 아주 긴 시계에서 <b>명목 가격</b>은 대체로 올랐습니다. 물가가 오르고 통화량이 늘기 때문입니다(03편).<br><br><b>틀린 부분 세 가지</b><br><b>①</b> <b>「결국」이 얼마나 긴가.</b> 03편에서 봤듯 <b>5년 넘는 침체</b>가 여러 번 있었습니다. 10편의 일본은 <b>수십 년</b>이었습니다. 「결국 오른다」는 말이 <b>내 인생 안에</b>를 보장하지 않습니다.<br><b>②</b> <b>「어느 집이」가 빠져 있습니다.</b> 전국 평균 이야기이고, <b>지역별로 정반대</b>인 시기가 많았습니다(03·09편).<br><b>③</b> <b>버티지 못하면 소용없습니다.</b> 이 트랙의 핵심입니다. 값이 회복돼도 <b>그때 나는 이미 팔린 뒤</b>일 수 있습니다.<br><br><b>제대로 쓰는 법</b> — 「오를 테니 무리해도 된다」가 아니라 <b>「감당 가능한 선에서 오래 보유한다」</b>는 근거로 쓰는 것입니다. 그 둘은 <b>완전히 다릅니다.</b>' },
+  { h:'「지금 안 사면 못 산다」', color:'#8E4B3A',
+    t:'매 사이클마다 나왔던 말입니다',
+    p:'<b>왜 이 말이 강력한가</b> — 실제로 <b>그렇게 된 시기가 있었기</b> 때문입니다. 2020~2021년에 망설인 사람들은 실제로 격차를 겪었습니다. 그래서 <b>경험에 기반한 두려움</b>입니다.<br><br><b>그런데</b> — 03편에서 봤듯 <b>이 말은 1990년에도, 2007년에도 있었습니다.</b> 그리고 그 직후에 하락이 왔습니다.<br><br><b>구조적으로 보면</b> — 이 말이 가장 크게 들릴 때가 <b>사이클의 ③ 과열 단계</b>입니다(03편). 모두가 확신하고 정부가 대책을 내는 시기입니다. 그리고 그 뒤가 ④입니다.<br><br><b>그렇다고 「기다려라」는 것도 아닙니다.</b> 반대 방향의 실수도 똑같이 흔합니다.<br><br><b>이 트랙의 답</b> — <b>전망으로 결정하지 말고 계산으로 결정하는 것</b>입니다. 3장 계산기가 통과되면 <b>지금이 고점이든 아니든 감당됩니다.</b> 통과되지 않으면 <b>지금이 저점이어도 위험합니다.</b> 이 판단에는 <b>예측이 필요 없습니다.</b>' },
+  { h:'「인구 줄어 폭락한다」', color:'#7A5C9E',
+    t:'방향은 맞는데 적용이 틀립니다',
+    p:'<b>맞는 부분</b> — 아주 긴 시계에서 인구는 수요의 상한입니다. 그리고 <b>이미 인구가 줄기 시작한 지역</b>이 있습니다.<br><br><b>틀린 부분</b><br><b>①</b> <b>집은 인구가 아니라 가구 수만큼 필요합니다</b>(03·10편). 1인 가구가 늘면서 인구가 정체해도 <b>가구 수는 늘었습니다.</b><br><b>②</b> <b>「전국」과 「내 지역」이 다릅니다.</b> 10편에서 본 대로 인구 감소는 <b>「전체 하락」이 아니라 「격차 확대」</b>로 나타납니다. 모이는 곳은 오릅니다.<br><b>③</b> <b>수십 년째 알려진 정보입니다.</b> 시장은 이걸 알고도 이렇게 움직였습니다. <b>모두가 아는 정보로는 돈을 못 법니다</b>(08편).<br><br><b>일본 인용의 문제</b> — 전국 평균은 크게 떨어졌지만 <b>도쿄 도심은 달랐습니다.</b> 그리고 1990년대 하락에는 <b>극단적인 거품 붕괴</b>가 함께 있었습니다.<br><br><b>제대로 쓰는 법</b> — 「전국이 폭락한다」가 아니라 <b>「내가 보는 지역의 인구·세대가 어느 방향인가」</b>를 확인하는 데 씁니다(09편).' },
+  { h:'「전세가 안전하다」', color:'#8E4B3A',
+    t:'2022년 이후 가장 크게 무너진 통념입니다',
+    p:'<b>왜 그렇게 믿었나</b> — 전세는 <b>「원금이 그대로 돌아오는」</b> 구조로 보였습니다. 집값이 떨어져도 내 보증금은 그대로니까요.<br><br><b>실제로는</b> — 07편에서 본 대로입니다. <b>보증금은 은행이 아니라 개인에게 맡긴 돈</b>이고, 그 사람이 무너지면 <b>내 돈도 위험합니다.</b><br><br>그리고 <b>구조적으로</b> — 전세보증금은 집주인 입장에서 <b>무이자 레버리지</b>입니다. 전세가율이 90%면 <b>실효 10배</b>이고, 집값이 <b>10%만 떨어져도</b> 집주인 자본이 사라진 뒤 <b>다음 손실은 내 보증금</b>에서 나갑니다.<br><br><b>즉 세입자는 자기도 모르게 후순위 채권자</b>입니다. 대출이면 은행이 그 위험을 계산해 조건을 정하는데, <b>전세는 세입자가 그 계산을 스스로 해야</b> 합니다.<br><br><b>그럼 전세를 하지 말라는 건가</b> — 아닙니다. <b>확인하고 하라는 것</b>입니다. 07편 5장의 순서를 밟으면 <b>대부분의 사고는 걸러집니다.</b> 그리고 <b>전세가율이 낮고 보증보험이 되는 물건</b>이라면 여전히 합리적인 선택입니다.' },
+  { h:'「대출은 무조건 적게」', color:'#6B7A52',
+    t:'대체로 맞지만 예외가 있습니다',
+    p:'<b>맞는 부분</b> — 이 트랙이 반복한 이야기입니다. 무너지는 이유는 대부분 <b>과도한 레버리지</b>이고, <b>버티는 힘</b>이 전부입니다.<br><br><b>그런데 「무조건 적게」가 항상 최선은 아닙니다.</b><br><br><b>① 현금을 다 쓰면 오히려 위험합니다.</b> 대출을 최소화하려고 <b>비상금까지 다 넣으면</b>, 작은 사고 하나에 <b>고금리 신용대출</b>을 써야 합니다. 3장 계산기의 <b>「비상금으로 버틸 기간」</b>이 이걸 보여줍니다.<br><br><b>② 기간은 길게 잡는 편이 유연합니다</b>(05편). 기간을 길게 하고 <b>여유 있을 때 앞당겨 갚는 것</b>이, 처음부터 짧게 잡아 매달 빠듯한 것보다 낫습니다. 중도상환수수료 기간만 확인하면 됩니다.<br><br><b>③ 금리가 낮을 때는 상환보다 나은 곳이 있을 수 있습니다.</b> 대출 금리보다 <b>확실히 높은 수익</b>을 안정적으로 낼 수 있다면요. 다만 <b>「확실히」가 어렵기 때문에</b> 대부분의 경우 상환이 안전합니다.<br><br><b>정리하면</b> — <b>「대출 총액을 줄이는 것」보다 「최악의 경우에도 낼 수 있는 수준으로 맞추는 것」</b>이 정확한 목표입니다.' },
+  { h:'「좋은 곳이면 오른다」', color:'#3A5A8E',
+    t:'08편의 결론입니다 — 이미 값에 들어 있습니다',
+    p:'<b>맞는 부분</b> — 좋은 입지는 <b>덜 떨어지고 먼저 회복하고 잘 팔립니다.</b> 이건 실제 값어치입니다.<br><br><b>틀린 부분</b> — <b>「그래서 더 오른다」는 따라오지 않습니다.</b> 좋다는 것을 <b>모두가 알기</b> 때문에 <b>이미 값에 반영</b>돼 있습니다. 더 오르려면 <b>지금보다 더 좋아져야</b> 합니다.<br><br><b>그래서 정확한 표현</b> — 좋은 곳을 고르면 <b>「덜 잃고 잘 팔리지만」 「더 버는 것」은 별개</b>입니다.<br><br><b>이게 왜 중요한가</b> — 이 오해가 <b>무리한 대출</b>의 근거가 되기 때문입니다. 「좋은 곳이니까 오를 테고, 그러니 무리해도 된다」는 논리인데, <b>앞부분이 틀리면 뒷부분이 위험해집니다.</b><br><br><b>제대로 쓰는 법</b> — 좋은 입지를 고르는 이유를 <b>「오를 것 같아서」가 아니라 「덜 잃고 잘 팔리고 살기 좋아서」</b>로 두는 것입니다. 그러면 <b>대출 결정과 분리</b>됩니다. 01편의 <b>네 가지 결정을 나눠서 보라</b>는 이야기가 이것입니다.' }
+];
+bindBtnRow('#myBtns', function(v){
+  document.getElementById('myVerdict').querySelector('.vh').textContent = MY[+v].h;
+  verdict('myVerdict', MY[+v].color, MY[+v].t, MY[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#fnCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#fnCheck li.done').length;
+      document.getElementById('fnCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 넷째와 다섯째만 지켜도 큰 실수는 대부분 피합니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelectorAll('.maprow')[0].click();
+document.querySelector('#stBtns button[data-v="0"]').click();
+afCalc();
+ccCalc();
+document.querySelector('#myBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
