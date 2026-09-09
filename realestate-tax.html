@@ -1,0 +1,1111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>취득세·보유세·양도세 — 살 때, 가질 때, 팔 때</title>
+<meta name="description" content="부동산 세금은 살 때·가질 때·팔 때 세 번 냅니다. 각 세금의 구조와 계산 방식, 그리고 세금이 매물을 잠그는 이유를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --buy:#6B7A52;
+    --hold:#8E6B3A;
+    --sell:#8E4B3A;
+    --misc:#7A5C9E;
+    --bad:#8E4B3A;
+    --neutral:#5B5648;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:600px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  .subnote{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);}
+
+  .steps-out{margin:16px 0 0;}
+  .steprow{
+    display:flex;
+    align-items:baseline;
+    gap:10px;
+    padding:8px 0;
+    border-bottom:1px dotted var(--rule);
+    font-size:13.8px;
+  }
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{
+    flex:1 1 auto;
+    color:var(--ink-soft);
+    font-family:'IBM Plex Sans KR',sans-serif;
+  }
+  .steprow .sv{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px;
+    color:var(--ink);
+    white-space:nowrap;
+  }
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{color:var(--sell);font-weight:600;font-size:15px;}
+  .steprow.minus .sv{color:var(--buy);}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">부동산 06 · 세금 · 투자 공부 노트</div>
+    <h1>취득세·보유세·양도세<br>— 살 때, 가질 때, 팔 때</h1>
+    <p class="lede">부동산 세금은 <b>세 번</b> 냅니다. 그리고 이 셋은 <b>서로 다른 방향으로 사람을 움직입니다.</b> 이 편은 각 세금의 <b>구조</b>를 잡고, 03편에서 봤던 <b>「세금이 매물을 잠그는」 현상</b>이 어떤 계산에서 나오는지 직접 확인합니다.</p>
+    <div class="callout">
+      <p><b>⚠️ 이 편은 이 시리즈에서 가장 빨리 낡습니다.</b> 세율·공제·중과·특례는 <b>거의 매년 바뀌었고 앞으로도 바뀝니다.</b> 그래서 계산기의 <b>세율과 공제를 전부 슬라이더</b>로 두었습니다. <b>지금 적용되는 값을 확인해서 넣어보세요.</b></p>
+      <p><b>이 문서는 세무 조언이 아닙니다.</b> 실제 세액은 개인 상황(세대 구성, 주택 수, 지역, 취득 시기, 특례 적용)에 따라 크게 달라집니다. <b>중요한 결정 전에는 반드시 세무 전문가나 국세청 자료로 확인하세요.</b></p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산 구조와 실무까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#three">1. 세 번 냅니다</a>
+    <a href="#acq">2. 취득세</a>
+    <a href="#hold">3. 보유세</a>
+    <a href="#gain">4. 양도세</a>
+    <a href="#lock">5. 매물이 잠기는 이유</a>
+    <a href="#mistake">6. 흔한 실수</a>
+    <a href="#check">7. 확인 목록</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="three">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 구조</span>
+      <h2>세 번 내고, 각각 다르게 작동합니다</h2>
+      <p class="one">셋을 <b>따로 보면</b> 훨씬 간단해집니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>집에 붙는 세금은 <b>세 번</b> 나와.</p>
+      <p><b>살 때</b> 한 번 — <b>취득세</b>야. 집값의 몇 %를 나라에 내. 한 번만 내고 끝.</p>
+      <p><b>갖고 있는 동안</b> 매년 — <b>재산세</b>와 <b>종합부동산세</b>. 비싼 집이거나 여러 채 갖고 있으면 더 많이 내.</p>
+      <p><b>팔 때</b> 한 번 — <b>양도세</b>야. <b>번 만큼</b>에 대해 내. 5억에 사서 8억에 팔았으면 3억 번 거니까 거기에 세금이 붙어.</p>
+      <p>그런데 재밌는 게 있어. <b>팔 때 세금이 크면 사람들이 안 팔아.</b> 안 팔면 세금도 안 내니까. 그러면 <b>시장에 파는 집이 줄어들고</b>, 집이 귀해져서 <b>값이 오르기도</b> 해. 세금을 올렸는데 값이 오른 거지. <b>5장에서 계산해볼 거야.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TIMELINE · 세 번의 세금</div>
+      <p class="labsub">각각 <b>무엇에 매기고, 어떤 행동을 유도하는지</b>가 다릅니다.</p>
+
+      <div class="btnrow" id="txBtns">
+        <button data-v="0" class="on">살 때 · 취득세</button>
+        <button data-v="1">가질 때 · 보유세</button>
+        <button data-v="2">팔 때 · 양도세</button>
+        <button data-v="3">셋의 관계</button>
+      </div>
+
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="부동산 세금 세 단계">
+        <g id="txScene"></g>
+      </svg>
+
+      <div class="verdict" id="txVerdict" style="--vc:var(--neutral)">
+        <div class="vh">세금</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="acq">
+    <div class="prod-head" style="--edge:var(--buy)">
+      <span class="prod-tag">02 · 살 때</span>
+      <h2>취득세 — 가장 계산이 단순합니다</h2>
+      <p class="one">다만 <b>주택 수와 지역</b>에 따라 세율이 크게 뜁니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">ACQUISITION · 살 때 내는 돈</div>
+      <p class="labsub">표준 세율은 자동 계산되고, <b>중과가 적용되면 직접 입력</b>할 수 있습니다.</p>
+
+      <div class="ctrl-row">
+        <label for="acPrice">집값 (취득가액)</label>
+        <input type="range" id="acPrice" min="10000" max="300000" step="5000" value="70000">
+        <output id="acPriceOut">7.0억원</output>
+      </div>
+      <div class="btnrow" id="acMode">
+        <button data-v="0" class="on">1주택 표준세율</button>
+        <button data-v="1">중과세율 직접 입력</button>
+      </div>
+      <div class="ctrl-row" id="acRateRow">
+        <label for="acRate">적용 취득세율</label>
+        <input type="range" id="acRate" min="1" max="12" step="0.1" value="8">
+        <output id="acRateOut">8.0%</output>
+      </div>
+      <div class="btnrow" id="acSize">
+        <button data-v="0" class="on">전용 85㎡ 이하</button>
+        <button data-v="1">85㎡ 초과</button>
+      </div>
+
+      <div class="steps-out" id="acSteps"></div>
+
+      <div class="verdict" id="acVerdict" style="--vc:var(--buy)">
+        <div class="vh">취득세</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>표준세율 계산식.</b> 주택 유상거래 기준으로 <b>6억 이하 1%</b>, <b>6억 초과 9억 이하는 (취득가액 × 2/3 − 3)%</b>, <b>9억 초과 3%</b>입니다. 여기에 <b>지방교육세(취득세의 10%)</b>가 붙고, <b>전용 85㎡를 초과하면 농어촌특별세 0.2%</b>가 추가됩니다.<br><br>
+        <b>중과</b> — 주택 수와 조정대상지역 여부에 따라 <b>훨씬 높은 세율</b>이 적용될 수 있습니다. 이 비율은 <b>여러 차례 바뀌었고 일시 완화된 적도</b> 있으므로, 「중과세율 직접 입력」으로 <b>지금 적용되는 값</b>을 넣어 확인하세요. 생애최초·신혼 등 <b>감면 제도</b>도 별도로 있습니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="hold">
+    <div class="prod-head" style="--edge:var(--hold)">
+      <span class="prod-tag">03 · 가질 때</span>
+      <h2>보유세 — 매년 나가는 돈</h2>
+      <p class="one">재산세는 <b>모두가</b>, 종부세는 <b>일정 기준을 넘으면</b> 냅니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>집을 갖고 있으면 <b>매년</b> 세금을 내. 두 가지야.</p>
+      <p><b>재산세</b>는 <b>모든 집주인</b>이 내. 집이 크고 비쌀수록 많이 내지.</p>
+      <p><b>종합부동산세</b>는 <b>아주 비싼 집이거나 여러 채</b>를 가진 사람만 내. 「종부세」라고 줄여 불러.</p>
+      <p>그런데 여기서 중요한 게 있어. 세금은 <b>실제 거래 가격이 아니라 「공시가격」</b>이라는 걸로 계산해. 나라가 매년 정하는 <b>기준 가격</b>인데, 보통 <b>실제 시세보다 낮아.</b></p>
+      <p>그래서 <b>공시가격이 얼마나 오르느냐</b>가 세금을 크게 바꿔. 집값이 안 올라도 <b>공시가격만 올라가면 세금이 늘어나기도</b> 해.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">HOLDING · 매년 얼마나 내나</div>
+      <p class="labsub">
+        <b>공시가격</b>에서 시작합니다. 시세가 아니라 <b>공시가격</b>이라는 점이 핵심입니다.
+      </p>
+
+      <div class="ctrl-row">
+        <label for="hdPub">공시가격</label>
+        <input type="range" id="hdPub" min="10000" max="300000" step="5000" value="80000">
+        <output id="hdPubOut">8.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdFair">공정시장가액비율</label>
+        <input type="range" id="hdFair" min="30" max="100" step="5" value="60">
+        <output id="hdFairOut">60%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdDeduct">종부세 공제액</label>
+        <input type="range" id="hdDeduct" min="0" max="200000" step="10000" value="120000">
+        <output id="hdDeductOut">12.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdRate">종부세율 (단순화)</label>
+        <input type="range" id="hdRate" min="0.3" max="5" step="0.1" value="0.7">
+        <output id="hdRateOut">0.7%</output>
+      </div>
+
+      <div class="steps-out" id="hdSteps"></div>
+
+      <div class="verdict" id="hdVerdict" style="--vc:var(--hold)">
+        <div class="vh">보유세</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>크게 단순화했습니다.</b> 재산세는 <b>표준 누진세율</b>(6천만 이하 0.1% / 1.5억 이하 0.15% / 3억 이하 0.25% / 초과 0.4%, 누진공제 적용)로 계산하고 <b>지방교육세(재산세의 20%)</b>를 더했습니다. 종부세는 <b>공제 후 과세표준에 단일 세율</b>을 적용하는 방식으로 단순화했습니다.<br><br>
+        <b>실제와 다른 부분</b> — 1세대 1주택 <b>특례세율</b>과 <b>공정시장가액비율 특례</b>, 종부세의 <b>누진 구간</b>, <b>재산세 중복분 공제</b>, <b>고령자·장기보유 세액공제</b>, <b>도시지역분·지역자원시설세</b>, 다주택 <b>중과세율</b> — 전부 빠졌습니다. 실제 고지서는 이보다 <b>복잡하고 대개 더 낮게</b> 나옵니다. <b>구조를 보는 용도로만</b> 쓰세요.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>공시가격이 세금을 정합니다</h3>
+      <p>보유세에서 가장 중요한 숫자는 <b>시세가 아니라 공시가격</b>입니다. 정부가 매년 정하고, <b>대체로 시세보다 낮습니다.</b></p>
+      <p>그래서 이런 일이 생깁니다 — <b>집값이 그대로여도 공시가격이 오르면 세금이 늘어납니다.</b> 반대로 집값이 떨어져도 공시가격이 안 내려가면 세금은 그대로입니다. <b>시세와 세금 사이에 시차와 괴리</b>가 있습니다.</p>
+      <p><b>공시가격 현실화</b>라는 말이 여기서 나옵니다. <b>공시가격을 시세에 가깝게 올리겠다</b>는 정책인데, 이건 <b>세율을 안 올려도 세금이 오르는 효과</b>를 냅니다. 그래서 정치적으로 민감하고, <b>속도가 여러 차례 조정되었습니다.</b></p>
+      <p class="plain"><b>실무에서 챙길 것.</b> 공시가격은 매년 발표되고 <b>이의신청 기간</b>이 있습니다. 우리 집 공시가격이 <b>비슷한 조건의 옆집보다 높게</b> 잡혔다면 조정을 요청할 수 있습니다. 그리고 <b>과세 기준일</b>도 중요합니다 — 그 하루의 소유자가 그해 보유세를 전부 냅니다. 매매 시점을 정할 때 <b>실제로 협상 대상이 되는 항목</b>입니다.</p>
+
+      <h3>「보유세를 올리면 매물이 나온다」는 논리</h3>
+      <p>보유세 인상의 논리는 단순합니다 — <b>갖고 있는 비용을 키우면 팔 것</b>이라는 것입니다.</p>
+      <p><b>그런데 실제로는 잘 작동하지 않았습니다.</b> 이유는 <b>5장에서 계산</b>으로 확인합니다. 요약하면 <b>양도세가 훨씬 크기 때문</b>입니다. 매년 나가는 몇 백만원보다 팔 때 나가는 몇 억이 크면, <b>버티는 쪽이 계속 유리</b>합니다.</p>
+      <p>그리고 <b>실거주 1주택자에게도 함께 적용</b>된다는 문제가 있습니다. 팔 생각이 없는 사람에게 세금만 늘어나는 것이라 <b>저항이 큽니다.</b> 그래서 대개 <b>고가·다주택에 한정</b>해 설계되고, 그러면 <b>영향 범위도 줄어듭니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="gain">
+    <div class="prod-head" style="--edge:var(--sell)">
+      <span class="prod-tag">04 · 팔 때</span>
+      <h2>양도세 — 가장 크고 가장 복잡합니다</h2>
+      <p class="one">그리고 <b>1세대 1주택이냐 아니냐</b>가 거의 모든 것을 가릅니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>5억에 산 집을 8억에 팔면 <b>3억을 벌었지?</b> 그 3억에 세금이 붙어. 이게 <b>양도세</b>야.</p>
+      <p>그런데 <b>아주 큰 예외</b>가 있어. <b>집이 한 채뿐이고 거기서 오래 살았으면 세금을 거의 안 내.</b> 살던 집을 팔고 다른 집으로 이사 가는 건 <b>돈을 벌려고 한 게 아니니까.</b></p>
+      <p>그리고 <b>오래 갖고 있을수록 깎아줘.</b> 10년 살면 번 돈의 <b>80%</b>까지 세금 계산에서 빼줘. 이걸 <b>장기보유특별공제</b>라고 해.</p>
+      <p>반대로 <b>1년도 안 되어 팔면</b> 세금이 아주 무거워. <b>단타를 막으려고</b> 그렇게 만든 거야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CAPITAL GAINS · 팔면 얼마가 남나</div>
+      <p class="labsub">단계별로 계산됩니다. <b>어느 단계에서 얼마가 깎이는지</b> 보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="cgBuy">취득가액</label>
+        <input type="range" id="cgBuy" min="10000" max="200000" step="5000" value="50000">
+        <output id="cgBuyOut">5.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cgSell">양도가액</label>
+        <input type="range" id="cgSell" min="10000" max="300000" step="5000" value="100000">
+        <output id="cgSellOut">10.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cgCost">필요경비 (취득세·중개보수·수리비)</label>
+        <input type="range" id="cgCost" min="0" max="10000" step="500" value="2000">
+        <output id="cgCostOut">2,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cgHold">보유 기간</label>
+        <input type="range" id="cgHold" min="0" max="20" step="1" value="10">
+        <output id="cgHoldOut">10년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cgLive">거주 기간</label>
+        <input type="range" id="cgLive" min="0" max="20" step="1" value="10">
+        <output id="cgLiveOut">10년</output>
+      </div>
+
+      <div class="btnrow" id="cgOne">
+        <button data-v="1" class="on">1세대 1주택</button>
+        <button data-v="0">그 외 (다주택 포함)</button>
+      </div>
+      <div class="ctrl-row">
+        <label for="cgExempt">1주택 비과세 기준</label>
+        <input type="range" id="cgExempt" min="60000" max="200000" step="10000" value="120000">
+        <output id="cgExemptOut">12.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cgHeavy">중과 가산세율</label>
+        <input type="range" id="cgHeavy" min="0" max="30" step="10" value="0">
+        <output id="cgHeavyOut">+0%p</output>
+      </div>
+
+      <div class="steps-out" id="cgSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">총 세금</span><span class="rv" id="cgTax">—</span></div>
+        <div><span class="rk">세후 실제 이익</span><span class="rv" id="cgNet">—</span></div>
+      </div>
+
+      <div class="verdict" id="cgVerdict" style="--vc:var(--sell)">
+        <div class="vh">양도세</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 구조.</b> 양도차익 = 양도가 − 취득가 − 필요경비. 1주택이면 <b>비과세 기준 초과분만 안분해 과세</b>합니다. 여기서 <b>장기보유특별공제</b>를 빼고 <b>기본공제 250만원</b>을 뺀 뒤 <b>누진세율</b>을 적용하고, <b>지방소득세(소득세의 10%)</b>를 더합니다.<br><br>
+        <b>장기보유특별공제</b> — 1주택(2년 이상 거주)은 <b>보유 연 4% + 거주 연 4%</b>로 각각 최대 40%, 합쳐 최대 80%. 그 외는 <b>3년 6%부터 연 2%p씩 최대 30%</b>입니다. <b>중과가 적용되면 이 공제가 배제</b>되도록 계산했습니다.<br><br>
+        <b>단기 보유</b> — <b>1년 미만 70%, 1~2년 60%</b>의 단일세율로 계산했습니다(주택 기준).<br><br>
+        <b>⚠️ 빠진 것들</b> — 일시적 2주택 특례, 상속·증여 주택, 조합원 입주권, 감면 규정, 세대 판정, 취득 시기별 경과규정. <b>실제 세액은 반드시 전문가에게 확인하세요.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>1세대 1주택 비과세 — 요건을 하나라도 놓치면</h3>
+      <p>4장 계산기에서 <b>「1세대 1주택」과 「그 외」의 차이</b>를 보셨을 겁니다. 같은 조건에서 <b>세금이 0원과 수억원</b>으로 갈립니다. 그래서 이 요건은 <b>부동산 세금에서 가장 값어치가 큰 항목</b>입니다.</p>
+      <p><b>요건은 대체로 세 갈래입니다.</b></p>
+      <p><b>① 1세대가 1주택만 보유.</b> 여기서 「세대」의 범위가 문제가 됩니다(6장). 배우자는 따로 살아도 같은 세대이고, 함께 사는 부모님의 집이 잡힐 수 있습니다.</p>
+      <p><b>② 보유 기간.</b> 일정 기간 이상 보유해야 합니다. <b>일 단위</b>로 셉니다.</p>
+      <p><b>③ 거주 기간.</b> 취득 시기와 지역에 따라 <b>실제 거주</b>가 요구될 수 있습니다. 전세를 놓고 다른 곳에 살았다면 <b>이 기간이 안 쌓입니다.</b></p>
+      <p>그리고 <b>고가 주택</b>에는 비과세가 <b>전액이 아니라 기준 초과분에 안분</b>됩니다. 4장 계산기가 그 계산입니다.</p>
+      <p class="plain"><b>가장 흔한 실패.</b> <b>「며칠 차이」</b>입니다. 이사 일정, 잔금일, 전입신고일이 며칠 어긋나서 요건을 못 채우는 경우입니다. <b>계약 전에 날짜를 세어보는 것</b>만으로 피할 수 있고, 그 값어치가 <b>수천만원</b>입니다.</p>
+
+      <h3>「똘똘한 한 채」가 나온 이유</h3>
+      <p>세제가 <b>1주택에 큰 혜택을 주고 다주택에 무겁게</b> 매기면, 사람들의 합리적 선택은 <b>「여러 채를 정리하고 좋은 곳 한 채로 몰아가는 것」</b>이 됩니다.</p>
+      <p>그 결과가 <b>수요의 집중</b>이었습니다. 여러 지역에 나뉘어 있던 수요가 <b>「어차피 한 채라면 가장 좋은 곳」</b>으로 모였고, 그 지역 값이 더 올랐습니다.</p>
+      <p>03편의 <b>「규제는 수요를 없애지 않고 옮긴다」</b>가 여기서도 나타납니다. 다주택을 억제한 것 자체는 의도대로였지만, <b>옮겨간 곳에서 다른 문제</b>가 생긴 것입니다.</p>
+      <p>이 이야기는 <b>09편(지역)</b>에서 다시 다룹니다. <b>「왜 특정 지역만 계속 오르는가」</b>의 한 축이 세제입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="lock">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">05 · 구조</span>
+      <h2>세금이 매물을 잠그는 이유</h2>
+      <p class="one">03편에서 본 현상을 <b>숫자로</b> 확인합니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">LOCK-IN · 팔까 말까</div>
+      <p class="labsub">
+        같은 집을 <b>지금 팔 때</b>와 <b>버틸 때</b>를 비교합니다. 보유세는 매년 나가고, 양도세는 팔 때 한 번입니다.
+      </p>
+
+      <div class="ctrl-row">
+        <label for="lkGain">지금까지의 양도차익</label>
+        <input type="range" id="lkGain" min="5000" max="150000" step="5000" value="50000">
+        <output id="lkGainOut">5.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="lkRate">양도세 실효 부담률</label>
+        <input type="range" id="lkRate" min="0" max="70" step="5" value="45">
+        <output id="lkRateOut">45%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="lkHold">연간 보유세</label>
+        <input type="range" id="lkHold" min="0" max="3000" step="50" value="500">
+        <output id="lkHoldOut">500만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="lkYears">몇 년을 버틸까</label>
+        <input type="range" id="lkYears" min="1" max="20" step="1" value="10">
+        <output id="lkYearsOut">10년</output>
+      </div>
+
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="지금 파는 비용과 버티는 비용 비교">
+        <g id="lkScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">지금 팔면 내는 세금</span><span class="rv" id="lkNow">—</span></div>
+        <div><span class="rk" id="lkWaitK">버티면 내는 보유세</span><span class="rv" id="lkWait">—</span></div>
+      </div>
+
+      <div class="verdict" id="lkVerdict" style="--vc:var(--bad)">
+        <div class="vh">팔까 버틸까</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>단순화했습니다.</b> 집값 변동, 임대 수입, 자금의 기회비용, 양도세 중과 유예 같은 변수를 뺐습니다. 그리고 실제로는 <b>세금만으로 결정하지 않습니다</b> — 이사할 집, 자녀 학교, 소득 사정이 함께 작용합니다. 이 계산기는 <b>「세제가 어느 방향으로 사람을 미는가」</b>를 보기 위한 것입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>이 구조가 만든 결과</h3>
+      <p>03편에서 <b>「양도세를 올리자 매물이 잠겼다」</b>고 했습니다. 위 계산기가 그 이유입니다.</p>
+      <p><b>보유세는 매년 조금씩 나가지만, 양도세는 팔 때 한 번에 크게</b> 나갑니다. 그리고 <b>안 팔면 안 냅니다.</b> 그래서 <b>「버티는 것」이 합리적 선택</b>이 되기 쉽습니다.</p>
+      <p>여기에 심리적 요인이 더해집니다 — <b>파는 순간 손실(세금)이 확정</b>되지만, 안 팔면 <b>장부상으로는 아무 일도 안 일어납니다.</b> 주식 트랙에서 본 <b>「손실 확정을 미루는 성향」</b>과 같은 구조입니다.</p>
+      <p><b>그럼 어떻게 매물이 나오게 하나</b> — 관찰된 방법은 두 가지였습니다.</p>
+      <p><b>① 양도세를 한시적으로 낮추는 것.</b> 「지금 팔면 싸게 해준다」는 신호를 주면 <b>실제로 매물이 늘었습니다.</b> 다만 이건 <b>기한이 끝나면 다시 잠깁니다.</b></p>
+      <p><b>② 보유세를 크게 올리는 것.</b> 버티는 비용을 키우는 방식입니다. 그런데 이건 <b>1주택 실거주자에게도 함께 적용</b>되어 저항이 큽니다. 그래서 대개 <b>고가·다주택에 한정</b>해 설계됩니다.</p>
+      <p class="plain"><b>투자자 관점의 함의.</b> <b>양도세 중과가 유예되거나 완화되는 시점</b>에는 매물이 늘어나는 경향이 있었습니다. 반대로 <b>중과가 시작되기 직전</b>에는 서둘러 파는 물량이 나오고, 그 뒤로는 <b>거래가 마릅니다.</b> 세제 변화는 <b>가격보다 거래량에 먼저</b> 나타납니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="mistake">
+    <div class="prod-head" style="--edge:var(--misc)">
+      <span class="prod-tag">06 · 실수</span>
+      <h2>가장 많이 하는 실수들</h2>
+      <p class="one">대부분 <b>「몰라서」</b>이고, 대부분 <b>미리 확인하면 피할 수 있었습니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MISTAKES · 눌러서 확인하세요</div>
+      <p class="labsub">각각 <b>어떤 상황에서 생기고 어떻게 피하는지</b>입니다.</p>
+
+      <div class="btnrow" id="msBtns">
+        <button data-v="0" class="on">일시적 2주택</button>
+        <button data-v="1">오피스텔 주택 수</button>
+        <button data-v="2">세대 분리</button>
+        <button data-v="3">필요경비 증빙</button>
+        <button data-v="4">거주 요건</button>
+        <button data-v="5">증여와 부담부증여</button>
+      </div>
+
+      <div class="verdict" id="msVerdict" style="--vc:var(--misc)">
+        <div class="vh">실수</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7 ══════════ -->
+  <section id="check">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 정리</span>
+      <h2>확인해야 할 항목</h2>
+      <p class="one">숫자는 바뀌지만 <b>확인할 항목은 잘 안 바뀝니다.</b></p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>시점</th><th>확인할 것</th><th>왜 중요한가</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>사기 전</th><td>내 세대의 <b>주택 수</b>가 몇인가</td><td>취득세 중과와 양도세 비과세를 가릅니다</td></tr>
+          <tr><th>사기 전</th><td>이 물건이 <b>주택으로 세는가</b></td><td>오피스텔·생숙은 판단이 갈립니다(02편)</td></tr>
+          <tr><th>사기 전</th><td><b>감면·특례</b> 대상인가</td><td>생애최초·신혼 등 감면이 클 수 있습니다</td></tr>
+          <tr><th>살 때</th><td><b>취득세 납부 기한</b></td><td>취득일로부터 정해진 기간 안에 신고·납부해야 합니다</td></tr>
+          <tr><th>보유 중</th><td><b>과세 기준일</b>에 누가 소유자인가</td><td>기준일 소유자가 그해 보유세를 전부 부담합니다</td></tr>
+          <tr><th>보유 중</th><td><b>공시가격 변동</b>과 이의신청 기간</td><td>공시가격이 세금을 결정합니다</td></tr>
+          <tr><th>보유 중</th><td><b>거주 기간</b>을 채우고 있는가</td><td>양도세 비과세와 공제 요건입니다</td></tr>
+          <tr><th>팔기 전</th><td><b>비과세 요건</b>을 채웠는가</td><td>며칠 차이로 수천만원이 갈립니다</td></tr>
+          <tr><th>팔기 전</th><td><b>필요경비 영수증</b>이 있는가</td><td>없으면 공제받지 못합니다</td></tr>
+          <tr><th>팔기 전</th><td>같은 해에 <b>다른 양도</b>가 있었나</td><td>합산 과세되어 세율이 뛸 수 있습니다</td></tr>
+          <tr><th>판 뒤</th><td><b>신고 기한</b></td><td>늦으면 가산세가 붙습니다</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <ul class="check" id="txCheck">
+      <li><b>계약 전에 세금을 계산해봤나?</b> 계약서에 도장을 찍은 뒤에는 되돌릴 수 없습니다.</li>
+      <li><b>내 「세대」에 누가 포함되는지 정확히 아나?</b> 주택 수 판정의 출발점입니다.</li>
+      <li><b>취득세를 자금 계획에 넣었나?</b> 01편의 거래비용 계산기로 확인하세요.</li>
+      <li><b>비과세 요건까지 며칠 남았는지 확인했나?</b> 보유·거주 기간은 일 단위로 셉니다.</li>
+      <li><b>수리비 영수증을 보관하고 있나?</b> 나중에 필요경비로 쓸 수 있습니다.</li>
+      <li><b>오피스텔·생숙을 갖고 있다면 주택 수 산입 여부를 확인했나?</b></li>
+      <li><b>「세금 아끼려고」 명의를 나누려 하고 있지는 않나?</b> 위험한 방법이 많습니다.</li>
+      <li><b>중요한 거래라면 세무 전문가에게 확인했나?</b> 수수료보다 절감액이 훨씬 큰 경우가 많습니다.</li>
+    </ul>
+    <div class="checkcount" id="txCount">0 / 8 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 세금은 <b>살 때·가질 때·팔 때</b> 세 번이고, 각각 <b>다른 방향으로 사람을 움직입니다.</b> 취득세는 <b>사는 것을 억제</b>하고, 보유세는 <b>갖고 있는 것을 억제</b>하며, 양도세는 <b>파는 것을 억제</b>합니다.</p>
+      <p>그래서 <b>보유세와 양도세를 동시에 올리면</b> — 「갖고 있기도 부담, 팔기도 손해」가 되는데, 사람들은 대개 <b>버티는 쪽</b>을 택합니다. 파는 순간 손실이 확정되기 때문입니다. <b>03편에서 본 「매물 잠김」</b>이 여기서 나옵니다.</p>
+      <p>다음 편은 <b>전세와 갭투자</b>입니다. 02편에서 본 보증금 위험과 05편의 레버리지 이야기가 <b>한곳에서 만나는</b> 편이고, 이 트랙에서 <b>실제 피해가 가장 컸던 주제</b>입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 부동산 06 · 세금<br>
+    <a href="index.html#realestate">← 부동산 목록으로</a> · <a href="realestate-loan.html">05 · 대출</a><br>
+    <br>
+    개인 학습용 정리이며 <b>세무 조언이 아닙니다.</b> 특정 절세 방법을 권하지 않습니다.<br>
+    세율·공제·중과·특례는 거의 매년 바뀝니다. 계산기는 여러 항목을 생략한 단순 모형이며 실제 세액과 다릅니다. 중요한 결정 전에는 반드시 세무 전문가나 국세청 자료로 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function won(man){ return Math.round(man).toLocaleString() + '만원'; }
+function eok(man){ return (man / 10000).toFixed(2) + '억원'; }
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + (r.minus ? ' minus' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 1. 세 단계 ══════════ */
+var TX = [
+  { h:'살 때 · 취득세', color:'#6B7A52', hi:0,
+    t:'취득세 — 한 번, 집값 기준',
+    p:'<b>무엇에 매기나</b> — 산 가격(취득가액)입니다. 벌었든 잃었든 상관없습니다.<br><br><b>언제</b> — 취득일로부터 정해진 기간 안에 <b>신고하고 납부</b>합니다. 잔금일에 맞춰 준비해야 합니다.<br><br><b>어떤 행동을 유도하나</b> — <b>사는 것을 억제</b>합니다. 특히 <b>여러 채 사는 것</b>을 막는 데 강력합니다. 중과가 적용되면 <b>사는 순간 집값의 10% 이상</b>이 나가므로, 다주택 매수 자체가 어려워집니다.<br><br><b>실무에서 중요한 것</b> — 이건 <b>비용이지 투자금이 아닙니다.</b> 01편에서 본 대로 <b>본전의 기준을 올리는</b> 항목입니다. 자금 계획에 반드시 포함해야 합니다.' },
+  { h:'가질 때 · 보유세', color:'#8E6B3A', hi:1,
+    t:'보유세 — 매년, 공시가격 기준',
+    p:'<b>무엇에 매기나</b> — <b>공시가격</b>입니다. 실제 거래가가 아니라 정부가 매년 정하는 기준 가격입니다. 대개 <b>시세보다 낮습니다.</b><br><br><b>두 가지</b> — 모두가 내는 <b>재산세</b>와, 일정 기준을 넘으면 내는 <b>종합부동산세</b>입니다.<br><br><b>과세 기준일이 중요합니다</b> — 정해진 <b>하루의 소유자</b>가 그해 세금을 전부 냅니다. 그래서 <b>매매 시점을 기준일 앞뒤로 조정</b>하는 협상이 실제로 일어납니다. 하루 차이로 수백만원이 갈릴 수 있습니다.<br><br><b>어떤 행동을 유도하나</b> — <b>오래 갖고 있는 것을 억제</b>합니다. 특히 <b>수익이 안 나는 상태로 버티는 것</b>의 비용을 키웁니다.' },
+  { h:'팔 때 · 양도세', color:'#8E4B3A', hi:2,
+    t:'양도세 — 한 번, 「번 돈」 기준',
+    p:'<b>무엇에 매기나</b> — <b>양도차익</b>, 즉 판 값에서 산 값과 비용을 뺀 <b>이익</b>입니다. 손해를 봤으면 안 냅니다.<br><br><b>가장 큰 갈림길</b> — <b>1세대 1주택인가</b>입니다. 요건을 갖추면 일정 금액까지 <b>전액 비과세</b>입니다. 이 차이가 <b>수억원</b>이 될 수 있습니다.<br><br><b>두 가지 축</b><br>· <b>오래 보유·거주할수록</b> 공제가 커집니다(장기보유특별공제)<br>· <b>짧게 보유하면</b> 세율이 매우 높습니다(단기 중과)<br><br><b>어떤 행동을 유도하나</b> — <b>파는 것을 억제</b>합니다. 특히 <b>짧게 사고파는 것</b>을요. 그런데 이게 <b>의도치 않은 결과</b>도 만듭니다 — <b>5장</b>에서 계산해봅니다.' },
+  { h:'셋의 관계', color:'#5B5648', hi:-1,
+    t:'세 세금이 서로 다른 방향으로 밉니다',
+    p:'<b>취득세</b>는 <b>사지 말라</b>고 하고, <b>보유세</b>는 <b>갖고 있지 말라</b>고 하고, <b>양도세</b>는 <b>팔지 말라</b>고 합니다.<br><br><b>여기서 문제가 생깁니다.</b> 보유세와 양도세를 <b>동시에</b> 올리면 「갖고 있기도 부담이고 팔기도 손해」가 됩니다. 그러면 어떻게 될까요?<br><br><b>대개 버팁니다.</b> 이유는 두 가지입니다.<br><b>①</b> 보유세는 <b>매년 조금씩</b>이지만 양도세는 <b>한 번에 크게</b> 나갑니다.<br><b>②</b> 파는 순간 <b>손실이 확정</b>되지만, 안 팔면 <b>장부상 아무 일도 안 일어납니다.</b><br><br>그래서 <b>매물이 잠기고</b>, 매물이 줄면 <b>값이 오르기도</b> 합니다. <b>세금을 올렸는데 값이 오르는</b> 역설입니다. 03편에서 본 그 현상이고, <b>5장에서 직접 계산</b>해봅니다.' }
+];
+function txScene(hi){
+  var boxes = [
+    { n:'살 때', s:'취득세', d:'집값 기준 · 한 번', c:'#6B7A52' },
+    { n:'가질 때', s:'재산세 + 종부세', d:'공시가격 기준 · 매년', c:'#8E6B3A' },
+    { n:'팔 때', s:'양도세', d:'양도차익 기준 · 한 번', c:'#8E4B3A' }
+  ];
+  var g = '';
+  g += '<line class="axis" x1="40" y1="118" x2="600" y2="118"/>';
+  boxes.forEach(function(b, i){
+    var x = 50 + i * 190, on = (hi === i || hi === -1);
+    g += '<rect x="' + x + '" y="34" width="164" height="64" rx="3" fill="' + b.c +
+         '" fill-opacity="' + (on ? '.4' : '.12') + '" stroke="' + b.c + '" stroke-width="' + (on ? '1.7' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (x + 12) + '" y="54"' +
+         (on ? ' fill="' + b.c + '"' : '') + '>' + b.n + '</text>';
+    g += '<text class="axt" x="' + (x + 12) + '" y="72">' + b.s + '</text>';
+    g += '<text class="axt" x="' + (x + 12) + '" y="89">' + b.d + '</text>';
+    g += '<circle cx="' + (x + 82) + '" cy="118" r="4" fill="' + b.c + '" fill-opacity="' + (on ? '1' : '.35') + '"/>';
+  });
+  var caps = [
+    '취득세는 「사지 말라」고 밉니다.',
+    '보유세는 「갖고 있지 말라」고 밉니다.',
+    '양도세는 「팔지 말라」고 밉니다.',
+    '셋이 서로 다른 방향으로 밀기 때문에, 조합에 따라 예상 밖의 결과가 나옵니다.'
+  ];
+  g += '<text class="axt" x="50" y="146">' + caps[hi === -1 ? 3 : hi] + '</text>';
+  g += '<text class="axt" x="50" y="166">그리고 셋 중 팔 때의 세금이 대체로 가장 큽니다.</text>';
+  document.getElementById('txScene').innerHTML = g;
+}
+bindBtnRow('#txBtns', function(v){
+  txScene(TX[+v].hi);
+  document.getElementById('txVerdict').querySelector('.vh').textContent = TX[+v].h;
+  verdict('txVerdict', TX[+v].color, TX[+v].t, TX[+v].p);
+});
+
+/* ══════════ 2. 취득세 ══════════ */
+var acMode = 0, acSize = 0;
+function stdAcqRate(man){
+  var e = man / 10000;
+  if(e <= 6) return 1;
+  if(e <= 9) return Math.round((e * 2 / 3 - 3) * 100) / 100;
+  return 3;
+}
+function acCalc(){
+  var price = +document.getElementById('acPrice').value;
+  document.getElementById('acPriceOut').textContent = (price / 10000).toFixed(1) + '억원';
+  var rate = acMode === 0 ? stdAcqRate(price) : +document.getElementById('acRate').value;
+  document.getElementById('acRateOut').textContent = (+document.getElementById('acRate').value).toFixed(1) + '%';
+  document.getElementById('acRateRow').style.opacity = acMode === 1 ? '1' : '.4';
+
+  var acq = price * rate / 100;
+  var edu = acq * 0.1;
+  var farm = acSize === 1 ? price * 0.002 : 0;
+  var total = acq + edu + farm;
+
+  var rows = [
+    { k:'취득세 (' + rate.toFixed(2) + '%)', v:won(acq) },
+    { k:'지방교육세 (취득세의 10%)', v:won(edu) }
+  ];
+  if(acSize === 1) rows.push({ k:'농어촌특별세 (0.2%)', v:won(farm) });
+  else rows.push({ k:'농어촌특별세', v:'비과세 (85㎡ 이하)' });
+  rows.push({ k:'합계', v:won(total) + ' (집값의 ' + (total / price * 100).toFixed(2) + '%)', total:true });
+  steps('acSteps', rows);
+
+  if(acMode === 0){
+    verdict('acVerdict', '#6B7A52',
+      '표준세율 ' + rate.toFixed(2) + '%로 ' + won(total) + '입니다',
+      '집값 <b>' + (price / 10000).toFixed(1) + '억원</b>에 표준세율 <b>' + rate.toFixed(2) +
+      '%</b>가 적용되어 <b>' + won(total) + '</b>을 냅니다. 집값의 <b>' + (total / price * 100).toFixed(2) + '%</b>입니다.<br><br>' +
+      '<b>세율 구간을 보세요</b> — <b>6억 이하는 1%</b>로 낮지만, <b>6억을 넘으면 급격히 올라</b> 9억에서 3%가 됩니다. 6억 근처에서는 <b>몇 백만원 차이로 세금이 크게 갈립니다.</b><br><br>' +
+      '<b>여기에 중개보수와 법무사 비용이 더 붙습니다.</b> 01편의 거래비용 계산기로 전체 금액을 확인하세요.<br><br>' +
+      '<b>확인할 것</b> — 생애최초 구입이나 신혼부부 등 <b>감면 대상</b>이면 이보다 적게 낼 수 있습니다. 조건과 한도는 <b>지금 기준으로 확인</b>하세요.');
+  } else {
+    var std = stdAcqRate(price);
+    var stdTotal = price * std / 100 * 1.1 + (acSize === 1 ? price * 0.002 : 0);
+    verdict('acVerdict', '#8E4B3A',
+      '중과 ' + rate.toFixed(1) + '%면 ' + won(total) + '입니다',
+      '표준세율이라면 <b>' + won(stdTotal) + '</b>인데, <b>' + rate.toFixed(1) + '%</b>가 적용되면 <b>' +
+      won(total) + '</b>입니다. 차이가 <b>' + won(total - stdTotal) + '</b>입니다.<br><br>' +
+      '<b>왜 이렇게 무겁게 만들었나</b> — <b>다주택 매수를 막기 위해서</b>입니다. 사는 순간 집값의 <b>' +
+      (total / price * 100).toFixed(1) + '%</b>가 나가면, <b>단기간에 사고파는 것이 거의 불가능</b>해집니다.<br><br>' +
+      '<b>실제 효과</b> — 이 방식은 <b>새로 사는 것을 막는 데는 효과가 컸습니다.</b> 다만 <b>이미 갖고 있는 사람이 내놓게 하지는 못합니다.</b> 그건 양도세 쪽 문제이고, <b>5장</b>에서 다룹니다.<br><br>' +
+      '<b>⚠️ 중과 세율은 여러 차례 바뀌었고 일시 완화된 적도 있습니다.</b> 지금 적용되는 값을 반드시 확인하세요.');
+  }
+}
+bindBtnRow('#acMode', function(v){ acMode = +v; acCalc(); });
+bindBtnRow('#acSize', function(v){ acSize = +v; acCalc(); });
+['acPrice', 'acRate'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', acCalc);
+});
+
+/* ══════════ 3. 보유세 ══════════ */
+function propertyTax(base){
+  // 표준 누진세율 (만원 단위)
+  if(base <= 6000) return base * 0.001;
+  if(base <= 15000) return base * 0.0015 - 3;
+  if(base <= 30000) return base * 0.0025 - 18;
+  return base * 0.004 - 63;
+}
+function hdCalc(){
+  var pub = +document.getElementById('hdPub').value;
+  var fair = +document.getElementById('hdFair').value / 100;
+  var deduct = +document.getElementById('hdDeduct').value;
+  var rate = +document.getElementById('hdRate').value / 100;
+
+  document.getElementById('hdPubOut').textContent = (pub / 10000).toFixed(1) + '억원';
+  document.getElementById('hdFairOut').textContent = (fair * 100).toFixed(0) + '%';
+  document.getElementById('hdDeductOut').textContent = (deduct / 10000).toFixed(1) + '억원';
+  document.getElementById('hdRateOut').textContent = (rate * 100).toFixed(1) + '%';
+
+  var propBase = pub * fair;
+  var prop = Math.max(0, propertyTax(propBase));
+  var propEdu = prop * 0.2;
+  var cbase = Math.max(0, pub - deduct) * fair;
+  var comp = cbase * rate;
+  var total = prop + propEdu + comp;
+
+  steps('hdSteps', [
+    { k:'공시가격', v:won(pub) },
+    { k:'재산세 과세표준 (× ' + (fair * 100).toFixed(0) + '%)', v:won(propBase) },
+    { k:'재산세 (표준 누진세율)', v:won(prop) },
+    { k:'지방교육세 (재산세의 20%)', v:won(propEdu) },
+    { k:'종부세 과세표준 ((공시 − 공제) × ' + (fair * 100).toFixed(0) + '%)', v:cbase > 0 ? won(cbase) : '0 (공제 이하)' },
+    { k:'종합부동산세 (× ' + (rate * 100).toFixed(1) + '%)', v:comp > 0 ? won(comp) : '해당 없음' },
+    { k:'연간 합계', v:won(total), total:true }
+  ]);
+
+  if(cbase <= 0){
+    verdict('hdVerdict', '#4C7A6D',
+      '종부세는 없고 재산세만 연 ' + won(prop + propEdu) + '입니다',
+      '공시가격 <b>' + (pub / 10000).toFixed(1) + '억원</b>이 공제 <b>' + (deduct / 10000).toFixed(1) +
+      '억원</b> 이하라 <b>종부세 대상이 아닙니다.</b><br><br>' +
+      '<b>공시가격 슬라이더를 올려보세요.</b> 공제를 넘는 순간부터 종부세가 붙기 시작합니다. 그리고 <b>넘는 만큼에만</b> 붙는다는 점이 중요합니다 — 1억을 넘으면 그 1억에만 붙지, 전체에 붙지 않습니다.<br><br>' +
+      '<b>여기서 알아둘 것</b> — 공시가격은 <b>정부가 매년 새로 정합니다.</b> 시세가 그대로여도 <b>공시가격 현실화 정책</b>에 따라 오르면 세금이 늘어납니다. 그래서 <b>공시가격 발표와 이의신청 기간</b>을 챙길 필요가 있습니다.');
+  } else {
+    var ratio = total / pub * 100;
+    verdict('hdVerdict', '#8E6B3A',
+      '연 ' + won(total) + ' — 공시가격의 ' + ratio.toFixed(2) + '%',
+      '재산세 계열이 <b>' + won(prop + propEdu) + '</b>, 종부세가 <b>' + won(comp) + '</b>로 합계 <b>' +
+      won(total) + '</b>입니다.<br><br>' +
+      '<b>이 부담을 어떻게 볼 것인가</b> — 매년 나가는 돈이므로 <b>' + (total * 10 / 10000).toFixed(2) +
+      '억원이 10년 동안</b> 나갑니다. 01편의 <b>자가 vs 전세 계산기</b>에 넣은 「보유·관리비」가 이 항목입니다.<br><br>' +
+      '<b>그리고 이건 임대 수익이 없어도 나갑니다.</b> 실거주 중이라면 <b>순수 지출</b>입니다. 5장에서 <b>「버티는 비용」</b>으로 다시 등장합니다.<br><br>' +
+      '<b>⚠️ 실제 고지서는 대개 이보다 낮습니다.</b> 1세대 1주택 특례세율, 고령자·장기보유 세액공제, 재산세 중복분 공제가 빠져 있기 때문입니다. <b>구조를 보는 용도로만</b> 쓰세요.');
+  }
+}
+['hdPub', 'hdFair', 'hdDeduct', 'hdRate'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', hdCalc);
+});
+
+/* ══════════ 4. 양도세 ══════════ */
+var cgOne = 1;
+var CG_BRACKETS = [
+  { upto:1400, rate:0.06, sub:0 },
+  { upto:5000, rate:0.15, sub:126 },
+  { upto:8800, rate:0.24, sub:576 },
+  { upto:15000, rate:0.35, sub:1544 },
+  { upto:30000, rate:0.38, sub:1994 },
+  { upto:50000, rate:0.40, sub:2594 },
+  { upto:100000, rate:0.42, sub:3594 },
+  { upto:Infinity, rate:0.45, sub:6594 }
+];
+function progressive(base){
+  for(var i = 0; i < CG_BRACKETS.length; i++){
+    if(base <= CG_BRACKETS[i].upto) return Math.max(0, base * CG_BRACKETS[i].rate - CG_BRACKETS[i].sub);
+  }
+  return 0;
+}
+function cgCalc(){
+  var buy = +document.getElementById('cgBuy').value;
+  var sell = +document.getElementById('cgSell').value;
+  var cost = +document.getElementById('cgCost').value;
+  var hold = +document.getElementById('cgHold').value;
+  var live = +document.getElementById('cgLive').value;
+  var exempt = +document.getElementById('cgExempt').value;
+  var heavy = +document.getElementById('cgHeavy').value;
+
+  document.getElementById('cgBuyOut').textContent = (buy / 10000).toFixed(1) + '억원';
+  document.getElementById('cgSellOut').textContent = (sell / 10000).toFixed(1) + '억원';
+  document.getElementById('cgCostOut').textContent = cost.toLocaleString() + '만원';
+  document.getElementById('cgHoldOut').textContent = hold === 0 ? '1년 미만' : hold + '년';
+  document.getElementById('cgLiveOut').textContent = live + '년';
+  document.getElementById('cgExemptOut').textContent = (exempt / 10000).toFixed(1) + '억원';
+  document.getElementById('cgHeavyOut').textContent = '+' + heavy + '%p';
+
+  var gain = sell - buy - cost;
+  var rows = [
+    { k:'양도가액', v:won(sell) },
+    { k:'− 취득가액', v:won(buy), minus:true },
+    { k:'− 필요경비', v:won(cost), minus:true },
+    { k:'= 양도차익', v:won(gain) }
+  ];
+
+  if(gain <= 0){
+    steps('cgSteps', rows.concat([{ k:'세금', v:'없음 (양도차손)', total:true }]));
+    document.getElementById('cgTax').textContent = '없음';
+    document.getElementById('cgTax').style.color = 'var(--pos)';
+    document.getElementById('cgNet').textContent = won(gain);
+    document.getElementById('cgNet').style.color = 'var(--neg)';
+    verdict('cgVerdict', '#5B5648',
+      '손해를 봤다면 양도세는 없습니다',
+      '양도세는 <b>이익에 매기는 세금</b>이므로 손실이면 내지 않습니다.<br><br>' +
+      '<b>다만 손실을 돌려주지도 않습니다.</b> 같은 해에 다른 부동산을 팔아 이익이 났다면 <b>합산해서 상계</b>할 수 있지만, 그 외에는 <b>그냥 손실</b>입니다.<br><br>' +
+      '<b>여기서 01편이 다시 나옵니다</b> — 양도가와 취득가가 같아도 <b>취득세·중개보수 때문에 손실</b>입니다. 그래서 <b>「본전」의 기준이 매매가가 아닙니다.</b>');
+    return;
+  }
+
+  var taxableGain = gain, note = '';
+  if(cgOne === 1 && sell <= exempt){
+    steps('cgSteps', rows.concat([
+      { k:'1세대 1주택 비과세 (' + (exempt / 10000).toFixed(0) + '억 이하)', v:'전액 비과세', minus:true },
+      { k:'총 세금', v:'0원', total:true }
+    ]));
+    document.getElementById('cgTax').textContent = '없음';
+    document.getElementById('cgTax').style.color = 'var(--pos)';
+    document.getElementById('cgNet').textContent = won(gain);
+    document.getElementById('cgNet').style.color = 'var(--pos)';
+    verdict('cgVerdict', '#4C7A6D',
+      '1세대 1주택 비과세 — 세금이 없습니다',
+      '양도가액 <b>' + (sell / 10000).toFixed(1) + '억원</b>이 비과세 기준 <b>' + (exempt / 10000).toFixed(0) +
+      '억원</b> 이하이므로, 양도차익 <b>' + won(gain) + '</b> 전액에 세금이 없습니다.<br><br>' +
+      '<b>이게 부동산 세제에서 가장 큰 혜택</b>입니다. 같은 이익을 주식이나 사업으로 냈다면 <b>수천만원에서 억 단위</b>의 세금이 붙었을 것입니다.<br><br>' +
+      '<b>그런데 요건이 있습니다</b> — <b>1세대가 1주택만</b> 보유하고, <b>일정 기간 이상 보유</b>해야 하며, 지역에 따라 <b>거주 요건</b>도 붙습니다. <b>하루라도 모자라면 적용되지 않습니다.</b><br><br>' +
+      '<b>「그 외」 버튼을 눌러보세요.</b> 같은 조건에서 세금이 얼마나 달라지는지 보면, <b>이 요건을 챙기는 것의 값어치</b>를 알 수 있습니다.');
+    return;
+  }
+  if(cgOne === 1 && sell > exempt){
+    taxableGain = gain * (sell - exempt) / sell;
+    note = '1주택 초과분 안분';
+    rows.push({ k:'1주택 비과세 안분 (' + (exempt / 10000).toFixed(0) + '억 초과분만 과세)', v:won(taxableGain) });
+  }
+
+  // 단기 보유
+  var shortRate = hold < 1 ? 0.70 : (hold < 2 ? 0.60 : 0);
+  var ltdRate = 0, ltd = 0;
+  if(shortRate === 0){
+    if(heavy > 0){
+      ltdRate = 0;   // 중과 적용 시 장기보유특별공제 배제
+    } else if(cgOne === 1 && live >= 2){
+      ltdRate = Math.min(0.4, hold * 0.04) + Math.min(0.4, live * 0.04);
+    } else if(hold >= 3){
+      ltdRate = Math.min(0.30, 0.06 + (hold - 3) * 0.02);
+    }
+    ltd = taxableGain * ltdRate;
+    rows.push({ k:'− 장기보유특별공제 (' + (ltdRate * 100).toFixed(0) + '%)', v:won(ltd), minus:true });
+  } else {
+    rows.push({ k:'장기보유특별공제', v:'배제 (2년 미만 보유)' });
+  }
+
+  var basic = 250;
+  var base = Math.max(0, taxableGain - ltd - basic);
+  rows.push({ k:'− 기본공제', v:won(basic), minus:true });
+  rows.push({ k:'= 과세표준', v:won(base) });
+
+  var incomeTax;
+  if(shortRate > 0){
+    incomeTax = base * shortRate;
+    rows.push({ k:'산출세액 (단기 ' + (shortRate * 100).toFixed(0) + '%)', v:won(incomeTax) });
+  } else {
+    incomeTax = progressive(base) + base * heavy / 100;
+    rows.push({ k:'산출세액 (누진세율' + (heavy > 0 ? ' + 중과 ' + heavy + '%p' : '') + ')', v:won(incomeTax) });
+  }
+  var local = incomeTax * 0.1;
+  var totalTax = incomeTax + local;
+  rows.push({ k:'+ 지방소득세 (10%)', v:won(local) });
+  rows.push({ k:'총 세금', v:won(totalTax), total:true });
+  steps('cgSteps', rows);
+
+  var net = gain - totalTax;
+  var effPct = totalTax / gain * 100;
+  document.getElementById('cgTax').textContent = won(totalTax) + ' (차익의 ' + (effPct < 1 ? effPct.toFixed(1) : effPct.toFixed(0)) + '%)';
+  document.getElementById('cgTax').style.color = 'var(--neg)';
+  document.getElementById('cgNet').textContent = won(net);
+  document.getElementById('cgNet').style.color = net > 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var eff = effPct;
+  if(shortRate > 0){
+    verdict('cgVerdict', '#8E4B3A',
+      hold < 1 ? '1년 안에 팔면 차익의 대부분이 세금입니다' : '2년 안에 팔아도 세율이 매우 높습니다',
+      '보유 <b>' + (hold === 0 ? '1년 미만' : hold + '년') + '</b>이라 <b>단기 세율 ' + (shortRate * 100).toFixed(0) +
+      '%</b>가 적용됩니다. 장기보유특별공제도 <b>받지 못합니다.</b><br><br>' +
+      '양도차익 <b>' + won(gain) + '</b> 중 <b>' + won(totalTax) + '</b>이 세금이고, 실제로 남는 것은 <b>' +
+      won(net) + '</b>입니다. 차익의 <b>' + (eff < 1 ? eff.toFixed(1) : eff.toFixed(0)) + '%</b>가 세금입니다.<br><br>' +
+      '<b>왜 이렇게 만들었나</b> — <b>단기 매매를 막기 위해서</b>입니다. 세금이 이 정도면 <b>단타로 이익을 내는 것이 거의 불가능</b>합니다.<br><br>' +
+      '<b>실전 함의</b> — 01편에서 <b>「짧게 살 거면 사는 게 불리하다」</b>고 했습니다. 거래비용에 <b>이 세금까지 더하면</b> 그 결론이 훨씬 강해집니다. <b>부동산은 구조적으로 장기 보유를 전제한 자산</b>입니다.');
+  } else if(heavy > 0){
+    verdict('cgVerdict', '#8E4B3A',
+      '중과 ' + heavy + '%p — 차익의 ' + (eff < 1 ? eff.toFixed(1) : eff.toFixed(0)) + '%가 세금입니다',
+      '중과가 적용되면 <b>세율이 ' + heavy + '%p 올라가고, 장기보유특별공제도 배제</b>됩니다. 두 가지가 동시에 작용해 부담이 크게 늘어납니다.<br><br>' +
+      '양도차익 <b>' + won(gain) + '</b> 중 <b>' + won(totalTax) + '</b>이 세금입니다.<br><br>' +
+      '<b>여기서 5장의 이야기가 시작됩니다</b> — 이 정도면 <b>「팔지 말자」가 합리적 선택</b>이 됩니다. 안 팔면 이 세금을 안 내니까요.<br><br>' +
+      '그래서 <b>중과를 강화했더니 매물이 줄어드는</b> 일이 벌어졌습니다. 03편에서 본 그 현상입니다. <b>중과 가산세율을 0으로 내려보고</b> 세금이 얼마나 달라지는지 확인해보세요.<br><br>' +
+      '<b>⚠️ 중과는 여러 차례 유예되거나 조정되었습니다.</b> 지금 적용되는지 반드시 확인하세요.');
+  } else if(cgOne === 1){
+    verdict('cgVerdict', '#4C7A6D',
+      '1주택 초과분만 과세되어 ' + won(totalTax) + '입니다',
+      '양도가 <b>' + (sell / 10000).toFixed(1) + '억원</b>이 비과세 기준 <b>' + (exempt / 10000).toFixed(0) +
+      '억원</b>을 넘어, <b>초과분에 해당하는 양도차익 ' + won(taxableGain) + '</b>만 과세됩니다.<br><br>' +
+      '<b>안분 방식</b> — 전체 차익 <b>' + won(gain) + '</b>에 <b>(양도가 − 기준) ÷ 양도가 = ' +
+      ((sell - exempt) / sell * 100).toFixed(0) + '%</b>를 곱합니다. <b>초과한 금액 전부가 아니라 비율로</b> 계산합니다.<br><br>' +
+      '여기에 장기보유특별공제 <b>' + (ltdRate * 100).toFixed(0) + '%</b>가 적용되어, 최종 세금은 <b>' +
+      won(totalTax) + '</b>, 차익의 <b>' + (eff < 1 ? eff.toFixed(1) : eff.toFixed(0)) + '%</b>입니다.<br><br>' +
+      '<b>보유·거주 슬라이더를 움직여보세요.</b> 1주택은 <b>보유 연 4% + 거주 연 4%</b>로 10년이면 합쳐 <b>80%</b>까지 공제됩니다. <b>거주 기간을 0으로 내리면</b> 세금이 얼마나 뛰는지 확인해보세요.');
+  } else {
+    verdict('cgVerdict', '#9E7A2E',
+      '차익의 ' + (eff < 1 ? eff.toFixed(1) : eff.toFixed(0)) + '%가 세금 — ' + won(net) + '이 남습니다',
+      '양도차익 <b>' + won(gain) + '</b>에서 장기보유특별공제 <b>' + (ltdRate * 100).toFixed(0) +
+      '%</b>와 기본공제를 뺀 <b>' + won(base) + '</b>이 과세표준이고, 세금은 <b>' + won(totalTax) + '</b>입니다.<br><br>' +
+      '<b>1세대 1주택과 비교해보세요.</b> 위 버튼을 「1세대 1주택」으로 바꾸면 같은 조건에서 세금이 <b>크게 줄거나 아예 없어집니다.</b><br><br>' +
+      '<b>이 차이가 만드는 것</b> — 「똘똘한 한 채」라는 말이 여기서 나왔습니다. <b>여러 채를 나눠 갖는 것보다 좋은 곳 한 채</b>가 세제상 훨씬 유리하니, <b>수요가 특정 지역으로 몰리는</b> 결과가 생겼습니다. 03편에서 본 <b>「규제는 수요를 없애지 않고 옮긴다」</b>의 한 사례입니다.<br><br>' +
+      '<b>보유 기간을 늘려보세요.</b> 장기보유특별공제가 커지면서 세금이 줄어듭니다.');
+  }
+}
+bindBtnRow('#cgOne', function(v){ cgOne = +v; cgCalc(); });
+['cgBuy', 'cgSell', 'cgCost', 'cgHold', 'cgLive', 'cgExempt', 'cgHeavy'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', cgCalc);
+});
+
+/* ══════════ 5. 매물 잠김 ══════════ */
+function lkCalc(){
+  var gain = +document.getElementById('lkGain').value;
+  var rate = +document.getElementById('lkRate').value / 100;
+  var hold = +document.getElementById('lkHold').value;
+  var years = +document.getElementById('lkYears').value;
+
+  document.getElementById('lkGainOut').textContent = (gain / 10000).toFixed(1) + '억원';
+  document.getElementById('lkRateOut').textContent = (rate * 100).toFixed(0) + '%';
+  document.getElementById('lkHoldOut').textContent = hold.toLocaleString() + '만원';
+  document.getElementById('lkYearsOut').textContent = years + '년';
+
+  var sellNow = gain * rate;
+  var waitCost = hold * years;
+
+  document.getElementById('lkNow').textContent = won(sellNow);
+  document.getElementById('lkNow').style.color = 'var(--neg)';
+  document.getElementById('lkWaitK').textContent = years + '년 버티면 내는 보유세';
+  document.getElementById('lkWait').textContent = won(waitCost);
+  document.getElementById('lkWait').style.color = waitCost > sellNow ? 'var(--neg)' : 'var(--pos)';
+
+  var X0 = 150, W = 400, maxV = Math.max(sellNow, waitCost) || 1;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">두 선택의 비용 (만원)</text>';
+  g += '<rect x="' + X0 + '" y="34" width="' + (sellNow / maxV * W).toFixed(1) + '" height="28" rx="2" fill="#8E4B3A" fill-opacity=".45" stroke="#8E4B3A" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="52" text-anchor="end">지금 판다</text>';
+  g += '<text class="lblb" x="' + (X0 + sellNow / maxV * W + 8).toFixed(1) + '" y="52" fill="#8E4B3A">' + Math.round(sellNow).toLocaleString() + '</text>';
+  g += '<rect x="' + X0 + '" y="76" width="' + (waitCost / maxV * W).toFixed(1) + '" height="28" rx="2" fill="#8E6B3A" fill-opacity=".45" stroke="#8E6B3A" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="94" text-anchor="end">' + years + '년 버틴다</text>';
+  g += '<text class="lblb" x="' + (X0 + waitCost / maxV * W + 8).toFixed(1) + '" y="94" fill="#8E6B3A">' + Math.round(waitCost).toLocaleString() + '</text>';
+  var breakYears = hold > 0 ? sellNow / hold : Infinity;
+  g += '<text class="axt" x="' + X0 + '" y="132">보유세만으로 양도세만큼을 내려면 ' +
+       (isFinite(breakYears) ? Math.round(breakYears) + '년' : '∞') + '이 걸립니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="152">그리고 그동안 집값이 오르면 그 이익은 그대로 내 것입니다.</text>';
+  document.getElementById('lkScene').innerHTML = g;
+
+  if(waitCost >= sellNow){
+    verdict('lkVerdict', '#4C7A6D',
+      years + '년이면 버티는 비용이 파는 비용을 넘습니다',
+      '지금 팔면 <b>' + won(sellNow) + '</b>, ' + years + '년 버티면 보유세로 <b>' + won(waitCost) + '</b>입니다.<br><br>' +
+      '<b>이 지점을 넘어가면</b> 세제가 「팔라」는 방향으로 밀기 시작합니다. 보유세를 올리는 정책이 노리는 것이 정확히 이것입니다.<br><br>' +
+      '<b>다만 현실은 더 복잡합니다</b> — 그동안 <b>집값이 오르면</b> 그 이익은 계속 내 것이고, <b>세율이 나중에 낮아질 수도</b> 있습니다. 그래서 실제로는 <b>이 계산보다 더 오래 버티는</b> 경우가 많습니다.<br><br>' +
+      '<b>버티는 기간을 줄여보세요.</b> 대부분의 현실적인 기간(5~10년)에서는 <b>버티는 쪽이 훨씬 쌉니다.</b>');
+  } else {
+    var over = sellNow - waitCost;
+    verdict('lkVerdict', '#8E4B3A',
+      '버티는 것이 ' + won(over) + ' 더 쌉니다',
+      '지금 팔면 세금이 <b>' + won(sellNow) + '</b>인데, ' + years + '년 버티는 보유세는 <b>' + won(waitCost) +
+      '</b>뿐입니다. <b>' + won(over) + '만큼 버티는 쪽이 쌉니다.</b><br><br>' +
+      '<b>이게 매물이 잠기는 이유입니다.</b> 보유세를 아무리 올려도 <b>양도세가 한 번에 크게 나가면</b>, 버티는 쪽이 계속 유리합니다.<br><br>' +
+      '<b>여기에 두 가지가 더해집니다</b><br>' +
+      '<b>①</b> 그동안 <b>집값이 오르면 그 이익도 내 것</b>입니다.<br>' +
+      '<b>②</b> <b>세율이 낮아질 때까지 기다린다</b>는 선택도 있습니다. 실제로 중과가 유예된 적이 있으므로, <b>기다림 자체에 값어치</b>가 생깁니다.<br><br>' +
+      '<b>결론</b> — 양도세를 올리면 <b>세수도 안 늘고 매물도 안 나옵니다.</b> 03편에서 <b>「실제로 매물이 늘어난 때는 중과를 유예했을 때」</b>라고 한 이유입니다.');
+  }
+}
+['lkGain', 'lkRate', 'lkHold', 'lkYears'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', lkCalc);
+});
+
+/* ══════════ 6. 실수 ══════════ */
+var MS = [
+  { h:'일시적 2주택', color:'#8E4B3A',
+    t:'새 집을 먼저 사고 옛 집을 늦게 팔았을 때',
+    p:'이사할 때 <b>새 집을 먼저 사고 옛 집을 나중에 파는</b> 것이 자연스럽습니다. 그 사이에는 <b>2주택</b>이 됩니다.<br><br>제도는 이걸 알고 있어서, <b>일정 기간 안에 옛 집을 팔면 1주택으로 봐주는</b> 특례가 있습니다.<br><br><b>사고가 나는 지점</b> — <b>그 기간을 넘기는 것</b>입니다. 집이 안 팔려서, 또는 기한을 잘못 알아서 며칠 넘기면 <b>1세대 1주택 비과세를 통째로 잃습니다.</b> 4장 계산기에서 <b>「1세대 1주택」과 「그 외」의 차이</b>를 보면 그 크기를 알 수 있습니다 — <b>수천만원에서 억 단위</b>입니다.<br><br><b>피하는 법</b> — <b>새 집을 계약하기 전에</b> 기한과 요건을 확인하세요. 그리고 <b>옛 집이 안 팔릴 가능성</b>을 계획에 넣으세요. 기한은 <b>취득 시기와 지역에 따라 다르고 개정되어 왔습니다.</b>' },
+  { h:'오피스텔 주택 수', color:'#7A5C9E',
+    t:'「주택이 아니니까 괜찮다」는 믿음',
+    p:'02편에서 다룬 이야기입니다. 오피스텔은 <b>건축법상 업무시설</b>이라 취득세도 주택 세율이 아닙니다. 그래서 <b>「주택 수에 안 들어간다」</b>고 생각하기 쉽습니다.<br><br><b>그런데 주거용으로 쓰면 세법상 주택으로 볼 수 있습니다.</b> 판단 기준은 <b>「실제로 주거에 쓰였는가」</b>이고, 전입신고 여부·내부 구조·임대차 계약 형태 등으로 봅니다.<br><br><b>어떤 사고가 나나</b> — 1주택자가 오피스텔을 하나 샀는데, 나중에 <b>원래 집을 팔 때 「1세대 1주택 비과세」를 못 받는</b> 상황이 생길 수 있습니다. <b>취득세 몇 백만원을 아꼈다가 양도세 수천만원을 무는</b> 구조입니다.<br><br><b>피하는 법</b> — 오피스텔을 사기 전에 <b>「이게 내 주택 수에 들어가는가」</b>를 반드시 확인하세요. 그리고 그 답은 <b>「어떻게 쓰느냐」에 따라 달라집니다.</b>' },
+  { h:'세대 분리', color:'#8E6B3A',
+    t:'「세대」가 무엇인지 정확히 모르는 것',
+    p:'비과세와 중과는 <b>「1세대」 단위</b>로 판정합니다. 그런데 <b>「세대」의 범위를 잘못 아는</b> 경우가 많습니다.<br><br><b>흔한 오해</b><br>· <b>「따로 산다」와 「세대가 분리됐다」는 다릅니다.</b> 주민등록상 분리와 실질 판단이 함께 봐집니다.<br>· <b>결혼하면 배우자는 같은 세대</b>입니다. 따로 살아도요.<br>· <b>부모님 집</b>이 내 세대의 주택 수에 들어갈 수 있습니다. 함께 사는 경우 특히 그렇습니다.<br>· 자녀가 <b>소득이 없으면</b> 독립 세대로 인정되지 않을 수 있습니다.<br><br><b>사고 유형</b> — 본인은 1주택이라 생각했는데 <b>세대 전체로는 2주택</b>이어서 비과세를 못 받는 경우입니다.<br><br><b>피하는 법</b> — <b>매수·매도 전에 내 세대 구성원과 각자의 주택 보유 현황을 정리</b>해보세요. 그리고 <b>세금을 아끼려고 서류상으로만 세대를 나누는 것은 위험합니다.</b> 실질로 판단되고, 문제가 되면 <b>가산세까지 붙습니다.</b>' },
+  { h:'필요경비 증빙', color:'#6B7A52',
+    t:'수리비 영수증을 안 챙긴 것',
+    p:'양도세는 <b>양도가 − 취득가 − 필요경비</b>에 매깁니다. 그래서 <b>필요경비를 인정받으면 세금이 줍니다.</b><br><br><b>인정되는 것(대체로)</b> — 취득세, 중개보수, 법무사 비용, <b>자본적 지출</b>에 해당하는 공사비(발코니 확장, 새시 교체, 난방 배관 교체 같은 <b>가치를 높이거나 수명을 늘리는</b> 공사).<br><br><b>인정 안 되는 것(대체로)</b> — <b>수익적 지출</b>, 즉 <b>원상 유지·수선</b>에 해당하는 비용(도배, 장판, 페인트, 싱크대 교체 등). 그리고 <b>증빙이 없는 모든 것.</b><br><br><b>가장 흔한 사고</b> — 공사는 했는데 <b>현금으로 지급하고 영수증이 없는</b> 경우입니다. 그러면 <b>인정받지 못합니다.</b><br><br><b>피하는 법</b> — 공사할 때 <b>세금계산서나 카드 결제</b>로 하고, <b>계약서와 함께 보관</b>하세요. 파는 것이 10년 뒤여도 그때 쓸 수 있습니다. <b>구분이 애매한 항목은 전문가에게 확인</b>하세요.' },
+  { h:'거주 요건', color:'#8E4B3A',
+    t:'「보유만 하면 되는 줄」 알았을 때',
+    p:'1세대 1주택 비과세와 장기보유특별공제에는 <b>보유 기간과 별도로 거주 기간</b> 요건이 붙는 경우가 있습니다.<br><br><b>두 가지가 다릅니다</b><br>· <b>비과세 요건</b> — 지역과 취득 시기에 따라 <b>실제 거주</b>가 요구될 수 있습니다.<br>· <b>장기보유특별공제</b> — 4장 계산기에서 봤듯, 1주택 최대 80% 공제는 <b>보유 40% + 거주 40%</b> 구조입니다. <b>거주를 안 했으면 절반밖에 못 받습니다.</b><br><br><b>계산기로 확인해보세요</b> — 4장에서 <b>거주 기간을 0으로</b> 내려보면 세금이 얼마나 뛰는지 볼 수 있습니다.<br><br><b>흔한 상황</b> — 전세를 놓고 본인은 다른 곳에 사는 경우입니다. 임대 수입은 얻지만 <b>거주 기간이 안 쌓입니다.</b> 파는 시점에 이 차이가 <b>수천만원</b>이 될 수 있습니다.<br><br><b>피하는 법</b> — <b>살 때부터 「언제 팔 것이고 그때 요건을 채우는가」</b>를 계산해두세요.' },
+  { h:'증여와 부담부증여', color:'#7A5C9E',
+    t:'「자녀에게 넘기면 절세」라는 단순한 생각',
+    p:'집을 자녀에게 <b>증여</b>하면 증여세가 붙습니다. 그리고 <b>대출이나 전세보증금을 함께 넘기면</b>(부담부증여) 구조가 복잡해집니다.<br><br><b>부담부증여의 구조</b> — 넘기는 재산 중 <b>빚에 해당하는 부분</b>은 「돈을 받고 판 것」으로 봐서 <b>증여자에게 양도세</b>가, 나머지는 <b>수증자에게 증여세</b>가 붙습니다. <b>두 세금이 동시에</b> 나옵니다.<br><br><b>사고가 나는 지점</b><br>· 증여세만 계산하고 <b>양도세를 빠뜨리는</b> 경우<br>· 증여 후 <b>일정 기간 안에 팔면 취득가액을 증여 당시가 아니라 원래 취득가로 보는</b> 규정에 걸리는 경우<br>· <b>자녀가 그 빚을 실제로 갚을 능력이 없으면</b> 부담부증여로 인정되지 않는 경우<br><br><b>피하는 법</b> — 이 영역은 <b>혼자 판단하면 안 됩니다.</b> 금액이 크고 규정이 복잡하며, <b>사후에 되돌리기 어렵습니다.</b> 반드시 <b>세무 전문가와 사전에</b> 상담하세요.' }
+];
+bindBtnRow('#msBtns', function(v){
+  document.getElementById('msVerdict').querySelector('.vh').textContent = MS[+v].h;
+  verdict('msVerdict', MS[+v].color, MS[+v].t, MS[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#txCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#txCheck li.done').length;
+      document.getElementById('txCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 항목이 가장 값어치가 큽니다. 세금은 사후에 되돌릴 수 없습니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#txBtns button[data-v="0"]').click();
+acCalc();
+hdCalc();
+cgCalc();
+lkCalc();
+</script>
+</body>
+</html>
