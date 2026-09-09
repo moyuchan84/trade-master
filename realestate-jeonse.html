@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전세와 갭투자 — 보증금을 지키는 법</title>
+<meta name="description" content="전세는 은행을 거치지 않는 레버리지입니다. 갭투자의 실제 배수, 역전세 구조, 전세사기가 만들어진 방식, 그리고 보증금을 지키는 순서를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --owner:#8E6B3A;
+    --tenant:#3A5A8E;
+    --safe:#4C7A6D;
+    --bad:#8E4B3A;
+    --neutral:#5B5648;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  .subnote{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);}
+
+  .keyline{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--edge2,var(--bad));
+    border-radius:3px;
+    padding:22px 24px;
+    margin:26px 0;
+    text-align:center;
+  }
+  .keyline .kt{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--edge2,var(--bad));
+    margin-bottom:12px;
+  }
+  .keyline .kb{
+    font-family:'Newsreader',serif;
+    font-size:20px;
+    line-height:1.5;
+    color:var(--ink);
+  }
+  .keyline .kb b{color:var(--edge2,var(--bad));}
+
+  /* 단계 타임라인 */
+  .steps{display:flex;flex-wrap:wrap;gap:6px;margin:18px 0 16px;}
+  .steps button{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    padding:8px 13px;
+    border:1px solid var(--rule);
+    background:var(--card);
+    color:var(--ink-soft);
+    border-radius:99px;
+    cursor:pointer;
+    transition:all .15s ease;
+  }
+  .steps button:hover{border-color:var(--ink-soft);color:var(--ink);}
+  .steps button.on{background:var(--stepc,var(--bad));border-color:var(--stepc,var(--bad));color:#fff;}
+  .steps button.done{border-color:var(--stepc,var(--bad));color:var(--stepc,var(--bad));}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">부동산 07 · 전세 · 투자 공부 노트</div>
+    <h1>전세와 갭투자<br>— 보증금을 지키는 법</h1>
+    <p class="lede">전세는 <b>세계에 거의 없는 제도</b>입니다. 그리고 <b>은행을 거치지 않는 레버리지</b>입니다. 그래서 대출 규제로는 잡히지 않고, 값이 오를 때는 상승을 키우고 <b>떨어질 때는 사고를 만듭니다.</b> 이 편은 그 구조와 <b>내 보증금을 지키는 순서</b>를 다룹니다.</p>
+    <div class="callout">
+      <p><b>이 편은 두 사람을 위한 것입니다.</b> <b>전세를 구하는 사람</b>에게는 <b>5장이 가장 급합니다.</b> 계약 전에 읽어야 합니다. <b>갭투자를 생각하는 사람</b>에게는 <b>2·3장</b>이 그 구조가 실제로 몇 배 레버리지인지 보여줍니다.</p>
+      <p><b>그리고 이 편은 실제 피해를 다룹니다.</b> 수만 명이 보증금을 잃었고, 대부분 <b>계약 전에 확인할 수 있었던 것</b>들이었습니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="구조와 실무 절차까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#what">1. 전세란 무엇인가</a>
+    <a href="#gap">2. 갭투자의 실제 배수</a>
+    <a href="#reverse">3. 역전세</a>
+    <a href="#fraud">4. 전세사기의 구조</a>
+    <a href="#protect">5. 보증금 지키는 순서</a>
+    <a href="#monthly">6. 월세로 돌리면</a>
+    <a href="#future">7. 전세의 미래</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="what">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 제도</span>
+      <h2>전세는 사실 이상한 제도입니다</h2>
+      <p class="one">외국인에게 설명하면 <b>대부분 못 믿습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>전세가 뭔지 생각해보면 <b>참 이상해.</b> 집주인한테 <b>몇 억을 맡기고</b>, 2년 동안 <b>월세는 한 푼도 안 내고</b> 살다가, 나갈 때 <b>맡긴 돈을 그대로 돌려받는</b> 거야.</p>
+      <p>집주인 입장에서는? <b>몇 억을 이자 없이 빌린</b> 셈이야. 그 돈으로 다른 걸 할 수 있지.</p>
+      <p>세입자 입장에서는? <b>월세를 안 내니까</b> 좋아. 대신 <b>그 몇 억이 묶여</b> 있어서 다른 데 못 써.</p>
+      <p>그런데 여기 <b>큰 위험</b>이 하나 있어. <b>집주인이 그 돈을 돌려주지 못하면?</b> 은행에 맡긴 게 아니라 <b>개인에게 맡긴</b> 거라서, 그 사람이 무너지면 <b>내 돈도 위험해져.</b></p>
+      <p>실제로 그런 일이 <b>아주 많이</b> 일어났어. 4장에서 왜 그랬는지 볼 거야.</p>
+    </div>
+
+    <div class="deep">
+      <h3>왜 이런 제도가 생겼나</h3>
+      <p>전세는 <b>금리가 아주 높던 시절</b>에 자리 잡았습니다. 집주인이 보증금 몇 억을 은행에 넣어두기만 해도 <b>연 10% 넘는 이자</b>가 나오던 때입니다. 그러면 <b>월세를 안 받아도 남는 장사</b>였습니다.</p>
+      <p>세입자에게도 좋았습니다. <b>목돈은 있는데 매달 나가는 돈은 부담스러운</b> 사람에게 딱 맞았고, 은행 대출이 어렵던 시절에 <b>사실상의 서민 금융</b> 역할을 했습니다.</p>
+      <p>즉 전세는 <b>고금리와 금융 미발달이 만든 제도</b>입니다. 그리고 그 두 조건이 <b>사라진 지 오래</b>입니다.</p>
+
+      <h3>그래서 지금은 흔들리고 있습니다</h3>
+      <p><b>저금리 시기</b>에는 집주인이 전세를 놓을 이유가 줄었습니다. 보증금을 받아도 <b>이자가 거의 안 붙으니까</b>요. 그래서 <b>월세나 반전세로 돌리는</b> 흐름이 커졌습니다.</p>
+      <p><b>고금리 시기</b>에는 세입자 쪽이 어려워졌습니다. <b>전세대출 이자가 월세만큼</b> 나가니, 굳이 큰돈을 묶어둘 이유가 줄었습니다.</p>
+      <p>즉 <b>금리가 낮아도 높아도 전세는 불리해지는</b> 구조입니다. 여기에 <b>2022년 이후의 전세 사고</b>까지 겹치면서, <b>전세 자체를 피하려는</b> 흐름이 생겼습니다. 7장에서 다룹니다.</p>
+
+      <h3>투자자 관점에서 전세의 정체</h3>
+      <p><b>전세보증금은 무이자 대출</b>입니다. 이게 핵심입니다.</p>
+      <p>은행 대출은 <b>이자를 내야 하고 DSR에 잡힙니다.</b> 전세보증금은 <b>이자가 없고 DSR에도 안 잡힙니다.</b> 대신 <b>만기에 원금을 통째로 돌려줘야</b> 합니다.</p>
+      <p>그래서 전세는 <b>대출 규제의 사각지대</b>였습니다. 05편에서 본 LTV·DSR을 아무리 조여도, <b>전세를 끼고 사는 것은 막지 못했습니다.</b> 03편에서 <b>「정책이 어려웠던 이유」</b> 중 하나로 전세를 꼽은 것이 이 때문입니다.</p>
+      <p class="plain"><b>정리하면</b> — 전세는 <b>이자 없는 대신 만기가 짧고(2년) 원금 상환이 한 번에 오는</b> 레버리지입니다. 대출보다 싸지만 <b>훨씬 위험한 구조</b>입니다. 2장에서 그 배수를 계산해봅니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="gap">
+    <div class="prod-head" style="--edge:var(--owner)">
+      <span class="prod-tag">02 · 갭투자</span>
+      <h2>갭투자는 몇 배 레버리지인가</h2>
+      <p class="one">계산해보면 <b>코인 선물보다 높은</b> 경우도 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>10억짜리 집이 있는데 <b>전세가 9억</b>이라고 해보자. 그러면 <b>1억만 있으면 이 집을 살 수 있어.</b> 나머지 9억은 <b>세입자가 맡긴 돈</b>으로 채우는 거지.</p>
+      <p>이걸 <b>갭투자</b>라고 해. 매매가와 전세가의 <b>「차이(갭)」만큼만</b> 넣으니까.</p>
+      <p>집값이 <b>10% 올라 11억</b>이 되면? 전세는 그대로 9억이니까 내 몫은 <b>2억.</b> <b>1억이 2억이 됐어. 두 배야.</b></p>
+      <p>그런데 반대로 <b>10% 떨어져 9억</b>이 되면? 내 몫은 <b>0원.</b> <b>1억이 전부 사라졌어.</b></p>
+      <p>더 떨어지면? <b>집을 팔아도 세입자 돈을 다 못 돌려줘.</b> 그러면 <b>세입자가 피해를 봐.</b> 이게 3·4장의 이야기야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">GAP · 실제 배수와 손익</div>
+      <p class="labsub">전세가율을 올려보면 <b>배수가 얼마나 빠르게 커지는지</b> 보입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="gpPrice">집값</label>
+        <input type="range" id="gpPrice" min="10000" max="200000" step="5000" value="100000">
+        <output id="gpPriceOut">10.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="gpRatio">전세가율</label>
+        <input type="range" id="gpRatio" min="40" max="98" step="1" value="80">
+        <output id="gpRatioOut">80% · 8.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="gpMove">집값 변동</label>
+        <input type="range" id="gpMove" min="-30" max="30" step="1" value="10">
+        <output id="gpMoveOut">+10%</output>
+      </div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="갭투자의 자기자본과 보증금 구조">
+        <g id="gpScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">실효 레버리지 배수</span><span class="rv" id="gpMult">—</span></div>
+        <div><span class="rk">내 돈 기준 수익률</span><span class="rv" id="gpRoe">—</span></div>
+      </div>
+
+      <div class="verdict" id="gpVerdict" style="--vc:var(--owner)">
+        <div class="vh">갭투자</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>단순화했습니다.</b> 취득세·중개보수 같은 <b>거래비용</b>(01편)과 보유세(06편), 그리고 <b>대출을 함께 쓴 경우</b>를 뺐습니다. 실제로는 <b>거래비용 때문에 필요한 자기자본이 더 크고, 배수는 조금 낮아집니다.</b> 반대로 전세보증금 위에 <b>대출까지 얹으면 배수는 훨씬 높아집니다.</b>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">코인 08편과 비교하면</div>
+      <div class="kb">전세가율 <b>90%</b>면 <b>10배 레버리지</b>입니다.<br>다만 <b>강제 청산이 없는 대신 만기가 2년</b>입니다.</div>
+    </div>
+
+    <div class="deep">
+      <h3>대출 레버리지와 결정적으로 다른 점</h3>
+      <p><b>① 이자가 없습니다.</b> 그래서 <b>버티는 비용이 대출보다 훨씬 쌉니다.</b> 05편에서 본 월 상환액이 아예 없습니다. 이게 갭투자가 매력적으로 보인 가장 큰 이유입니다.</p>
+      <p><b>② 대신 만기가 짧습니다.</b> 주택담보대출은 <b>30년</b>이지만 전세는 <b>2년</b>입니다. 그리고 만기에 <b>원금 전액</b>을 돌려줘야 합니다. 대출처럼 나눠 갚는 게 아닙니다.</p>
+      <p><b>③ 갱신이 「재대출」입니다.</b> 2년 뒤 새 세입자가 <b>같은 금액 이상</b>으로 들어오면 문제가 없습니다. 그런데 전세 시세가 떨어지면 <b>차액을 내가 메워야</b> 합니다. 이게 <b>역전세</b>이고 3장의 주제입니다.</p>
+      <p><b>④ DSR에 안 잡힙니다.</b> 그래서 <b>대출 규제와 무관하게</b> 여러 채를 살 수 있었습니다. 실제로 <b>수백 채를 보유한</b> 사례가 나온 이유입니다.</p>
+
+      <h3>「무자본 갭투자」가 가능했던 이유</h3>
+      <p>전세가율이 <b>100%에 가까우면</b> 필요한 자기자본이 <b>거의 0</b>이 됩니다. 이론적으로는 <b>내 돈 없이</b> 집을 살 수 있습니다.</p>
+      <p>정상적인 시장에서는 이런 일이 잘 안 생깁니다. 전세가가 매매가에 근접하면 <b>「차라리 사겠다」</b>는 사람이 나오기 때문입니다.</p>
+      <p><b>그런데 시세를 모르면</b> 이야기가 달라집니다. 02편에서 본 <b>신축 빌라의 시세 불투명성</b>이 여기서 악용됐습니다 — <b>매매가를 부풀리고 전세가를 거기 맞추면</b>, 실제로는 전세가가 <b>진짜 시세를 넘어서는</b> 상태가 됩니다.</p>
+      <p>그러면 <b>집주인은 돈 한 푼 안 들이고 집을 얻고</b>, 세입자는 <b>처음부터 돌려받을 수 없는 보증금</b>을 넣게 됩니다. <b>4장의 구조</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="reverse">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">03 · 역전세</span>
+      <h2>전세가가 떨어지면 무슨 일이</h2>
+      <p class="one">집값이 아니라 <b>전세가가 떨어질 때</b> 사고가 납니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>2년 전에 <b>5억</b>에 전세를 놨어. 이제 만기라 세입자가 나가는데, <b>5억을 돌려줘야</b> 해.</p>
+      <p>보통은 <b>새 세입자한테 5억을 받아서</b> 그걸로 돌려줘. 그런데 지금 <b>전세 시세가 4억으로 떨어졌으면?</b></p>
+      <p>새 세입자는 <b>4억만</b> 낼 거야. 그러면 <b>1억이 모자라.</b> 그 1억은 <b>집주인이 어디서든 구해와야</b> 해.</p>
+      <p>그런데 갭투자로 산 사람은 <b>애초에 돈이 별로 없었어.</b> 그리고 <b>여러 채를 갖고 있으면 채수만큼 곱해져.</b> 10채면 10억이야.</p>
+      <p>못 구하면? <b>세입자가 못 나가거나</b>, <b>집이 경매로 넘어가.</b> 이게 2022년 이후에 대규모로 일어난 일이야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">REVERSE · 만기에 얼마를 메워야 하나</div>
+      <p class="labsub">보유 채수를 늘려보면 <b>왜 개인이 감당할 수 없게 되는지</b> 보입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="rvOld">2년 전 전세보증금</label>
+        <input type="range" id="rvOld" min="5000" max="100000" step="1000" value="50000">
+        <output id="rvOldOut">5.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rvDrop">전세 시세 변동</label>
+        <input type="range" id="rvDrop" min="-40" max="20" step="1" value="-20">
+        <output id="rvDropOut">-20%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rvCount">보유 채수</label>
+        <input type="range" id="rvCount" min="1" max="50" step="1" value="1">
+        <output id="rvCountOut">1채</output>
+      </div>
+
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="역전세 시 반환해야 할 차액">
+        <g id="rvScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">한 채당 메울 금액</span><span class="rv" id="rvOne">—</span></div>
+        <div><span class="rk">전체 부담</span><span class="rv" id="rvAll">—</span></div>
+      </div>
+
+      <div class="verdict" id="rvVerdict" style="--vc:var(--bad)">
+        <div class="vh">역전세</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 2022년에 한꺼번에 터졌나</h3>
+      <p>세 가지가 <b>동시에</b> 왔습니다.</p>
+      <p><b>① 전세가가 떨어졌습니다.</b> 04편에서 본 대로 금리가 오르자 <b>전세대출 이자 부담</b>이 커졌고, 세입자들이 <b>월세로 옮겨가면서</b> 전세 수요가 줄었습니다.</p>
+      <p><b>② 2020~2021년의 고점 계약이 만기를 맞았습니다.</b> 전세는 <b>2년 주기</b>입니다. 전세가가 가장 높던 시기에 맺은 계약이 <b>정확히 2022~2023년에</b> 만기가 돌아왔습니다. 그때 시세는 이미 떨어져 있었습니다.</p>
+      <p><b>③ 갭투자자들이 메울 돈이 없었습니다.</b> 애초에 <b>자기 돈을 거의 안 넣고</b> 산 구조였습니다. 그리고 금리가 올라 <b>대출로 메우는 것도 어려워졌습니다.</b></p>
+      <p>이 셋이 겹치면서 <b>보증금 반환 사고가 대규모로</b> 발생했습니다.</p>
+
+      <h3>세입자가 알아야 할 현실</h3>
+      <p><b>「집주인이 안 돌려주면 어떻게 하나」</b>에 대한 답은 생각보다 답답합니다.</p>
+      <p><b>① 소송과 경매는 시간이 걸립니다.</b> 임차권등기명령, 보증금반환청구소송, 강제경매까지 <b>1~2년 이상</b> 걸릴 수 있습니다. 그동안 <b>내 돈은 묶여 있습니다.</b></p>
+      <p><b>② 경매로 넘어가도 전액 회수가 안 될 수 있습니다.</b> 02편의 계산기 그대로입니다. <b>낙찰가율</b>을 곱하고 <b>선순위</b>를 빼면 남는 게 부족할 수 있습니다.</p>
+      <p><b>③ 이사를 못 갈 수 있습니다.</b> 대항력을 유지하려면 <b>전입 상태를 유지</b>해야 하는데, 그러면 새 집으로 옮기기 어렵습니다. <b>임차권등기</b>를 마치면 이사할 수 있지만 절차와 시간이 필요합니다.</p>
+      <p class="plain"><b>그래서 결론은 하나입니다.</b> <b>사고가 난 뒤의 대응은 전부 느리고 불완전합니다.</b> 유일하게 효과적인 것은 <b>계약 전에 거르는 것</b>입니다. 5장이 그 방법입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="fraud">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">04 · 사기</span>
+      <h2>전세사기는 어떻게 만들어졌나</h2>
+      <p class="one">우연이 아니라 <b>설계된 구조</b>였습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SCHEME · 단계별로 따라가기</div>
+      <p class="labsub">순서대로 눌러보세요. <b>각 단계에서 세입자가 확인할 수 있었던 것</b>도 함께 표시됩니다.</p>
+
+      <div class="steps" id="fdBtns" style="--stepc:var(--bad)">
+        <button data-v="0" class="on">① 대상 고르기</button>
+        <button data-v="1">② 시세 부풀리기</button>
+        <button data-v="2">③ 세입자 유인</button>
+        <button data-v="3">④ 무자본 매수</button>
+        <button data-v="4">⑤ 명의 넘기기</button>
+        <button data-v="5">⑥ 만기와 붕괴</button>
+      </div>
+
+      <div class="verdict" id="fdVerdict" style="--vc:var(--bad)">
+        <div class="vh">단계</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>이 구조에서 반복되는 것 하나.</b> 각 단계마다 <b>세입자가 확인할 수 있었던 신호가 있었습니다.</b> 시세, 등기부, 건축물대장, 전세가율, 보증보험 가입 가능 여부 — 전부 <b>계약 전에, 몇 천원으로, 몇 시간 안에</b> 확인할 수 있는 것들입니다.</p>
+      <p><b>그런데 왜 놓쳤을까요.</b> <b>급했기 때문</b>입니다. 「오늘 안 하면 다른 사람에게 넘어간다」, 「이 조건은 흔치 않다」 — 코인 08편의 사기 패턴에서 본 그 수법이 여기서도 똑같이 쓰였습니다. <b>판단할 시간을 뺏는 것</b>이 첫 번째 도구입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="protect">
+    <div class="prod-head" style="--edge:var(--safe)">
+      <span class="prod-tag">05 · 실전</span>
+      <h2>보증금을 지키는 순서</h2>
+      <p class="one">이 편에서 <b>가장 실용적인 부분</b>입니다. 순서대로 하세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CHECKLIST · 시점별로 할 일</div>
+      <p class="labsub">각 시점에 <b>무엇을, 왜</b> 하는지입니다.</p>
+
+      <div class="steps" id="ptBtns" style="--stepc:var(--safe)">
+        <button data-v="0" class="on">① 집을 보기 전</button>
+        <button data-v="1">② 계약 전</button>
+        <button data-v="2">③ 계약할 때</button>
+        <button data-v="3">④ 잔금일</button>
+        <button data-v="4">⑤ 거주 중</button>
+        <button data-v="5">⑥ 만기 전</button>
+      </div>
+
+      <div class="verdict" id="ptVerdict" style="--vc:var(--safe)">
+        <div class="vh">시점</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SAFETY · 이 계약이 안전한가</div>
+      <p class="labsub">02편 계산기의 <b>전세 전용 버전</b>입니다. 숫자를 넣어 확인하세요.</p>
+
+      <div class="ctrl-row">
+        <label for="sfPrice">집 시세 (직접 확인한 값)</label>
+        <input type="range" id="sfPrice" min="5000" max="100000" step="1000" value="30000">
+        <output id="sfPriceOut">3.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="sfDep">내 보증금</label>
+        <input type="range" id="sfDep" min="2000" max="90000" step="1000" value="21000">
+        <output id="sfDepOut">2.1억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="sfMort">등기부상 근저당 (채권최고액)</label>
+        <input type="range" id="sfMort" min="0" max="50000" step="1000" value="0">
+        <output id="sfMortOut">0원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="sfRate">경매 낙찰가율 가정</label>
+        <input type="range" id="sfRate" min="50" max="95" step="1" value="70">
+        <output id="sfRateOut">70%</output>
+      </div>
+
+      <svg viewBox="0 0 640 170" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="전세 계약 안전성 판단">
+        <g id="sfScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">전세가율 (보증금+근저당) ÷ 시세</span><span class="rv" id="sfRatio">—</span></div>
+        <div><span class="rk">경매 시 회수 가능액</span><span class="rv" id="sfGet">—</span></div>
+      </div>
+
+      <div class="verdict" id="sfVerdict" style="--vc:var(--safe)">
+        <div class="vh">안전성</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>주의.</b> 소액임차인 최우선변제, 경매 비용, 당해세 등을 뺀 <b>단순 모형</b>입니다. 그리고 <b>「시세」를 정확히 아는 것이 가장 어렵습니다</b> — 4장에서 본 대로 <b>부풀려진 값을 시세로 믿는 것</b>이 사고의 출발점이었습니다. <b>여러 경로로 교차 확인</b>하세요.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="monthly">
+    <div class="prod-head" style="--edge:var(--tenant)">
+      <span class="prod-tag">06 · 월세</span>
+      <h2>보증금을 줄이고 월세로 돌리면</h2>
+      <p class="one">위험을 줄이는 <b>현실적인 방법</b> 중 하나입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>전세 5억이 부담스럽거나 <b>불안하면</b>, 보증금을 줄이고 <b>대신 매달 조금씩 내는</b> 방법이 있어. 이걸 <b>반전세</b>라고 해.</p>
+      <p>예를 들어 보증금을 <b>5억에서 3억으로</b> 줄이면, 줄어든 2억만큼 <b>월세</b>를 내는 거야. 얼마를 낼지는 <b>전월세전환율</b>이라는 걸로 정해.</p>
+      <p>좋은 점은 — <b>위험에 걸린 돈이 줄어들어.</b> 만약 집주인이 못 돌려줘도 <b>5억이 아니라 3억</b>만 위험한 거니까.</p>
+      <p>나쁜 점은 — <b>매달 돈이 나가.</b> 그리고 그 돈은 <b>돌려받지 못해.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CONVERT · 보증금을 월세로</div>
+      <p class="labsub">
+        <b>전환율</b>은 「보증금 1억을 월세로 바꾸면 연 몇 %인가」입니다.
+      </p>
+
+      <div class="ctrl-row">
+        <label for="cvFull">원래 전세보증금</label>
+        <input type="range" id="cvFull" min="5000" max="100000" step="1000" value="50000">
+        <output id="cvFullOut">5.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cvKeep">낮출 보증금</label>
+        <input type="range" id="cvKeep" min="1000" max="100000" step="1000" value="30000">
+        <output id="cvKeepOut">3.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cvRate">전월세전환율</label>
+        <input type="range" id="cvRate" min="2" max="10" step="0.1" value="5.0">
+        <output id="cvRateOut">5.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cvLoan">전세대출 금리 (비교용)</label>
+        <input type="range" id="cvLoan" min="2" max="8" step="0.1" value="4.0">
+        <output id="cvLoanOut">4.0%</output>
+      </div>
+
+      <div class="readout two">
+        <div><span class="rk">월세</span><span class="rv" id="cvMonth">—</span></div>
+        <div><span class="rk">위험에 걸린 금액 변화</span><span class="rv" id="cvRisk">—</span></div>
+      </div>
+
+      <div class="verdict" id="cvVerdict" style="--vc:var(--tenant)">
+        <div class="vh">전환</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산.</b> 월세 = (줄인 보증금 × 전환율) ÷ 12. 전환율에는 <b>법정 상한</b>이 있지만 기준이 바뀌므로 슬라이더로 두었습니다. <b>비교용 전세대출 금리</b>는 「그 돈을 빌려서 전세로 넣었다면 이자가 얼마였을까」를 보기 위한 것입니다 — <b>전환율이 대출금리보다 높으면 전세가, 낮으면 월세가 금전적으로 유리</b>합니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7 ══════════ -->
+  <section id="future">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 전망</span>
+      <h2>전세는 앞으로 어떻게 될까</h2>
+      <p class="one">줄어드는 방향인 것은 <b>대체로 합의</b>되어 있습니다.</p>
+    </div>
+
+    <div class="deep">
+      <h3>줄어드는 이유</h3>
+      <p><b>① 집주인의 이유가 사라졌습니다.</b> 고금리 시절에는 보증금을 굴려 이자를 얻었지만, 지금은 그 매력이 작습니다. <b>월세가 더 확실한 수입</b>입니다.</p>
+      <p><b>② 세입자의 이유도 약해졌습니다.</b> 전세대출 이자가 <b>월세와 비슷하거나 더 나가는</b> 국면이 있었습니다. 그러면 <b>큰돈을 묶어둘 이유</b>가 없습니다.</p>
+      <p><b>③ 사고 경험이 남았습니다.</b> 2022년 이후 <b>「전세는 위험하다」</b>는 인식이 퍼졌습니다. 특히 <b>빌라 전세를 기피</b>하는 흐름이 뚜렷합니다.</p>
+      <p><b>④ 제도가 부담을 키웠습니다.</b> 보증보험 가입 요건 강화, 임대사업자 의무 등으로 <b>전세를 놓는 것 자체의 비용</b>이 커졌습니다.</p>
+
+      <h3>그런데 완전히 사라지지는 않을 것 같습니다</h3>
+      <p>공정하게 말하면 <b>반대 방향의 힘도 있습니다.</b></p>
+      <p><b>① 아파트 전세는 여전히 수요가 있습니다.</b> 사고 대부분은 <b>비아파트</b>에서 났습니다. 시세가 명확하고 보증보험도 잘 되는 아파트에서는 <b>전세가 여전히 합리적</b>일 수 있습니다.</p>
+      <p><b>② 목돈은 있고 소득은 빠듯한 사람</b>에게는 여전히 유리한 제도입니다.</p>
+      <p><b>③ 금리가 다시 낮아지면</b> 전세대출 부담이 줄어 <b>전세 수요가 돌아올</b> 수 있습니다.</p>
+      <p>그래서 예상되는 방향은 <b>「사라짐」이 아니라 「양극화」</b>에 가깝습니다 — <b>아파트 전세는 유지되고, 비아파트 전세는 크게 줄어드는</b> 형태입니다.</p>
+
+      <h3>투자자 관점에서의 함의</h3>
+      <p>전세가 줄면 <b>03편에서 본 「증폭 장치」가 약해집니다.</b> 갭투자가 어려워지면 <b>상승기의 과열도, 하락기의 연쇄 사고도</b> 줄어듭니다.</p>
+      <p>대신 <b>매수에 필요한 자기자본이 커집니다.</b> 전세를 못 끼면 <b>대출로 채워야 하고, 그건 DSR에 잡힙니다</b>(05편). 즉 <b>규제의 사각지대가 좁아지는</b> 것입니다.</p>
+      <p class="plain"><b>한 줄로</b> — 전세가 줄어드는 것은 <b>시장을 덜 뜨겁고 덜 위험하게</b> 만들 가능성이 큽니다. 다만 <b>목돈 없이 집을 사는 길</b>도 함께 좁아집니다. <b>양쪽 다 사실</b>입니다.</p>
+    </div>
+
+    <ul class="check" id="jsCheck">
+      <li><b>이 집의 진짜 시세를 여러 경로로 확인했나?</b> 부동산이 알려준 값 하나로는 부족합니다.</li>
+      <li><b>전세가율((보증금+근저당) ÷ 시세)이 80%를 넘지 않나?</b> 5장 계산기로 확인하세요.</li>
+      <li><b>등기부등본을 뗐나? 계약 당일에 다시 뗐나?</b></li>
+      <li><b>건축물대장에서 용도와 위반건축물 여부를 봤나?</b> (02편)</li>
+      <li><b>다가구라면 확정일자 부여 현황을 확인했나?</b> 안 보여주면 그게 답입니다.</li>
+      <li><b>집주인의 미납 세금을 확인했나?</b> 임차인이 열람할 수 있는 제도가 있습니다.</li>
+      <li><b>보증보험 가입이 되는 물건인가?</b> 안 되면 왜 안 되는지 반드시 확인하세요.</li>
+      <li><b>계약서에 권리관계 유지 특약을 넣었나?</b></li>
+      <li><b>잔금 당일 전입신고와 확정일자를 마쳤나?</b> 하루도 늦으면 안 됩니다.</li>
+      <li><b>「오늘 결정해야 한다」는 말을 듣지 않았나?</b> 그 말 자체가 신호입니다.</li>
+      <li><b>보증금을 줄이고 월세로 돌리는 선택지를 계산해봤나?</b> (6장)</li>
+    </ul>
+    <div class="checkcount" id="jsCount">0 / 11 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 전세는 <b>이자 없는 대신 만기가 2년이고 원금이 한 번에 오는</b> 레버리지입니다. 전세가율 90%면 <b>10배 레버리지</b>이고, 값이 10%만 떨어져도 <b>자기자본이 사라집니다.</b></p>
+      <p>그리고 그 위험은 <b>집주인이 아니라 세입자에게</b> 넘어갑니다. 사고가 난 뒤의 대응은 <b>전부 느리고 불완전합니다.</b> 그래서 <b>계약 전 몇 시간</b>이 전부입니다.</p>
+      <p>다음 편부터는 <b>고르는 눈</b>으로 넘어갑니다. <b>좋은 아파트를 고르는 법</b>, 그리고 <b>「좋은 아파트」와 「좋은 투자」가 다른 이유</b>.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 부동산 07 · 전세와 갭투자<br>
+    <a href="index.html#realestate">← 부동산 목록으로</a> · <a href="realestate-tax.html">06 · 세금</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 법률 조언이 아닙니다.<br>
+    계산기는 여러 항목을 생략한 단순 모형입니다. 보증보험 요건, 최우선변제 한도, 전월세전환율 상한, 임대차 관련 제도는 계속 바뀝니다. 실제 계약 전에는 등기부·건축물대장·확정일자 현황을 직접 확인하고 필요하면 전문가의 도움을 받으세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function won(man){ return Math.round(man).toLocaleString() + '만원'; }
+function eok(man){ return (man / 10000).toFixed(2) + '억원'; }
+
+/* ══════════ 2. 갭투자 ══════════ */
+function gpDraw(){
+  var price = +document.getElementById('gpPrice').value;
+  var ratio = +document.getElementById('gpRatio').value / 100;
+  var move = +document.getElementById('gpMove').value;
+
+  var dep = price * ratio;
+  var own = price - dep;
+  document.getElementById('gpPriceOut').textContent = (price / 10000).toFixed(1) + '억원';
+  document.getElementById('gpRatioOut').textContent = (ratio * 100).toFixed(0) + '% · ' + (dep / 10000).toFixed(1) + '억원';
+  document.getElementById('gpMoveOut').textContent = (move >= 0 ? '+' : '') + move + '%';
+
+  var mult = price / own;
+  var after = price * (1 + move / 100);
+  var ownAfter = after - dep;
+  var roe = (ownAfter - own) / own * 100;
+  var wipe = (1 - ratio) * 100;
+
+  document.getElementById('gpMult').textContent = mult.toFixed(1) + '배';
+  document.getElementById('gpMult').style.color = mult >= 8 ? 'var(--neg)' : (mult >= 4 ? '' : 'var(--pos)');
+  var rEl = document.getElementById('gpRoe');
+  rEl.textContent = pct(roe, 1);
+  signColor(rEl, roe);
+
+  var X0 = 60, W = 500, ymax = Math.max(price, after) * 1.12;
+  function w(v){ return Math.max(0, v / ymax * W); }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="26">산 시점</text>';
+  g += '<rect x="' + X0 + '" y="34" width="' + w(own).toFixed(1) + '" height="26" rx="2" fill="#8E6B3A" fill-opacity=".5" stroke="#8E6B3A" stroke-width="1.3"/>';
+  g += '<rect x="' + (X0 + w(own)).toFixed(1) + '" y="34" width="' + w(dep).toFixed(1) + '" height="26" rx="2" fill="#3A5A8E" fill-opacity=".25" stroke="#3A5A8E" stroke-width="1.2"/>';
+  if(own / ymax > 0.1) g += '<text class="axt" x="' + (X0 + 8) + '" y="51">내 돈 ' + (own / 10000).toFixed(1) + '억</text>';
+  else g += '<text class="lblb" x="' + (X0 + w(own) + 8).toFixed(1) + '" y="26" fill="#8E6B3A">내 돈 ' + (own / 10000).toFixed(2) + '억</text>';
+  if(dep / ymax > 0.15) g += '<text class="axt" x="' + (X0 + w(own) + 8).toFixed(1) + '" y="51">세입자 보증금 ' + (dep / 10000).toFixed(1) + '억</text>';
+
+  g += '<text class="axt" x="' + X0 + '" y="90">' + (move >= 0 ? '+' : '') + move + '% 뒤</text>';
+  var oa = Math.max(0, ownAfter);
+  g += '<rect x="' + X0 + '" y="98" width="' + w(oa).toFixed(1) + '" height="26" rx="2" fill="' +
+       (ownAfter >= own ? '#4C7A6D' : '#8E4B3A') + '" fill-opacity=".5" stroke="' +
+       (ownAfter >= own ? '#4C7A6D' : '#8E4B3A') + '" stroke-width="1.3"/>';
+  g += '<rect x="' + (X0 + w(oa)).toFixed(1) + '" y="98" width="' + w(Math.min(dep, after)).toFixed(1) +
+       '" height="26" rx="2" fill="#3A5A8E" fill-opacity=".25" stroke="#3A5A8E" stroke-width="1.2"/>';
+  g += '<text class="lblb" x="' + (X0 + w(after) + 10).toFixed(1) + '" y="115" fill="' +
+       (roe >= 0 ? '#4C7A6D' : '#8E4B3A') + '">내 몫 ' + (Math.max(0, ownAfter) / 10000).toFixed(2) + '억</text>';
+
+  g += '<line class="axis" x1="' + X0 + '" y1="140" x2="' + (X0 + W) + '" y2="140"/>';
+  g += '<text class="axt" x="' + X0 + '" y="160">전세가율 ' + (ratio * 100).toFixed(0) + '% → 실효 ' + mult.toFixed(1) +
+       '배. 집값이 ' + wipe.toFixed(0) + '% 떨어지면 내 돈이 전부 사라집니다.</text>';
+  if(ownAfter < 0){
+    g += '<text class="lblb" x="' + X0 + '" y="182" fill="#8E4B3A">집을 팔아도 보증금이 ' +
+         (Math.abs(ownAfter) / 10000).toFixed(2) + '억 모자랍니다 — 세입자 피해로 이어집니다.</text>';
+  }
+  document.getElementById('gpScene').innerHTML = g;
+
+  if(ownAfter <= 0.5){
+    var shortfall = ownAfter < -0.5
+      ? '집을 전부 팔아도 <b>' + eok(Math.abs(ownAfter)) + '이 모자랍니다.</b>'
+      : '집을 전부 팔면 <b>보증금만 겨우 돌려줄 수 있고 내 몫은 0원</b>입니다. 여기서 조금만 더 떨어지면 <b>보증금이 모자라기 시작합니다.</b>';
+    verdict('gpVerdict', '#8E4B3A',
+      ownAfter < -0.5 ? '집을 팔아도 보증금을 다 못 돌려줍니다' : '내 돈이 전부 사라지는 지점입니다',
+      '집값이 <b>' + move + '%</b> 떨어져 <b>' + eok(after) + '</b>이 됐는데 보증금은 <b>' + eok(dep) +
+      '</b>입니다. ' + shortfall + '<br><br>' +
+      '<b>이 상태를 「깡통」이라고 부릅니다.</b> 그리고 여기서 중요한 것은 — <b>손실을 집주인이 아니라 세입자가 떠안게 된다</b>는 점입니다.<br><br>' +
+      (ownAfter < -0.5
+        ? '집주인은 애초에 <b>' + eok(own) + '</b>밖에 안 넣었으므로 <b>잃을 것이 그것뿐</b>입니다. 나머지 <b>' +
+          eok(Math.abs(ownAfter)) + '</b>은 <b>세입자의 돈</b>입니다.<br><br>'
+        : '집주인이 넣은 <b>' + eok(own) + '</b>이 전부 사라졌습니다. 여기서 더 떨어지면 <b>다음 손실은 세입자의 돈</b>에서 나갑니다.<br><br>') +
+      '<b>이것이 전세 레버리지의 본질적인 문제</b>입니다. 대출이라면 손실이 은행에 가고, 은행은 그 위험을 계산해 금리와 한도를 정합니다. 전세는 <b>세입자가 그 위험을 지는데, 대개 그 사실을 모릅니다.</b>');
+  } else if(mult >= 8){
+    verdict('gpVerdict', '#8E4B3A',
+      '실효 ' + mult.toFixed(1) + '배 — 코인 선물과 비슷한 수준입니다',
+      '전세가율이 <b>' + (ratio * 100).toFixed(0) + '%</b>라 내 돈은 <b>' + eok(own) + '</b>뿐인데 <b>' +
+      eok(price) + '</b>짜리 자산을 갖습니다. <b>실효 ' + mult.toFixed(1) + '배</b>입니다.<br><br>' +
+      '집값 <b>' + pct(move, 0) + '</b>가 내 돈 기준 <b>' + pct(roe, 0) + '</b>가 됩니다.<br><br>' +
+      '<b>코인 08편과 비교해보세요.</b> 거기서 <b>10배 레버리지는 9.5%만 떨어져도 전액 청산</b>이라고 했습니다. 여기서는 <b>' +
+      wipe.toFixed(0) + '% 떨어지면 내 돈이 사라집니다.</b> 숫자가 거의 같습니다.<br><br>' +
+      '<b>다른 점 두 가지</b><br><b>①</b> 강제 청산이 없습니다. <b>버틸 수 있으면 기다릴 수 있습니다.</b><br>' +
+      '<b>②</b> 대신 <b>2년마다 만기</b>가 옵니다. 그때 전세가가 떨어져 있으면 <b>차액을 메워야</b> 합니다(3장).<br><br>' +
+      '<b>집값 변동을 왼쪽으로</b> 옮겨보세요. -' + wipe.toFixed(0) + '%를 지나면 어떻게 되는지 확인하세요.');
+  } else if(roe >= 0){
+    verdict('gpVerdict', '#8E6B3A',
+      '집값 ' + pct(move, 0) + '가 내 돈 기준 ' + pct(roe, 0) + '가 됩니다',
+      '전세가율 <b>' + (ratio * 100).toFixed(0) + '%</b>에서 내 돈은 <b>' + eok(own) + '</b>이고 실효 배수는 <b>' +
+      mult.toFixed(1) + '배</b>입니다.<br><br>' +
+      '<b>대출 레버리지와 비교하면</b> — 01편에서 자기자본 40%(2.5배)일 때를 봤습니다. 여기는 그보다 <b>배수가 높은데 이자가 없습니다.</b> 그래서 <b>버티는 비용이 훨씬 쌉니다.</b><br><br>' +
+      '<b>대신 만기가 2년</b>입니다. 그때 전세 시세가 떨어져 있으면 <b>차액을 현금으로 메워야</b> 합니다. 대출은 30년에 걸쳐 나눠 갚지만 <b>전세는 2년마다 원금 전액이 걸립니다.</b><br><br>' +
+      '<b>전세가율 슬라이더를 올려보세요.</b> 배수가 얼마나 빠르게 커지는지 보입니다.');
+  } else {
+    verdict('gpVerdict', '#9E7A2E',
+      '손실도 ' + mult.toFixed(1) + '배로 증폭됩니다',
+      '집값이 <b>' + move + '%</b> 떨어져 내 몫이 <b>' + eok(own) + ' → ' + eok(ownAfter) + '</b>이 됐습니다. 내 돈 기준 <b>' +
+      pct(roe, 0) + '</b>입니다.<br><br>' +
+      '아직 보증금은 지켜집니다. <b>' + wipe.toFixed(0) + '%</b>까지 떨어지면 내 돈이 전부 사라지고, <b>그보다 더 떨어지면 세입자 보증금이 위험해집니다.</b><br><br>' +
+      '지금은 <b>' + (wipe + move).toFixed(0) + '%p</b>의 여유가 남아 있습니다.<br><br>' +
+      '<b>여기서 3장으로 이어집니다</b> — 집값이 안 떨어져도 <b>전세 시세만 떨어지면</b> 만기에 문제가 생깁니다. 그게 <b>역전세</b>입니다.');
+  }
+}
+['gpPrice', 'gpRatio', 'gpMove'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', gpDraw);
+});
+
+/* ══════════ 3. 역전세 ══════════ */
+function rvDraw(){
+  var old = +document.getElementById('rvOld').value;
+  var drop = +document.getElementById('rvDrop').value;
+  var count = +document.getElementById('rvCount').value;
+
+  var now = old * (1 + drop / 100);
+  var gap = old - now;
+  var total = gap * count;
+
+  document.getElementById('rvOldOut').textContent = (old / 10000).toFixed(1) + '억원';
+  document.getElementById('rvDropOut').textContent = (drop >= 0 ? '+' : '') + drop + '%';
+  document.getElementById('rvCountOut').textContent = count + '채';
+
+  var oEl = document.getElementById('rvOne');
+  oEl.textContent = gap > 0 ? won(gap) : '없음 (오히려 ' + won(-gap) + ' 여유)';
+  oEl.style.color = gap > 0 ? 'var(--neg)' : 'var(--pos)';
+  var aEl = document.getElementById('rvAll');
+  aEl.textContent = total > 0 ? eok(total) : '없음';
+  aEl.style.color = total > 0 ? 'var(--neg)' : 'var(--pos)';
+
+  var X0 = 150, W = 400, maxV = Math.max(old, now) || 1;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">한 채 기준 (만원)</text>';
+  g += '<rect x="' + X0 + '" y="34" width="' + (old / maxV * W).toFixed(1) + '" height="26" rx="2" fill="#3A5A8E" fill-opacity=".4" stroke="#3A5A8E" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="51" text-anchor="end">돌려줄 돈</text>';
+  g += '<text class="lblb" x="' + (X0 + old / maxV * W + 8).toFixed(1) + '" y="51" fill="#3A5A8E">' + Math.round(old).toLocaleString() + '</text>';
+  g += '<rect x="' + X0 + '" y="70" width="' + (now / maxV * W).toFixed(1) + '" height="26" rx="2" fill="#6B7A52" fill-opacity=".4" stroke="#6B7A52" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="87" text-anchor="end">새 세입자에게 받을 돈</text>';
+  g += '<text class="lblb" x="' + (X0 + now / maxV * W + 8).toFixed(1) + '" y="87" fill="#6B7A52">' + Math.round(now).toLocaleString() + '</text>';
+  if(gap > 0){
+    g += '<rect x="' + (X0 + now / maxV * W).toFixed(1) + '" y="70" width="' + (gap / maxV * W).toFixed(1) +
+         '" height="26" rx="2" fill="#8E4B3A" fill-opacity=".35" stroke="#8E4B3A" stroke-width="1.2" stroke-dasharray="3 2"/>';
+    g += '<text class="axt" x="' + X0 + '" y="124">차액 ' + won(gap) + '을 집주인이 현금으로 메워야 합니다.</text>';
+    g += '<text class="' + (count > 1 ? 'lblb' : 'axt') + '" x="' + X0 + '" y="146"' +
+         (count > 1 ? ' fill="#8E4B3A"' : '') + '>' + count + '채면 ' + eok(total) + '입니다.</text>';
+  } else {
+    g += '<text class="axt" x="' + X0 + '" y="124">전세가가 올라서 오히려 여유가 생깁니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="146">상승기에는 이 차액이 다시 투자 자금이 되곤 했습니다.</text>';
+  }
+  document.getElementById('rvScene').innerHTML = g;
+
+  if(gap <= 0){
+    verdict('rvVerdict', '#4C7A6D',
+      '전세가가 올랐다면 문제가 없습니다',
+      '새 세입자에게 <b>' + won(now) + '</b>을 받아 <b>' + won(old) + '</b>을 돌려주고도 <b>' + won(-gap) + '</b>이 남습니다.<br><br>' +
+      '<b>상승기에는 이게 투자 자금이 됐습니다.</b> 2년마다 전세가가 오르면 <b>차액을 빼서 다른 집을 또 사는</b> 방식이 가능했습니다. 갭투자가 빠르게 늘어난 이유입니다.<br><br>' +
+      '<b>그런데 이건 전세가가 계속 오른다는 전제</b> 위에 있습니다. <b>슬라이더를 마이너스로</b> 내려보세요. 방향이 바뀌면 같은 구조가 <b>정반대로</b> 작동합니다.');
+  } else if(count === 1){
+    verdict('rvVerdict', '#9E7A2E',
+      '한 채라면 ' + won(gap) + '을 마련해야 합니다',
+      '2년 전 <b>' + won(old) + '</b>에 놓은 전세가 지금 시세로는 <b>' + won(now) + '</b>입니다. 만기에 <b>' +
+      won(gap) + '</b>이 부족합니다.<br><br>' +
+      '<b>선택지</b><br>· <b>현금으로 메운다</b> — 여유가 있으면 가장 깔끔합니다.<br>' +
+      '· <b>대출로 메운다</b> — 05편의 DSR 한도 안에서 가능해야 합니다. 고금리 국면에서는 어렵습니다.<br>' +
+      '· <b>기존 세입자와 감액 갱신</b> — 세입자가 계속 살겠다고 하면 차액만 돌려주면 됩니다.<br>' +
+      '· <b>집을 판다</b> — 그런데 이런 시기에는 잘 안 팔립니다.<br><br>' +
+      '<b>보유 채수를 늘려보세요.</b> 여기서 개인이 감당할 수 없는 규모가 되는 지점이 보입니다.');
+  } else {
+    verdict('rvVerdict', '#8E4B3A',
+      count + '채면 ' + eok(total) + ' — 개인이 감당할 수 없는 규모입니다',
+      '한 채당 <b>' + won(gap) + '</b>씩, <b>' + count + '채</b>면 <b>' + eok(total) + '</b>입니다.<br><br>' +
+      '<b>여기서 핵심</b> — 갭투자로 여러 채를 산 사람은 <b>애초에 자기 돈이 거의 없었습니다.</b> 2장에서 봤듯 전세가율이 높을수록 <b>적은 돈으로 많은 채수</b>를 살 수 있었기 때문입니다.<br><br>' +
+      '그런데 <b>역전세는 채수만큼 곱해집니다.</b> 살 때는 「적은 돈으로 많이」였는데, 갚을 때는 「많은 돈이 한꺼번에」가 됩니다. <b>비대칭입니다.</b><br><br>' +
+      '<b>그래서 무슨 일이 벌어졌나</b> — 메우지 못한 집주인들이 <b>보증금을 돌려주지 못했고</b>, 세입자들은 <b>소송과 경매</b>로 가야 했습니다. 그 과정에서 <b>회수하지 못한 금액</b>이 생겼습니다.<br><br>' +
+      '<b>이건 사기가 아니어도 일어납니다.</b> 다음 장은 <b>여기에 고의가 더해진</b> 경우입니다.');
+  }
+}
+['rvOld', 'rvDrop', 'rvCount'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', rvDraw);
+});
+
+/* ══════════ 4. 사기 구조 ══════════ */
+var FD = [
+  { t:'① 시세를 알기 어려운 물건을 고릅니다',
+    p:'대상은 대개 <b>신축 빌라(다세대·연립)</b>였습니다. 02편에서 본 이유 그대로입니다 — <b>같은 물건이 없어서 시세를 비교할 수 없습니다.</b><br><br>아파트는 옆집이 얼마에 팔렸는지 누구나 압니다. 신축 빌라는 <b>거래 사례 자체가 없고</b>, 있어도 <b>내 집과 조건이 다릅니다.</b><br><br>그리고 신축이라 <b>깨끗하고 좋아 보입니다.</b> 첫 입주자라는 점이 오히려 안심을 줍니다.<br><br><b>세입자가 확인할 수 있었던 것</b> — <b>주변 유사 물건의 실거래가</b>. 신축이라 사례가 없다면 <b>인근 비슷한 연식·면적</b>을 찾아봐야 합니다. <b>「비교할 대상이 없다」는 것 자체가 위험 신호</b>입니다.' },
+  { t:'② 시세를 부풀립니다',
+    p:'매매가를 <b>실제 가치보다 높게</b> 설정합니다. 신축이라 <b>「분양가가 이것」</b>이라고 하면 반박하기 어렵습니다.<br><br>여기에 <b>감정평가를 부풀리거나</b>, 부풀린 값으로 <b>몇 건의 실거래를 만들어</b> 그것을 시세처럼 보이게 하는 방식도 쓰였습니다.<br><br>그러면 <b>전세가를 그 부풀린 값에 맞춰</b> 높게 잡을 수 있습니다. 겉보기 전세가율은 <b>80%처럼 보이지만</b>, 진짜 시세 기준으로는 <b>100%를 넘습니다.</b><br><br><b>세입자가 확인할 수 있었던 것</b> — <b>여러 경로로 교차 확인</b>입니다. 중개인 한 곳의 말이 아니라 <b>다른 중개사무소, 실거래가 공개 시스템, 인근 시세</b>를 함께 봐야 합니다. 그리고 <b>보증보험 가입 가능 여부</b>가 강력한 신호입니다 — 보증기관도 시세를 평가하므로, <b>가입이 안 된다면 그 값이 과하다는 뜻</b>일 수 있습니다.' },
+  { t:'③ 세입자를 유인합니다',
+    p:'<b>「시세보다 싸다」</b>, <b>「신축인데 이 가격」</b>, <b>「오늘 안 하면 넘어간다」</b>. 여기에 <b>이사비 지원, 중개보수 대납</b> 같은 혜택이 붙기도 했습니다.<br><br>중개인이 <b>공모하거나</b> 사정을 알면서 소개한 경우도 있었습니다. 그래서 <b>「중개사가 소개했으니 안전하다」는 것은 보장이 아닙니다.</b><br><br><b>표적</b>은 주로 <b>사회 초년생과 신혼부부</b>였습니다. 전세 계약이 처음이라 <b>무엇을 확인해야 하는지 모르고</b>, 목돈 대부분이 <b>전세대출</b>인 경우가 많았습니다.<br><br><b>세입자가 확인할 수 있었던 것</b> — <b>「급하게 만드는 것」 자체가 신호</b>입니다. 코인 08편의 사기 패턴 첫 번째 항목과 같습니다. <b>제대로 된 매물은 하루 이틀 확인한다고 사라지지 않습니다.</b> 그리고 <b>비정상적으로 좋은 조건에는 이유가 있습니다.</b>' },
+  { t:'④ 세입자 돈으로 집을 삽니다',
+    p:'여기가 구조의 핵심입니다. 순서를 보면 <b>「집을 사고 전세를 놓는」 것이 아니라 「전세보증금으로 집을 사는」</b> 것입니다.<br><br>매매 계약과 전세 계약을 <b>같은 날 또는 며칠 안에</b> 처리하면서, <b>세입자가 낸 보증금이 매매 대금으로 들어갑니다.</b> 집주인의 실제 자기 자금은 <b>거의 0</b>입니다.<br><br>2장에서 본 <b>「무자본 갭투자」</b>입니다. 전세가율이 <b>100% 근처거나 넘으면</b> 이게 가능해집니다.<br><br>그리고 자기 돈이 안 드니 <b>같은 방식으로 수십, 수백 채</b>를 할 수 있습니다.<br><br><b>세입자가 확인할 수 있었던 것</b> — <b>계약 시점의 소유자가 누구인가</b>입니다. 등기부상 소유자가 <b>계약 직전에 바뀌었거나 바뀔 예정</b>이라면 각별히 주의해야 합니다. 그리고 <b>「잔금일에 소유권이 이전된다」</b>는 구조라면 <b>내 보증금이 매수 자금으로 쓰이는 것</b>일 수 있습니다.' },
+  { t:'⑤ 명의를 넘깁니다',
+    p:'일정 시점에 소유권을 <b>다른 사람 이름</b>으로 넘깁니다. 대가를 받고 명의를 빌려주는 <b>「바지 임대인」</b>입니다. 자산이 없거나 연락이 닿지 않는 사람인 경우가 많았습니다.<br><br>이렇게 하면 <b>실제 이익을 챙긴 사람은 뒤로 빠지고</b>, 세입자는 <b>갚을 능력이 없는 명의자</b>를 상대하게 됩니다.<br><br>소송에서 이겨도 <b>상대에게 재산이 없으면 받아낼 수 없습니다.</b> 그래서 <b>「이겨도 못 받는」</b> 상황이 생깁니다.<br><br><b>세입자가 확인할 수 있었던 것</b> — <b>거주 중에도 등기부를 주기적으로 확인</b>하는 것입니다. 소유자가 바뀌면 <b>새 소유자가 임대인 지위를 승계</b>하지만, 그 사람이 <b>변제 능력이 있는지는 별개</b>입니다. 소유자 변경을 일찍 알면 <b>만기 전에 대응</b>할 시간이 생깁니다.' },
+  { t:'⑥ 만기가 오고, 돌려줄 돈이 없습니다',
+    p:'2년 뒤 만기가 옵니다. <b>정상적인 구조라면</b> 새 세입자를 받아 그 돈으로 돌려주면 됩니다.<br><br>그런데 <b>전세가가 원래 부풀려져 있었으므로</b> 그 금액에 들어올 새 세입자가 없습니다. 시장이 식으면 더 그렇습니다. <b>3장의 역전세가 극단적인 형태로</b> 나타납니다.<br><br>집주인은 <b>메울 돈이 없고</b>(애초에 자기 돈이 없었으니), 명의자는 <b>갚을 능력이 없습니다.</b><br><br>결국 <b>경매</b>로 갑니다. 그런데 <b>02편의 계산기</b> 그대로입니다 — 부풀려진 값이 아니라 <b>진짜 시세</b>에 <b>낙찰가율</b>을 곱하면, <b>보증금보다 훨씬 적은 금액</b>이 나옵니다.<br><br><b>그래서 피해가 확정됩니다.</b><br><br><b>이 편에서 가장 중요한 문장</b> — 이 모든 단계에서 <b>세입자가 확인할 수 있었던 신호가 있었습니다.</b> 그리고 <b>사고가 난 뒤에는 되돌릴 방법이 거의 없습니다.</b> 그래서 <b>5장이 이 편의 결론</b>입니다.' }
+];
+(function(){
+  var btns = document.querySelectorAll('#fdBtns button');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var v = +b.getAttribute('data-v');
+      btns.forEach(function(o, i){
+        o.classList.toggle('on', i === v);
+        o.classList.toggle('done', i < v);
+      });
+      document.getElementById('fdVerdict').querySelector('.vh').textContent = '단계 ' + (v + 1) + ' / ' + FD.length;
+      verdict('fdVerdict', '#8E4B3A', FD[v].t, FD[v].p);
+    });
+  });
+})();
+
+/* ══════════ 5. 보호 절차 ══════════ */
+var PT = [
+  { t:'① 집을 보기 전 — 시세부터',
+    p:'물건을 보기 전에 <b>그 동네의 시세 감각</b>을 잡아두세요. 나중에 <b>부풀린 값을 들었을 때 알아챌 수 있는</b> 유일한 방법입니다.<br><br><b>할 일</b><br>· <b>실거래가 공개 시스템</b>에서 인근 유사 물건 확인<br>· <b>여러 중개사무소</b>에 같은 조건으로 문의 — 한 곳 말만 듣지 않기<br>· 이 지역의 <b>대략적인 전세가율</b> 파악<br><br><b>기준 하나</b> — 아파트는 시세가 명확하지만 <b>빌라는 그렇지 않습니다</b>(02편). 빌라 전세라면 <b>더 많은 확인이 필요하다</b>고 전제하세요.' },
+  { t:'② 계약 전 — 서류 세 가지',
+    p:'<b>반드시 직접</b> 떼어보세요. 중개인이 보여주는 것만 믿지 마세요. 인터넷으로 <b>몇 천원</b>이면 됩니다.<br><br><b>① 등기부등본</b> — 갑구(소유자·가압류·압류·경매)와 을구(근저당)를 봅니다. 근저당 <b>채권최고액 + 내 보증금</b>이 시세의 <b>70~80%를 넘으면</b> 위험합니다. <b>신탁등기</b>가 있으면 특히 주의하세요.<br><br><b>② 건축물대장</b> — <b>용도</b>(주택인지 숙박·업무시설인지)와 <b>위반건축물 여부</b>를 봅니다. 위반건축물이면 <b>보증보험이 안 될 수</b> 있습니다.<br><br><b>③ 다가구라면 확정일자 부여 현황</b> — 나보다 먼저 들어온 세입자들의 보증금 총액입니다. <b>등기부에는 안 나옵니다</b>(02편). 임대인이 보여주기를 꺼린다면 <b>그 자체가 답</b>입니다.<br><br><b>하나 더</b> — 임대인의 <b>미납 국세·지방세</b>를 확인할 수 있는 제도가 있습니다. 세금 체납은 <b>내 보증금보다 앞설 수</b> 있어 중요합니다. 요건과 절차는 <b>최신 기준으로 확인</b>하세요.' },
+  { t:'③ 계약할 때 — 사람과 특약',
+    p:'<b>사람 확인</b><br>· 계약 상대가 <b>등기부상 소유자와 같은 사람</b>인지 신분증으로 확인<br>· 대리인이면 <b>위임장과 인감증명서</b> 확인, 가능하면 <b>소유자와 직접 통화</b><br>· <b>보증금은 반드시 소유자 명의 계좌</b>로. 중개인이나 제3자 계좌는 안 됩니다.<br><br><b>특약에 넣을 것</b><br>· 「잔금일 <b>다음 날까지</b> 등기부상 권리관계를 현 상태로 유지한다」<br>· 「위반 시 계약을 해제하고 <b>보증금을 즉시 반환</b>한다」<br>· 보증보험을 전제로 한다면 「<b>가입이 불가할 경우 계약을 해제</b>하고 보증금을 반환한다」<br><br><b>왜 이게 필요한가</b> — 계약과 잔금 사이에 <b>근저당이 새로 잡히면</b> 내가 뒤로 밀립니다. 특약은 그때 <b>빠져나올 근거</b>가 됩니다.' },
+  { t:'④ 잔금일 — 같은 날 세 가지',
+    p:'<b>이날이 가장 중요합니다.</b> 순서와 타이밍이 보증금을 지킵니다.<br><br><b>① 잔금 치르기 직전에 등기부를 다시 뗍니다.</b> 계약 후 며칠 사이에 <b>근저당이 새로 잡혔을 수</b> 있습니다. 이걸 확인하지 않고 잔금을 치르면 되돌릴 수 없습니다.<br><br><b>② 전입신고</b> — 그날 바로 합니다. <b>등기부·건축물대장의 표시 그대로</b> 신고해야 합니다. 「101호」로 알고 있었는데 서류상 <b>「B01호」</b>라면, 잘못 신고할 경우 <b>대항력이 생기지 않을 수</b> 있습니다(02편).<br><br><b>③ 확정일자</b> — 함께 받습니다.<br><br><b>왜 이렇게 급한가</b> — 대항력과 우선변제권은 <b>전입한 다음 날 0시부터</b> 효력이 생깁니다. 그 <b>하루의 틈</b>에 근저당이 설정되면 <b>은행이 나보다 앞섭니다.</b> 특약(③)이 이 위험을 줄여주지만, <b>당일 처리가 기본</b>입니다.' },
+  { t:'⑤ 거주 중 — 잊지 말 것',
+    p:'계약이 끝났다고 안심하면 안 됩니다.<br><br><b>① 전입 상태를 유지</b>합니다. 대항력은 <b>계속 거주하고 전입되어 있어야</b> 유지됩니다. 잠깐 다른 곳으로 주소를 옮기면 <b>순위가 사라질 수</b> 있습니다. 가족 사정으로 옮겨야 한다면 <b>반드시 미리 확인</b>하세요.<br><br><b>② 등기부를 주기적으로 확인</b>합니다. 소유자가 바뀌었거나 <b>근저당·압류가 새로 생겼는지</b> 봅니다. 1년에 한두 번이면 충분합니다.<br><br><b>③ 보증보험을 유지</b>합니다. 갱신 시점을 놓치지 마세요.<br><br><b>④ 계약서와 영수증을 보관</b>합니다. 확정일자 받은 원본은 <b>분실하면 곤란합니다.</b><br><br><b>이상 신호</b> — 집주인과 <b>연락이 잘 안 되거나</b>, 소유자가 바뀌었는데 <b>알려주지 않았거나</b>, 인근에서 <b>같은 임대인의 보증금 사고 소식</b>이 들린다면 <b>만기를 기다리지 말고 상담</b>하세요.' },
+  { t:'⑥ 만기 전 — 늦어도 몇 달 전에',
+    p:'<b>만기 두세 달 전</b>에는 움직여야 합니다.<br><br><b>① 갱신 여부를 명확히 통지</b>합니다. 계약갱신청구권을 쓸지, 나갈지. <b>기한이 정해져 있으므로</b> 늦으면 자동 갱신되거나 권리를 잃을 수 있습니다.<br><br><b>② 나간다면 반환 일정을 문서로</b> 확인합니다. 「새 세입자 구해지면 준다」는 <b>구두 약속은 근거가 약합니다.</b><br><br><b>③ 반환이 불확실해 보이면 즉시 준비</b>합니다.<br>· <b>내용증명</b>으로 반환 요구를 남깁니다.<br>· 이사해야 한다면 <b>임차권등기명령</b>을 신청합니다. 이걸 마쳐야 <b>이사해도 순위가 유지</b>됩니다.<br>· 보증보험에 가입했다면 <b>보증기관에 즉시 연락</b>합니다.<br>· 필요하면 <b>전세피해지원 창구나 법률 상담</b>을 받습니다.<br><br><b>가장 흔한 실수</b> — <b>「곧 준다」는 말을 믿고 기다리는 것</b>입니다. 그 사이에 <b>다른 채권자가 앞서거나</b> 상황이 나빠질 수 있습니다. <b>기다리되 절차는 동시에 진행</b>하세요.' }
+];
+(function(){
+  var btns = document.querySelectorAll('#ptBtns button');
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){
+      var v = +b.getAttribute('data-v');
+      btns.forEach(function(o, i){
+        o.classList.toggle('on', i === v);
+        o.classList.toggle('done', i < v);
+      });
+      document.getElementById('ptVerdict').querySelector('.vh').textContent = '시점 ' + (v + 1) + ' / ' + PT.length;
+      verdict('ptVerdict', '#4C7A6D', PT[v].t, PT[v].p);
+    });
+  });
+})();
+
+/* ══════════ 5b. 안전성 계산기 ══════════ */
+function sfDraw(){
+  var price = +document.getElementById('sfPrice').value;
+  var dep = +document.getElementById('sfDep').value;
+  var mort = +document.getElementById('sfMort').value;
+  var rate = +document.getElementById('sfRate').value / 100;
+
+  document.getElementById('sfPriceOut').textContent = (price / 10000).toFixed(1) + '억원';
+  document.getElementById('sfDepOut').textContent = (dep / 10000).toFixed(1) + '억원';
+  document.getElementById('sfMortOut').textContent = mort === 0 ? '0원' : (mort / 10000).toFixed(1) + '억원';
+  document.getElementById('sfRateOut').textContent = (rate * 100).toFixed(0) + '%';
+
+  var ratio = (dep + mort) / price * 100;
+  var pot = price * rate;
+  var get = Math.min(dep, Math.max(0, pot - mort));
+  var loss = dep - get;
+
+  var rEl = document.getElementById('sfRatio');
+  rEl.textContent = ratio.toFixed(0) + '%';
+  rEl.style.color = ratio > 80 ? 'var(--neg)' : (ratio > 70 ? '' : 'var(--pos)');
+  var gEl = document.getElementById('sfGet');
+  gEl.textContent = eok(get) + (loss > 0.5 ? ' (부족 ' + eok(loss) + ')' : ' (전액)');
+  gEl.style.color = loss > 0.5 ? 'var(--neg)' : 'var(--pos)';
+
+  var X0 = 40, W = 560, ymax = price || 1;
+  function w(v){ return Math.max(0, v / ymax * W); }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">시세 ' + (price / 10000).toFixed(1) + '억 → 낙찰 ' +
+       (pot / 10000).toFixed(2) + '억 (낙찰가율 ' + (rate * 100).toFixed(0) + '%)</text>';
+  g += '<rect x="' + X0 + '" y="32" width="' + W + '" height="18" rx="2" fill="#D9D2C0" fill-opacity=".7" stroke="#C8BFA8" stroke-width="1"/>';
+  g += '<rect x="' + X0 + '" y="32" width="' + w(pot).toFixed(1) + '" height="18" rx="2" fill="#5B5648" fill-opacity=".3" stroke="#5B5648" stroke-width="1.1"/>';
+  var x = X0;
+  if(mort > 0){
+    g += '<rect x="' + x.toFixed(1) + '" y="62" width="' + w(mort).toFixed(1) + '" height="26" rx="2" fill="#8E4B3A" fill-opacity=".45" stroke="#8E4B3A" stroke-width="1.2"/>';
+    if(w(mort) > 60) g += '<text class="axt" x="' + (x + 6).toFixed(1) + '" y="79">근저당</text>';
+    x += w(mort);
+  }
+  g += '<rect x="' + x.toFixed(1) + '" y="62" width="' + w(dep).toFixed(1) + '" height="26" rx="2" fill="#3A5A8E" fill-opacity=".45" stroke="#3A5A8E" stroke-width="1.2"/>';
+  if(w(dep) > 70) g += '<text class="axt" x="' + (x + 6).toFixed(1) + '" y="79">내 보증금 ' + (dep / 10000).toFixed(1) + '억</text>';
+  var px = X0 + w(pot);
+  g += '<line x1="' + px.toFixed(1) + '" y1="56" x2="' + px.toFixed(1) + '" y2="96" stroke="#8E4B3A" stroke-width="2"/>';
+  g += '<text class="lblb" x="' + Math.min(px + 8, X0 + W - 4).toFixed(1) + '" y="108" fill="#8E4B3A" text-anchor="' +
+       (px > X0 + W - 130 ? 'end' : 'start') + '">낙찰금은 여기까지</text>';
+  g += '<text class="' + (loss > 0.5 ? 'lblb' : 'axt') + '" x="' + X0 + '" y="136"' +
+       (loss > 0.5 ? ' fill="#8E4B3A"' : '') + '>' +
+       (loss > 0.5 ? '보증금 ' + eok(dep) + ' 중 ' + eok(get) + '만 회수 — ' + eok(loss) + ' 손실'
+                   : '보증금 ' + eok(dep) + ' 전액이 낙찰금 안에 들어옵니다.') + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="158">전세가율 (보증금 + 근저당) ÷ 시세 = ' + ratio.toFixed(0) + '%</text>';
+  document.getElementById('sfScene').innerHTML = g;
+
+  if(loss > 0.5){
+    verdict('sfVerdict', '#8E4B3A',
+      '이 조건이면 ' + eok(loss) + '을 잃습니다',
+      '시세 <b>' + eok(price) + '</b>에 낙찰가율 <b>' + (rate * 100).toFixed(0) + '%</b>를 적용하면 <b>' +
+      eok(pot) + '</b>입니다. 근저당 <b>' + eok(mort) + '</b>을 빼면 <b>' + eok(Math.max(0, pot - mort)) +
+      '</b>이 남고, 내 보증금 <b>' + eok(dep) + '</b>에 <b>' + eok(loss) + '이 모자랍니다.</b><br><br>' +
+      '<b>이런 계약은 하지 마세요.</b> 안전 마진이 없는 정도가 아니라 <b>이미 마이너스</b>입니다.<br><br>' +
+      '<b>가장 흔한 함정</b> — 「시세가 <b>' + eok(price) + '</b>인데 전세가 <b>' + eok(dep) +
+      '</b>이면 여유가 있다」고 생각하는 것입니다. 그런데 <b>경매는 시세대로 안 팔립니다.</b> 낙찰가율을 곱하는 순간 <b>' +
+      eok(price - pot) + '이 증발합니다.</b><br><br>' +
+      '<b>그리고 「시세」 자체를 의심해야 합니다</b>(4장). 부풀려진 값이라면 실제 낙찰가는 <b>이보다 더 낮습니다.</b>');
+  } else if(ratio > 80){
+    verdict('sfVerdict', '#9E7A2E',
+      '전액 회수되지만 전세가율 ' + ratio.toFixed(0) + '%는 높습니다',
+      '지금 가정에서는 보증금 전액이 회수됩니다. 다만 <b>(보증금 + 근저당) ÷ 시세 = ' + ratio.toFixed(0) +
+      '%</b>로 <b>여유가 적습니다.</b><br><br>' +
+      '<b>왜 문제인가</b> — 이 계산에는 <b>경매 비용, 당해세, 최우선변제</b> 같은 항목이 빠져 있습니다. 그리고 <b>시장이 나쁠 때 낙찰가율은 더 떨어집니다.</b><br><br>' +
+      '<b>낙찰가율 슬라이더를 60%로 내려보세요.</b> 그래도 전액이 남는지가 실질적인 기준입니다.<br><br>' +
+      '<b>실전 기준</b> — 전세가율 <b>70% 이하</b>면 비교적 안전하고, <b>80%를 넘으면 신중해야</b> 하며, <b>90%를 넘으면 하지 않는 것</b>이 원칙에 가깝습니다. 그리고 <b>보증보험 가입</b>이 되는지 반드시 확인하세요.');
+  } else {
+    verdict('sfVerdict', '#4C7A6D',
+      '전세가율 ' + ratio.toFixed(0) + '% — 여유가 있습니다',
+      '보증금 <b>' + eok(dep) + '</b> 전액이 낙찰금 안에 들어오고, <b>' + eok(pot - mort - dep) + '</b>의 여유가 남습니다.<br><br>' +
+      '<b>다만 이건 「시세를 정확히 알았을 때」의 이야기</b>입니다. 4장에서 봤듯 <b>부풀려진 값을 시세로 믿는 것</b>이 사고의 출발점이었습니다. <b>시세 슬라이더를 20% 내려보면</b> 그림이 어떻게 달라지는지 확인해보세요.<br><br>' +
+      '<b>그리고 이 계산은 전제가 있습니다</b> — 내가 <b>전입신고와 확정일자를 제대로 갖췄고</b>, 나보다 앞선 임차인이 없다는 것입니다. <b>다가구라면 확정일자 현황을 반드시 확인</b>하세요(02편).<br><br>' +
+      '<b>가장 확실한 방법은 보증보험</b>입니다. 가입이 되면 이 계산과 무관하게 보증기관이 책임집니다. <b>가입이 안 되는 물건이라면 왜 안 되는지</b>가 곧 답입니다.');
+  }
+}
+['sfPrice', 'sfDep', 'sfMort', 'sfRate'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', sfDraw);
+});
+
+/* ══════════ 6. 월세 전환 ══════════ */
+function cvCalc(){
+  var full = +document.getElementById('cvFull').value;
+  var keep = Math.min(+document.getElementById('cvKeep').value, full);
+  var rate = +document.getElementById('cvRate').value / 100;
+  var loanRate = +document.getElementById('cvLoan').value / 100;
+
+  document.getElementById('cvFullOut').textContent = (full / 10000).toFixed(1) + '억원';
+  document.getElementById('cvKeepOut').textContent = (keep / 10000).toFixed(1) + '억원';
+  document.getElementById('cvRateOut').textContent = (rate * 100).toFixed(1) + '%';
+  document.getElementById('cvLoanOut').textContent = (loanRate * 100).toFixed(1) + '%';
+
+  var converted = full - keep;
+  var monthly = converted * rate / 12;
+  var loanMonthly = converted * loanRate / 12;
+
+  document.getElementById('cvMonth').textContent = converted > 0 ? won(monthly) + ' / 월' : '없음 (전세 그대로)';
+  document.getElementById('cvMonth').style.color = converted > 0 ? 'var(--neg)' : '';
+  var kEl = document.getElementById('cvRisk');
+  kEl.textContent = eok(full) + ' → ' + eok(keep) + ' (' + (converted > 0 ? '-' + eok(converted) : '변화 없음') + ')';
+  kEl.style.color = converted > 0 ? 'var(--pos)' : '';
+
+  if(converted <= 0){
+    verdict('cvVerdict', '#5B5648',
+      '전세 그대로입니다',
+      '보증금 <b>' + eok(full) + '</b>이 전액 묶여 있습니다. 월세는 없지만 <b>이 금액 전부가 집주인의 신용에 걸려</b> 있습니다.<br><br>' +
+      '<b>「낮출 보증금」 슬라이더를 내려보세요.</b> 위험에 걸린 금액이 줄어드는 대신 월세가 생깁니다.');
+  } else if(rate > loanRate){
+    verdict('cvVerdict', '#3A5A8E',
+      '금전적으로는 전세가 유리한 구간입니다',
+      '보증금을 <b>' + eok(converted) + '</b> 줄이면 월세 <b>' + won(monthly) + '</b>을 냅니다. 같은 돈을 <b>전세대출로 빌렸다면 이자가 월 ' +
+      won(loanMonthly) + '</b>입니다.<br><br>' +
+      '즉 전환율(<b>' + (rate * 100).toFixed(1) + '%</b>)이 대출금리(<b>' + (loanRate * 100).toFixed(1) +
+      '%</b>)보다 높으므로, <b>돈만 따지면 전세가 유리</b>합니다. 월 <b>' + won(monthly - loanMonthly) + '</b> 차이입니다.<br><br>' +
+      '<b>그런데 돈이 전부는 아닙니다.</b> 보증금을 줄이면 <b>위험에 걸린 금액이 ' + eok(converted) + ' 줄어듭니다.</b><br><br>' +
+      '<b>이걸 보험료로 보세요</b> — 월 <b>' + won(monthly - loanMonthly) +
+      '</b>을 더 내는 대신 <b>' + eok(converted) + '</b>의 위험을 던다면, 그게 비싼지 싼지는 <b>그 물건이 얼마나 안전한가</b>에 달려 있습니다. 5장 계산기 결과가 불안하다면 <b>충분히 낼 만한 값</b>입니다.');
+  } else {
+    verdict('cvVerdict', '#4C7A6D',
+      '월세 전환이 금전적으로도 유리합니다',
+      '보증금을 <b>' + eok(converted) + '</b> 줄이면 월세 <b>' + won(monthly) + '</b>인데, 같은 돈을 전세대출로 빌렸다면 이자가 월 <b>' +
+      won(loanMonthly) + '</b>입니다. <b>월 ' + won(loanMonthly - monthly) + '이 절약</b>됩니다.<br><br>' +
+      '전환율(<b>' + (rate * 100).toFixed(1) + '%</b>)이 대출금리(<b>' + (loanRate * 100).toFixed(1) +
+      '%</b>)보다 낮기 때문입니다.<br><br>' +
+      '<b>그리고 위험도 함께 줄어듭니다.</b> 묶이는 돈이 <b>' + eok(full) + ' → ' + eok(keep) + '</b>이 되므로, 사고가 나도 <b>잃을 수 있는 최대 금액이 줄어듭니다.</b><br><br>' +
+      '<b>즉 돈도 아끼고 위험도 줄이는 구간</b>입니다. 고금리 국면에서 실제로 이런 상황이 만들어졌고, 그래서 <b>월세로 옮겨가는 흐름</b>이 커졌습니다(7장).');
+  }
+}
+['cvFull', 'cvKeep', 'cvRate', 'cvLoan'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', cvCalc);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#jsCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#jsCheck li.done').length;
+      document.getElementById('jsCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 이 목록에 몇 시간을 쓰는 것이, 사고가 난 뒤 몇 년을 쓰는 것보다 낫습니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+gpDraw();
+rvDraw();
+document.querySelector('#fdBtns button[data-v="0"]').click();
+document.querySelector('#ptBtns button[data-v="0"]').click();
+sfDraw();
+cvCalc();
+</script>
+</body>
+</html>
