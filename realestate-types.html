@@ -1,0 +1,1000 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>아파트·빌라·단독·다가구 구분법</title>
+<meta name="description" content="다가구와 다세대의 차이가 왜 전세 사고와 직결되는지, 오피스텔·도시형생활주택·생활형숙박시설은 무엇이 다른지, 그리고 왜 아파트만 오르는지 정리한 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --single:#8E6B3A;
+    --multi:#6B7A52;
+    --apt:#3A5A8E;
+    --other:#7A5C9E;
+    --bad:#8E4B3A;
+    --neutral:#5B5648;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  .subnote{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);}
+
+  /* 핵심 한 줄 */
+  .keyline{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--bad);
+    border-radius:3px;
+    padding:22px 24px;
+    margin:26px 0;
+    text-align:center;
+  }
+  .keyline .kt{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--bad);
+    margin-bottom:12px;
+  }
+  .keyline .kb{
+    font-family:'Newsreader',serif;
+    font-size:21px;
+    line-height:1.45;
+    color:var(--ink);
+  }
+  .keyline .kb b{color:var(--bad);}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">부동산 02 · 종류 · 투자 공부 노트</div>
+    <h1>아파트·빌라·단독·다가구<br>구분법</h1>
+    <p class="lede">「빌라」는 <b>법에 없는 말</b>입니다. 그리고 <b>다가구</b>와 <b>다세대</b>는 이름이 한 글자 차이인데 <b>등기 구조가 완전히 다릅니다.</b> 이 한 글자를 몰라서 <b>보증금을 통째로 잃는 일</b>이 지금도 벌어집니다. 이 편은 그 구분부터 정확히 잡습니다.</p>
+    <div class="callout">
+      <b>이 편이 실제로 지켜주는 것.</b> 집을 사는 사람보다 <b>전세를 구하는 사람에게 더 급한 내용</b>입니다. 계약서에 도장을 찍기 전 <b>이 건물이 무슨 종류인지</b>와 <b>내 앞에 누가 몇 명 있는지</b>를 확인하는 법을 다룹니다. <b>4장의 계산기</b>가 이 편의 핵심입니다.
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="법적 기준과 실무까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#why">1. 왜 구분이 중요한가</a>
+    <a href="#法">2. 여섯 가지 도감</a>
+    <a href="#pair">3. 다가구 vs 다세대</a>
+    <a href="#auction">4. 경매로 넘어가면</a>
+    <a href="#other">5. 오피스텔·도생·생숙</a>
+    <a href="#deungki">6. 등기부 읽는 법</a>
+    <a href="#apt">7. 왜 아파트만 오르나</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="why">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 이유</span>
+      <h2>이름이 다르면 거의 모든 게 다릅니다</h2>
+      <p class="one">같은 「집」처럼 보여도 <b>등기·대출·세금·안전성</b>이 전부 갈립니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>겉보기에 비슷한 건물이 두 개 있어. 둘 다 4층이고, 한 층에 두 집씩 살아. 그런데 <b>하나는 「다가구」고 하나는 「다세대」</b>야.</p>
+      <p>차이가 뭘까? <b>주인이 몇 명이냐</b>야.</p>
+      <p><b>다가구</b>는 건물 전체가 <b>한 사람 것</b>이야. 집주인 한 명이 여러 집에 세를 놓는 거지.<br>
+      <b>다세대</b>는 <b>101호, 102호마다 주인이 따로</b> 있어. 아파트처럼.</p>
+      <p>이게 왜 중요하냐면 — <b>다가구에서 집주인이 빚을 못 갚아 건물이 경매에 넘어가면</b>, 그 건물에 사는 <b>모든 세입자가 한꺼번에</b> 문제에 휘말려. 그리고 <b>먼저 들어온 사람이 먼저 돈을 받아.</b> 내가 늦게 들어왔으면 <b>남는 게 없을 수도</b> 있어.</p>
+      <p>더 무서운 건 — <b>내 앞에 몇 명이 얼마씩 넣었는지, 등기부만 봐서는 안 보여.</b></p>
+    </div>
+
+    <div class="deep">
+      <h3>구분이 바꾸는 것들</h3>
+      <p><b>① 등기 구조.</b> 다가구는 건물 전체가 <b>등기 하나</b>입니다. 다세대는 <b>호실마다 등기</b>가 따로 있습니다. 그래서 다세대는 <b>한 호실만 사고팔 수 있고</b> 다가구는 <b>건물째</b>여야 합니다.</p>
+      <p><b>② 전세 안전성.</b> 위에서 본 대로입니다. 다세대는 <b>내 호실의 등기부만 보면</b> 내 앞에 뭐가 있는지 대체로 파악됩니다. 다가구는 <b>다른 세입자들의 보증금</b>이 내 앞에 쌓여 있는데 <b>등기부에 안 나옵니다.</b></p>
+      <p><b>③ 대출.</b> 담보 가치 평가와 대출 한도가 다릅니다. <b>아파트가 가장 유리</b>하고, 다가구·단독으로 갈수록 조건이 나빠집니다. 시세 산정이 어렵기 때문입니다(7장).</p>
+      <p><b>④ 세금.</b> 주택 수 산정, 취득세율, 양도세 비과세 요건에서 <b>주택인지 아닌지</b>가 갈립니다. 오피스텔이 특히 헷갈립니다(5장, 그리고 06편).</p>
+      <p><b>⑤ 환금성.</b> 팔 때 사줄 사람이 얼마나 많은가. 이게 결국 <b>왜 아파트만 오르는가</b>로 이어집니다(7장).</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="法">
+    <div class="prod-head" style="--edge:var(--multi)">
+      <span class="prod-tag">02 · 도감</span>
+      <h2>법으로는 여섯 가지입니다</h2>
+      <p class="one">기준은 <b>층수·바닥면적·소유권</b> 셋뿐입니다. 생각보다 단순합니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TYPES · 건물을 눌러보세요</div>
+      <p class="labsub">위쪽은 <b>단독주택</b>(소유자 한 명), 아래쪽은 <b>공동주택</b>(호실마다 소유자)입니다.</p>
+
+      <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주택 유형 여섯 가지 도식">
+        <g id="tyScene"></g>
+      </svg>
+
+      <div class="verdict" id="tyVerdict" style="--vc:var(--multi)">
+        <div class="vh">유형</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>기준에 대해.</b> 층수·면적 기준은 <b>건축법 시행령의 용도별 건축물 종류</b>를 따랐습니다. 실제로는 <b>1층을 필로티 주차장으로 쓰면 층수에서 빼는</b> 등 세부 규정이 더 있고, 개정될 수 있습니다. 정확한 판단은 <b>건축물대장</b>으로 확인하세요.
+      </div>
+    </div>
+
+    <h3>한 장으로</h3>
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th></th><th>층수</th><th>바닥면적 합계</th><th>소유권</th><th>흔히 부르는 말</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>단독주택</th><td>—</td><td>—</td><td>한 명</td><td>단독, 주택</td></tr>
+          <tr><th>다중주택</th><td>3개 층 이하</td><td>660㎡ 이하</td><td>한 명</td><td>하숙, 셰어하우스</td></tr>
+          <tr><th>다가구주택</th><td>3개 층 이하</td><td>660㎡ 이하 · 19세대 이하</td><td><b>한 명 (구분등기 불가)</b></td><td>「빌라」로도 불림</td></tr>
+          <tr><th>다세대주택</th><td>4개 층 이하</td><td>660㎡ <b>이하</b></td><td><b>호실마다</b></td><td>「빌라」</td></tr>
+          <tr><th>연립주택</th><td>4개 층 이하</td><td>660㎡ <b>초과</b></td><td><b>호실마다</b></td><td>「빌라」, 연립</td></tr>
+          <tr><th>아파트</th><td><b>5개 층 이상</b></td><td>—</td><td><b>호실마다</b></td><td>아파트</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <div class="note">
+      <p><b>「빌라」는 법에 없는 말입니다.</b> 다세대·연립을 주로 가리키지만 <b>다가구를 빌라라고 부르는 경우도 흔합니다.</b> 그래서 <b>「빌라 전세」라는 말만으로는 위험도를 알 수 없습니다.</b></p>
+      <p>부동산에서 「빌라」라고 소개받았다면 <b>반드시 등기부등본과 건축물대장으로 실제 종류를 확인</b>해야 합니다. 이게 이 편에서 가장 실용적인 한 문장입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="pair">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">03 · 핵심</span>
+      <h2>다가구와 다세대 — 한 글자가 만드는 차이</h2>
+      <p class="one">이 편에서 <b>단 하나만 기억한다면</b> 이것입니다.</p>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">기억할 한 줄</div>
+      <div class="kb">다가구는 <b>건물 전체가 등기 하나</b>,<br>다세대는 <b>호실마다 등기가 따로</b>.</div>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COMPARE · 무엇이 달라지나</div>
+      <p class="labsub">항목을 눌러 <b>같은 상황에서 결과가 어떻게 갈리는지</b> 확인하세요.</p>
+
+      <div class="btnrow" id="pcBtns">
+        <button data-v="0" class="on">등기부에 보이는 것</button>
+        <button data-v="1">내 앞의 순위</button>
+        <button data-v="2">사고가 났을 때</button>
+        <button data-v="3">확인하는 방법</button>
+      </div>
+
+      <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="다가구와 다세대의 권리 구조 비교">
+        <g id="pcScene"></g>
+      </svg>
+
+      <div class="verdict" id="pcVerdict" style="--vc:var(--bad)">
+        <div class="vh">비교</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="auction">
+    <div class="prod-head" style="--edge:var(--bad)">
+      <span class="prod-tag">04 · 계산기</span>
+      <h2>경매로 넘어가면 내 보증금은 얼마나 돌아오나</h2>
+      <p class="one">계약 전에 <b>이 계산을 해보는 것</b>만으로 대부분의 사고를 피할 수 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>집주인이 은행 빚을 못 갚으면 <b>집이 경매로 팔려.</b> 그리고 그 돈을 <b>순서대로</b> 나눠 가져.</p>
+      <p>순서는 이래. <b>먼저 권리를 잡은 사람이 먼저</b>야. 은행이 먼저 근저당을 잡았으면 은행이 먼저 받고, 그다음 <b>먼저 들어온 세입자</b>, 그다음 <b>나중에 들어온 세입자.</b></p>
+      <p>그런데 <b>경매로 팔리는 값은 시세보다 싸.</b> 보통 <b>70~80%</b> 정도야. 그러니까 앞사람들이 다 가져가고 나면 <b>내 차례에 남는 게 없을 수도</b> 있어.</p>
+      <p>아래에서 직접 계산해보자. <b>이게 이 편에서 제일 중요한 계산기</b>야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">RECOVERY · 내 보증금이 안전한가</div>
+      <p class="labsub">유형을 고르고 숫자를 넣어보세요. <b>계약 전에 이 계산을 해야 합니다.</b></p>
+
+      <div class="btnrow" id="auType">
+        <button data-v="0" class="on">다세대 · 아파트 (호실 등기)</button>
+        <button data-v="1">다가구 (건물 통째 등기)</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="auPrice" id="auPriceLabel">내 호실 시세</label>
+        <input type="range" id="auPrice" min="1" max="40" step="0.5" value="3">
+        <output id="auPriceOut">3.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="auRate">경매 낙찰가율</label>
+        <input type="range" id="auRate" min="50" max="95" step="1" value="75">
+        <output id="auRateOut">75%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="auMort">선순위 근저당 (은행 빚)</label>
+        <input type="range" id="auMort" min="0" max="30" step="0.1" value="0">
+        <output id="auMortOut">0.0억원</output>
+      </div>
+      <div class="ctrl-row" id="auPriorRow">
+        <label for="auPrior">나보다 먼저 들어온 보증금 합</label>
+        <input type="range" id="auPrior" min="0" max="30" step="0.1" value="0">
+        <output id="auPriorOut">0.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="auDep">내 보증금</label>
+        <input type="range" id="auDep" min="0.2" max="20" step="0.1" value="2">
+        <output id="auDepOut">2.0억원</output>
+      </div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="경매 배당 순서에 따른 보증금 회수 구조">
+        <g id="auScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">돌려받을 수 있는 금액</span><span class="rv" id="auGet">—</span></div>
+        <div><span class="rk">못 받는 금액</span><span class="rv" id="auLoss">—</span></div>
+      </div>
+
+      <div class="verdict" id="auVerdict" style="--vc:var(--bad)">
+        <div class="vh">보증금 안전성</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>단순화했습니다.</b> <b>소액임차인 최우선변제</b>(일정 금액까지 순위와 무관하게 먼저 받는 제도), 경매 비용, 당해세, 임금채권 같은 항목을 뺐습니다. 최우선변제 한도는 <b>지역과 시점에 따라 다르고 개정됩니다.</b> 또한 이 계산은 <b>전입신고와 확정일자를 갖춰 우선변제권이 있다</b>고 가정합니다 — <b>그게 없으면 순위 자체가 없습니다.</b> 실제 판단은 <b>등기부·확정일자 현황·전문가 확인</b>이 필요합니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>보증금을 지키는 순서</h3>
+      <p><b>① 계약 전 — 등기부등본을 뗍니다.</b> 근저당(을구), 가압류·압류(갑구)를 확인합니다. <b>계약 당일에 다시 한 번</b> 떼야 합니다. 사이에 근저당이 새로 잡힐 수 있습니다.</p>
+      <p><b>② 다가구라면 — 확정일자 부여 현황을 확인합니다.</b> 그 건물의 <b>다른 세입자들이 언제 얼마의 보증금으로 들어왔는지</b>를 보는 서류입니다. 임대인의 동의나 정당한 이해관계가 필요할 수 있습니다. <b>집주인이 이걸 보여주기를 꺼린다면 그 자체가 신호</b>입니다.</p>
+      <p><b>③ 계약서에 특약을 넣습니다.</b> 「잔금일 다음 날까지 등기부상 권리관계를 현 상태로 유지한다」는 취지의 문구가 흔히 쓰입니다.</p>
+      <p><b>④ 잔금 치른 날 바로 전입신고 + 확정일자.</b> 확정일자의 우선변제 효력은 <b>전입한 다음 날 0시부터</b> 생깁니다. 이 하루의 틈에 근저당이 잡히면 <b>내가 뒤로 밀립니다.</b> 그래서 ③의 특약이 중요합니다.</p>
+      <p><b>⑤ 가능하면 보증보험에 가입합니다.</b> 보증금 반환을 보증기관이 책임지는 상품입니다. <b>가입 조건이 안 되는 물건</b>이라면, 그건 <b>그 물건이 위험하다는 신호로 읽어야</b> 합니다.</p>
+
+      <h3>「전세가율이 높다」가 위험 신호인 이유</h3>
+      <p>01편에서 <b>전세가율</b>(집값 대비 전세금 비율)을 봤습니다. 세입자 입장에서 이 숫자는 <b>안전 마진</b>입니다.</p>
+      <p>전세가율이 <b>70%</b>면 집값이 30% 떨어져도 보증금은 대체로 지켜집니다. 그런데 <b>90%를 넘으면</b> 경매 낙찰가율만 생각해도 <b>이미 부족합니다.</b> 위 계산기에서 확인할 수 있습니다.</p>
+      <p>그리고 <b>전세가율이 100%에 가깝거나 넘는 물건</b>이 있습니다. 이걸 <b>깡통전세</b>라고 부릅니다. 07편에서 이 구조가 <b>어떻게 의도적으로 만들어졌는지</b> 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="other">
+    <div class="prod-head" style="--edge:var(--other)">
+      <span class="prod-tag">05 · 주택이 아닌 것들</span>
+      <h2>오피스텔·도시형생활주택·생활형숙박시설</h2>
+      <p class="one">집처럼 생겼는데 <b>법적으로는 집이 아닌 것</b>들이 있습니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th></th><th>오피스텔</th><th>도시형생활주택</th><th>생활형숙박시설</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>법적 성격</th><td>업무시설 (준주택)</td><td><b>주택</b></td><td>숙박시설</td></tr>
+          <tr><th>주거용 사용</th><td>가능</td><td>당연히 가능</td><td><b>원칙적으로 불가</b></td></tr>
+          <tr><th>전입신고</th><td>주거용이면 가능</td><td>가능</td><td><b>원칙적으로 불가</b></td></tr>
+          <tr><th>취득세</th><td>주택 아닌 세율 (4.6%)</td><td>주택 세율</td><td>주택 아닌 세율 (4.6%)</td></tr>
+          <tr><th>주택 수 산입</th><td><b>주거용이면 포함될 수 있음</b></td><td>포함</td><td>원칙적으로 미포함</td></tr>
+          <tr><th>주택담보대출</th><td>제한적</td><td>가능</td><td>불가 (사업자대출 등)</td></tr>
+          <tr><th>흔한 오해</th><td>「주택 수에 안 들어간다」</td><td>「아파트다」</td><td>「살아도 된다」</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <div class="note">
+      <p><b>⚠️ 이 표는 특히 빨리 낡습니다.</b> 오피스텔의 주택 수 산입, 생활형숙박시설의 주거용 사용 규제(이행강제금 부과와 유예)는 <b>정책적으로 여러 번 바뀌었고 지금도 논의 중</b>입니다. 세율과 대출 규제도 마찬가지입니다.</p>
+      <p>여기서 가져갈 것은 <b>구체적 숫자가 아니라 「이 셋은 아파트와 법적 취급이 다르다」는 사실</b>입니다. 실제 판단 전에는 <b>반드시 최신 자료로 확인하세요.</b> 세무 조언이 아닙니다.</p>
+    </div>
+
+    <div class="deep">
+      <h3>오피스텔에서 가장 자주 나는 사고</h3>
+      <p><b>「오피스텔은 주택이 아니니까 주택 수에 안 들어간다」</b>는 믿음입니다. 그런데 <b>주거용으로 쓰면 세법상 주택으로 볼 수 있습니다.</b></p>
+      <p>그러면 무슨 일이 생기냐면 — 1주택자가 오피스텔을 샀는데, 나중에 <b>원래 집을 팔 때 「1세대 1주택 비과세」를 못 받는</b> 상황이 생길 수 있습니다. <b>취득세를 아꼈다고 좋아했다가 양도세에서 훨씬 크게 물리는</b> 구조입니다.</p>
+      <p>판단 기준은 <b>「실제로 주거용으로 쓰였는가」</b>이고, 이건 <b>전입신고 여부, 내부 구조, 임대차 계약 형태</b> 등으로 판단됩니다. <b>「업무용으로 신고했으니 괜찮다」가 자동으로 성립하지는 않습니다.</b></p>
+
+      <h3>생활형숙박시설 — 「살 수 있다」고 팔렸지만</h3>
+      <p>분양 당시 <b>주거용처럼 홍보</b>된 경우가 많았습니다. 청약 규제나 주택 수 산입을 피할 수 있다는 점이 부각됐습니다.</p>
+      <p>그런데 <b>건축법상 숙박시설</b>이라 <b>주거용으로 쓰는 것은 원칙적으로 위법</b>입니다. 정부가 <b>이행강제금 부과</b> 방침을 밝혔다가 <b>유예를 반복</b>하면서, 소유자들이 오랫동안 불확실한 상태에 놓였습니다.</p>
+      <p><b>여기서 배울 것</b> — 이 시리즈가 반복하는 이야기입니다. <b>「규제를 피할 수 있다」가 주된 장점인 상품은 그 규제가 바뀌면 장점이 사라집니다.</b> 코인 07편에서 규제 변화를 위험으로 다룬 것과 같은 구조입니다.</p>
+      <p class="plain"><b>확인 방법.</b> 분양 광고나 중개인의 말이 아니라 <b>건축물대장의 「용도」</b>를 보세요. 거기에 <b>「숙박시설」</b>이라고 적혀 있으면 숙박시설입니다. 이름이 「○○레지던스」든 「○○스위트」든 상관없습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="deungki">
+    <div class="prod-head" style="--edge:var(--apt)">
+      <span class="prod-tag">06 · 실무</span>
+      <h2>등기부등본은 세 부분입니다</h2>
+      <p class="one">이 셋만 알면 <b>대부분의 위험은 눈에 보입니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>등기부등본은 <b>그 집의 신분증</b> 같은 거야. 세 칸으로 나뉘어 있어.</p>
+      <p><b>표제부</b>는 「이 집이 어디에 있고 얼마나 큰가」.<br>
+      <b>갑구</b>는 「이 집 주인이 누구인가」.<br>
+      <b>을구</b>는 「이 집에 빚이 얼마나 걸려 있는가」.</p>
+      <p>전세를 구할 때 제일 중요한 건 <b>을구</b>야. 거기에 <b>은행 빚(근저당)</b>이 얼마나 적혀 있는지 봐야 하거든. 내 보증금보다 그게 크면 <b>위험해.</b></p>
+      <p>인터넷으로 <b>누구나</b> 뗄 수 있어. 몇 백원이면 돼. <b>이걸 안 떼고 계약하는 게 가장 흔한 실수</b>야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">REGISTRY · 각 칸에서 무엇을 볼까</div>
+      <p class="labsub">칸을 눌러 <b>거기서 확인해야 할 것</b>과 <b>위험 신호</b>를 보세요.</p>
+
+      <div class="btnrow" id="dgBtns">
+        <button data-v="0" class="on">표제부</button>
+        <button data-v="1">갑구</button>
+        <button data-v="2">을구</button>
+        <button data-v="3">건축물대장</button>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="등기부등본의 구성">
+        <g id="dgScene"></g>
+      </svg>
+
+      <div class="verdict" id="dgVerdict" style="--vc:var(--apt)">
+        <div class="vh">서류</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7 ══════════ -->
+  <section id="apt">
+    <div class="prod-head" style="--edge:var(--apt)">
+      <span class="prod-tag">07 · 시장</span>
+      <h2>왜 아파트만 오르나</h2>
+      <p class="one">취향의 문제가 아니라 <b>구조의 문제</b>입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>같은 동네에 아파트랑 빌라가 있어. 왜 아파트만 값이 많이 오를까? 시설이 좋아서? 그것도 있지만 <b>더 큰 이유가 있어.</b></p>
+      <p><b>아파트는 옆집이랑 우리 집이 똑같아.</b> 같은 평수면 구조도 같고 크기도 같아. 그래서 <b>옆집이 5억에 팔리면 우리 집도 5억이라는 걸 모두가 알아.</b></p>
+      <p>빌라는? <b>집마다 다 달라.</b> 크기도 구조도 다르고, 옆집이 얼마에 팔렸는지 알아도 <b>우리 집이 그 값인지는 몰라.</b></p>
+      <p>그러면 어떻게 될까? <b>값을 모르니까 사는 사람이 조심하고, 은행도 돈을 덜 빌려줘.</b> 사는 사람이 적으면 <b>팔기 어렵고, 팔기 어려우면 값도 잘 안 올라.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">WHY · 네 가지 이유</div>
+      <p class="labsub">서로 연결된 <b>하나의 고리</b>입니다. 순서대로 눌러보세요.</p>
+
+      <div class="btnrow" id="whBtns">
+        <button data-v="0" class="on">① 표준화</button>
+        <button data-v="1">② 시세 투명성</button>
+        <button data-v="2">③ 대출</button>
+        <button data-v="3">④ 환금성</button>
+        <button data-v="4">고리 전체</button>
+      </div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="아파트 가격 형성의 순환 구조">
+        <g id="whScene"></g>
+      </svg>
+
+      <div class="verdict" id="whVerdict" style="--vc:var(--apt)">
+        <div class="vh">이유</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>그렇다고 아파트만이 답은 아닙니다</h3>
+      <p>공정하게 말하면, 위 논리는 <b>「아파트가 더 좋은 집」이라는 뜻이 아닙니다.</b> <b>「아파트가 자산으로 다루기 쉽다」</b>는 뜻입니다.</p>
+      <p>그리고 그 편리함은 <b>이미 가격에 반영</b>돼 있습니다. 같은 면적이면 아파트가 비쌉니다. 즉 <b>표준화의 값어치를 이미 지불하고 사는 것</b>입니다.</p>
+      <p>그래서 <b>비아파트가 무조건 나쁜 선택은 아닙니다.</b> 다만 조건이 붙습니다 —</p>
+      <p><b>① 오래 살 것.</b> 환금성이 낮으니 <b>자주 팔 생각이면 불리</b>합니다.<br>
+         <b>② 값이 오르는 것을 주된 이유로 삼지 말 것.</b> 그건 아파트에 유리한 게임입니다.<br>
+         <b>③ 그 대신 얻는 것이 분명할 것.</b> 같은 돈으로 더 넓거나, 원하는 위치이거나, 마당이 있거나.</p>
+      <p>정리하면 <b>비아파트는 「거주 결정」으로는 충분히 합리적이고, 「투자 결정」으로는 불리한 조건에서 시작</b>합니다. 01편의 <b>네 가지 결정</b>을 나눠서 보라고 한 이유가 여기서 또 나옵니다.</p>
+
+      <h3>재건축·재개발이라는 변수</h3>
+      <p>비아파트가 크게 오르는 경우가 있습니다. <b>재개발로 아파트가 될 때</b>입니다. 낡은 빌라가 <b>새 아파트 입주권</b>으로 바뀌면 값이 크게 뜁니다.</p>
+      <p>그래서 「재개발 될 곳」을 미리 사두는 투자가 있습니다. 다만 <b>매우 어렵습니다</b> —</p>
+      <p><b>① 시간이 아주 깁니다.</b> 구역 지정부터 입주까지 <b>10년이 넘는</b> 경우가 흔하고, <b>중간에 무산되기도</b> 합니다.<br>
+         <b>② 이미 기대가 값에 들어 있습니다.</b> 「될 것 같은 곳」은 이미 비쌉니다.<br>
+         <b>③ 규제가 자주 바뀝니다.</b> 초과이익 환수, 조합원 지위 양도 제한 같은 규정이 <b>계획을 통째로 흔듭니다.</b></p>
+      <p>이 주제는 <b>08편(좋은 아파트 고르는 법)</b>에서 신축·구축과 함께 다루겠습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 8 ══════════ -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">08 · 정리</span>
+      <h2>계약 전 확인 목록</h2>
+      <p class="one">특히 <b>전세를 구한다면</b> 이 목록을 그대로 쓰세요.</p>
+    </div>
+
+    <ul class="check" id="tyCheck">
+      <li><b>이 건물이 법적으로 무슨 종류인가?</b> 「빌라」라는 말로는 알 수 없습니다. 건축물대장을 확인하세요.</li>
+      <li><b>다가구라면, 내 앞에 몇 명이 얼마씩 있나?</b> 확정일자 부여 현황으로 확인합니다.</li>
+      <li><b>등기부 을구의 근저당이 얼마인가?</b> 채권최고액은 실제 빚의 <b>110~130%</b>로 잡혀 있는 것이 보통입니다.</li>
+      <li><b>갑구에 가압류·압류·경매개시결정이 있나?</b> 하나라도 있으면 <b>계약하지 마세요.</b></li>
+      <li><b>4장 계산기를 돌려봤나?</b> 낙찰가율 75%로 넣어도 내 보증금이 남는지.</li>
+      <li><b>전세가율이 80%를 넘지 않나?</b> 넘는다면 안전 마진이 거의 없습니다.</li>
+      <li><b>보증보험 가입이 되는 물건인가?</b> 안 되는 이유가 있다면 그게 곧 위험입니다.</li>
+      <li><b>계약 당일에 등기부를 다시 뗐나?</b> 계약 전과 잔금일 사이에 바뀔 수 있습니다.</li>
+      <li><b>잔금 당일 전입신고와 확정일자를 마쳤나?</b> 하루만 늦어도 순위가 밀립니다.</li>
+      <li><b>오피스텔·생숙이라면 용도를 확인했나?</b> 건축물대장의 「용도」란을 보세요.</li>
+    </ul>
+    <div class="checkcount" id="tyCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 법적 종류는 <b>층수·바닥면적·소유권</b> 셋으로 갈리고, 그중 <b>소유권 구조</b>가 가장 중요합니다. <b>다가구는 등기 하나, 다세대는 호실마다</b> — 이 한 줄이 전세 안전성을 결정합니다.</p>
+      <p>그리고 <b>「빌라」는 법에 없는 말</b>입니다. 그 말만 듣고 판단하면 안 되고, <b>등기부등본과 건축물대장</b>을 직접 봐야 합니다. 몇 백원이면 됩니다.</p>
+      <p>다음 편에서는 시야를 넓힙니다. <b>지난 40년 동안 집값을 실제로 움직인 것이 무엇이었는지</b> — 정책이었는지, 공급이었는지, 아니면 금리였는지.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 부동산 02 · 주택의 종류와 구분법<br>
+    <a href="index.html#realestate">← 부동산 목록으로</a> · <a href="realestate-basics.html">01 · 집은 어떤 자산인가</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 법률·세무 조언이 아닙니다.<br>
+    건축 기준·세율·대출 규제·최우선변제 한도는 계속 바뀝니다. 계산기는 여러 항목을 뺀 단순 모형이며, 실제 계약 전에는 등기부·건축물대장·확정일자 현황을 직접 확인하고 필요하면 전문가의 도움을 받으세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 2. 유형 도감 ══════════ */
+var TY = [
+  { key:'단독', name:'단독주택', group:0, floors:2, units:1, color:'#8E6B3A',
+    t:'단독주택 — 한 채, 한 세대, 한 주인',
+    p:'가장 단순합니다. <b>한 가구가 사는 집</b>이고 <b>소유자도 한 명</b>입니다.<br><br><b>장점</b> — 마당과 주차를 온전히 쓰고, 증축·개조가 상대적으로 자유롭습니다. 땅을 온전히 갖는다는 점도 큽니다.<br><br><b>단점</b> — <b>시세를 알기 어렵습니다.</b> 집마다 땅 크기·모양·건물 상태가 다 달라서 「옆집이 얼마에 팔렸다」가 내 집 값이 되지 않습니다. 그래서 <b>대출도 팔기도 어렵습니다.</b><br><br>땅값 비중이 크기 때문에 <b>건물이 낡아도 값이 유지되는 경우</b>가 있습니다. 반대로 말하면 <b>건물이 아니라 땅을 사는 것</b>에 가깝습니다.' },
+  { key:'다중', name:'다중주택', group:0, floors:3, units:6, color:'#8E6B3A',
+    t:'다중주택 — 여러 사람이 살지만 「독립된 집」은 아님',
+    p:'<b>3개 층 이하, 바닥면적 합계 660㎡ 이하</b>이고, 여러 사람이 <b>장기간 거주</b>하지만 <b>각 방이 독립된 주거 형태가 아닌</b> 건물입니다. 하숙집이나 셰어하우스를 떠올리면 됩니다.<br><br>구분 기준의 핵심은 <b>취사시설</b>입니다. 방마다 부엌을 따로 두면 다중주택이 아니라 다가구·다세대 쪽으로 갑니다.<br><br><b>소유권은 한 명</b>입니다. 그래서 전세 위험 구조는 <b>다가구와 비슷하게</b> 봐야 합니다 — <b>다른 거주자들의 보증금이 내 앞에 있을 수 있습니다.</b>' },
+  { key:'다가구', name:'다가구주택', group:0, floors:3, units:8, color:'#8E4B3A',
+    t:'다가구주택 — 여러 집인데 주인은 한 명',
+    p:'<b>이 편에서 가장 중요한 유형</b>입니다.<br><br><b>기준</b> — 주택으로 쓰는 층이 <b>3개 층 이하</b>, 바닥면적 합계 <b>660㎡ 이하</b>, <b>19세대 이하</b>. 그리고 결정적으로 <b>구분등기를 할 수 없습니다.</b><br><br>즉 겉보기엔 여러 집이 사는 빌라처럼 보여도 <b>등기부는 건물 전체에 대해 딱 하나</b>입니다. 101호만 따로 살 수 없습니다.<br><br><b>세입자에게 무엇을 뜻하나</b> — 건물이 경매로 넘어가면 <b>그 건물의 모든 세입자가 하나의 배당 절차에 함께</b> 들어갑니다. 그리고 <b>먼저 들어온 사람이 먼저 받습니다.</b><br><br>더 큰 문제는 <b>내 앞에 얼마가 쌓여 있는지 등기부에는 안 나온다</b>는 것입니다. <b>확정일자 부여 현황</b>을 따로 확인해야 합니다.<br><br>3장과 4장에서 자세히 다룹니다.' },
+  { key:'다세대', name:'다세대주택', group:1, floors:4, units:8, color:'#6B7A52',
+    t:'다세대주택 — 호실마다 주인이 따로',
+    p:'<b>4개 층 이하</b>, 1개 동 바닥면적 합계 <b>660㎡ 이하</b>. 그리고 <b>호실마다 등기가 따로</b> 있습니다.<br><br>흔히 <b>「빌라」</b>라고 부르는 것의 상당수가 이것입니다. 아파트와 <b>법적 성격은 같은 공동주택</b>이고, 층수와 규모만 작습니다.<br><br><b>세입자에게 유리한 점</b> — 내 호실의 <b>등기부만 보면</b> 내 앞에 어떤 권리가 있는지 대체로 파악됩니다. 다가구처럼 <b>보이지 않는 선순위</b>가 쌓이는 구조가 아닙니다.<br><br><b>다만 안전한 것은 아닙니다</b> — 근저당이 크게 잡혀 있거나 <b>전세가율이 지나치게 높으면</b> 똑같이 위험합니다. 그리고 <b>시세를 정확히 알기 어렵다</b>는 문제는 여전합니다. 07편의 전세사기 상당수가 <b>바로 이 시세 불투명성</b>을 이용했습니다.' },
+  { key:'연립', name:'연립주택', group:1, floors:4, units:12, color:'#6B7A52',
+    t:'연립주택 — 다세대보다 덩치만 큰 것',
+    p:'<b>4개 층 이하</b>인데 1개 동 바닥면적 합계가 <b>660㎡를 초과</b>하면 연립주택입니다.<br><br>다세대와의 차이는 <b>딱 이 면적 하나</b>입니다. 소유권 구조도 같고, 법적 성격(공동주택)도 같습니다.<br><br>이것도 흔히 <b>「빌라」</b>라고 불립니다. 실무적으로는 <b>다세대와 거의 같게 다루면</b> 됩니다.<br><br><b>참고</b> — 규모가 크면 <b>세대 수가 많아 시세 참고 사례가 조금 더 생깁니다.</b> 그래서 아주 작은 다세대보다는 환금성이 나은 편입니다. 다만 아파트와 비교하면 <b>여전히 큰 차이</b>가 있습니다(7장).' },
+  { key:'아파트', name:'아파트', group:1, floors:6, units:24, color:'#3A5A8E',
+    t:'아파트 — 주택으로 쓰는 층이 5개 층 이상',
+    p:'기준은 의외로 단순합니다. <b>주택으로 쓰는 층수가 5개 층 이상</b>이면 아파트입니다.<br><br>소유권은 <b>호실마다</b> 따로이고, 이 점은 다세대·연립과 같습니다. 법적으로는 <b>같은 공동주택</b>입니다.<br><br><b>그런데 시장에서의 대우는 완전히 다릅니다.</b> 같은 면적이라도 값이 다르고, 대출 조건이 다르고, 팔리는 속도가 다릅니다.<br><br>이유는 <b>층수가 아니라 규모가 만드는 표준화</b>입니다. 같은 단지에 같은 평형이 수십·수백 채 있으면 <b>시세가 명확해지고</b>, 그러면 <b>대출도 거래도 쉬워집니다.</b><br><br>7장에서 이 고리를 자세히 봅니다.' }
+];
+function tyScene(active){
+  var g = '';
+  g += '<text class="axt" x="30" y="22">단독주택 — 소유자 한 명 · 구분등기 없음</text>';
+  g += '<text class="axt" x="30" y="140">공동주택 — 호실마다 소유자 · 구분등기 있음</text>';
+  TY.forEach(function(t, i){
+    var col = i % 3, row = t.group;
+    var x = 40 + col * 200, y = row === 0 ? 34 : 152;
+    var on = (i === active);
+    var w = 150, h = 76;
+    g += '<g class="tyBox" data-v="' + i + '" tabindex="0" role="button" style="cursor:pointer">';
+    g += '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" rx="3" fill="' + t.color +
+         '" fill-opacity="' + (on ? '.42' : '.12') + '" stroke="' + t.color +
+         '" stroke-width="' + (on ? '1.8' : '1') + '"/>';
+    // 층·세대 표시
+    var fl = Math.min(t.floors, 6);
+    for(var f = 0; f < fl; f++){
+      var fy = y + h - 8 - f * 9;
+      g += '<line x1="' + (x + 8) + '" y1="' + fy + '" x2="' + (x + w - 8) + '" y2="' + fy +
+           '" stroke="' + t.color + '" stroke-width="1" stroke-opacity="' + (on ? '.7' : '.3') + '"/>';
+    }
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (x + 10) + '" y="' + (y + 17) + '"' +
+         (on ? ' fill="' + t.color + '"' : '') + '>' + t.key + '</text>';
+    g += '<text class="axt" x="' + (x + w - 10) + '" y="' + (y + 17) + '" text-anchor="end">' +
+         (t.group === 0 ? '등기 1개' : '호실별 등기') + '</text>';
+    g += '</g>';
+  });
+  document.getElementById('tyScene').innerHTML = g;
+  bindTy();
+}
+function bindTy(){
+  document.querySelectorAll('.tyBox').forEach(function(el){
+    function open(){
+      var i = +el.getAttribute('data-v');
+      tyScene(i);
+      document.getElementById('tyVerdict').querySelector('.vh').textContent = TY[i].name;
+      verdict('tyVerdict', TY[i].color, TY[i].t, TY[i].p);
+    }
+    el.addEventListener('click', open);
+    el.addEventListener('keydown', function(e){ if(e.key === 'Enter' || e.key === ' '){ e.preventDefault(); open(); } });
+  });
+}
+
+/* ══════════ 3. 다가구 vs 다세대 ══════════ */
+var PC = [
+  { color:'#8E4B3A', mode:0,
+    t:'같은 등기부인데 보이는 게 다릅니다',
+    p:'<b>다세대</b> — 내가 들어갈 <b>101호의 등기부</b>를 뗍니다. 거기에 <b>101호에 걸린 근저당</b>이 나옵니다. 다른 호실의 사정은 <b>나와 상관없습니다.</b><br><br><b>다가구</b> — 등기부가 <b>건물 전체에 하나</b>뿐입니다. 거기에는 <b>건물 전체에 걸린 근저당</b>이 나옵니다. 그런데 <b>다른 세입자들의 보증금은 등기부에 안 나옵니다.</b><br><br>이게 결정적입니다. <b>등기부가 깨끗해 보여도</b> 그 건물에 <b>먼저 들어온 세입자 열 명이 각각 1억씩 넣어두었을 수</b> 있습니다. 그 10억이 <b>내 앞에</b> 있는데 <b>서류에는 안 보입니다.</b>' },
+  { color:'#8E4B3A', mode:1,
+    t:'배당 순서에서 내가 몇 번째인가',
+    p:'경매가 되면 낙찰금을 <b>순위대로</b> 나눕니다. 순위는 <b>권리를 언제 갖췄는가</b>로 정해집니다.<br><br><b>다세대</b> — 내 호실 기준입니다. 보통 <b>근저당 → 나</b> 정도의 단순한 구조입니다.<br><br><b>다가구</b> — 건물 전체 기준입니다. <b>근저당 → 먼저 들어온 세입자 → 그다음 → … → 나</b>. 내가 마지막에 들어왔다면 <b>맨 뒤</b>입니다.<br><br><b>그래서 다가구에서는 「몇 층인가」보다 「언제 들어왔는가」가 훨씬 중요합니다.</b> 같은 건물, 같은 보증금이어도 <b>먼저 들어온 사람은 돌려받고 나중에 온 사람은 못 받는</b> 일이 생깁니다.<br><br>세입자 입장에서 이 사실을 <b>계약 전에</b> 아는 것이 전부입니다.' },
+  { color:'#8E4B3A', mode:2,
+    t:'사고가 나면 규모가 다릅니다',
+    p:'<b>다세대</b> — 문제가 생겨도 <b>내 호실 하나</b>의 문제입니다. 소유자가 여러 명이라 <b>한 호실의 사고가 다른 호실로 번지지 않습니다.</b><br><br><b>다가구</b> — 집주인 한 명이 <b>건물 전체</b>를 갖고 있으므로, 그 사람이 무너지면 <b>모든 세입자가 동시에</b> 당합니다. 열 세대라면 <b>열 가구가 한꺼번에</b>입니다.<br><br>그리고 낙찰금은 <b>한정돼 있습니다.</b> 건물 시세가 15억인데 낙찰가가 11억이고 은행 빚이 5억이면, 세입자들이 나눠 가질 수 있는 돈은 <b>6억</b>뿐입니다. 보증금 총액이 10억이었다면 <b>4억이 사라집니다.</b><br><br>그 4억을 <b>누가 잃느냐</b>는 <b>순서</b>가 정합니다. 4장에서 계산해봅니다.' },
+  { color:'#4C7A6D', mode:3,
+    t:'그래서 확인 방법도 다릅니다',
+    p:'<b>다세대·아파트라면</b><br>· <b>등기부등본</b>(내 호실)에서 갑구·을구 확인<br>· 근저당 <b>채권최고액</b>과 내 보증금의 합이 시세 대비 얼마인지<br>· 계약 당일 <b>다시 한 번</b> 열람<br><br><b>다가구라면 여기에 하나 더</b><br>· <b>확정일자 부여 현황</b>을 반드시 확인합니다. 그 건물의 <b>다른 세입자들이 언제 얼마로 들어왔는지</b>가 나오는 서류입니다.<br>· 열람에는 <b>임대인의 동의나 정당한 이해관계</b>가 필요할 수 있습니다. <b>집주인이 꺼린다면 그 자체가 답</b>입니다.<br>· 중개인에게 <b>「선순위 임차보증금 총액」을 서면으로</b> 확인받아 두는 것도 방법입니다.<br><br><b>한 문장으로</b> — 다가구 전세는 <b>등기부만 보고 계약하면 안 됩니다.</b>' }
+];
+function pcScene(mode){
+  var g = '';
+  var LX = 40, RX = 340, W = 260;
+  g += '<text class="lblb" x="' + LX + '" y="22" fill="#6B7A52">다세대 · 아파트</text>';
+  g += '<text class="lblb" x="' + RX + '" y="22" fill="#8E4B3A">다가구</text>';
+
+  // 왼쪽: 호실별 등기
+  var units = ['101호', '102호', '201호', '202호'];
+  units.forEach(function(u, i){
+    var x = LX + (i % 2) * 132, y = 34 + Math.floor(i / 2) * 44;
+    var mine = (i === 0);
+    g += '<rect x="' + x + '" y="' + y + '" width="120" height="36" rx="3" fill="#6B7A52" fill-opacity="' +
+         (mine ? '.42' : '.12') + '" stroke="#6B7A52" stroke-width="' + (mine ? '1.6' : '1') + '"/>';
+    g += '<text class="axt" x="' + (x + 9) + '" y="' + (y + 16) + '">' + u + (mine ? ' (나)' : '') + '</text>';
+    g += '<text class="axt" x="' + (x + 9) + '" y="' + (y + 29) + '">등기 · 소유자 각각</text>';
+  });
+  g += '<text class="axt" x="' + LX + '" y="140">내 호실 등기부만 보면 됩니다.</text>';
+
+  // 오른쪽: 건물 하나
+  g += '<rect x="' + RX + '" y="34" width="' + W + '" height="80" rx="3" fill="#8E4B3A" fill-opacity=".14" stroke="#8E4B3A" stroke-width="1.4"/>';
+  g += '<text class="axt" x="' + (RX + 10) + '" y="50">건물 전체 = 등기 1개 · 소유자 1명</text>';
+  var tenants = ['세입자 A (먼저)', '세입자 B', '나 (나중)'];
+  tenants.forEach(function(t, i){
+    var y = 58 + i * 18;
+    var mine = (i === 2);
+    g += '<rect x="' + (RX + 10) + '" y="' + y + '" width="' + (W - 20) + '" height="15" rx="2" fill="#8E4B3A" fill-opacity="' +
+         (mine ? '.45' : '.22') + '" stroke="#8E4B3A" stroke-width="' + (mine ? '1.3' : '0.8') + '"/>';
+    g += '<text class="axt" x="' + (RX + 16) + '" y="' + (y + 11) + '">' + t + '</text>';
+  });
+  if(mode === 0){
+    g += '<text class="lblb" x="' + RX + '" y="140" fill="#8E4B3A">위 세 줄은 등기부에 나오지 않습니다.</text>';
+  } else if(mode === 1){
+    g += '<text class="lblb" x="' + RX + '" y="140" fill="#8E4B3A">A → B → 나 순서로 배당받습니다.</text>';
+  } else if(mode === 2){
+    g += '<text class="lblb" x="' + RX + '" y="140" fill="#8E4B3A">집주인이 무너지면 셋이 동시에 당합니다.</text>';
+  } else {
+    g += '<text class="lblb" x="' + RX + '" y="140" fill="#4C7A6D">확정일자 부여 현황으로 확인합니다.</text>';
+  }
+
+  g += '<line class="axis" x1="40" y1="158" x2="600" y2="158"/>';
+  var caps = [
+    '등기부에 보이는 정보의 범위가 다릅니다 — 다가구는 보이지 않는 선순위가 있습니다.',
+    '배당은 순위대로입니다. 다가구에서는 「언제 들어왔는가」가 층수보다 중요합니다.',
+    '다세대는 사고가 한 호실에 머물지만, 다가구는 모든 세입자가 함께 휘말립니다.',
+    '다가구 전세는 등기부만으로 부족합니다. 확정일자 현황을 반드시 확인하세요.'
+  ];
+  g += '<text class="axt" x="40" y="180">' + caps[mode] + '</text>';
+  document.getElementById('pcScene').innerHTML = g;
+}
+bindBtnRow('#pcBtns', function(v){
+  pcScene(PC[+v].mode);
+  verdict('pcVerdict', PC[+v].color, PC[+v].t, PC[+v].p);
+});
+
+/* ══════════ 4. 경매 배당 계산기 ══════════ */
+var auType = 0;
+function auCalc(){
+  var price = +document.getElementById('auPrice').value;
+  var rate = +document.getElementById('auRate').value / 100;
+  var mort = +document.getElementById('auMort').value;
+  var prior = +document.getElementById('auPrior').value;
+  var dep = +document.getElementById('auDep').value;
+
+  document.getElementById('auPriceOut').textContent = price.toFixed(1) + '억원';
+  document.getElementById('auRateOut').textContent = (rate * 100).toFixed(0) + '%';
+  document.getElementById('auMortOut').textContent = mort.toFixed(1) + '억원';
+  document.getElementById('auPriorOut').textContent = prior.toFixed(1) + '억원';
+  document.getElementById('auDepOut').textContent = dep.toFixed(1) + '억원';
+
+  var pot = price * rate;                       // 낙찰금
+  var beforeMe = mort + prior;                  // 내 앞 순위 합
+  var left = Math.max(0, pot - beforeMe);       // 내 차례에 남은 돈
+  var get = Math.min(dep, left);
+  var loss = dep - get;
+
+  var gEl = document.getElementById('auGet');
+  gEl.textContent = get.toFixed(2) + '억원 (' + (get / dep * 100).toFixed(0) + '%)';
+  gEl.style.color = loss <= 0.001 ? 'var(--pos)' : (get > 0 ? '' : 'var(--neg)');
+  var lEl = document.getElementById('auLoss');
+  lEl.textContent = loss <= 0.001 ? '없음' : '-' + loss.toFixed(2) + '억원';
+  lEl.style.color = loss <= 0.001 ? 'var(--pos)' : 'var(--neg)';
+
+  // 도식
+  var X0 = 40, W = 560, ymax = Math.max(price, beforeMe + dep) || 1;
+  function w(v){ return Math.max(0, v / ymax * W); }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">시세 ' + price.toFixed(1) + '억 → 낙찰 ' + pot.toFixed(2) + '억 (낙찰가율 ' + (rate * 100).toFixed(0) + '%)</text>';
+  g += '<rect x="' + X0 + '" y="32" width="' + w(price).toFixed(1) + '" height="20" rx="2" fill="#D9D2C0" fill-opacity=".7" stroke="#C8BFA8" stroke-width="1"/>';
+  g += '<rect x="' + X0 + '" y="32" width="' + w(pot).toFixed(1) + '" height="20" rx="2" fill="#5B5648" fill-opacity=".35" stroke="#5B5648" stroke-width="1.2"/>';
+  g += '<text class="axt" x="' + (X0 + w(price) + 8).toFixed(1) + '" y="47">시세</text>';
+
+  g += '<text class="axt" x="' + X0 + '" y="76">배당 순서 — 앞에서부터 채워집니다</text>';
+  var x = X0;
+  var segs = [
+    { n:'은행 근저당', v:mort, c:'#8E4B3A' },
+    { n:'먼저 온 세입자', v:prior, c:'#8E6B3A' },
+    { n:'내 보증금', v:dep, c:'#3A5A8E' }
+  ];
+  segs.forEach(function(s){
+    if(s.v <= 0) return;
+    var sw = w(s.v);
+    g += '<rect x="' + x.toFixed(1) + '" y="84" width="' + sw.toFixed(1) + '" height="26" rx="2" fill="' + s.c +
+         '" fill-opacity=".45" stroke="' + s.c + '" stroke-width="1.2"/>';
+    if(sw > 60) g += '<text class="axt" x="' + (x + 6).toFixed(1) + '" y="101">' + s.n + ' ' + s.v.toFixed(1) + '</text>';
+    x += sw;
+  });
+  var px = X0 + w(pot);
+  g += '<line x1="' + px.toFixed(1) + '" y1="76" x2="' + px.toFixed(1) + '" y2="120" stroke="#8E4B3A" stroke-width="2"/>';
+  g += '<text class="lblb" x="' + Math.min(px + 8, X0 + W - 4).toFixed(1) + '" y="130" fill="#8E4B3A" text-anchor="' +
+       (px > X0 + W - 140 ? 'end' : 'start') + '">낙찰금은 여기까지</text>';
+  g += '<text class="axt" x="' + X0 + '" y="152">이 선을 넘어가는 부분은 받지 못합니다.</text>';
+  g += '<text class="' + (loss > 0.001 ? 'lblb' : 'axt') + '" x="' + X0 + '" y="176"' +
+       (loss > 0.001 ? ' fill="#8E4B3A"' : '') + '>' +
+       (loss > 0.001
+         ? '내 보증금 ' + dep.toFixed(1) + '억 중 ' + get.toFixed(2) + '억만 회수 — ' + loss.toFixed(2) + '억 손실'
+         : '내 보증금 ' + dep.toFixed(1) + '억 전액이 낙찰금 안에 들어옵니다.') + '</text>';
+  document.getElementById('auScene').innerHTML = g;
+
+  // 해설
+  var margin = pot - beforeMe - dep;
+  var depRatio = dep / price * 100;
+  if(loss > 0.001 && get <= 0.001){
+    verdict('auVerdict', '#8E4B3A',
+      '한 푼도 못 받습니다',
+      '낙찰금 <b>' + pot.toFixed(2) + '억원</b>이 내 앞 순위(<b>' + beforeMe.toFixed(2) +
+      '억원</b>)에서 이미 다 소진됩니다. <b>내 차례에는 아무것도 남지 않습니다.</b><br><br>' +
+      (auType === 1
+        ? '다가구에서 이런 일이 자주 벌어집니다. <b>「먼저 온 세입자 보증금 합」은 등기부에 나오지 않기 때문</b>입니다. 등기부상 근저당이 <b>' + mort.toFixed(1) + '억</b>으로 작아 보여도, <b>보이지 않는 ' + prior.toFixed(1) + '억</b>이 내 앞에 있었습니다.'
+        : '근저당이 이미 <b>' + mort.toFixed(1) + '억원</b>이나 잡혀 있는 물건입니다. 등기부 을구만 봤어도 <b>계약 전에 알 수 있었던 위험</b>입니다.') +
+      '<br><br><b>이런 계약은 하면 안 됩니다.</b> 안전 마진이 없는 정도가 아니라 <b>마이너스</b>입니다.');
+  } else if(loss > 0.001){
+    verdict('auVerdict', '#8E4B3A',
+      dep.toFixed(1) + '억 중 ' + loss.toFixed(2) + '억을 잃습니다',
+      '낙찰금 <b>' + pot.toFixed(2) + '억원</b>에서 내 앞 순위 <b>' + beforeMe.toFixed(2) +
+      '억원</b>을 빼면 <b>' + left.toFixed(2) + '억원</b>이 남습니다. 내 보증금은 <b>' + dep.toFixed(1) +
+      '억원</b>이므로 <b>' + loss.toFixed(2) + '억원을 못 받습니다.</b><br><br><b>여기서 볼 것</b> — 시세로는 <b>' +
+      price.toFixed(1) + '억</b>짜리라 「충분해 보였을」 수 있습니다. 그런데 <b>경매는 시세대로 안 팔립니다.</b> 낙찰가율 <b>' +
+      (rate * 100).toFixed(0) + '%</b>를 적용하는 순간 <b>' + (price - pot).toFixed(2) + '억이 증발합니다.</b><br><br>계약 전 계산에서 <b>낙찰가율을 넣지 않는 것</b>이 가장 흔한 실수입니다.');
+  } else if(margin < dep * 0.2){
+    verdict('auVerdict', '#9E7A2E',
+      '전액 회수되지만 여유가 거의 없습니다',
+      '지금 조건에서는 <b>' + dep.toFixed(1) + '억원 전액</b>을 돌려받습니다. 다만 여유가 <b>' + margin.toFixed(2) +
+      '억원</b>뿐입니다.<br><br><b>이게 왜 문제인가</b> — 이 계산에는 <b>경매 비용, 당해세, 최우선변제 같은 항목이 빠져 있습니다.</b> 그리고 <b>낙찰가율은 시장이 나쁠 때 더 떨어집니다.</b> 여유가 이 정도면 <b>실제로는 부족할 수 있습니다.</b><br><br><b>낙찰가율 슬라이더를 65%로 내려보세요.</b> 그래도 전액이 남는지가 실질적인 기준입니다.<br><br>참고로 내 보증금은 시세의 <b>' + depRatio.toFixed(0) + '%</b>입니다.');
+  } else {
+    verdict('auVerdict', '#4C7A6D',
+      '전액 회수되고 여유도 있습니다',
+      '낙찰금 <b>' + pot.toFixed(2) + '억원</b>에서 앞 순위와 내 보증금을 다 채우고도 <b>' + margin.toFixed(2) +
+      '억원</b>이 남습니다. 내 보증금은 시세의 <b>' + depRatio.toFixed(0) + '%</b>입니다.<br><br><b>다만 안심하기 전에</b> — 이 계산은 <b>내가 전입신고와 확정일자를 제대로 갖췄다</b>는 전제입니다. 그게 없으면 <b>순위 자체가 없어</b> 이 계산이 무의미합니다.<br><br>그리고 <b>계약 시점과 잔금 시점 사이에 근저당이 새로 잡히면</b> 이 그림이 바뀝니다. 특약과 당일 재열람이 필요한 이유입니다.<br><br><b>가장 확실한 방법</b>은 보증보험 가입입니다. 가입이 안 되는 물건이라면 <b>왜 안 되는지</b>를 반드시 확인하세요.');
+  }
+}
+bindBtnRow('#auType', function(v){
+  auType = +v;
+  var label = document.getElementById('auPriceLabel');
+  var row = document.getElementById('auPriorRow');
+  if(auType === 1){
+    label.textContent = '건물 전체 시세';
+    row.style.opacity = '1';
+    document.getElementById('auPrice').value = 15;
+    document.getElementById('auMort').value = 5;
+    document.getElementById('auPrior').value = 6;
+    document.getElementById('auDep').value = 2;
+  } else {
+    label.textContent = '내 호실 시세';
+    row.style.opacity = '.55';
+    document.getElementById('auPrice').value = 3;
+    document.getElementById('auMort').value = 0;
+    document.getElementById('auPrior').value = 0;
+    document.getElementById('auDep').value = 2;
+  }
+  auCalc();
+});
+['auPrice', 'auRate', 'auMort', 'auPrior', 'auDep'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', auCalc);
+});
+
+/* ══════════ 6. 등기부 ══════════ */
+var DG = [
+  { h:'표제부', color:'#5B5648',
+    t:'표제부 — 이 부동산이 무엇인가',
+    p:'<b>소재지, 면적, 구조, 층수, 용도</b>가 적혀 있습니다. 「이 집이 어디에 있고 어떤 건물인가」입니다.<br><br><b>여기서 확인할 것</b><br>· <b>주소가 계약서와 정확히 같은가.</b> 동·호수가 하나만 달라도 <b>다른 부동산</b>입니다.<br>· <b>다가구인지 다세대인지.</b> 표제부가 <b>건물 하나로만</b> 되어 있으면 다가구, <b>전유부분(호실)</b>이 따로 있으면 다세대·아파트입니다.<br>· <b>면적이 광고와 맞는가.</b><br><br><b>흔한 사고</b> — 「101호」로 계약했는데 등기부상으로는 <b>「B01호」</b>인 경우처럼, <b>실제 표시와 관행적 호칭이 다른</b> 사례가 있습니다. 이러면 <b>전입신고가 엉뚱한 곳에 되어 대항력이 생기지 않을 수</b> 있습니다. <b>등기부·건축물대장의 표시 그대로</b> 신고해야 합니다.' },
+  { h:'갑구', color:'#3A5A8E',
+    t:'갑구 — 이 집의 주인은 누구인가',
+    p:'<b>소유권에 관한 사항</b>입니다. 현재 소유자와 <b>소유권을 위협하는 것들</b>이 여기 적힙니다.<br><br><b>여기서 확인할 것</b><br>· <b>계약 상대가 등기부상 소유자와 같은 사람인가.</b> 대리인이라면 <b>위임장과 인감증명</b>을 확인합니다.<br>· <b>소유권 이전 시점.</b> 아주 최근에 바뀌었다면 <b>왜인지</b> 물어볼 만합니다.<br><br><b>즉시 물러나야 하는 신호</b><br>· <b>가압류 · 압류 · 가처분</b><br>· <b>경매개시결정</b><br>· <b>신탁등기</b> (소유권이 신탁회사에 있어 <b>집주인이 마음대로 임대할 수 없는</b> 경우가 있습니다. 신탁원부를 확인해야 합니다.)<br><br>이 중 하나라도 있으면 <b>「집주인이 곧 정리해준다」는 말을 믿고 계약하지 마세요.</b> 잔금 전에 말끔히 정리되는 것을 확인하기 전까지는 <b>진행하지 않는 것</b>이 원칙입니다.' },
+  { h:'을구', color:'#8E4B3A',
+    t:'을구 — 이 집에 빚이 얼마나 걸려 있나',
+    p:'<b>소유권 외의 권리</b>가 적힙니다. 전세 계약에서 <b>가장 중요한 칸</b>입니다.<br><br><b>근저당권</b>이 핵심입니다. 은행이 돈을 빌려주고 잡은 담보입니다. 여기 적힌 금액을 <b>채권최고액</b>이라고 하는데, <b>실제 빌린 돈의 110~130%</b>로 잡아두는 것이 보통입니다.<br><br><b>계산할 때는 채권최고액을 기준으로</b> 보수적으로 잡는 것이 안전합니다. 4장 계산기에 넣을 숫자가 이것입니다.<br><br><b>확인할 것</b><br>· <b>채권최고액 + 내 보증금</b>이 시세의 <b>70~80%를 넘지 않는가</b><br>· 등기 날짜가 <b>내 확정일자보다 앞인가 뒤인가</b> (앞이면 은행이 먼저)<br>· <b>전세권 설정</b>이 다른 사람 이름으로 되어 있지는 않은가<br><br><b>중요</b> — 근저당이 <b>0원인 물건이 무조건 안전한 것도 아닙니다.</b> 다가구라면 <b>등기부에 안 나오는 선순위 보증금</b>이 있을 수 있습니다. 3장에서 본 그대로입니다.' },
+  { h:'건축물대장', color:'#7A5C9E',
+    t:'건축물대장 — 등기부가 알려주지 않는 것',
+    p:'등기부는 <b>권리</b>를 보여주고, 건축물대장은 <b>건물 자체</b>를 보여줍니다. <b>둘 다 봐야</b> 합니다.<br><br><b>여기서만 알 수 있는 것</b><br>· <b>용도.</b> 「다가구주택」인지 「다세대주택」인지, <b>「숙박시설」인지 「업무시설」인지</b>가 정확히 적혀 있습니다. 5장의 생활형숙박시설·오피스텔 판별이 여기서 끝납니다.<br>· <b>위반건축물 여부.</b> 불법 증축이나 용도 변경이 있으면 <b>「위반건축물」로 표시</b>됩니다. 이러면 <b>대출과 보증보험이 막힐 수 있고</b>, 이행강제금이 부과될 수 있습니다.<br>· <b>사용승인일.</b> 실제 준공 시점입니다.<br>· <b>주차 대수, 승강기, 구조.</b><br><br><b>실무 팁</b> — 등기부등본과 건축물대장은 <b>인터넷으로 누구나</b> 열람할 수 있습니다. 비용은 <b>건당 몇 백원에서 천원대</b>입니다.<br><br>수억원이 오가는 계약에서 <b>천원을 아끼려다 전부를 잃는 일</b>이 실제로 벌어집니다.' }
+];
+function dgScene(idx){
+  var g = '';
+  var rows = [
+    { n:'표제부', d:'부동산의 표시 — 주소 · 면적 · 구조', c:'#5B5648' },
+    { n:'갑구', d:'소유권 — 소유자 · 가압류 · 압류 · 경매', c:'#3A5A8E' },
+    { n:'을구', d:'소유권 외 권리 — 근저당 · 전세권', c:'#8E4B3A' },
+    { n:'건축물대장', d:'별도 서류 — 용도 · 위반건축물 여부', c:'#7A5C9E' }
+  ];
+  rows.forEach(function(r, i){
+    var y = 24 + i * 38, on = (i === idx);
+    g += '<rect x="40" y="' + y + '" width="' + (i === 3 ? 520 : 560) + '" height="30" rx="3" fill="' + r.c +
+         '" fill-opacity="' + (on ? '.42' : '.12') + '" stroke="' + r.c +
+         '" stroke-width="' + (on ? '1.8' : '1') + '"' + (i === 3 ? ' stroke-dasharray="5 3"' : '') + '/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="52" y="' + (y + 19) + '"' +
+         (on ? ' fill="' + r.c + '"' : '') + '>' + r.n + '</text>';
+    g += '<text class="axt" x="150" y="' + (y + 19) + '">' + r.d + '</text>';
+  });
+  g += '<text class="axt" x="40" y="190">위 셋은 등기부등본 한 장 안에 있고, 건축물대장은 따로 떼야 합니다.</text>';
+  document.getElementById('dgScene').innerHTML = g;
+}
+bindBtnRow('#dgBtns', function(v){
+  dgScene(+v);
+  document.getElementById('dgVerdict').querySelector('.vh').textContent = DG[+v].h;
+  verdict('dgVerdict', DG[+v].color, DG[+v].t, DG[+v].p);
+});
+
+/* ══════════ 7. 왜 아파트만 ══════════ */
+var WH = [
+  { h:'① 표준화', color:'#3A5A8E', hi:0,
+    t:'같은 단지, 같은 평형 — 전부 똑같습니다',
+    p:'한 단지에 <b>같은 평형이 수백 채</b> 있습니다. 구조도 면적도 마감도 거의 같습니다.<br><br>이게 왜 중요하냐면 — <b>비교할 대상이 많다</b>는 뜻입니다. 옆 동 같은 평수가 이번 달에 팔렸으면, <b>내 집도 대략 그 값</b>입니다.<br><br>비아파트는 반대입니다. 같은 「빌라」라도 <b>면적·구조·향·주차·마감</b>이 전부 다릅니다. 옆집이 3억에 팔려도 <b>내 집이 3억인지는 아무도 모릅니다.</b>' },
+  { h:'② 시세 투명성', color:'#3A5A8E', hi:1,
+    t:'값을 아니까 안심하고 삽니다',
+    p:'표준화의 결과로 <b>시세가 명확해집니다.</b> 실거래가가 공개되고, 그 가격이 <b>내 물건에도 그대로 적용</b>됩니다.<br><br>사는 사람 입장에서는 <b>「바가지 쓸 걱정이 적다」</b>는 뜻입니다. 그래서 <b>망설임 없이 삽니다.</b><br><br>비아파트는 <b>「이 값이 적정한지 모르겠다」</b>는 불안이 남습니다. 그 불안이 <b>할인 요인</b>이 됩니다. 그리고 이 불안 때문에 <b>07편의 전세사기가 가능했습니다</b> — <b>시세를 모르니 부풀린 값을 믿었던 것</b>입니다.' },
+  { h:'③ 대출', color:'#6B7A52', hi:2,
+    t:'은행도 값을 아니까 더 빌려줍니다',
+    p:'은행은 담보 가치를 알아야 돈을 빌려줍니다. <b>시세가 명확한 아파트</b>는 평가가 쉽고, <b>한도도 조건도 좋습니다.</b><br><br>비아파트는 <b>감정평가를 따로</b> 해야 하고, 보수적으로 잡히며, <b>한도가 낮고 금리가 높습니다.</b> 아예 취급하지 않는 상품도 있습니다.<br><br><b>여기가 결정적입니다.</b> 01편에서 봤듯 부동산은 <b>레버리지가 기본</b>입니다. 대출이 잘 나오면 <b>살 수 있는 사람이 훨씬 많아집니다.</b> 대출이 안 나오면 <b>현금 가진 사람만</b> 살 수 있습니다.<br><br>즉 <b>대출 조건이 곧 수요의 크기</b>입니다.' },
+  { h:'④ 환금성', color:'#8E6B3A', hi:3,
+    t:'그래서 잘 팔리고, 잘 팔리니 값이 붙습니다',
+    p:'살 수 있는 사람이 많으니 <b>내놓으면 팔립니다.</b> 그리고 <b>제값에</b> 팔립니다.<br><br>비아파트는 <b>몇 달, 길게는 몇 년</b>이 걸리기도 하고, 빨리 팔려면 <b>값을 낮춰야</b> 합니다.<br><br>01편에서 본 <b>환금성</b>이 여기서 다시 나옵니다. 그리고 <b>환금성 자체가 가격에 반영</b>됩니다 — 언제든 팔 수 있는 자산에는 <b>웃돈이 붙습니다.</b><br><br>「아파트가 비싼 이유」의 상당 부분이 <b>이 웃돈</b>입니다. 시설이 좋아서만은 아닙니다.' },
+  { h:'고리 전체', color:'#7A5C9E', hi:-1,
+    t:'넷은 서로를 강화하는 하나의 고리입니다',
+    p:'<b>표준화 → 시세 투명 → 대출 잘 나옴 → 살 사람 많음 → 잘 팔림 → 시세가 더 명확해짐</b> → 다시 처음으로.<br><br>이게 <b>스스로를 강화하는 고리</b>라서, 한번 형성되면 <b>격차가 계속 벌어집니다.</b> 아파트와 비아파트의 값 차이가 시간이 갈수록 커진 이유입니다.<br><br><b>그런데 반대로 돌 수도 있습니다.</b> 대출 규제가 강해지면 ③이 약해지고, 그러면 ④가 줄고, 값이 흔들립니다. <b>2022년에 실제로 일어난 일</b>이고, 04·05편에서 다룹니다.<br><br><b>가장 중요한 함의</b> — 아파트 가격은 <b>건물 자체의 가치</b>만이 아니라 <b>이 고리가 얼마나 잘 도는가</b>에 달려 있습니다. 그래서 <b>금리와 대출 규제</b>가 집값에 그토록 크게 작용합니다.' }
+];
+function whScene(hi){
+  var nodes = [
+    { n:'표준화', x:110, y:50 },
+    { n:'시세 투명', x:330, y:50 },
+    { n:'대출 잘 나옴', x:490, y:105 },
+    { n:'잘 팔림', x:270, y:150 }
+  ];
+  var g = '';
+  // 화살표
+  var seq = [[0,1],[1,2],[2,3],[3,0]];
+  seq.forEach(function(p){
+    var a = nodes[p[0]], b = nodes[p[1]];
+    g += '<line x1="' + a.x + '" y1="' + a.y + '" x2="' + b.x + '" y2="' + b.y +
+         '" stroke="#8A8474" stroke-width="1.2" stroke-dasharray="4 3" stroke-opacity=".7"/>';
+  });
+  nodes.forEach(function(n, i){
+    var on = (hi === i || hi === -1);
+    var c = ['#3A5A8E', '#3A5A8E', '#6B7A52', '#8E6B3A'][i];
+    g += '<rect x="' + (n.x - 58) + '" y="' + (n.y - 15) + '" width="116" height="30" rx="15" fill="' + c +
+         '" fill-opacity="' + (on ? '.42' : '.12') + '" stroke="' + c + '" stroke-width="' + (on ? '1.8' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + n.x + '" y="' + (n.y + 5) +
+         '" text-anchor="middle"' + (on ? ' fill="' + c + '"' : '') + '>' + n.n + '</text>';
+  });
+  g += '<text class="axt" x="40" y="192">' +
+       (hi === -1 ? '넷이 서로를 강화합니다 — 그래서 격차가 계속 벌어집니다.'
+                  : '이 고리에서 ' + nodes[hi].n + ' 단계입니다.') + '</text>';
+  document.getElementById('whScene').innerHTML = g;
+}
+bindBtnRow('#whBtns', function(v){
+  whScene(WH[+v].hi);
+  document.getElementById('whVerdict').querySelector('.vh').textContent = WH[+v].h;
+  verdict('whVerdict', WH[+v].color, WH[+v].t, WH[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#tyCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#tyCheck li.done').length;
+      document.getElementById('tyCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 넷째 항목은 하나라도 걸리면 그냥 나오세요. 협상할 문제가 아닙니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+tyScene(2);
+document.getElementById('tyVerdict').querySelector('.vh').textContent = TY[2].name;
+verdict('tyVerdict', TY[2].color, TY[2].t, TY[2].p);
+document.querySelector('#pcBtns button[data-v="0"]').click();
+document.querySelector('#auType button[data-v="0"]').click();
+document.querySelector('#dgBtns button[data-v="0"]').click();
+document.querySelector('#whBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
