@@ -836,16 +836,22 @@ function mnEtaText(d){
   if(secs < 90) return '약 ' + Math.round(secs) + '초';
   return '약 ' + Math.round(secs / 60) + '분';
 }
-/* 이 브라우저가 초당 몇 번 해시할 수 있는지 짧게 재봅니다. */
-(function measure(){
-  var n = 600, t0 = performance.now(), chain = Promise.resolve();
+/* 이 브라우저가 초당 몇 번 해시할 수 있는지 재봅니다.
+   페이지가 로딩되는 동안 재면 값이 크게 낮게 나오므로, 화면이 안정된 뒤에 측정합니다. */
+function mnMeasure(){
+  var n = 1500, t0 = performance.now(), chain = Promise.resolve();
   for(var i = 0; i < n; i++){ (function(k){ chain = chain.then(function(){ return sha256('bench' + k); }); })(i); }
-  chain.then(function(){
+  return chain.then(function(){
     var r = n / ((performance.now() - t0) / 1000);
-    if(isFinite(r) && r > 100) mnRate = r;
+    if(isFinite(r) && r > 500) mnRate = r;
     mnSetup();
   });
-})();
+}
+if('requestIdleCallback' in window){
+  requestIdleCallback(function(){ mnMeasure(); }, { timeout: 2500 });
+} else {
+  window.addEventListener('load', function(){ setTimeout(mnMeasure, 800); });
+}
 
 function mnSetup(){
   var d = +document.getElementById('mnDiff').value;
@@ -875,6 +881,10 @@ async function mnLoop(){
       document.getElementById('mnGo').disabled = false;
       document.getElementById('mnStop').disabled = true;
 
+      if(secs > 0.3 && mnTries > 2000){        // 실측이 더 정확하므로 갱신
+        mnRate = mnTries / secs;
+        mnSetup();
+      }
       var exp = mnExpected(d);
       var ratio = mnTries / exp;
       verdict('mnVerdict', '#4C7A6D', '찾았습니다 — ' + mnTries.toLocaleString('ko-KR') + '번 만에',
