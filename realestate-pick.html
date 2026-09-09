@@ -1,0 +1,957 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>좋은 아파트 고르는 법</title>
+<meta name="description" content="입지 5요소와 단지 요소, 나만의 우선순위 점수표, 신축과 구축의 차이, 재건축 사업성 계산, 그리고 「좋은 아파트」와 「좋은 투자」가 다른 이유.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;
+    --ink:#232019;
+    --ink-soft:#5B5648;
+    --rule:#D9D2C0;
+    --card:#FCFBF7;
+    --loc:#3A5A8E;
+    --cplx:#6B7A52;
+    --new:#7A5C9E;
+    --field:#8E6B3A;
+    --bad:#8E4B3A;
+    --neutral:#5B5648;
+    --warn-bg:#F1E6DD;
+    --warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans KR', sans-serif;
+    line-height:1.7;
+    -webkit-font-smoothing:antialiased;
+  }
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+
+  h1,h2,h3,h4{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  header.top{margin-bottom:8px;}
+  .kicker{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12.5px;
+    color:var(--ink-soft);
+    margin-bottom:14px;
+  }
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+
+  .callout{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:18px 20px;
+    font-size:14.5px;
+    margin:28px 0 0;
+    border-radius:2px;
+  }
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+
+  nav.toc{
+    margin:24px 0 56px;
+    padding:20px 0;
+    border-top:1px solid var(--rule);
+    border-bottom:1px solid var(--rule);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+  }
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{
+    border-left:3px solid var(--edge,var(--rule));
+    padding-left:18px;
+    margin-bottom:22px;
+  }
+  .prod-tag{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--edge,var(--ink-soft));
+    display:block;
+    margin-bottom:6px;
+  }
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th, table.cmp td{
+    border:1px solid var(--rule);
+    padding:11px 13px;
+    text-align:left;
+    vertical-align:top;
+    line-height:1.58;
+  }
+  table.cmp thead th{
+    background:#EFEADF;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    font-weight:500;
+    white-space:nowrap;
+  }
+  table.cmp tbody th{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    background:#F3EFE5;
+    white-space:nowrap;
+  }
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+
+  .note{
+    background:var(--warn-bg);
+    color:var(--warn-ink);
+    border-left:3px solid var(--warn-ink);
+    padding:16px 18px;
+    font-size:14px;
+    border-radius:2px;
+    margin:22px 0;
+  }
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+
+  .plain{
+    background:none;
+    border-left:3px solid var(--rule);
+    color:var(--ink-soft);
+    padding:12px 15px;
+    font-size:13.6px;
+    margin:16px 0 0;
+  }
+  .plain b{color:var(--ink);font-weight:600;}
+
+  .subnote{font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--ink-soft);}
+
+  .keyline{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--edge2,var(--loc));
+    border-radius:3px;
+    padding:22px 24px;
+    margin:26px 0;
+    text-align:center;
+  }
+  .keyline .kt{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    color:var(--edge2,var(--loc));
+    margin-bottom:12px;
+  }
+  .keyline .kb{
+    font-family:'Newsreader',serif;
+    font-size:20px;
+    line-height:1.5;
+    color:var(--ink);
+  }
+  .keyline .kb b{color:var(--edge2,var(--loc));}
+
+  /* 후보 카드 */
+  .cands{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:20px 0 0;}
+  .cand{
+    background:var(--card);
+    border:1px solid var(--rule);
+    border-left:3px solid var(--cc);
+    border-radius:3px;
+    padding:15px 16px;
+    transition:all .18s ease;
+  }
+  .cand.win{border-color:var(--cc);box-shadow:0 3px 14px rgba(35,32,25,.09);}
+  .cand h4{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--cc);
+    margin:0 0 6px;
+  }
+  .cand .cn{font-family:'Newsreader',serif;font-size:15.5px;margin:0 0 8px;line-height:1.35;}
+  .cand .cs{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:22px;
+    color:var(--cc);
+    display:block;
+    margin-bottom:2px;
+  }
+  .cand .crank{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-faint);}
+  .cand.win .crank{color:var(--cc);font-weight:600;}
+
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+
+  footer{
+    margin-top:60px;
+    padding-top:22px;
+    border-top:1px solid var(--rule);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--ink-soft);
+    line-height:1.9;
+  }
+  footer a{color:var(--ink-soft);}
+
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .cands{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">부동산 08 · 선택 · 투자 공부 노트</div>
+    <h1>좋은 아파트 고르는 법</h1>
+    <p class="lede">「어디가 좋은가」에는 <b>답이 있습니다.</b> 입지와 단지 조건은 <b>대체로 합의된 기준</b>이 있습니다. 그런데 이 편에서 진짜로 다루려는 것은 그다음 질문입니다 — <b>「좋은 아파트」가 「좋은 투자」인가.</b> 답은 <b>「반드시 그렇지는 않다」</b>입니다.</p>
+    <div class="callout">
+      <p><b>이 편이 하지 않는 것.</b> 특정 지역·단지를 <b>추천하지 않습니다.</b> 대신 <b>「무엇이 값을 만드는지」</b>와 <b>「내 우선순위에 따라 답이 어떻게 달라지는지」</b>를 다룹니다.</p>
+      <p><b>그리고 계속 짚을 것 하나</b> — 좋은 조건은 <b>이미 값에 들어 있습니다.</b> 그래서 「좋은 곳을 고르는 것」과 「돈을 버는 것」은 <b>다른 일</b>입니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="판단 기준과 계산까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#frame">1. 좋은 집 ≠ 좋은 투자</a>
+    <a href="#loc">2. 입지 다섯 가지</a>
+    <a href="#complex">3. 단지 조건</a>
+    <a href="#mine">4. 나만의 우선순위</a>
+    <a href="#age">5. 신축이냐 구축이냐</a>
+    <a href="#field">6. 현장에서만 아는 것</a>
+    <a href="#sum">7. 정리</a>
+  </nav>
+
+  <!-- ══════════ 1 ══════════ -->
+  <section id="frame">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">01 · 관점</span>
+      <h2>좋은 집과 좋은 투자는 다릅니다</h2>
+      <p class="one">이 구분을 먼저 잡아야 <b>나머지가 제자리를 찾습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>반에서 <b>제일 인기 있는 딱지</b>가 있어. 다들 갖고 싶어 해. 그럼 그 딱지가 <b>제일 좋은 투자</b>일까?</p>
+      <p>아니야. 인기가 많으니까 <b>이미 값이 비싸.</b> 값이 더 오르려면 <b>지금보다 더 인기가 많아져야</b> 하는데, 이미 1등이면 <b>더 올라갈 자리가 없어.</b></p>
+      <p>집도 똑같아. <b>좋은 학교, 좋은 지하철, 좋은 단지</b> — 이건 모두가 알아. 그래서 <b>이미 값에 들어 있어.</b></p>
+      <p>그럼 어떻게 해야 할까? 두 가지 답이 있어.<br>
+      <b>①</b> 내가 <b>살 집</b>을 고르는 거라면 — <b>좋은 곳을 고르는 게 맞아.</b> 값이 안 올라도 <b>내가 편하게 사니까.</b><br>
+      <b>②</b> <b>돈을 벌려고</b> 고르는 거라면 — <b>「지금은 덜 알려졌지만 앞으로 좋아질 곳」</b>을 찾아야 해. 그런데 그건 <b>훨씬 어렵고 자주 틀려.</b></p>
+      <p>그러니까 <b>「어느 쪽인지」를 먼저 정하는 게</b> 첫걸음이야.</p>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 편의 출발점</div>
+      <div class="kb">「좋다」는 <b>이미 값에 들어 있습니다.</b><br>값이 오르려면 <b>더 좋아져야</b> 합니다.</div>
+    </div>
+
+    <div class="deep">
+      <h3>그렇다고 「좋은 곳을 고르는 것」이 의미 없다는 뜻은 아닙니다</h3>
+      <p>오해하기 쉬운 부분이라 분명히 해둡니다. <b>좋은 입지를 고르는 것에는 세 가지 실질적인 값어치</b>가 있습니다.</p>
+      <p><b>① 환금성.</b> 02편에서 본 대로입니다. 좋은 곳은 <b>팔릴 때 팔립니다.</b> 그리고 <b>제값에</b> 팔립니다. 나쁜 곳은 <b>내려야 팔리고 몇 달씩 걸립니다.</b> 부동산에서 이건 <b>수익률만큼 중요합니다.</b></p>
+      <p><b>② 하방 방어.</b> 시장이 나빠질 때 <b>덜 떨어집니다.</b> 그리고 <b>먼저 회복합니다.</b> 03편에서 본 대로 같은 시기에도 <b>지역별로 정반대로 움직였습니다.</b></p>
+      <p><b>③ 거주 가치.</b> 값이 안 올라도 <b>매일 그 편익을 받고 있습니다.</b> 01편에서 본 <b>「집만이 쓰면서 갖는 자산」</b>이라는 성질입니다.</p>
+      <p>그래서 정확한 표현은 이렇습니다 — <b>좋은 곳을 고르면 「덜 잃고 잘 팔리지만」, 「더 버는 것」은 별개</b>입니다.</p>
+
+      <h3>「더 버는 것」이 어려운 이유</h3>
+      <p>주식 트랙에서 반복한 이야기가 그대로 적용됩니다. <b>모두가 아는 정보는 이미 값에 반영</b>돼 있습니다.</p>
+      <p>「강남이 좋다」는 정보로는 돈을 못 법니다. 모두가 알고, 그래서 이미 비쌉니다. 돈을 벌려면 <b>「남들이 아직 모르거나 과소평가하는 것」</b>을 알아야 하는데 —</p>
+      <p><b>① 그런 정보는 드물고</b>, <b>② 대개 틀리며</b>, <b>③ 맞아도 실현까지 오래 걸립니다.</b> 개발 계획은 <b>지연되거나 취소</b>되는 일이 흔합니다.</p>
+      <p class="plain"><b>현실적인 결론.</b> 대부분의 사람에게 합리적인 선택은 <b>「내가 살 집을 좋은 조건으로 고르고, 오래 보유하는 것」</b>입니다. 01편에서 본 <b>「부동산으로 돈 번 사람의 상당수는 살고 있어서 안 팔았기 때문」</b>이라는 이야기와 이어집니다. <b>그건 전략이라기보다 구조가 만든 결과</b>였지만, 결과적으로 유효했습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 2 ══════════ -->
+  <section id="loc">
+    <div class="prod-head" style="--edge:var(--loc)">
+      <span class="prod-tag">02 · 입지</span>
+      <h2>입지는 다섯 가지로 나뉩니다</h2>
+      <p class="one">그리고 <b>순서가 있습니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">LOCATION · 무엇이 값을 만드나</div>
+      <p class="labsub">각 요소가 <b>왜 값을 만들고, 어떻게 확인하고, 무엇을 조심할지</b>입니다.</p>
+
+      <div class="btnrow" id="lcBtns">
+        <button data-v="0" class="on">① 일자리</button>
+        <button data-v="1">② 교통</button>
+        <button data-v="2">③ 학군</button>
+        <button data-v="3">④ 생활 인프라</button>
+        <button data-v="4">⑤ 환경</button>
+      </div>
+
+      <svg viewBox="0 0 640 180" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="입지 다섯 요소의 상대적 영향력">
+        <g id="lcScene"></g>
+      </svg>
+
+      <div class="verdict" id="lcVerdict" style="--vc:var(--loc)">
+        <div class="vh">입지</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>순서에 대해.</b> 위 그림의 막대 길이는 <b>일반적으로 이야기되는 상대적 중요도</b>이며 정확한 수치가 아닙니다. 그리고 <b>사람마다 순서가 다릅니다</b> — 아이가 없으면 학군의 값어치가 낮고, 재택근무라면 일자리 접근성이 덜 중요합니다. <b>4장에서 내 순서를 직접 만들어봅니다.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>입지는 고정된 것이 아닙니다</h3>
+      <p>위 다섯 가지는 <b>지금의 상태</b>입니다. 그런데 값이 오르는 것은 <b>「좋아질 때」</b>입니다. 1장에서 말한 <b>「더 좋아져야 오른다」</b>가 이 뜻입니다.</p>
+      <p><b>실제로 입지를 바꾼 것들</b><br>
+         · <b>새 노선 개통</b> — 교통 요소를 통째로 바꿉니다<br>
+         · <b>대규모 업무지구 조성</b> — 일자리 요소를 만듭니다<br>
+         · <b>대단지 입주</b> — 상권과 학교를 함께 만듭니다<br>
+         · <b>혐오시설 이전이나 공원화</b> — 환경 요소를 바꿉니다</p>
+      <p><b>그런데 이걸로 돈을 벌기는 어렵습니다.</b> 이유가 셋입니다.</p>
+      <p><b>① 발표되는 순간 값에 반영됩니다.</b> 계획이 알려지면 그날 오릅니다.<br>
+         <b>② 실현까지 아주 오래 걸립니다.</b> 노선 하나가 <b>계획부터 개통까지 10~20년</b>입니다. 그동안 자금이 묶입니다.<br>
+         <b>③ 자주 어긋납니다.</b> 노선이 바뀌거나, 예산이 삭감되거나, 아예 취소됩니다.</p>
+      <p class="plain"><b>그래도 쓸모 있는 관점 하나.</b> <b>「착공한 것」과 「계획만 있는 것」을 구분</b>하는 것입니다. 착공된 사업은 <b>거의 확실히 완공</b>되고 시기도 대략 압니다. 03편에서 본 <b>「입주 물량은 미리 알 수 있는 정보」</b>와 같은 성격입니다. <b>계획에 값을 내지 말고, 착공된 것에 값을 내세요.</b></p>
+
+      <h3>그리고 나빠지는 경우도 있습니다</h3>
+      <p>대부분의 이야기가 「좋아지는 것」에 집중되는데, <b>반대 방향도 있습니다.</b></p>
+      <p><b>주요 고용처가 떠나거나</b>, <b>학령인구가 줄어 학교가 통폐합</b>되거나, <b>상권이 다른 곳으로 옮겨가거나</b>, <b>인근에 대규모 입주가 몰려 공급 과잉</b>이 되는 경우입니다.</p>
+      <p>특히 마지막 항목은 <b>미리 알 수 있습니다.</b> 03편의 <b>공급 시차</b>가 그것입니다 — <b>지금 착공된 물량이 2~3년 뒤 입주</b>합니다. 사기 전에 <b>그 지역의 향후 입주 물량</b>을 확인하는 것이 <b>몇 안 되는 예측 가능한 작업</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 3 ══════════ -->
+  <section id="complex">
+    <div class="prod-head" style="--edge:var(--cplx)">
+      <span class="prod-tag">03 · 단지</span>
+      <h2>같은 동네에서도 단지가 갈립니다</h2>
+      <p class="one">입지가 <b>어디</b>라면, 이건 <b>무엇</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COMPLEX · 단지 조건</div>
+      <p class="labsub">입지가 같아도 <b>이 조건들로 값이 갈립니다.</b></p>
+
+      <div class="btnrow" id="cxBtns">
+        <button data-v="0" class="on">세대수</button>
+        <button data-v="1">연식</button>
+        <button data-v="2">브랜드</button>
+        <button data-v="3">용적률·대지지분</button>
+        <button data-v="4">동·향·층</button>
+        <button data-v="5">주차·커뮤니티</button>
+      </div>
+
+      <div class="verdict" id="cxVerdict" style="--vc:var(--cplx)">
+        <div class="vh">단지</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 4 ══════════ -->
+  <section id="mine">
+    <div class="prod-head" style="--edge:var(--loc)">
+      <span class="prod-tag">04 · 우선순위</span>
+      <h2>내 우선순위를 숫자로 만들어보기</h2>
+      <p class="one">가중치를 바꾸면 <b>1위가 바뀝니다.</b> 그게 이 계산기의 목적입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>「어느 집이 제일 좋아?」라는 질문에는 <b>정답이 없어.</b> 사람마다 <b>중요하게 생각하는 게 다르니까.</b></p>
+      <p>회사가 가까운 게 제일 중요한 사람, 아이 학교가 제일 중요한 사람, 집이 넓고 새것인 게 좋은 사람 — <b>전부 답이 달라.</b></p>
+      <p>그래서 <b>「내가 뭘 얼마나 중요하게 여기는지」를 숫자로 적어보면</b> 답이 나와. 아래에서 슬라이더를 움직여서 <b>우리 집 순서</b>를 만들어보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">WEIGHTS · 가중치를 움직여보세요</div>
+      <p class="labsub">세 가지 유형의 후보가 있고, <b>내 가중치에 따라 순위가 달라집니다.</b></p>
+
+      <div class="ctrl-row">
+        <label for="wJob">일자리 접근성</label>
+        <input type="range" id="wJob" min="0" max="10" step="1" value="8">
+        <output id="wJobOut">8</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="wTrans">교통</label>
+        <input type="range" id="wTrans" min="0" max="10" step="1" value="8">
+        <output id="wTransOut">8</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="wSchool">학군</label>
+        <input type="range" id="wSchool" min="0" max="10" step="1" value="5">
+        <output id="wSchoolOut">5</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="wInfra">생활 인프라</label>
+        <input type="range" id="wInfra" min="0" max="10" step="1" value="6">
+        <output id="wInfraOut">6</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="wEnv">환경·조용함</label>
+        <input type="range" id="wEnv" min="0" max="10" step="1" value="4">
+        <output id="wEnvOut">4</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="wCplx">단지 품질 (신축·대단지)</label>
+        <input type="range" id="wCplx" min="0" max="10" step="1" value="5">
+        <output id="wCplxOut">5</output>
+      </div>
+
+      <div class="cands" id="mnCands"></div>
+
+      <div class="stack" id="mnStack" style="margin-top:18px;"></div>
+
+      <div class="verdict" id="mnVerdict" style="--vc:var(--loc)">
+        <div class="vh">내 우선순위</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>이 점수가 뜻하는 것과 뜻하지 않는 것.</b> 이건 <b>「내 조건에 얼마나 맞는가」</b>이지 <b>「값이 오를 확률」이 아닙니다.</b> 세 후보의 항목별 점수는 <b>유형을 설명하기 위한 예시값</b>이고, 실제 물건은 직접 매겨야 합니다.<br><br>
+        <b>그리고 가격이 빠져 있습니다.</b> 실제로는 <b>점수가 높은 곳이 비쌉니다.</b> 그래서 최종 판단은 <b>「점수 ÷ 가격」</b>에 가깝고, 그 계산은 <b>내 예산이 정해져야</b> 가능합니다(05편).
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 5 ══════════ -->
+  <section id="age">
+    <div class="prod-head" style="--edge:var(--new)">
+      <span class="prod-tag">05 · 연식</span>
+      <h2>신축이냐 구축이냐</h2>
+      <p class="one">구축의 값어치는 <b>땅</b>에 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>아파트를 사면 <b>두 가지</b>를 같이 사는 거야. <b>건물</b>이랑 <b>땅</b>.</p>
+      <p>건물은 시간이 지나면 <b>낡아서 값이 떨어져.</b> 자동차처럼. 그런데 <b>땅은 안 낡아.</b></p>
+      <p>그래서 새 아파트는 <b>「건물 값 + 땅 값」</b>인데, 30년 된 아파트는 <b>거의 「땅 값」</b>이야.</p>
+      <p>재밌는 건 — 아주 오래되면 <b>값이 다시 올라가기 시작</b>해. <b>「부수고 새로 지을 수 있겠다」</b>는 기대가 생기거든. 그래서 아파트 값은 <b>내려가다가 다시 올라가는 U자 모양</b>이 되기도 해.</p>
+      <p>다만 그 <b>「다시 올라가는」</b> 부분이 제일 어렵고 자주 어긋나. 아래에서 왜 그런지 계산해보자.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">AGE · 무엇을 사는 것인가</div>
+      <p class="labsub">연식대별로 <b>사는 것이 다릅니다.</b></p>
+
+      <div class="btnrow" id="agBtns">
+        <button data-v="0" class="on">신축 (0~10년)</button>
+        <button data-v="1">준신축 (10~20년)</button>
+        <button data-v="2">구축 (20~30년)</button>
+        <button data-v="3">재건축 대상</button>
+      </div>
+
+      <div class="verdict" id="agVerdict" style="--vc:var(--new)">
+        <div class="vh">연식</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">REDEVELOP · 재건축 사업성 개념 계산</div>
+      <p class="labsub">
+        재건축이 되는지는 결국 <b>「일반분양으로 공사비를 얼마나 메우느냐」</b>입니다.
+      </p>
+
+      <div class="ctrl-row">
+        <label for="rdUnits">현재 세대수</label>
+        <input type="range" id="rdUnits" min="100" max="3000" step="50" value="500">
+        <output id="rdUnitsOut">500세대</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rdNow">현재 용적률</label>
+        <input type="range" id="rdNow" min="80" max="300" step="10" value="180">
+        <output id="rdNowOut">180%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rdMax">허용 용적률</label>
+        <input type="range" id="rdMax" min="100" max="500" step="10" value="300">
+        <output id="rdMaxOut">300%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rdCost">세대당 공사비</label>
+        <input type="range" id="rdCost" min="10000" max="80000" step="1000" value="30000">
+        <output id="rdCostOut">3.0억원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rdSale">일반분양가 (세대당)</label>
+        <input type="range" id="rdSale" min="20000" max="250000" step="5000" value="80000">
+        <output id="rdSaleOut">8.0억원</output>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="재건축 사업성 구조">
+        <g id="rdScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">일반분양 세대수</span><span class="rv" id="rdGen">—</span></div>
+        <div><span class="rk">조합원 1인당 부담금</span><span class="rv" id="rdBurden">—</span></div>
+      </div>
+
+      <div class="verdict" id="rdVerdict" style="--vc:var(--new)">
+        <div class="vh">사업성</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>크게 단순화했습니다.</b> 실제 재건축에는 <b>기부채납(공공기여)으로 빼주는 면적</b>, <b>임대주택 의무 비율</b>, <b>이주비와 금융비용</b>, <b>조합원 분양가와 일반분양가의 차이</b>, <b>재건축초과이익 환수</b>, <b>안전진단 통과 여부</b>가 모두 들어갑니다. 그리고 <b>기존 조합원이 넓은 평형을 원하면</b> 일반분양 물량이 줄어듭니다.<br><br>
+        <b>이 계산기의 목적</b>은 정확한 부담금이 아니라, <b>「용적률 여유가 사업성을 결정한다」</b>는 구조를 보는 것입니다. 실제 판단은 <b>조합의 사업성 검토 자료</b>로 하세요.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>리모델링이라는 다른 길</h3>
+      <p>재건축이 <b>부수고 새로 짓는 것</b>이라면, <b>리모델링</b>은 <b>뼈대를 남기고 고치는 것</b>입니다.</p>
+      <p><b>장점</b> — 재건축보다 <b>요건이 덜 까다롭고 기간이 짧습니다.</b> 그래서 <b>용적률이 이미 높아 재건축이 안 되는 단지</b>가 선택하는 경우가 많습니다. 위 계산기에서 <b>허용 용적률을 현재 용적률 근처로</b> 놓으면 나오는 그 상황입니다.</p>
+      <p><b>한계</b> — 뼈대를 남기므로 <b>구조와 배치를 크게 못 바꿉니다.</b> 주차를 크게 늘리기 어렵고, 늘릴 수 있는 세대수도 재건축보다 적습니다. 그래서 <b>일반분양 수입이 작아 부담금이 큽니다.</b></p>
+      <p>즉 <b>「재건축이 안 되니까 리모델링」</b>인 경우가 많고, 그 말은 <b>사업성이 원래 좋지 않다</b>는 뜻이기도 합니다. <b>기대만으로 값이 오른 단지</b>라면 특히 주의해야 합니다.</p>
+
+      <h3>연식별 가격 곡선이 U자인 이유</h3>
+      <p>같은 입지에서 연식만 놓고 보면 대체로 이런 모양입니다 — <b>신축이 가장 비싸고, 15~25년쯤에서 가장 낮고, 재건축 기대가 붙으면 다시 올라갑니다.</b></p>
+      <p><b>내려가는 구간</b>은 <b>건물 값이 빠지는</b> 것입니다. 이건 자연스럽고 예측 가능합니다.</p>
+      <p><b>올라가는 구간</b>은 <b>기대</b>입니다. 그리고 이 부분이 <b>불확실합니다.</b> 규제, 사업성, 조합원 동의, 공사비 — 어느 하나만 어긋나도 <b>기대가 빠지면서 값이 다시 내려갑니다.</b></p>
+      <p class="plain"><b>실전적인 함의.</b> <b>「바닥 구간」인 준신축~구축</b>이 <b>실거주 가성비</b>로는 가장 나은 경우가 많습니다. 반대로 <b>「올라가는 구간」인 재건축 기대 단지</b>는 <b>기대가 값에 얼마나 들어 있는지</b>를 반드시 따져야 합니다. 위 계산기에서 <b>예상 부담금</b>을 넣어보고, 그것이 <b>지금 붙은 프리미엄보다 큰지</b> 보세요.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 6 ══════════ -->
+  <section id="field">
+    <div class="prod-head" style="--edge:var(--field)">
+      <span class="prod-tag">06 · 임장</span>
+      <h2>현장에 가야만 알 수 있는 것</h2>
+      <p class="one">02편에서 본 <b>「공개 자료로 알 수 없는 것」</b>이 이것입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">FIELD · 언제 무엇을 볼까</div>
+      <p class="labsub">같은 집도 <b>가는 시간에 따라 다르게</b> 보입니다.</p>
+
+      <div class="btnrow" id="fdBtns">
+        <button data-v="0" class="on">평일 아침</button>
+        <button data-v="1">평일 저녁·밤</button>
+        <button data-v="2">주말 낮</button>
+        <button data-v="3">비 오는 날</button>
+        <button data-v="4">집 안에서</button>
+        <button data-v="5">사람에게 묻기</button>
+      </div>
+
+      <div class="verdict" id="fdVerdict" style="--vc:var(--field)">
+        <div class="vh">임장</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="note">
+      <p><b>임장의 진짜 값어치.</b> 02편에서 <b>「아파트는 시세가 명확하다」</b>고 했습니다. 맞습니다. 그런데 그건 <b>같은 단지 같은 평형 사이</b>의 이야기입니다.</p>
+      <p><b>동·층·향·수리 상태·소음</b>은 여전히 <b>가서 봐야 압니다.</b> 그리고 이 차이가 <b>같은 평형 안에서도 수천만원</b>을 만듭니다. <b>몇 시간을 들여 확인하는 것의 시급이 가장 높은 일</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- ══════════ 7 ══════════ -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">07 · 정리</span>
+      <h2>고르기 전 확인 목록</h2>
+      <p class="one">순서가 중요합니다.</p>
+    </div>
+
+    <ul class="check" id="pkCheck">
+      <li><b>이건 「살 집」인가 「투자」인가?</b> 둘 다여도 좋지만 <b>구분해서 계산</b>해야 합니다.</li>
+      <li><b>4장에서 내 우선순위를 매겨봤나?</b> 배우자와 <b>각자 매겨서 비교</b>해보면 대화가 쉬워집니다.</li>
+      <li><b>몇 년을 살 계획인가?</b> 짧으면 거래비용 때문에 불리합니다(01편).</li>
+      <li><b>이 조건이 이미 값에 들어 있다는 것을 인정하나?</b> 「좋으니까 오를 것」은 근거가 약합니다.</li>
+      <li><b>이 단지의 세대수와 연식을 확인했나?</b> 환금성에 직결됩니다.</li>
+      <li><b>같은 단지 최근 실거래가를 여러 건 봤나?</b> 한 건은 예외일 수 있습니다.</li>
+      <li><b>주변 입주 물량을 확인했나?</b> 03편에서 본 <b>「미리 알 수 있는 정보」</b>입니다.</li>
+      <li><b>현장에 두 번 이상, 다른 시간대에 가봤나?</b></li>
+      <li><b>동·층·향·수리 상태를 직접 확인했나?</b></li>
+      <li><b>재건축 기대가 값에 얼마나 들어 있나?</b> 「될 것 같은 곳」은 이미 비쌉니다.</li>
+      <li><b>대출 한도와 세금을 계산해봤나?</b> (05·06편)</li>
+    </ul>
+    <div class="checkcount" id="pkCount">0 / 11 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 입지는 <b>일자리·교통·학군·인프라·환경</b>, 단지는 <b>세대수·연식·용적률·동향층</b>으로 나뉩니다. 기준 자체는 <b>대체로 합의</b>되어 있습니다.</p>
+      <p>그런데 그 기준이 <b>모두에게 알려져 있다는 것</b>이 핵심입니다. <b>좋은 조건은 이미 값에 들어 있습니다.</b> 그래서 좋은 곳을 고르면 <b>「덜 잃고 잘 팔리지만」</b>, <b>「더 버는 것」은 별개</b>입니다.</p>
+      <p>그리고 <b>사람마다 답이 다릅니다.</b> 4장에서 가중치를 바꾸면 1위가 바뀌는 것을 보셨을 겁니다. <b>「어디가 좋냐」보다 「나에게 무엇이 중요하냐」가 먼저</b>입니다.</p>
+      <p>다음 편에서는 <b>지역</b>을 봅니다. 특정 지역을 추천하는 것이 아니라, <b>「왜 그곳이 비싼가」를 읽는 법</b>입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 부동산 08 · 좋은 아파트 고르는 법<br>
+    <a href="index.html#realestate">← 부동산 목록으로</a> · <a href="realestate-jeonse.html">07 · 전세와 갭투자</a><br>
+    <br>
+    개인 학습용 정리이며 투자 권유가 아닙니다. 특정 지역·단지의 매수를 권하지 않습니다.<br>
+    점수표의 후보와 항목별 점수는 유형을 설명하기 위한 예시값이며 실제 물건 평가가 아닙니다. 재건축 계산기는 여러 항목을 생략한 개념 모형입니다. 실제 판단은 현장 확인과 공식 자료로 하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function won(man){ return Math.round(man).toLocaleString() + '만원'; }
+// 받침 유무에 따라 조사를 고릅니다 (이/가, 은/는)
+function josa(word, withBatchim, without){
+  var ch = word.charCodeAt(word.length - 1);
+  if(ch < 0xAC00 || ch > 0xD7A3) return without;
+  return ((ch - 0xAC00) % 28) > 0 ? withBatchim : without;
+}
+function eok(man){ return (man / 10000).toFixed(2) + '억원'; }
+
+/* ══════════ 2. 입지 ══════════ */
+var LC = [
+  { h:'① 일자리', color:'#3A5A8E', w:100,
+    t:'가장 근본적인 요인 — 사람은 일자리를 따라 삽니다',
+    p:'집값의 가장 깊은 뿌리는 <b>「이 근처에 소득이 높은 일자리가 얼마나 있는가」</b>입니다. 나머지 요소들은 <b>대체로 이것을 보조</b>합니다.<br><br><b>왜 그런가</b> — 사람은 <b>출퇴근 시간을 줄이려고</b> 돈을 냅니다. 그리고 <b>소득이 높은 일자리 근처</b>일수록 그 돈을 낼 수 있는 사람이 많습니다. 그래서 <b>업무지구 접근성</b>이 값을 만듭니다.<br><br><b>확인하는 법</b><br>· 주요 업무지구까지 <b>실제 출퇴근 시간</b>(지도 앱의 「출근 시간대」로 확인)<br>· 그 지역의 <b>일자리가 늘고 있는가 줄고 있는가</b><br>· <b>대기업·공공기관 이전 계획</b><br><br><b>조심할 것</b> — <b>「기업이 온다더라」</b>는 계획은 자주 지연되거나 취소됩니다. 그리고 <b>발표되는 순간 값에 반영</b>됩니다. 09편에서 다룹니다.' },
+  { h:'② 교통', color:'#3A5A8E', w:88,
+    t:'일자리까지 얼마나 빨리 가는가',
+    p:'교통은 <b>일자리 요인의 연장</b>입니다. 같은 거리라도 <b>빠른 노선이 있으면</b> 값이 다릅니다.<br><br><b>값에 크게 작용하는 것</b><br>· <b>업무지구로 직결되는 노선</b>인가 (환승 없이)<br>· <b>역까지 걸어서 몇 분</b>인가 — <b>도보 10분 안팎</b>이 흔한 기준선입니다<br>· 그 역이 <b>급행이 서는 역</b>인가<br><br><b>확인하는 법</b> — 지도에서 거리를 보지 말고 <b>실제로 걸어보세요.</b> 언덕이 있거나 큰길을 건너야 하면 <b>「직선거리 500m」가 실제로는 12분</b>일 수 있습니다.<br><br><b>조심할 것</b> — <b>신설 노선 계획</b>은 값에 미리 반영되지만 <b>완공까지 10년 넘게</b> 걸리고 <b>노선이 바뀌거나 취소</b>되기도 합니다. 그리고 <b>착공 시점에 한 번, 개통 시점에 한 번</b> 반응하는 경향이 있어, <b>계획 발표 단계에서 사면 오래 기다려야</b> 합니다.' },
+  { h:'③ 학군', color:'#3A5A8E', w:72,
+    t:'특정 시기에 아주 강하게 작용합니다',
+    p:'아이가 <b>학교에 다니는 기간</b> 동안 학군은 <b>거의 절대적인 기준</b>이 됩니다. 그래서 <b>수요가 특정 지역에 몰리고</b> 값을 만듭니다.<br><br><b>구체적으로 보는 것</b><br>· <b>배정받는 초·중학교</b>가 어디인가 (단지마다 다릅니다)<br>· <b>길을 건너지 않고</b> 통학할 수 있는가 — 초등학교는 이게 큽니다<br>· <b>학원가 접근성</b> — 중고등학생에게는 학교보다 이게 더 작용하기도 합니다<br><br><b>확인하는 법</b> — <b>학교 배정은 단지·동별로 갈릴 수</b> 있으므로 <b>정확한 배정 정보</b>를 확인해야 합니다. 「근처에 좋은 학교가 있다」와 「우리 집이 그 학교에 배정된다」는 <b>다릅니다.</b><br><br><b>조심할 것</b> — 학군 수요는 <b>인구 구조에 민감</b>합니다. 학령인구가 줄면 <b>이 요인의 힘도 약해집니다.</b> 그리고 <b>내 아이가 졸업하면 나에게는 값어치가 사라지는데 가격에는 남아 있습니다.</b>' },
+  { h:'④ 생활 인프라', color:'#3A5A8E', w:60,
+    t:'매일 쓰는 것들 — 체감은 크고 가격 반영은 중간',
+    p:'대형마트, 병원, 공원, 관공서, 상권. <b>없으면 매일 불편</b>하지만, 앞의 셋보다는 <b>가격에 덜 반영</b>되는 편입니다.<br><br><b>왜 덜 반영되나</b> — <b>대체 가능하기 때문</b>입니다. 마트가 멀면 배송을 시키면 되고, 상권은 차로 갈 수 있습니다. 반면 <b>출퇴근 시간</b>은 대체할 방법이 없습니다.<br><br><b>그래도 중요한 것</b><br>· <b>종합병원 접근성</b> — 나이가 들수록 값어치가 커집니다<br>· <b>공원·녹지</b> — 아이가 있으면 체감이 큽니다<br>· <b>단지 안 또는 바로 앞 상가</b> — 매일 쓰는 편의점·세탁소 수준<br><br><b>실전 팁</b> — 이 항목은 <b>가격에 덜 반영되므로 「같은 값이면 이걸로 고르는」</b> 기준이 되기 좋습니다. 즉 <b>돈을 더 내야 하는 요소가 아니라 고르는 요소</b>입니다.' },
+  { h:'⑤ 환경', color:'#3A5A8E', w:48,
+    t:'조용함, 조망, 공기 — 취향의 폭이 가장 넓습니다',
+    p:'소음, 조망, 일조, 공기질, 혐오시설과의 거리 같은 것들입니다.<br><br><b>가격에 반영되는 정도</b>는 <b>사람마다 편차가 가장 큽니다.</b> 조망에 큰 값을 내는 사람도 있고 전혀 신경 안 쓰는 사람도 있습니다.<br><br><b>다만 확실히 값을 깎는 것들이 있습니다</b><br>· <b>도로·철도 소음</b> — 특히 저층<br>· <b>바로 앞 건물에 막힌 조망과 일조</b><br>· <b>혐오시설 인접</b><br><br><b>확인하는 법</b> — <b>반드시 현장에서, 창문을 열고</b> 확인하세요. 6장의 임장 항목입니다. 소음은 <b>낮과 밤이 다르고</b>, 일조는 <b>계절에 따라 다릅니다.</b><br><br><b>기회가 되는 지점</b> — 환경은 <b>취향의 편차가 크므로</b>, 내가 신경 안 쓰는 단점이 있는 물건은 <b>싸게 살 수 있습니다.</b> 다만 <b>팔 때도 같은 이유로 싸게 팔린다는 것</b>은 감안해야 합니다.' }
+];
+function lcScene(idx){
+  var g = '';
+  var X0 = 120, W = 400;
+  g += '<text class="axt" x="' + X0 + '" y="24">일반적으로 이야기되는 상대적 중요도 (개념도)</text>';
+  LC.forEach(function(l, i){
+    var y = 34 + i * 27, on = (i === idx);
+    var w = l.w / 100 * W;
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="20" rx="2" fill="#3A5A8E" fill-opacity="' +
+         (on ? '.5' : '.16') + '" stroke="#3A5A8E" stroke-width="' + (on ? '1.5' : '0.9') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end"' +
+         (on ? ' fill="#3A5A8E"' : '') + '>' + l.h + '</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="174">아래로 갈수록 가격 반영은 줄고, 취향의 편차는 커집니다.</text>';
+  document.getElementById('lcScene').innerHTML = g;
+}
+bindBtnRow('#lcBtns', function(v){
+  lcScene(+v);
+  document.getElementById('lcVerdict').querySelector('.vh').textContent = LC[+v].h;
+  verdict('lcVerdict', LC[+v].color, LC[+v].t, LC[+v].p);
+});
+
+/* ══════════ 3. 단지 ══════════ */
+var CX = [
+  { h:'세대수', color:'#6B7A52',
+    t:'02편의 「표준화」가 단지 단위로 나타난 것',
+    p:'세대수가 많을수록 <b>같은 평형의 거래 사례가 많아집니다.</b> 그러면 <b>시세가 명확해지고 환금성이 좋아집니다</b>(02편의 고리 그대로).<br><br><b>그 외의 장점</b><br>· <b>관리비가 세대당 저렴</b>해집니다 (고정비를 나눠 부담)<br>· <b>커뮤니티 시설</b>이 들어갈 수 있습니다<br>· <b>상가와 학교</b>가 단지에 붙습니다<br>· 재건축·리모델링 때 <b>사업성이 좋습니다</b><br><br><b>흔한 기준선</b> — <b>500세대</b>, <b>1,000세대</b>를 경계로 이야기하는 경우가 많습니다. 다만 <b>절대 기준은 아닙니다</b> — 입지가 아주 좋은 소규모 단지가 외곽 대단지보다 나은 경우가 흔합니다.<br><br><b>작은 단지의 단점</b> — 거래가 드물어 <b>시세를 알기 어렵고</b>, 팔 때 <b>오래 걸립니다.</b> 100세대 미만이면 이 문제가 뚜렷해집니다.' },
+  { h:'연식', color:'#6B7A52',
+    t:'값이 「건물」에서 「땅」으로 옮겨갑니다',
+    p:'새 아파트는 <b>건물 자체에 값</b>이 있습니다. 시간이 지나면 <b>건물 값은 떨어지고 땅 값만 남습니다.</b><br><br>그래서 곡선이 이렇습니다 — <b>신축 프리미엄이 빠지면서 내려가다가</b>, 재건축 기대가 생기는 시점부터 <b>다시 올라갑니다.</b> 5장에서 자세히 봅니다.<br><br><b>실무에서 보는 것</b><br>· <b>배관·난방·주차</b> 상태 — 20년이 넘으면 이게 실제 불편으로 옵니다<br>· <b>대수선 이력</b>과 <b>장기수선충당금</b> 적립 상태<br>· <b>엘리베이터 유무</b> — 오래된 5층 단지는 없는 경우가 있습니다<br><br><b>주의</b> — <b>「구축이니까 싸다」는 기회가 아닙니다.</b> 싼 데는 이유가 있고, 그 이유(불편함·수리비)는 <b>내가 부담</b>합니다. 구축을 사는 이유는 <b>「같은 값에 더 좋은 입지」</b>이거나 <b>「재건축 기대」</b>여야 합니다.' },
+  { h:'브랜드', color:'#6B7A52',
+    t:'실체가 있지만 과대평가되기도 합니다',
+    p:'대형 건설사 브랜드가 붙으면 <b>값이 더 나갑니다.</b> 이게 실체가 있느냐 하면 <b>일부는 있습니다.</b><br><br><b>실체가 있는 부분</b><br>· <b>마감과 설계 품질</b>이 대체로 낫습니다<br>· <b>하자 대응</b> 체계가 있습니다<br>· <b>이름값 자체가 환금성</b>을 만듭니다 — 살 사람이 안심하니까요<br><br><b>과대평가되는 부분</b><br>· <b>같은 브랜드도 단지마다 품질이 다릅니다.</b> 시공사가 같아도 <b>시기와 지역에 따라</b> 차이가 큽니다<br>· 입지가 나쁜 브랜드 단지보다 <b>입지가 좋은 비브랜드 단지</b>가 나은 경우가 많습니다<br><br><b>정리하면</b> — 브랜드는 <b>같은 입지·같은 연식일 때의 우선순위</b>이지, <b>입지를 이기는 요소는 아닙니다.</b>' },
+  { h:'용적률·대지지분', color:'#6B7A52',
+    t:'재건축 가능성을 결정하는 숫자',
+    p:'<b>용적률</b> = 대지 면적 대비 건물 연면적의 비율입니다. <b>대지지분</b>은 내 집에 딸린 땅의 크기입니다.<br><br><b>왜 중요한가</b> — 재건축은 <b>「지금보다 더 높이 지어서 늘어난 만큼을 팔아 공사비를 대는」</b> 사업입니다. 그러니 <b>현재 용적률이 낮을수록</b> 늘릴 여지가 크고 <b>사업성이 좋습니다.</b><br><br><b>거꾸로 말하면</b> — 이미 <b>용적률이 높은 단지</b>는 재건축이 <b>어렵습니다.</b> 더 지을 공간이 없으니 <b>조합원이 공사비를 직접 부담</b>해야 합니다.<br><br><b>대지지분</b>이 클수록 재건축 때 <b>내 몫이 큽니다.</b> 같은 평형이어도 단지마다 다릅니다.<br><br><b>확인하는 법</b> — 등기부와 건축물대장에서 확인할 수 있습니다. <b>5장 계산기</b>에서 용적률 여유가 사업성을 어떻게 바꾸는지 직접 볼 수 있습니다.<br><br><b>주의</b> — <b>허용 용적률은 규제가 정합니다.</b> 규제가 바뀌면 사업성이 통째로 바뀝니다. 그리고 <b>기대만으로 값이 먼저 오릅니다</b>(03편).' },
+  { h:'동·향·층', color:'#6B7A52',
+    t:'같은 단지 안에서 수천만원이 갈립니다',
+    p:'<b>향</b> — 일반적으로 <b>남향</b>이 선호되고 값이 가장 높습니다. 남동·남서가 그다음이고, 북향이 가장 낮습니다. 일조와 난방비에 실제로 차이가 납니다.<br><br><b>층</b> — <b>중층 이상</b>이 선호됩니다. <b>저층</b>은 소음·사생활·조망에서 불리하고, <b>최상층</b>은 여름 더위와 누수 위험이 있습니다(단열이 잘 된 신축은 덜합니다). <b>1층</b>은 아이 있는 집이 선호하기도 해 <b>수요가 따로</b> 있습니다.<br><br><b>동</b> — 단지 안에서도 <b>역과 가까운 동</b>, <b>초등학교와 가까운 동</b>, <b>도로 소음이 적은 동</b>이 갈립니다. 그리고 <b>동 앞이 막혔는지</b>가 큽니다.<br><br><b>실전 관점</b> — 이 차이는 <b>실거래가에 그대로 나타납니다.</b> 같은 평형인데 가격이 다르면 <b>대개 이유가 있습니다.</b> 싼 물건을 봤다면 <b>왜 싼지</b>를 먼저 찾으세요.<br><br><b>기회가 되는 경우</b> — 내가 신경 안 쓰는 단점(예: 조망)이라면 <b>싸게 살 수 있습니다.</b> 다만 <b>팔 때도 그만큼 싸다</b>는 것을 감안해야 합니다.' },
+  { h:'주차·커뮤니티', color:'#6B7A52',
+    t:'구축과 신축의 체감 차이가 가장 큰 항목',
+    p:'<b>주차</b>가 실제 생활에서 가장 크게 체감됩니다. <b>세대당 주차 대수</b>가 1대에 못 미치는 오래된 단지는 <b>매일 저녁 자리를 찾아 헤매게</b> 됩니다.<br><br><b>확인하는 법</b> — 건축물대장에서 <b>주차 대수</b>를 보고, <b>세대수로 나눠</b>보세요. 그리고 <b>평일 저녁 8~10시</b>에 가보면 실상이 바로 보입니다(6장).<br><br><b>커뮤니티</b>(헬스장, 독서실, 카페, 게스트하우스 등)는 신축 대단지의 강점입니다. 다만 <b>관리비가 올라갑니다.</b> <b>실제로 쓸 것인지</b>를 따져보세요 — 안 쓰면 <b>비용만 내는 것</b>입니다.<br><br><b>지하주차장 연결</b> — 지하주차장에서 <b>엘리베이터로 바로 연결</b>되는지가 비 오는 날과 짐 들 때 큰 차이를 만듭니다. 오래된 단지는 <b>연결이 안 되는</b> 경우가 많습니다.' }
+];
+bindBtnRow('#cxBtns', function(v){
+  document.getElementById('cxVerdict').querySelector('.vh').textContent = CX[+v].h;
+  verdict('cxVerdict', CX[+v].color, CX[+v].t, CX[+v].p);
+});
+
+/* ══════════ 4. 나만의 우선순위 ══════════ */
+var CANDS = [
+  { n:'도심 구축 소형', tag:'A · 직주근접', c:'#3A5A8E',
+    s:{ job:9, trans:9, school:5, infra:8, env:4, cplx:4 },
+    d:'회사까지 20분. 오래된 단지라 주차가 빠듯하고 조용하지는 않습니다.' },
+  { n:'외곽 신축 대단지', tag:'B · 쾌적함', c:'#6B7A52',
+    s:{ job:4, trans:5, school:6, infra:6, env:8, cplx:9 },
+    d:'출퇴근 70분. 대신 새 아파트에 넓고, 공원과 커뮤니티가 있습니다.' },
+  { n:'학군지 중형', tag:'C · 교육', c:'#7A5C9E',
+    s:{ job:6, trans:7, school:10, infra:7, env:6, cplx:6 },
+    d:'학교와 학원가가 가깝습니다. 값이 이미 비싸고 단지는 평범합니다.' }
+];
+var WKEYS = [
+  { k:'job', id:'wJob', n:'일자리' },
+  { k:'trans', id:'wTrans', n:'교통' },
+  { k:'school', id:'wSchool', n:'학군' },
+  { k:'infra', id:'wInfra', n:'인프라' },
+  { k:'env', id:'wEnv', n:'환경' },
+  { k:'cplx', id:'wCplx', n:'단지' }
+];
+function mnCalc(){
+  var w = {}, sum = 0;
+  WKEYS.forEach(function(x){
+    var v = +document.getElementById(x.id).value;
+    document.getElementById(x.id + 'Out').textContent = v;
+    w[x.k] = v; sum += v;
+  });
+
+  var scored = CANDS.map(function(c){
+    var t = 0;
+    WKEYS.forEach(function(x){ t += w[x.k] * c.s[x.k]; });
+    return { c:c, score: sum > 0 ? t / sum : 0 };
+  });
+  var ranked = scored.slice().sort(function(a, b){ return b.score - a.score; });
+  var best = ranked[0], gap = ranked[0].score - ranked[1].score;
+
+  var html = '';
+  scored.forEach(function(r){
+    var rank = ranked.indexOf(r) + 1;
+    html += '<div class="cand' + (rank === 1 && sum > 0 ? ' win' : '') + '" style="--cc:' + r.c.c + '">' +
+            '<h4>' + r.c.tag + '</h4>' +
+            '<div class="cn">' + r.c.n + '</div>' +
+            '<span class="cs">' + (sum > 0 ? r.score.toFixed(2) : '—') + '</span>' +
+            '<span class="crank">' + (sum > 0 ? rank + '위' : '가중치를 올리세요') + '</span>' +
+            '</div>';
+  });
+  document.getElementById('mnCands').innerHTML = html;
+
+  var sh = '';
+  WKEYS.forEach(function(x){
+    sh += '<div class="srow"><span class="sname">' + x.n + '</span>' +
+          '<span class="strack"><span class="sfill" style="width:' + (sum > 0 ? w[x.k] / 10 * 100 : 0) +
+          '%;background:#3A5A8E"></span></span>' +
+          '<span class="sval">' + (sum > 0 ? (w[x.k] / sum * 100).toFixed(0) + '%' : '—') + '</span></div>';
+  });
+  document.getElementById('mnStack').innerHTML = sh;
+
+  if(sum === 0){
+    verdict('mnVerdict', '#5B5648',
+      '가중치를 하나 이상 올려주세요',
+      '모든 항목이 0이면 비교할 수 없습니다.<br><br><b>먼저 「나에게 가장 중요한 것 하나」</b>를 10으로 올려보세요. 그다음 나머지를 조정하면 됩니다.');
+  } else if(gap < 0.25){
+    verdict('mnVerdict', '#9E7A2E',
+      '1위와 2위가 거의 같습니다 (' + best.score.toFixed(2) + ' vs ' + ranked[1].score.toFixed(2) + ')',
+      '<b>' + best.c.n + '</b>과 <b>' + ranked[1].c.n + '</b>의 점수 차이가 <b>' + gap.toFixed(2) + '</b>뿐입니다.<br><br>' +
+      '<b>이럴 때가 실제로 가장 흔합니다.</b> 그리고 이 경우 <b>점수로 결정하면 안 됩니다.</b> 오차 범위 안이니까요.<br><br>' +
+      '<b>대신 이렇게 하세요</b><br>· <b>가격을 넣어보세요.</b> 같은 점수라면 <b>싼 쪽</b>입니다.<br>' +
+      '· <b>「절대 못 참는 것」이 있는지</b> 보세요. 점수는 평균이라 <b>치명적인 단점을 가립니다.</b> 예를 들어 출퇴근 90분은 다른 장점으로 못 메웁니다.<br>' +
+      '· <b>배우자와 각자 매겨보세요.</b> 가중치가 다르면 <b>답도 다릅니다.</b> 그 차이를 먼저 이야기하는 것이 순서입니다.');
+  } else {
+    verdict('mnVerdict', best.c.c,
+      '내 우선순위에서는 「' + best.c.n + '」' + josa(best.c.n, '이', '가') + ' 1위입니다 (' + best.score.toFixed(2) + '점)',
+      '<b>' + best.c.d + '</b><br><br>' +
+      '2위는 <b>' + ranked[1].c.n + '</b>(' + ranked[1].score.toFixed(2) + '점), 3위는 <b>' + ranked[2].c.n +
+      '</b>(' + ranked[2].score.toFixed(2) + '점)입니다.<br><br>' +
+      '<b>이제 가중치를 바꿔보세요.</b> <b>학군을 10으로</b> 올리면 순위가 어떻게 되는지, <b>일자리를 0으로</b> 내리면 어떻게 되는지.<br><br>' +
+      '<b>여기서 알 수 있는 것</b> — <b>「어느 집이 좋은가」에 하나의 정답이 없다</b>는 것입니다. 같은 세 후보인데 <b>가중치만 바꾸면 1위가 바뀝니다.</b><br><br>' +
+      '<b>그래서 순서는 이렇습니다</b> — 「어디가 좋냐」를 묻기 전에 <b>「나에게 무엇이 중요하냐」</b>를 정합니다. 그게 정해지면 <b>후보가 크게 줄어듭니다.</b><br><br>' +
+      '<b>다만 이 점수에는 가격이 빠져 있습니다.</b> 실제로는 <b>점수가 높은 곳이 비쌉니다.</b> 최종 판단은 <b>내 예산 안에서</b>의 비교여야 합니다.');
+  }
+}
+WKEYS.forEach(function(x){
+  document.getElementById(x.id).addEventListener('input', mnCalc);
+});
+
+/* ══════════ 5. 연식 ══════════ */
+var AG = [
+  { h:'신축 (0~10년)', color:'#7A5C9E',
+    t:'건물에 값을 내는 구간',
+    p:'<b>사는 것</b> — 새 건물, 좋은 마감, 넉넉한 주차, 커뮤니티 시설.<br><br><b>장점</b> — <b>당장 편합니다.</b> 수리할 게 없고, 단열과 방음이 낫고, 주차가 세대당 1대를 넘습니다. 그리고 <b>가장 잘 팔립니다</b>(환금성).<br><br><b>단점</b> — <b>신축 프리미엄을 지불합니다.</b> 그리고 그 프리미엄은 <b>시간이 지나면서 빠집니다.</b> 같은 입지의 구축보다 비싼 만큼, <b>그 차액이 유지되지는 않습니다.</b><br><br><b>흔한 오해</b> — <b>「새 아파트니까 계속 오를 것」</b>. 새것은 <b>매년 덜 새것</b>이 됩니다. 그리고 <b>더 새로운 단지가 옆에 들어서면</b> 상대적 지위가 내려갑니다.<br><br><b>적합한 경우</b> — <b>오래 실거주</b>할 계획이고, 편의성에 값을 낼 의향이 있는 경우입니다. <b>거주 가치를 매년 받는</b> 것이니 합리적입니다.' },
+  { h:'준신축 (10~20년)', color:'#6B7A52',
+    t:'가장 애매하고, 그래서 가성비가 있는 구간',
+    p:'<b>사는 것</b> — 아직 쓸 만한 건물 + 자리 잡은 생활권.<br><br><b>장점</b> — <b>신축 프리미엄은 빠졌는데 아직 불편하지 않습니다.</b> 주차도 대체로 세대당 1대 안팎이고, 배관도 아직 버팁니다. 그리고 <b>단지와 주변 상권이 자리를 잡았습니다.</b><br><br><b>단점</b> — <b>이야깃거리가 없습니다.</b> 신축의 새것 프리미엄도, 구축의 재건축 기대도 없습니다. 그래서 <b>주목을 덜 받습니다.</b><br><br><b>그게 기회일 수 있습니다</b> — 주목받지 않는다는 것은 <b>기대가 값에 덜 들어 있다</b>는 뜻이기도 합니다. 01편의 관점에서 보면, <b>실거주 만족도 대비 가격이 합리적인</b> 구간인 경우가 많습니다.<br><br><b>확인할 것</b> — 이 시기부터 <b>장기수선충당금 적립 상태</b>가 중요해집니다. 부족하면 <b>나중에 큰 공사 때 일시 부담</b>이 옵니다.' },
+  { h:'구축 (20~30년)', color:'#8E6B3A',
+    t:'값이 땅으로 옮겨가는 구간',
+    p:'<b>사는 것</b> — 사실상 <b>땅</b>과 <b>입지</b>입니다. 건물 값은 많이 빠졌습니다.<br><br><b>장점</b> — <b>같은 값에 훨씬 좋은 입지</b>를 살 수 있습니다. 그리고 대개 <b>용적률이 낮고 대지지분이 커서</b> 나중에 재건축 여지가 있습니다.<br><br><b>단점 — 실제로 불편합니다</b><br>· <b>주차</b>가 가장 큰 문제입니다. 세대당 0.5~0.8대면 매일 스트레스입니다.<br>· <b>배관·난방</b> 노후로 수리비가 듭니다.<br>· <b>단열과 방음</b>이 떨어져 관리비가 더 나올 수 있습니다.<br>· 엘리베이터가 없는 단지도 있습니다.<br><br><b>사는 이유가 분명해야 합니다</b> — <b>「입지를 사는 것」</b>이거나 <b>「재건축을 기다리는 것」</b>이어야 합니다. <b>「싸니까」는 이유가 안 됩니다</b> — 싼 데는 이유가 있고 그 비용은 내가 부담합니다.' },
+  { h:'재건축 대상', color:'#8E4B3A',
+    t:'가장 기대가 크고 가장 자주 어긋납니다',
+    p:'<b>사는 것</b> — <b>새 아파트를 받을 권리에 대한 기대</b>입니다. 지금의 낡은 집이 아닙니다.<br><br><b>왜 어려운가</b><br><br><b>① 시간이 아주 깁니다.</b> 안전진단 → 조합 설립 → 사업시행인가 → 관리처분 → 이주·철거 → 준공. <b>10년이 넘는 것이 보통</b>이고 <b>중간에 멈추기도</b> 합니다.<br><br><b>② 이미 기대가 값에 들어 있습니다.</b> 「될 것 같은 곳」은 <b>이미 비쌉니다.</b> 그래서 <b>실제로 진행되어야 본전</b>인 경우가 많습니다.<br><br><b>③ 규제가 자주 바뀝니다.</b> 안전진단 기준, 초과이익 환수, 조합원 지위 양도 제한 — 이런 규정 하나가 <b>사업 전체를 몇 년 늦추거나 멈춥니다</b>(03편).<br><br><b>④ 부담금이 예상보다 커집니다.</b> 공사비가 오르면(04편) <b>조합원 부담금이 늘어나고</b>, 그 때문에 사업이 중단되기도 합니다.<br><br><b>아래 계산기</b>로 <b>용적률 여유가 사업성을 어떻게 바꾸는지</b> 확인해보세요.' }
+];
+bindBtnRow('#agBtns', function(v){
+  document.getElementById('agVerdict').querySelector('.vh').textContent = AG[+v].h;
+  verdict('agVerdict', AG[+v].color, AG[+v].t, AG[+v].p);
+});
+
+/* ══════════ 5b. 재건축 사업성 ══════════ */
+function rdCalc(){
+  var units = +document.getElementById('rdUnits').value;
+  var now = +document.getElementById('rdNow').value;
+  var max = +document.getElementById('rdMax').value;
+  var cost = +document.getElementById('rdCost').value;
+  var sale = +document.getElementById('rdSale').value;
+
+  document.getElementById('rdUnitsOut').textContent = units.toLocaleString() + '세대';
+  document.getElementById('rdNowOut').textContent = now + '%';
+  document.getElementById('rdMaxOut').textContent = max + '%';
+  document.getElementById('rdCostOut').textContent = (cost / 10000).toFixed(1) + '억원';
+  document.getElementById('rdSaleOut').textContent = (sale / 10000).toFixed(1) + '억원';
+
+  var newUnits = Math.round(units * max / now);
+  var gen = Math.max(0, newUnits - units);
+  var totalCost = newUnits * cost;
+  var income = gen * sale;
+  var net = totalCost - income;
+  var perUnit = net / units;
+
+  document.getElementById('rdGen').textContent = gen.toLocaleString() + '세대 (전체 ' + newUnits.toLocaleString() + '세대)';
+  document.getElementById('rdGen').style.color = gen > 0 ? 'var(--pos)' : 'var(--neg)';
+  var bEl = document.getElementById('rdBurden');
+  bEl.textContent = perUnit > 0 ? '부담 ' + won(perUnit) : '환급 ' + won(-perUnit);
+  bEl.style.color = perUnit > 0 ? 'var(--neg)' : 'var(--pos)';
+
+  var X0 = 150, W = 400, maxV = Math.max(totalCost, income) || 1;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">용적률 ' + now + '% → ' + max + '% : ' +
+       units.toLocaleString() + '세대 → ' + newUnits.toLocaleString() + '세대</text>';
+  g += '<rect x="' + X0 + '" y="34" width="' + (totalCost / maxV * W).toFixed(1) + '" height="28" rx="2" fill="#8E4B3A" fill-opacity=".45" stroke="#8E4B3A" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="52" text-anchor="end">총 공사비</text>';
+  g += '<text class="lblb" x="' + (X0 + totalCost / maxV * W + 8).toFixed(1) + '" y="52" fill="#8E4B3A">' + eok(totalCost) + '</text>';
+  g += '<rect x="' + X0 + '" y="72" width="' + (income / maxV * W).toFixed(1) + '" height="28" rx="2" fill="#6B7A52" fill-opacity=".45" stroke="#6B7A52" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="90" text-anchor="end">일반분양 수입</text>';
+  g += '<text class="lblb" x="' + (X0 + income / maxV * W + 8).toFixed(1) + '" y="90" fill="#6B7A52">' + eok(income) + '</text>';
+  g += '<line class="axis" x1="' + X0 + '" y1="112" x2="' + (X0 + W) + '" y2="112"/>';
+  g += '<text class="' + (perUnit > 0 ? 'lblb' : 'axt') + '" x="' + X0 + '" y="134"' +
+       (perUnit > 0 ? ' fill="#8E4B3A"' : '') + '>차액 ' + eok(Math.abs(net)) + '을 조합원 ' + units.toLocaleString() +
+       '명이 나눕니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="156">→ 1인당 ' + (perUnit > 0 ? '부담 ' : '환급 ') + won(Math.abs(perUnit)) + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="180">기부채납·임대 의무·이주비·금융비용·초과이익 환수는 빠져 있습니다.</text>';
+  document.getElementById('rdScene').innerHTML = g;
+
+  if(max <= now){
+    verdict('rdVerdict', '#8E4B3A',
+      '늘릴 용적률이 없으면 사업이 성립하지 않습니다',
+      '허용 용적률(<b>' + max + '%</b>)이 현재 용적률(<b>' + now + '%</b>) 이하입니다. <b>더 지을 수 없으니 일반분양도 없습니다.</b><br><br>' +
+      '그러면 공사비 <b>' + eok(totalCost) + '</b>을 <b>조합원이 전부 부담</b>해야 합니다. 1인당 <b>' + won(perUnit) + '</b>입니다.<br><br>' +
+      '<b>이게 재건축이 안 되는 가장 흔한 이유</b>입니다. 이미 높게 지어진 단지는 <b>더 지을 공간이 없어</b> 사업성이 나옵니다.<br><br>' +
+      '<b>허용 용적률 슬라이더를 올려보세요.</b> 규제가 완화되면 사업성이 어떻게 바뀌는지 볼 수 있습니다. <b>그래서 재건축 규제 완화 소식에 값이 먼저 뛰는 것</b>입니다(03편).');
+  } else if(perUnit <= 0){
+    verdict('rdVerdict', '#4C7A6D',
+      '일반분양으로 공사비를 다 메우고 ' + won(-perUnit) + '이 환급됩니다',
+      '용적률이 <b>' + now + '% → ' + max + '%</b>로 늘어 세대수가 <b>' + units.toLocaleString() + ' → ' +
+      newUnits.toLocaleString() + '세대</b>가 됩니다. 늘어난 <b>' + gen.toLocaleString() + '세대</b>를 일반분양하면 <b>' +
+      eok(income) + '</b>이 들어옵니다.<br><br>' +
+      '공사비 <b>' + eok(totalCost) + '</b>보다 많으므로 <b>조합원은 돈을 내지 않고 오히려 받습니다.</b><br><br>' +
+      '<b>이런 조건이면 사업이 빠르게 진행됩니다.</b> 반대로 말하면 <b>이런 단지는 이미 값이 올라 있습니다.</b> 「사업성이 좋다」는 정보는 <b>모두가 알고 있으니까요.</b><br><br>' +
+      '<b>공사비 슬라이더를 올려보세요.</b> 04편에서 본 <b>공사비 급등</b>이 사업성을 어떻게 뒤집는지 볼 수 있습니다.');
+  } else if(perUnit < 15000){
+    verdict('rdVerdict', '#9E7A2E',
+      '1인당 ' + won(perUnit) + ' — 부담은 있지만 진행되는 수준입니다',
+      '일반분양 <b>' + gen.toLocaleString() + '세대</b>로 <b>' + eok(income) + '</b>을 벌지만 공사비 <b>' +
+      eok(totalCost) + '</b>에는 모자랍니다. 차액 <b>' + eok(net) + '</b>을 <b>' + units.toLocaleString() +
+      '명이 나누면 1인당 ' + won(perUnit) + '</b>입니다.<br><br>' +
+      '<b>적은 돈은 아니지만 실제로 이 수준에서 진행되는 사례가 있습니다.</b> 새 아파트의 값어치가 부담금보다 크다고 판단되면 조합원들이 동의합니다. 다만 <b>현금으로 마련해야 하므로</b> 조합원 사정에 따라 갈립니다.<br><br>' +
+      '<b>다만 변수가 많습니다</b><br>· <b>공사비가 오르면</b> 부담금이 커집니다(04편)<br>· <b>기부채납·임대 의무</b>로 일반분양 물량이 줄 수 있습니다<br>· <b>분양가 상한</b>이 적용되면 수입이 줄어듭니다(03편)<br>· <b>초과이익 환수</b>가 추가 부담이 될 수 있습니다<br><br>' +
+      '<b>실제 사업이 멈추는 대부분의 이유가 「부담금이 예상보다 커져서」</b>입니다.');
+  } else {
+    verdict('rdVerdict', '#8E4B3A',
+      '1인당 ' + won(perUnit) + ' — 이 정도면 동의가 어렵습니다',
+      '차액 <b>' + eok(net) + '</b>을 <b>' + units.toLocaleString() + '명</b>이 나누면 1인당 <b>' + won(perUnit) + '</b>입니다.<br><br>' +
+      '<b>이 금액을 현금으로 낼 수 있는 조합원이 얼마나 될까요.</b> 특히 <b>고령이고 소득이 없는</b> 조합원에게는 사실상 불가능합니다.<br><br>' +
+      '<b>그래서 사업이 멈춥니다.</b> 동의율이 안 나오거나, 시작했다가 <b>공사비가 오르면서 중단</b>됩니다. 실제로 이런 사례가 여러 번 있었습니다.<br><br>' +
+      '<b>투자 관점의 함의</b> — <b>「재건축 대상」이라는 말만으로는 부족합니다.</b> <b>용적률 여유, 대지지분, 세대수, 그리고 예상 부담금</b>을 봐야 합니다. 그리고 그 숫자는 <b>조합의 사업성 검토 자료</b>에 나옵니다.<br><br>' +
+      '<b>기대만 있고 숫자가 없는 재건축</b>은 가장 위험한 투자에 속합니다.');
+  }
+}
+['rdUnits', 'rdNow', 'rdMax', 'rdCost', 'rdSale'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', rdCalc);
+});
+
+/* ══════════ 6. 임장 ══════════ */
+var FDD = [
+  { h:'평일 아침', color:'#8E6B3A',
+    t:'출근길을 직접 걸어보세요',
+    p:'<b>7~9시</b>에 가서 <b>실제 출근 경로</b>를 그대로 해보세요. 지도 앱의 예상 시간과 <b>실제가 다릅니다.</b><br><br><b>확인할 것</b><br>· 역까지 <b>실제로 몇 분</b> 걸리는가 (언덕, 신호등, 육교 포함)<br>· 그 시간대 <b>지하철이 얼마나 붐비는가</b> — 탈 수 있는지, 앉을 수 있는지<br>· <b>버스 배차 간격</b>과 정류장까지 거리<br>· 차로 다닌다면 <b>단지 나가는 길이 얼마나 막히는가</b><br><br><b>왜 중요한가</b> — 출퇴근은 <b>하루 두 번, 매일</b> 겪습니다. 10분 차이가 <b>1년이면 80시간</b>입니다. 그리고 이건 <b>돈으로 환산되지 않지만 삶의 질을 가장 크게 바꿉니다.</b><br><br>02편에서 <b>「일자리가 가장 근본적인 입지 요인」</b>이라고 한 이유가 이것입니다.' },
+  { h:'평일 저녁·밤', color:'#8E6B3A',
+    t:'주차와 소음의 진실이 드러나는 시간',
+    p:'<b>저녁 8~10시</b>가 가장 많은 것을 보여줍니다.<br><br><b>확인할 것</b><br>· <b>주차 자리가 있는가.</b> 이중주차가 얼마나 심한가. 이게 구축 단지의 실상을 가장 정확히 보여줍니다<br>· <b>불이 켜진 집이 얼마나 되는가</b> — 공실률을 대략 짐작할 수 있습니다<br>· <b>소음</b> — 도로, 상가, 유흥시설. 낮에는 안 들리던 것이 밤에 들립니다<br>· <b>가로등과 골목 조명</b> — 어두운 구간이 있는지<br>· <b>귀갓길이 안전하게 느껴지는가</b> — 특히 역에서 집까지<br><br><b>실전 팁</b> — 낮에만 보고 결정하면 <b>이 항목들을 전부 놓칩니다.</b> 그리고 이것들은 <b>살기 시작하면 매일 겪습니다.</b>' },
+  { h:'주말 낮', color:'#8E6B3A',
+    t:'생활권과 이웃을 보는 시간',
+    p:'<b>주말 오후</b>에는 그 동네의 <b>생활</b>이 보입니다.<br><br><b>확인할 것</b><br>· <b>상권이 살아 있는가</b> — 빈 점포가 많으면 신호입니다<br>· <b>어떤 사람들이 사는가</b> — 아이가 많은지, 노년층이 많은지. 내 가족 구성과 맞는지<br>· <b>공원과 놀이터</b>에 사람이 있는가<br>· <b>장 보는 곳까지 실제로 가보기</b> — 마트, 시장<br>· <b>주말 주차</b> 상황 (평일과 다릅니다)<br><br><b>단지 안에서 볼 것</b><br>· 게시판의 <b>공지사항</b> — 분쟁이나 큰 공사 예정이 붙어 있기도 합니다<br>· <b>관리 상태</b> — 화단, 복도, 계단이 깨끗한가. 관리가 잘 되는 단지는 값도 잘 지킵니다<br>· <b>재활용장과 쓰레기 처리</b> 상태' },
+  { h:'비 오는 날', color:'#8E6B3A',
+    t:'가장 적게 가지만 가장 많이 알려줍니다',
+    p:'비 오는 날에만 보이는 것들이 있습니다.<br><br><b>확인할 것</b><br>· <b>물이 고이는 곳</b>이 있는가 — 단지 입구, 주차장 진입로<br>· <b>지하주차장에서 집까지 비를 맞는가</b> — 엘리베이터 직결 여부가 여기서 체감됩니다<br>· <b>누수 흔적</b> — 천장, 벽, 창틀 주변의 얼룩<br>· <b>창문 주변으로 물이 새는가</b><br>· <b>배수</b> 상태 — 오래된 단지는 이게 문제인 경우가 있습니다<br><br><b>집 안에서</b> — 비 오는 날 <b>곰팡이 냄새</b>가 나는지 확인하세요. 특히 <b>북향 방, 붙박이장 뒤, 베란다</b>. 맑은 날에는 잘 안 납니다.<br><br><b>솔직히</b> — 일부러 비 오는 날을 맞추기는 어렵습니다. 다만 <b>기회가 되면 반드시</b> 가보세요. 그리고 <b>여름 장마철 이후</b>에 보는 것도 방법입니다.' },
+  { h:'집 안에서', color:'#8E6B3A',
+    t:'짧은 시간에 봐야 할 것들',
+    p:'집을 보는 시간은 대개 <b>10~20분</b>입니다. 순서를 정해두면 놓치지 않습니다.<br><br><b>① 창문을 열어봅니다.</b> 소음, 냄새, 조망, 바람. <b>가장 먼저 하세요</b> — 나중엔 잊어버립니다.<br><br><b>② 물을 틀어봅니다.</b> 수압, 온수 나오는 속도, 배수 속도. 화장실과 주방 모두.<br><br><b>③ 천장과 벽 모서리를 봅니다.</b> 누수 얼룩, 곰팡이, 결로 흔적. <b>새로 도배한 부분</b>이 있으면 왜인지 물어보세요.<br><br><b>④ 창틀과 새시</b>를 봅니다. 오래된 새시는 <b>단열과 방음이 크게 떨어지고</b>, 교체하면 <b>수백만원</b>입니다.<br><br><b>⑤ 난방을 확인합니다.</b> 개별난방인지 중앙난방인지, 보일러 연식.<br><br><b>⑥ 실제로 서 봅니다.</b> 방에 침대와 책상이 들어가는지, 주방 동선이 어떤지. <b>사진으로는 알 수 없습니다.</b><br><br><b>⑦ 사진을 찍어두세요.</b> 여러 집을 보면 <b>반드시 헷갈립니다.</b>' },
+  { h:'사람에게 묻기', color:'#4C7A6D',
+    t:'서류에 없는 정보의 출처',
+    p:'<b>중개인에게</b><br>· 이 집이 <b>왜 나왔는가</b><br>· <b>얼마나 오래 매물로 있었는가</b> — 오래 안 팔렸다면 이유가 있습니다<br>· <b>최근 이 단지에서 실제로 거래된 사례</b><br>· 다만 중개인은 <b>거래가 성사되어야 수익을 얻습니다.</b> 그 점을 감안해서 들으세요.<br><br><b>경비원·관리사무소에</b> — 의외로 <b>가장 솔직한 정보원</b>입니다.<br>· 주차 상황이 실제로 어떤지<br>· 최근 <b>큰 공사나 하자 문제</b>가 있었는지<br>· <b>층간소음 분쟁</b>이 있었는지<br><br><b>단지 상가에서</b> — 오래 장사한 분들은 <b>동네 흐름</b>을 압니다. 어떤 사람들이 들어오고 나가는지.<br><br><b>온라인</b> — 단지 커뮤니티나 지역 카페에 <b>하자·분쟁 이력</b>이 남아 있는 경우가 있습니다. 다만 <b>불만이 있는 사람이 더 많이 쓴다</b>는 점은 감안하세요.<br><br><b>주의</b> — 사람에게 들은 것은 <b>확인이 필요한 단서</b>이지 사실이 아닙니다. 중요한 것은 <b>반드시 서류로 확인</b>하세요.' }
+];
+bindBtnRow('#fdBtns', function(v){
+  document.getElementById('fdVerdict').querySelector('.vh').textContent = FDD[+v].h;
+  verdict('fdVerdict', FDD[+v].color, FDD[+v].t, FDD[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#pkCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#pkCheck li.done').length;
+      document.getElementById('pkCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 첫째 항목이 나머지 열 개의 순서를 정합니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#lcBtns button[data-v="0"]').click();
+document.querySelector('#cxBtns button[data-v="0"]').click();
+mnCalc();
+document.querySelector('#agBtns button[data-v="0"]').click();
+rdCalc();
+document.querySelector('#fdBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
