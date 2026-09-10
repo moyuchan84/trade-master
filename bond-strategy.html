@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>내 장기채를 어떻게 볼 것인가</title>
+<meta name="description" content="아홉 편의 계산을 하나로 모아 지금 들고 있는 채권을 점검합니다. 목적 적합성·버티는 힘·회복 조건을 종합 진단하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --diag:#4C6B7A;--fit:#7A5C9E;--hold2:#5F7A52;--map:#8E6B3A;--warn:#8E4B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:680px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--diag));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--diag));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--diag));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  /* 진단 카드 */
+  .diag3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0 0;}
+  .diag3 > div{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--dc);border-radius:3px;padding:14px 15px;}
+  .diag3 h4{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--dc);margin:0 0 7px;}
+  .diag3 .dv{font-family:'Newsreader',serif;font-size:17px;color:var(--ink);line-height:1.35;margin-bottom:6px;}
+  .diag3 .dn{font-size:12.5px;color:var(--ink-soft);line-height:1.55;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .diag3{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">채권 10 · 전략 · 투자 공부 노트</div>
+    <h1>내 장기채를<br>어떻게 볼 것인가</h1>
+    <p class="lede">아홉 편의 계산을 하나로 모읍니다. 그리고 <b>답할 수 없는 질문</b>에서 <b>답할 수 있는 질문</b>으로 옮깁니다.</p>
+    <div class="callout">
+      <p><b>이 트랙은 「사라」거나 「팔라」고 말하지 않습니다.</b> 그건 <b>돈의 성격과 본인의 상황</b>이 정하는 것이고, 그 정보는 <b>본인만 갖고 있기</b> 때문입니다.</p>
+      <p>대신 <b>세 가지 질문</b>을 드립니다. 셋 다 <b>예측이 필요 없고, 본인만 답할 수 있는</b> 것들입니다.</p>
+      <p><b>① 내가 든 것이 정확히 무엇인가</b> — 듀레이션은? 실물인가 ETF인가? 환헤지인가?<br>
+         <b>② 이 돈은 언제 쓸 돈인가</b> — 날짜가 있는가, 없는가?<br>
+         <b>③ 얼마나 더 떨어져도 팔지 않을 수 있는가</b> — 크기는 적당한가?</p>
+      <p><b>「금리가 언제 내려갈까」는 여기 없습니다.</b> 06편에서 본 대로 <b>아무도 답할 수 없기</b> 때문입니다. 그리고 <b>세 질문에 답하면 그 질문의 답을 몰라도 결정할 수 있습니다.</b></p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#diag">1. 종합 진단</a>
+    <a href="#scen">2. 세 가지 시나리오</a>
+    <a href="#map">3. 아홉 편 요약</a>
+    <a href="#mind">4. 마음가짐</a>
+    <a href="#end">5. 마지막</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="diag">
+    <div class="prod-head" style="--edge:var(--diag)">
+      <span class="prod-tag">01 · 진단</span>
+      <h2>지금 들고 있는 것을 넣어보세요</h2>
+      <p class="one">세 질문에 대한 답이 <b>숫자로 나옵니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>값이 떨어져서 속상할 때, 사람들은 보통 <b>「언제 오를까?」</b>를 물어. 그런데 그건 <b>아무도 몰라.</b></p>
+      <p>대신 <b>내가 답할 수 있는 질문 세 개</b>가 있어.</p>
+      <p><b>① 내가 뭘 들고 있지?</b> — 얼마나 크게 흔들리는 물건인지. <b>숫자 하나만 보면</b> 알 수 있어.</p>
+      <p><b>② 이 돈 언제 쓸 거지?</b> — 날짜가 정해져 있으면 <b>거기에 맞는 물건</b>을 들어야 해.</p>
+      <p><b>③ 더 떨어져도 괜찮은 만큼만 갖고 있나?</b> — 이건 <b>내 사정</b>이라 나만 알아.</p>
+      <p>이 셋에 답하면 신기한 일이 생겨. <b>「언제 오를까」를 몰라도 뭘 해야 할지 정해져.</b> 그게 이 편의 목적이야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DIAGNOSIS · 내 상황을 넣어보세요</div>
+      <p class="labsub">모르는 값이 있으면 <b>그것부터 확인</b>하는 것이 첫 할 일입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="dgDur">듀레이션 (07편 5장에서 확인)</label>
+        <input type="range" id="dgDur" min="1" max="25" step="1" value="17">
+        <output id="dgDurOut">17</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dgLoss">지금 평가손익</label>
+        <input type="range" id="dgLoss" min="-70" max="40" step="1" value="-40">
+        <output id="dgLossOut">−40%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dgY">지금 이 상품의 수익률 (YTM)</label>
+        <input type="range" id="dgY" min="5" max="90" step="1" value="48">
+        <output id="dgYOut">4.8%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dgUse">이 돈을 쓸 시점</label>
+        <input type="range" id="dgUse" min="0" max="30" step="1" value="0">
+        <output id="dgUseOut">정해지지 않음</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dgWeight">전체 자산에서 차지하는 비중</label>
+        <input type="range" id="dgWeight" min="1" max="100" step="1" value="20">
+        <output id="dgWeightOut">20%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dgHedge">환헤지 여부</label>
+        <select id="dgHedge">
+          <option value="1">환헤지형 (H)</option>
+          <option value="0" selected>언헤지</option>
+          <option value="2">국내 채권 (환율 없음)</option>
+        </select>
+      </div>
+
+      <div class="diag3" id="dgCards"></div>
+
+      <div class="steps-out" id="dgSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">금리 +1%p면 추가로</span><span class="rv" id="dgDown">—</span></div>
+        <div><span class="rk">그때 전체 자산 영향</span><span class="rv" id="dgTotal">—</span></div>
+      </div>
+
+      <div class="verdict" id="dgVerdict" style="--vc:var(--diag)">
+        <div class="vh">종합</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>세 카드가 뜻하는 것.</b><br>
+        · <b>목적 적합성</b> — <b>듀레이션 ÷ 쓸 시점</b>입니다. <b>1에 가까울수록</b> 저축에 가깝고, <b>클수록 금리 방향에 대한 베팅</b>입니다(04편).<br>
+        · <b>버티는 힘</b> — 금리가 <b>1%p 더 올랐을 때</b> 전체 자산이 얼마나 흔들리는지입니다.<br>
+        · <b>회복 조건</b> — <b>지금 수익률로 버티면서</b> 본전이 되려면 금리가 얼마나 내려야 하는지입니다(06편).<br><br>
+        <b>⚠️ 이 진단은 「해야 할 일」을 알려주지 않습니다.</b> <b>「지금 상태가 어떤지」</b>를 숫자로 정리할 뿐입니다. 결정은 <b>이 숫자를 보고 본인이</b> 내리는 것입니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="scen">
+    <div class="prod-head" style="--edge:var(--fit)">
+      <span class="prod-tag">02 · 시나리오</span>
+      <h2>세 가지 경우를 미리 계산해두기</h2>
+      <p class="one">예측이 아니라 <b>「이렇게 되면 이렇다」</b>를 미리 아는 것입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SCENARIOS · 기간을 바꿔보세요</div>
+      <p class="labsub">1장에서 넣은 조건에 <b>세 가지 금리·환율 경로</b>를 적용합니다.</p>
+
+      <div class="ctrl-row">
+        <label for="scYears">앞으로 지날 기간</label>
+        <input type="range" id="scYears" min="1" max="20" step="1" value="3">
+        <output id="scYearsOut">3년</output>
+      </div>
+
+      <div class="steps-out" id="scSteps"></div>
+
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="세 시나리오별 결과">
+        <g id="scScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">낙관 / 중립 / 비관</span><span class="rv" id="scAll">—</span></div>
+        <div><span class="rk">본전이 되는 기간 (중립)</span><span class="rv" id="scEven">—</span></div>
+      </div>
+
+      <div class="verdict" id="scVerdict" style="--vc:var(--fit)">
+        <div class="vh">시나리오</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>세 시나리오의 정의</b> (예시이며 예측이 아닙니다)<br>
+        · <b>낙관</b> — 금리 <b>−1.5%p</b>, 언헤지면 환율 <b>−5%</b> (금리가 내려가면 달러가 약해지는 경향, 08편)<br>
+        · <b>중립</b> — 금리 <b>변화 없음</b>, 환율 변화 없음 — <b>이자만 쌓이는</b> 경우<br>
+        · <b>비관</b> — 금리 <b>+1%p</b>, 언헤지면 환율 <b>+5%</b><br><br>
+        <b>⚠️ 낙관 시나리오조차 짧은 기간에는 본전이 안 될 수</b> 있습니다. 기간 슬라이더를 움직여 <b>얼마나 걸리는지</b> 확인하세요. <b>그 숫자를 미리 알고 있는 것</b>이 이 계산기의 전부입니다.<br><br>
+        <b>실제 경로는 이보다 훨씬 복잡합니다</b> — 오르내림이 반복되고, 중간에 더 큰 낙폭이 올 수 있습니다(09편 4장).
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 편의 한 줄</div>
+      <div class="kb">답할 수 없는 질문을 붙들지 말고<br><b>답할 수 있는 질문</b>으로 옮기세요.</div>
+    </div>
+    <div class="deep">
+      <h3>이 진단이 「해야 할 일」을 말해주지 않는 이유</h3>
+      <p>계산기는 <b>세 가지 상태</b>를 숫자로 보여줍니다. 그런데 <b>「그래서 팔아라/들고 있어라」까지는 말하지 않습니다.</b> 이유가 있습니다.</p>
+      <p><b>같은 숫자가 사람마다 다른 결론</b>이 되기 때문입니다. <b>전체 자산의 20%</b>가 흔들리는 것이 누군가에게는 <b>견딜 만한 일</b>이고 누군가에게는 <b>잠을 못 자는 일</b>입니다. <b>그 차이는 계산에 들어가지 않습니다.</b></p>
+      <p>그리고 <b>가족 상황·소득의 안정성·다른 자산·나이</b>가 전부 다릅니다. <b>이 정보는 본인만 갖고 있습니다.</b></p>
+      <p class="plain"><b>그래서 이 트랙이 하는 일은 「번역」입니다.</b> <b>「내 채권이 어떻게 되고 있는 건가」</b>라는 모호한 불안을 <b>「듀레이션 17, 비중 20%, 금리 1%p면 전체 −3.4%, 5년 버티면 2.3%p 필요」</b>라는 구체적인 문장으로 바꾸는 것입니다.<br><br><b>불안은 대체로 「모르는 것」에서 옵니다.</b> 숫자가 나쁘더라도 <b>알고 있는 나쁨은 견딜 만합니다.</b> 그리고 <b>구체적인 문장으로 바뀌면 판단이 가능해집니다.</b> 그 판단은 본인 몫이고, 그게 맞습니다.</p>
+
+    </div>
+
+    <div class="deep">
+      <h3>「지금 사는 사람」의 관점으로 한 번 보기</h3>
+      <p>이 트랙에서 반복해서 나온 문장이 있습니다 — <b>「가격이 떨어졌다는 것과 수익률이 올랐다는 것은 같은 사실의 양면」</b>입니다.</p>
+      <p>지금 손실 상태라면 <b>이 사실이 잘 안 보입니다.</b> 그런데 <b>같은 채권을 지금 처음 사는 사람</b>의 눈으로 보면 이렇습니다.</p>
+      <p><b>· 수익률이 훨씬 높아졌습니다</b> — 2020년에는 1% 안팎이었던 것이 지금은 4~5% 수준입니다. <b>같은 위험에 두세 배의 이자</b>입니다.<br>
+         <b>· 캐리가 실제로 작동합니다</b> — 02편에서 본 대로 <b>금리가 안 움직여도 수익률만큼</b> 쌓입니다. 1%일 때는 이 효과가 거의 없었습니다.<br>
+         <b>· 금리 하락 여지가 생겼습니다</b> — 1%에서는 더 내려갈 곳이 없었지만, 4~5%에서는 <b>내려갈 공간</b>이 있습니다.</p>
+      <p class="plain"><b>그렇다고 「그러니 더 사라」는 뜻이 아닙니다.</b> 금리는 <b>더 오를 수도</b> 있고, 그건 06편에서 본 대로 <b>아무도 모릅니다.</b><br><br>다만 <b>이 관점이 판단에 도움이 됩니다.</b> <b>「본전까지 얼마나 남았나」</b>로 보면 앞이 막막하지만, <b>「지금 이 자산의 조건이 어떤가」</b>로 보면 <b>예전보다 나아진 조건</b>이 보입니다. 그리고 <b>후자가 실제로 미래를 정하는 것</b>입니다. <b>내가 산 가격은 미래에 아무 영향도 주지 않습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="map">
+    <div class="prod-head" style="--edge:var(--map)">
+      <span class="prod-tag">03 · 지도</span>
+      <h2>아홉 편을 한 줄씩</h2>
+      <p class="one">잊었다면 <b>그 편으로 돌아가</b> 계산기를 다시 열어보세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MAP · 편을 눌러보세요</div>
+      <p class="labsub">각 편에서 <b>기억할 것 하나</b>씩입니다.</p>
+
+      <div class="btnrow" id="mpBtns">
+        <button data-v="0" class="on">01</button>
+        <button data-v="1">02</button>
+        <button data-v="2">03</button>
+        <button data-v="3">04</button>
+        <button data-v="4">05</button>
+        <button data-v="5">06</button>
+        <button data-v="6">07</button>
+        <button data-v="7">08</button>
+        <button data-v="8">09</button>
+      </div>
+
+      <div class="verdict" id="mpVerdict" style="--vc:var(--map)">
+        <div class="vh">요약</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="mind">
+    <div class="prod-head" style="--edge:var(--hold2)">
+      <span class="prod-tag">04 · 마음</span>
+      <h2>어떤 마음가짐으로 볼 것인가</h2>
+      <p class="one">숫자를 다 봤다면 <b>남는 것은 이것</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MINDSET · 눌러서 확인하세요</div>
+      <p class="labsub">전부 <b>이 트랙에서 계산으로 확인한 것</b>들입니다.</p>
+
+      <div class="btnrow" id="mdBtns">
+        <button data-v="0" class="on">「본전」을 놓기</button>
+        <button data-v="1">맞히려 하지 않기</button>
+        <button data-v="2">시간을 편으로</button>
+        <button data-v="3">줄이는 것도 답</button>
+        <button data-v="4">매일 보지 않기</button>
+        <button data-v="5">가족과 이야기하기</button>
+      </div>
+
+      <div class="verdict" id="mdVerdict" style="--vc:var(--hold2)">
+        <div class="vh">마음가짐</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="end">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 마지막</span>
+      <h2>오늘 할 수 있는 것</h2>
+      <p class="one">전부 <b>몇 분이면 끝나는</b> 것들입니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>순서</th><th>할 일</th><th>어디서</th><th>왜</th><th>편</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>1</th><td><b>듀레이션 숫자 확인</b></td><td>운용사 페이지 · 투자설명서</td><td>결과의 대부분을 정합니다</td><td>02·07</td></tr>
+          <tr><th>2</th><td><b>이름에 (H)가 있는지</b></td><td>상품명</td><td>환율 포함 여부가 갈립니다</td><td>08</td></tr>
+          <tr><th>3</th><td><b>실물인지 선물인지</b></td><td>상품명 · 설명서</td><td>롤 비용이 붙습니다</td><td>07</td></tr>
+          <tr><th>4</th><td><b>이 돈의 사용 시점 정하기</b></td><td>스스로</td><td>저축인지 베팅인지 갈립니다</td><td>04</td></tr>
+          <tr><th>5</th><td><b>전체 자산 중 비중 계산</b></td><td>스스로</td><td>버틸 수 있는지 정합니다</td><td>06·09</td></tr>
+          <tr><th>6</th><td><b>1장 계산기에 넣어보기</b></td><td>이 편</td><td>세 질문의 답이 숫자로 나옵니다</td><td>10</td></tr>
+          <tr><th>7</th><td><b>내 만기의 금리를 즐겨찾기</b></td><td>공개 통계</td><td>기준금리가 아니라 이 숫자입니다</td><td>04·05</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <ul class="check" id="bsCheck">
+      <li><b>내 상품의 듀레이션 숫자를 알고 있나?</b></li>
+      <li><b>환헤지형인지 언헤지인지 확인했나?</b></li>
+      <li><b>실물형인지 선물형인지 확인했나?</b></li>
+      <li><b>이 돈에 쓸 날짜가 있는지 정했나?</b></li>
+      <li><b>날짜가 있다면 듀레이션과 맞는가?</b></li>
+      <li><b>날짜가 없다면 「베팅」임을 인정하고 있나?</b></li>
+      <li><b>금리가 1%p 더 올랐을 때의 손실을 계산해봤나?</b></li>
+      <li><b>그 손실을 견딜 수 있는 비중인가?</b></li>
+      <li><b>빌린 돈이나 곧 쓸 돈이 섞여 있지 않나?</b></li>
+      <li><b>레버리지·인버스를 장기로 들고 있지 않나?</b></li>
+      <li><b>「본전」이 아니라 「지금 새로 산다면」으로 보고 있나?</b></li>
+      <li><b>10년·30년물 금리를 볼 곳을 알고 있나?</b></li>
+      <li><b>매일 확인하는 습관을 끊었나?</b></li>
+      <li><b>가족에게 지금 상태를 설명할 수 있나?</b></li>
+    </ul>
+    <div class="checkcount" id="bsCount">0 / 14 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>채권 트랙을 마치며.</b> 열 편을 관통한 것은 하나입니다 — <b>채권은 「안전자산」이라는 한 단어로 요약되지 않는다</b>는 것.</p>
+      <p><b>국채에는 신용 위험이 거의 없습니다.</b> 그건 사실입니다. 그런데 <b>금리 위험은 만기가 길수록 매우 큽니다.</b> 그리고 <b>「안전자산」이라는 네 글자는 앞의 절반만</b> 말하고 있습니다. <b>뒤의 절반을 빠뜨린 채 장기채를 사는 것</b>이 이 트랙의 출발점이었습니다.</p>
+      <p><b>그런데 반대편도 말해야 공평합니다.</b> 지금은 <b>조건이 예전보다 좋습니다.</b> 금리가 1% 안팎이던 시절의 채권은 <b>받을 이자가 거의 없는데 가격만 흔들리는</b> 자산이었습니다. 금리가 오른 지금은 <b>같은 채권에 훨씬 높은 이자</b>가 붙어 있습니다. <b>가격이 떨어졌다는 것과 수익률이 올랐다는 것은 같은 사실의 양면</b>입니다.</p>
+      <p><b>그리고 시간이 편입니다.</b> 06편에서 계산한 대로 <b>−40%를 지금 되돌리려면 금리가 3.9%p 내려가야</b> 하지만, <b>5년을 버티면 1.9%p</b>, <b>10년이면 0.3%p</b>면 됩니다. <b>이자가 금리 하락이 해야 할 일을 대신합니다.</b> 이건 주식에는 없는 성질입니다.</p>
+      <p><b>그래서 마지막으로 남기고 싶은 문장은 이것입니다.</b></p>
+      <p><b>「금리가 언제 내려갈까」는 아무도 답할 수 없습니다.</b> 그 질문을 붙들고 있으면 <b>기다림이 계속 괴로워집니다.</b> 대신 <b>「나는 무엇을 들고 있고, 얼마나 버틸 수 있는가」</b>로 옮기면, <b>답이 나오고 결정이 가능해집니다.</b> 그 답은 <b>시장이 아니라 내가</b> 갖고 있습니다.</p>
+      <p><b>그리고 이 트랙에서 계산한 어떤 숫자보다 중요한 것</b> — <b>이 돈이 흔들려도 가족의 생활이 흔들리지 않는 크기인가.</b> 그 답이 <b>예</b>라면, 나머지는 <b>시간과 산수의 문제</b>입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 채권 10 · 전략 · <b>채권 트랙 완결</b><br>
+    <a href="index.html#bond">← 채권 목록으로</a> · <a href="bond-mistakes.html">09 · 실패하는 방법</a> · <a href="index.html">전체 목록</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    계산기는 「이렇게 되면 이렇다」는 조건 계산이며 예측이 아닙니다. 매수·매도 판단은 본인의 자금 사정과 목적에 따라 스스로 내리셔야 합니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return (r >= 0 ? '+' : '') + r.toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+var S = {};   /* 1장 입력을 2장이 공유 */
+
+/* ══════════ 1. 진단 ══════════ */
+function dgDraw(){
+  var dur = +document.getElementById('dgDur').value;
+  var lossPct = +document.getElementById('dgLoss').value;
+  var y = +document.getElementById('dgY').value / 10;
+  var use = +document.getElementById('dgUse').value;
+  var wt = +document.getElementById('dgWeight').value;
+  var hedge = document.getElementById('dgHedge').value;
+  document.getElementById('dgDurOut').textContent = dur;
+  document.getElementById('dgLossOut').textContent = lossPct === 0 ? '없음' : sgn(lossPct, 0) + '%';
+  document.getElementById('dgYOut').textContent = num(y, 1) + '%';
+  document.getElementById('dgUseOut').textContent = use === 0 ? '정해지지 않음' : use + '년 뒤';
+  document.getElementById('dgWeightOut').textContent = wt + '%';
+
+  S = { dur:dur, loss:lossPct / 100, y:y, use:use, wt:wt, hedge:hedge };
+
+  // ① 목적 적합성
+  var ratio = use > 0 ? dur / use : null;
+  var fitName, fitNote, fitColor;
+  if(use === 0){ fitName = '날짜 없음'; fitNote = '저축이 아니라 금리 방향에 대한 베팅입니다. 그에 맞는 크기여야 합니다.'; fitColor = '#8E6B3A'; }
+  else if(ratio > 2){ fitName = '크게 어긋남'; fitNote = '듀레이션이 쓸 시점의 ' + num(ratio, 1) + '배입니다. 저축이 아니라 베팅에 가깝습니다.'; fitColor = '#8E4B3A'; }
+  else if(ratio > 1.3){ fitName = '다소 김'; fitNote = '쓸 시점보다 듀레이션이 깁니다. 그때 시장가격으로 팔아야 합니다.'; fitColor = '#8E6B3A'; }
+  else if(ratio < 0.7){ fitName = '다소 짧음'; fitNote = '재투자 위험이 남습니다. 금리가 내려가면 불리합니다.'; fitColor = '#7A5C9E'; }
+  else { fitName = '적정'; fitNote = '듀레이션과 쓸 시점이 맞아 결과가 안정적입니다.'; fitColor = '#5F7A52'; }
+
+  // ② 버티는 힘
+  var down1 = -dur;                       // 금리 +1%p일 때 추가 하락
+  var totalHit = down1 * wt / 100;
+  var holdName, holdNote, holdColor;
+  if(Math.abs(totalHit) < 3){ holdName = '여유 있음'; holdNote = '금리가 1%p 더 올라도 전체 자산은 ' + num(Math.abs(totalHit), 1) + '%만 흔들립니다.'; holdColor = '#5F7A52'; }
+  else if(Math.abs(totalHit) < 8){ holdName = '보통'; holdNote = '전체 자산이 ' + num(Math.abs(totalHit), 1) + '% 흔들립니다. 견딜 만한지 스스로 판단할 구간입니다.'; holdColor = '#8E6B3A'; }
+  else { holdName = '부담 큼'; holdNote = '전체 자산이 ' + num(Math.abs(totalHit), 1) + '% 흔들립니다. 비중을 줄이는 것도 정당한 선택입니다.'; holdColor = '#8E4B3A'; }
+
+  // ③ 회복 조건 (5년 기준)
+  var fxAssume = (hedge === '0') ? -5 : 0;    // 언헤지면 회복 국면에 환율 -5% 가정
+  function needDrop(t){
+    var need = 1 / Math.max(0.0001, (1 + S.loss) * Math.pow(1 + y / 100, t) * (1 + fxAssume / 100));
+    return (need - 1) / dur * 100;
+  }
+  var need5 = needDrop(5), need0 = needDrop(0);
+  var recName, recNote, recColor;
+  if(lossPct >= 0){ recName = '해당 없음'; recNote = '지금 손실이 없습니다.'; recColor = '#5F7A52'; }
+  else if(need5 <= 0){ recName = '이자만으로'; recNote = '5년이면 금리가 안 내려가도 본전이 됩니다.'; recColor = '#5F7A52'; }
+  else if(need5 < 2){ recName = num(need5, 2) + '%p'; recNote = '5년 버티면 이만큼만 내려가면 됩니다. 지금 당장이면 ' + num(need0, 2) + '%p입니다.'; recColor = '#8E6B3A'; }
+  else { recName = num(need5, 2) + '%p'; recNote = '5년을 버텨도 이만큼이 필요합니다. 큰 폭입니다.'; recColor = '#8E4B3A'; }
+
+  document.getElementById('dgCards').innerHTML =
+    '<div style="--dc:' + fitColor + '"><h4>① 목적 적합성</h4><div class="dv">' + fitName + '</div><div class="dn">' + fitNote + '</div></div>' +
+    '<div style="--dc:' + holdColor + '"><h4>② 버티는 힘</h4><div class="dv">' + holdName + '</div><div class="dn">' + holdNote + '</div></div>' +
+    '<div style="--dc:' + recColor + '"><h4>③ 회복 조건 (5년)</h4><div class="dv">' + recName + '</div><div class="dn">' + recNote + '</div></div>';
+
+  steps('dgSteps', [
+    { k:'듀레이션', v:num(dur, 0) },
+    { k:'쓸 시점', v:use === 0 ? '정해지지 않음' : use + '년' },
+    { k:'듀레이션 ÷ 쓸 시점', v:ratio === null ? '—' : num(ratio, 1) + '배' },
+    { k:'금리 +1%p일 때 추가 하락', v:sgn(down1, 0) + '%' },
+    { k:'그때 전체 자산 영향 (비중 ' + wt + '%)', v:sgn(totalHit, 1) + '%' },
+    { k:'환율 가정', v:hedge === '0' ? '언헤지 · 회복 시 −5% 가정' : (hedge === '1' ? '헤지형 · 영향 없음' : '국내 · 영향 없음') },
+    { k:'5년 버틸 때 필요한 금리 하락', v:lossPct >= 0 ? '해당 없음' : (need5 <= 0 ? '없음' : num(need5, 2) + '%p'), total:true }
+  ]);
+
+  document.getElementById('dgDown').textContent = sgn(down1, 0) + '%';
+  document.getElementById('dgDown').style.color = 'var(--neg)';
+  document.getElementById('dgTotal').textContent = sgn(totalHit, 1) + '%';
+  document.getElementById('dgTotal').style.color = Math.abs(totalHit) > 8 ? 'var(--neg)' : '';
+
+  if(use === 0 && Math.abs(totalHit) > 8){
+    verdict('dgVerdict', '#8E4B3A',
+      '베팅인데 크기가 큽니다 — 여기가 가장 위험한 조합입니다',
+      '쓸 날짜가 없으니 이건 <b>금리 방향에 대한 베팅</b>입니다(01편 5장의 ③번 목적). <b>그 자체는 정당합니다.</b><br><br>' +
+      '<b>문제는 크기</b>입니다. 금리가 <b>1%p만 더 올라도 전체 자산이 ' + num(Math.abs(totalHit), 1) +
+      '%</b> 흔들립니다. <b>2%p면 ' + num(Math.abs(totalHit) * 2, 1) + '%</b>입니다.<br><br>' +
+      '<b>왜 이게 위험한가</b> — 09편에서 계산한 대로 <b>실제 손실의 대부분은 「버티지 못하고 파는 것」</b>에서 납니다. 그리고 <b>비중이 클수록 팔게 될 가능성이 커집니다.</b><br><br>' +
+      '<b>여기서 할 수 있는 것 두 가지</b><br>' +
+      '· <b>비중을 줄인다</b> — 손실 확정이지만 <b>남은 것을 끝까지 들 수 있게</b> 됩니다.<br>' +
+      '· <b>듀레이션을 줄인다</b> — 같은 금액이어도 <b>흔들림이 작아집니다.</b> 다만 <b>금리 하락의 수혜도 줄어듭니다.</b><br><br>' +
+      '<b>둘 다 「지금 손실을 확정하는」 일</b>이라 마음이 어렵습니다. 다만 <b>06편에서 본 대로 「본전」은 시장이 모르는 숫자</b>입니다. 물어야 할 것은 <b>「지금 새로 투자한다면 이 크기로 할 것인가」</b>입니다.');
+  } else if(ratio !== null && ratio > 2){
+    verdict('dgVerdict', '#8E4B3A',
+      '목적과 도구가 어긋나 있습니다 — 듀레이션이 쓸 시점의 ' + num(ratio, 1) + '배',
+      '<b>' + use + '년 뒤에 쓸 돈</b>인데 듀레이션이 <b>' + dur + '</b>입니다. 04편에서 계산한 대로, 이러면 <b>그 시점의 시장가격이 결과를 정합니다.</b><br><br>' +
+      '<b>같은 금리 ±2%p 움직임에서</b> — 듀레이션이 맞으면 결과가 <b>0.3%p 안</b>에 들어오는데, 이렇게 어긋나면 <b>10%p 넘게</b> 벌어집니다.<br><br>' +
+      '<b>즉 이건 저축이 아니라 베팅</b>입니다. <b>나쁘다는 뜻이 아니라 다른 것</b>이라는 뜻입니다. 문제는 <b>「안전하게 두려고」 시작했다면 의도와 다른 자리</b>에 있다는 것입니다.<br><br>' +
+      '<b>조정할 수 있는 것</b><br>· <b>듀레이션을 ' + Math.max(1, Math.round(use * 1.1)) + ' 근처로</b> 맞추면 <b>' + use +
+      '년 뒤 금액이 거의 확정</b>됩니다(04·07편).<br>· 또는 <b>쓸 날짜를 다시 생각</b>해봅니다 — 미룰 수 있는 돈이라면 어긋남이 줄어듭니다.<br><br>' +
+      '<b>이건 지금이라도 고칠 수 있는 문제</b>입니다. 시장을 맞힐 필요가 없습니다.');
+  } else if(use === 0 && Math.abs(totalHit) < 3){
+    verdict('dgVerdict', '#5F7A52',
+      '베팅이지만 크기가 감당할 만합니다',
+      '쓸 날짜가 없으니 <b>금리 방향에 거는 것</b>이고, 그 인식만 분명하면 됩니다. 그리고 <b>크기가 적당합니다</b> — 금리가 1%p 더 올라도 전체 자산은 <b>' +
+      num(Math.abs(totalHit), 1) + '%</b>만 흔들립니다.<br><br>' +
+      '<b>이 상태의 장점</b> — <b>버틸 수 있습니다.</b> 06편에서 본 <b>개인의 진짜 우위</b>가 바로 이것입니다. 기관은 <b>분기마다 평가받아</b> 몇 년을 못 버티지만, <b>평가받지 않는 개인은 버틸 수 있습니다.</b><br><br>' +
+      '<b>그리고 버틸 수 있으면 시간이 편이 됩니다</b> — 지금 수익률 <b>' + num(y, 1) + '%</b>가 매년 쌓여 <b>금리 하락이 해야 할 일을 대신</b>합니다.<br><br>' +
+      '<b>남은 할 일은 확인뿐</b>입니다 — 듀레이션·환헤지·상품 구조를 아직 확인하지 않았다면 <b>5장의 표대로</b> 하나씩 보세요. 그다음은 <b>기다리는 것</b>이고, 그건 <b>아무것도 안 하는 것</b>입니다.');
+  } else if(ratio !== null && ratio <= 1.3 && ratio >= 0.7){
+    verdict('dgVerdict', '#5F7A52',
+      '목적과 듀레이션이 맞습니다 — 결과가 안정적입니다',
+      '<b>' + use + '년 뒤에 쓸 돈</b>에 듀레이션 <b>' + dur + '</b>이면 <b>거의 맞습니다</b>(비율 ' + num(ratio, 1) + '배).<br><br>' +
+      '<b>이것이 채권의 가장 강력한 쓰임</b>입니다 — <b>가격 위험과 재투자 위험이 서로를 상쇄</b>해, 금리가 어떻게 되든 <b>결과가 거의 확정</b>됩니다(04편).<br><br>' +
+      '<b>지금 평가손실이 있더라도</b> — 그건 <b>중간 가격</b>일 뿐이고, <b>쓸 시점의 금액은 대체로 지켜집니다.</b> 다만 <b>만기가 있는 상품이어야</b> 그 확정성이 온전합니다(07편). <b>일반 ETF라면 완전한 확정은 아닙니다.</b><br><br>' +
+      '<b>확인할 것 하나</b> — 내가 든 것이 <b>실물 채권이나 만기매칭 상품</b>인지, <b>만기가 없는 일반 ETF</b>인지입니다. 후자라면 <b>07편을 다시</b> 보세요.');
+  } else if(lossPct < 0 && need5 > 3){
+    verdict('dgVerdict', '#8E6B3A',
+      '5년을 버텨도 금리가 ' + num(need5, 2) + '%p 내려가야 합니다',
+      '손실이 <b>' + sgn(lossPct, 0) + '%</b>로 커서 <b>이자만으로는 부족</b>합니다. <b>' + num(need5, 2) +
+      '%p</b>는 작은 숫자가 아니고, 역사적으로 그 정도 하락은 <b>큰 침체나 위기</b>에서 나왔습니다.<br><br>' +
+      (S.hedge === '0'
+        ? '<b>그리고 언헤지라 환율까지 감안</b>했습니다 — 회복 국면에서 <b>달러가 약해질 수</b> 있어(08편) 조건이 더 까다로워집니다. ' +
+          '<b>환율 영향이 없다면 ' + num((1 / Math.max(0.0001, (1 + S.loss) * Math.pow(1 + y / 100, 5)) - 1) / dur * 100, 2) +
+          '%p</b>로 줄어듭니다.<br><br>'
+        : '') +
+      (dur <= 5
+        ? '<b>그리고 듀레이션이 ' + dur + '로 짧습니다.</b> 짧으면 <b>금리가 내려가도 가격이 크게 오르지 않아</b> 필요한 하락 폭이 커집니다. ' +
+          '<b>이런 경우 회복은 금리가 아니라 시간(이자)이 해줍니다.</b> <b>2장에서 기간을 늘려보세요</b> — 금리가 전혀 안 움직여도 본전이 되는 지점이 나옵니다.<br><br>'
+        : '') +
+      '<b>여기서 냉정하게 볼 것</b> — <b>「본전」에 집착할 필요가 있는가</b>입니다. 06편에서 본 대로 <b>내가 산 가격은 시장이 모르는 숫자</b>이고, 앞으로의 수익률과 무관합니다.<br><br>' +
+      '<b>지금 물어야 할 질문</b> — <b>「이 돈을 지금 새로 투자한다면 이 자산을 이만큼 담을 것인가.」</b> 답이 <b>예</b>라면 들고 있는 것이 맞고, <b>아니오</b>라면 <b>손실 여부와 무관하게</b> 조정을 생각할 수 있습니다.<br><br>' +
+      '<b>기간 슬라이더를 더 늘려보세요</b>(2장). 어느 지점에서 <b>현실적인 숫자</b>가 되는지 확인하면 판단이 쉬워집니다.');
+  } else {
+    verdict('dgVerdict', '#4C6B7A',
+      '세 항목을 하나씩 보세요',
+      '<b>① 목적 적합성 — ' + fitName + '</b><br>' + fitNote + '<br><br>' +
+      '<b>② 버티는 힘 — ' + holdName + '</b><br>' + holdNote + '<br><br>' +
+      '<b>③ 회복 조건 — ' + recName + '</b><br>' + recNote + '<br><br>' +
+      '<b>이 셋 중 빨간 것이 있으면 그것부터</b> 보면 됩니다. <b>전부 초록이면 남은 일은 기다리는 것</b>이고, 그건 <b>아무것도 안 하는 것</b>입니다.<br><br>' +
+      '<b>슬라이더 중 「모르는 값」이 있다면</b> — 그것을 확인하는 것이 <b>오늘의 첫 할 일</b>입니다. <b>5장의 표</b>에 어디서 보는지 정리해두었습니다.');
+  }
+  scDraw();
+}
+['dgDur', 'dgLoss', 'dgY', 'dgUse', 'dgWeight'].forEach(function(id){ document.getElementById(id).addEventListener('input', dgDraw); });
+document.getElementById('dgHedge').addEventListener('change', dgDraw);
+
+/* ══════════ 2. 시나리오 ══════════ */
+function scDraw(){
+  var t = +document.getElementById('scYears').value;
+  document.getElementById('scYearsOut').textContent = t + '년';
+  var unhedged = (S.hedge === '0');
+
+  function run(dRate, dFx){
+    var v = (1 + S.loss);
+    v *= Math.max(0, 1 - S.dur * dRate / 100);
+    v *= Math.pow(1 + S.y / 100, t);
+    v *= (1 + (unhedged ? dFx : 0) / 100);
+    return (v - 1) * 100;
+  }
+  var opt = run(-1.5, -5), mid = run(0, 0), pes = run(1, 5);
+
+  // 중립에서 본전이 되는 기간
+  var evenT = null;
+  for(var k = 0; k <= 40; k++){
+    if((1 + S.loss) * Math.pow(1 + S.y / 100, k) >= 1){ evenT = k; break; }
+  }
+
+  steps('scSteps', [
+    { k:'출발 (지금 평가손익)', v:sgn(S.loss * 100, 0) + '%' },
+    { k:'낙관 — 금리 −1.5%p' + (unhedged ? ' · 환율 −5%' : ''), v:sgn(opt, 1) + '%' },
+    { k:'중립 — 변화 없음 (이자만)', v:sgn(mid, 1) + '%' },
+    { k:'비관 — 금리 +1%p' + (unhedged ? ' · 환율 +5%' : ''), v:sgn(pes, 1) + '%' },
+    { k:'중립에서 본전이 되는 기간', v:evenT === null ? '40년 이상' : (evenT === 0 ? '이미 본전' : evenT + '년'), total:true }
+  ]);
+
+  document.getElementById('scAll').textContent = sgn(opt, 1) + '% / ' + sgn(mid, 1) + '% / ' + sgn(pes, 1) + '%';
+  document.getElementById('scEven').textContent = evenT === null ? '40년 이상' : (evenT === 0 ? '이미 본전' : evenT + '년');
+  document.getElementById('scEven').style.color = evenT !== null && evenT <= 7 ? 'var(--pos)' : (evenT === null || evenT > 15 ? 'var(--neg)' : '');
+
+  var X0 = 150, W = 380;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">' + t + '년 뒤 · 매수가 대비 (%)' + (unhedged ? ' · 언헤지' : ' · 환율 영향 없음') + '</text>';
+  var vals = [S.loss * 100, opt, mid, pes];
+  var posMax = Math.max(5, Math.max.apply(null, vals.concat([0])));
+  var negMax = Math.max(5, -Math.min.apply(null, vals.concat([0])));
+  var scale = (W - 80) / (posMax + negMax);
+  var ZERO = X0 + 40 + negMax * scale;
+  [{ n:'지금', v:S.loss * 100, c:'#8A8474' },
+   { n:'낙관', v:opt, c:'#5F7A52' },
+   { n:'중립', v:mid, c:'#8E6B3A' },
+   { n:'비관', v:pes, c:'#8E4B3A' }].forEach(function(b, i){
+    var y = 32 + i * 32;
+    var w = Math.abs(b.v) * scale;
+    var x = b.v >= 0 ? ZERO : ZERO - w;
+    var on = (i > 0);
+    g += '<rect x="' + x.toFixed(1) + '" y="' + y + '" width="' + Math.max(0.6, w).toFixed(1) +
+         '" height="21" rx="1.5" fill="' + b.c + '" fill-opacity="' + (on ? '.45' : '.24') + '" stroke="' + b.c +
+         '" stroke-width="' + (on ? '1.5' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 15) + '" text-anchor="end"' +
+         (on ? ' fill="' + b.c + '"' : '') + '>' + b.n + '</text>';
+    var tx = b.v >= 0 ? (x + w + 6) : (x - 6);
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + Math.max(X0 + 2, Math.min(tx, X0 + W - 2)).toFixed(1) +
+         '" y="' + (y + 15) + '" text-anchor="' + (b.v >= 0 ? 'start' : 'end') + '"' + (on ? ' fill="' + b.c + '"' : '') +
+         '>' + sgn(b.v, 1) + '</text>';
+  });
+  g += '<line x1="' + ZERO.toFixed(1) + '" y1="26" x2="' + ZERO.toFixed(1) + '" y2="' + (32 + 4 * 32) +
+       '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + ZERO.toFixed(1) + '" y="' + (32 + 4 * 32 + 16) + '" text-anchor="middle">본전</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (32 + 4 * 32 + 38) + '">세 경우를 미리 알고 있으면 실제로 벌어졌을 때 놀라지 않습니다.</text>';
+  document.getElementById('scScene').innerHTML = g;
+
+  if(S.loss >= 0){
+    verdict('scVerdict', '#5F7A52',
+      '손실이 없는 상태에서의 시나리오입니다',
+      '<b>낙관 ' + sgn(opt, 1) + '% · 중립 ' + sgn(mid, 1) + '% · 비관 ' + sgn(pes, 1) + '%</b>입니다.<br><br>' +
+      '<b>1장에서 「지금 평가손익」을 마이너스로</b> 놓으면 <b>회복 시나리오</b>가 됩니다.<br><br>' +
+      '<b>비관 시나리오를 꼭 보세요.</b> 금리가 <b>1%p만 더 올라도</b> 듀레이션 <b>' + S.dur + '</b> 때문에 결과가 크게 달라집니다.');
+  } else if(opt < 0){
+    verdict('scVerdict', '#8E6B3A',
+      '낙관 시나리오에서도 ' + t + '년으로는 본전이 안 됩니다 (' + sgn(opt, 1) + '%)',
+      '금리가 <b>1.5%p나 내려가고</b> 이자가 <b>' + t + '년</b> 쌓여도 <b>' + sgn(opt, 1) + '%</b>입니다. <b>' +
+      sgn(S.loss * 100, 0) + '%에서 출발했기</b> 때문입니다.<br><br>' +
+      '<b>이 숫자를 정직하게 보는 것이 중요합니다.</b> <b>「금리만 내려가면 곧 회복된다」는 기대는 대체로 기간을 너무 짧게</b> 잡고 있습니다.<br><br>' +
+      '<b>「앞으로 지날 기간」 슬라이더를 늘려보세요.</b> 어느 지점에서 <b>본전을 넘는지</b> 보입니다. <b>중립 시나리오만으로도 ' +
+      (evenT === null ? '40년 이상' : evenT + '년') + '</b>이면 본전이 됩니다 — <b>이자가 쌓이기</b> 때문입니다.<br><br>' +
+      '<b>여기서 나오는 결론</b> — <b>이건 몇 달이나 1~2년의 이야기가 아닙니다.</b> 그 시간을 <b>버틸 수 있는 돈인지</b>가 1장의 두 번째 질문이었습니다. <b>버틸 수 있다면 기다리면 되고, 없다면 크기를 조정하는 것이 맞습니다.</b>');
+  } else if(pes > 0){
+    verdict('scVerdict', '#5F7A52',
+      '세 시나리오 모두 본전을 넘습니다',
+      '<b>비관 시나리오(금리 +1%p)에서도 ' + sgn(pes, 1) + '%</b>입니다. <b>' + t +
+      '년의 이자가 금리 상승분을 덮을 만큼</b> 쌓였기 때문입니다.<br><br>' +
+      '<b>이것이 06편에서 말한 「시간이 금리를 대신한다」</b>의 구체적인 모습입니다. 시간이 충분하면 <b>금리 방향을 맞히지 않아도</b> 됩니다.<br><br>' +
+      '<b>기간 슬라이더를 짧게</b> 줄여보세요. <b>1~3년에서는 금리 방향이 결과를 지배</b>하고, <b>기간이 길어질수록 이자가 지배</b>합니다.<br><br>' +
+      '<b>여기서 실전 결론</b> — <b>「짧게 보면 도박, 길게 보면 저축」</b>입니다. 어느 쪽인지는 <b>내 돈이 얼마나 오래 머물 수 있느냐</b>가 정합니다.');
+  } else {
+    verdict('scVerdict', '#4C6B7A',
+      '낙관 ' + sgn(opt, 1) + '% · 중립 ' + sgn(mid, 1) + '% · 비관 ' + sgn(pes, 1) + '%',
+      '<b>' + t + '년 뒤에 이 셋 중 어딘가</b>에 있게 됩니다. 물론 <b>이보다 더 좋을 수도 더 나쁠 수도</b> 있습니다.<br><br>' +
+      '<b>이 계산의 목적은 예측이 아닙니다.</b> <b>「비관 시나리오가 와도 견딜 수 있는가」</b>를 미리 확인하는 것입니다.<br><br>' +
+      '<b>비관에서 ' + sgn(pes, 1) + '%</b>가 나왔습니다. 1장의 <b>비중 ' + S.wt + '%</b>를 곱하면 전체 자산으로는 <b>' +
+      num(pes * S.wt / 100, 1) + '%</b>입니다. <b>그 정도면 생활이 흔들리지 않는지</b>가 판단 기준입니다.<br><br>' +
+      '<b>중립만으로도 ' + (evenT === null ? '40년 이상' : evenT + '년') + '이면 본전</b>이 됩니다 — <b>금리가 전혀 안 움직여도</b> 말입니다. <b>그 기간을 버틸 수 있는지</b>가 남은 질문의 전부입니다.');
+  }
+}
+document.getElementById('scYears').addEventListener('input', scDraw);
+
+/* ══════════ 3. 지도 ══════════ */
+var MP = [
+  { h:'01 · 채권이란 무엇인가', c:'#4C6B7A', href:'bond-basics.html',
+    t:'채권은 「받을 돈의 목록」이고, 목록은 발행 시점에 확정됩니다',
+    p:'액면가·표면금리·만기 세 가지로 정의되고, <b>표면금리는 절대 바뀌지 않습니다.</b> 바뀌는 것은 <b>그 목록을 지금 얼마로 쳐주느냐</b>입니다.<br><br>' +
+      '<b>가장 중요한 것</b> — 채권 투자에는 <b>두 개의 전혀 다른 게임</b>이 있습니다. <b>①만기까지 들고 목록대로 받는 것</b>과 <b>②중간 가격 변동으로 이익을 보는 것.</b><br><br>' +
+      '<b>「어느 게임을 하고 있는지」가 헷갈리는 것</b>이 이 트랙에서 다룬 모든 실패의 출발점이었습니다.' },
+  { h:'02 · 금리와 가격', c:'#5B6E8E', href:'bond-price.html',
+    t:'금리가 내리면 가격은 오릅니다 — 만기가 길수록 크게',
+    p:'<b>방향이 반대</b>입니다. 그리고 <b>듀레이션</b>이 그 폭을 정합니다 — <b>금리 1%p당 몇 %</b>인가입니다.<br><br>' +
+      '30년 국채는 듀레이션이 <b>17 근처</b>라 금리 1%p에 <b>15~20%</b>가 움직입니다. <b>웬만한 주식보다 큰 변동성</b>입니다.<br><br>' +
+      '<b>그리고 캐리</b> — 금리가 <b>전혀 안 움직여도</b> 수익률만큼 쌓입니다. 매수 시 YTM 5%면 1년 총수익이 <b>정확히 5%</b>입니다.' },
+  { h:'03 · 국채와 회사채', c:'#7A5C3A', href:'bond-types.html',
+    t:'위험은 두 종류이고, 자주 반대로 움직입니다',
+    p:'<b>금리 위험</b>과 <b>신용 위험</b>입니다. 침체기에는 <b>국채는 오르고 회사채는 떨어지는</b> 일이 실제로 생깁니다.<br><br>' +
+      '<b>「이자를 더 준다」는 혜택이 아니라 신호</b>입니다. CCC 등급은 가산금리 <b>12%p</b>인데 기대손실도 <b>12%</b>여서 <b>남는 게 0</b>입니다.<br><br>' +
+      '<b>국채가 안전한 것은 「자국통화 명목 금액」에 한합니다.</b> 진짜 위험은 부도가 아니라 <b>인플레이션</b>입니다.' },
+  { h:'04 · 단기채와 장기채', c:'#4C6B7A', href:'bond-maturity.html',
+    t:'기준금리를 내려도 장기금리는 안 내려갈 수 있습니다',
+    p:'중앙은행은 <b>단기금리를 정하고</b>, 장기금리는 <b>시장이 예상</b>합니다. 전달 계수가 <b>0이면 장기채는 그대로</b>, <b>음수면 오히려 떨어집니다.</b><br><br>' +
+      '<b>그래서 볼 곳이 바뀝니다</b> — 기준금리 뉴스가 아니라 <b>10년·30년물 금리 자체</b>입니다.<br><br>' +
+      '<b>그리고 만기 매칭</b> — 듀레이션을 쓸 시점에 맞추면 <b>금리가 어떻게 되든 결과가 거의 확정</b>됩니다. 목표 5년에 5년물이면 ±2%p에서 <b>0.3%p 안</b>, 30년물이면 <b>10%p 넘게</b> 벌어집니다.' },
+  { h:'05 · 수익률곡선', c:'#4C6B7A', href:'bond-curve.html',
+    t:'「역전 해소」가 장기채에 좋은 소식이라는 보장은 없습니다',
+    p:'곡선 변화는 <b>불·베어 × 스티프닝·플래트닝</b> 네 가지입니다. 장기채가 원하는 것은 <b>불 플래트닝 하나</b>입니다.<br><br>' +
+      '<b>역전이 풀리는 길이 둘</b>입니다 — <b>단기가 내려와서</b>면 장기채는 <b>0%</b>, <b>장기가 올라가서</b>면 <b>−28%</b>입니다.<br><br>' +
+      '<b>역전 → 침체 시차는 6~22개월</b>이고 <b>표본이 여섯 개</b>뿐입니다. 법칙이라 부를 수 없습니다.' },
+  { h:'06 · 경기와 예측의 한계', c:'#7A5C9E', href:'bond-cycle.html',
+    t:'예상대로 되면 아무 일도 일어나지 않습니다',
+    p:'시장이 예상하는 인하는 <b>이미 가격에</b> 있습니다. 가격을 움직이는 것은 <b>예상과의 차이</b>뿐입니다. <b>「인하했는데 왜 안 오르지」의 답</b>이 이것입니다.<br><br>' +
+      '<b>방향은 자주 맞고 시점은 거의 못 맞힙니다.</b> 그리고 <b>손실의 대부분은 그 사이에 파는 데서</b> 납니다.<br><br>' +
+      '<b>가장 도움이 되는 계산</b> — <b>−40%를 지금 되돌리려면 3.9%p</b>, <b>5년 버티면 1.9%p</b>, <b>10년이면 0.3%p</b>. <b>시간이 금리를 대신합니다.</b>' },
+  { h:'07 · 실물 채권과 ETF', c:'#5F7A52', href:'bond-products.html',
+    t:'ETF에 없는 것은 수익이 아니라 「확정된 금액」입니다',
+    p:'<b>「ETF는 만기가 없어 회복이 안 된다」는 과장</b>입니다. 금리가 고정이면 실물 채권과 <b>수학적으로 정확히 같습니다.</b> 둘 다 <b>같은 이자</b>를 받기 때문입니다.<br><br>' +
+      '<b>진짜 차이는 확정성</b>입니다. 실물은 <b>만기일 금액이 지금 정해지고</b>, ETF는 <b>어느 날에도 정해진 금액이 없습니다.</b><br><br>' +
+      '<b>그래서 판단은 「쓸 날짜가 있는가」</b>가 정합니다. 있으면 만기가 있는 상품, 없으면 <b>ETF가 오히려 적합</b>합니다.' },
+  { h:'08 · 해외 채권과 환율', c:'#7A5C9E', href:'bond-global.html',
+    t:'채권과 환율은 더해지는 게 아니라 곱해집니다',
+    p:'<b>헤지 비용 ≈ 두 나라 단기금리 차이</b>입니다. 그래서 <b>「미국 금리가 높아 유리」는 헤지하면 사라집니다.</b><br><br>' +
+      '<b>그렇다고 언헤지가 답도 아닙니다</b> — <b>금리가 내려가 회복하는 국면에서 달러가 약해지는</b> 경향이 있어, <b>기다리던 수익이 상쇄</b>될 수 있습니다.<br><br>' +
+      '<b>오늘 할 수 있는 확인 하나</b> — <b>상품 이름 끝에 (H)가 있는가.</b>' },
+  { h:'09 · 돈을 잃는 방법', c:'#8E4B3A', href:'bond-mistakes.html',
+    t:'여섯 중 다섯은 확인만으로 막힙니다',
+    p:'그리고 <b>듀레이션 하나가 압도적</b>입니다 — 같은 조건에서 <b>17이면 −57%, 5면 −13%</b>로 <b>44%p</b> 차이입니다. <b>나머지를 전부 합친 것보다 큽니다.</b><br><br>' +
+      '<b>막을 수 없는 것은 여섯 번째 하나</b> — <b>버티지 못하고 파는 것</b>입니다. <b>금리가 어디로 갈지 모르기</b> 때문입니다.<br><br>' +
+      '<b>그래서 구조가 이렇습니다</b> — <b>알 수 있는 것은 확인해서 막고, 알 수 없는 것은 크기로 감당한다.</b>' }
+];
+bindBtnRow('#mpBtns', function(v){
+  var m = MP[+v];
+  document.getElementById('mpVerdict').querySelector('.vh').textContent = m.h;
+  verdict('mpVerdict', m.c, m.t, m.p + '<br><br><b>→ <a href="' + m.href + '">' + m.h + ' 다시 읽기</a></b>');
+});
+
+/* ══════════ 4. 마음가짐 ══════════ */
+var MD = [
+  { h:'「본전」을 놓기', color:'#7A5C9E',
+    t:'내가 산 가격은 시장이 모르는 숫자입니다',
+    p:'<b>「본전만 오면 팔겠다」</b>는 생각이 강하게 작동합니다. 그런데 <b>내가 산 가격은 앞으로의 수익률과 아무 관계가 없습니다.</b><br><br>' +
+      '<b>정확한 질문은 이것</b>입니다 — <b>「이 돈을 지금 새로 투자한다면 이 자산을 고를 것인가?」</b> 답이 <b>예</b>면 들고 있는 것이 맞고, <b>아니오</b>면 <b>손실 여부와 무관하게</b> 다시 생각해야 합니다.<br><br>' +
+      '<b>이걸 완전히 없앨 수는 없습니다.</b> 사람은 산 가격을 기준으로 이익과 손실을 나눠 보고, <b>손실을 확정하기 싫어서</b> 판단을 미룹니다. <b>알고 있는 것만으로도 조금 나아집니다.</b><br><br>' +
+      '<b>더 나은 기준으로 바꾸는 법</b> — <b>「본전」이 아니라 「몇 년 뒤에 이 돈을 어디에 쓸 것인가」</b>로 옮기면 판단이 훨씬 쉬워집니다. 04편의 만기 매칭이 그 이야기였습니다.' },
+  { h:'맞히려 하지 않기', color:'#8E4B3A',
+    t:'예측은 개인이 이길 수 있는 게임이 아닙니다',
+    p:'채권 시장, 특히 국채 시장은 <b>전문 기관이 지배</b>합니다. <b>개인이 정보나 분석으로 앞서기는 매우 어렵습니다.</b><br><br>' +
+      '그리고 06편에서 본 대로 <b>시장이 예상하는 것은 이미 가격에</b> 있습니다. <b>내가 뉴스를 보고 아는 시점에는 이미 반영</b>되어 있습니다.<br><br>' +
+      '<b>그럼 개인이 얻을 수 있는 것은</b> — 둘입니다.<br>· <b>이자</b> — 맞히지 않아도 나옵니다<br>· <b>버티는 힘</b> — 기관은 <b>분기마다 평가받아</b> 몇 년을 못 버팁니다. <b>평가받지 않는 개인은 버틸 수 있습니다.</b><br><br>' +
+      '<b>두 번째가 진짜 우위</b>입니다. 다만 <b>「버틸 수 있는 돈」일 때만</b> 성립합니다. 급하게 쓸 돈이거나 크기가 너무 크면 <b>오히려 기관보다 불리</b>합니다.<br><br>' +
+      '<b>그래서 노력을 쏟을 곳이 정해집니다</b> — <b>예측이 아니라 구조</b>입니다. 확인할 것을 확인하고, 크기를 맞추는 것.' },
+  { h:'시간을 편으로', color:'#5F7A52',
+    t:'채권에는 주식에 없는 성질이 하나 있습니다',
+    p:'주식은 <b>떨어진 뒤 가만히 있으면 그대로</b>입니다. 채권은 <b>가만히 있어도 이자가 나옵니다.</b><br><br>' +
+      '<b>06편에서 계산한 그대로</b> — <b>−40%를 지금 되돌리려면 금리가 3.9%p</b> 내려가야 하지만, <b>5년 버티면 1.9%p</b>, <b>10년이면 0.3%p</b>면 됩니다. <b>−20%였다면 5년 이자만으로</b> 회복됩니다.<br><br>' +
+      '<b>이것이 「시간이 금리를 대신한다」</b>는 말의 뜻입니다. <b>기다릴수록 필요한 조건이 쉬워집니다.</b><br><br>' +
+      '<b>다만 정직하게 붙여야 할 단서 셋</b><br>· <b>「본전」은 명목 기준</b>입니다 — 10년이면 <b>그동안의 물가 상승만큼 실질로는 손해</b>입니다.<br>' +
+      '· <b>그 사이 금리가 더 오르면</b> 시간표가 뒤로 밀립니다.<br>· <b>언헤지라면 환율이 곱해집니다</b>(08편).<br><br>' +
+      '<b>그래도 방향은 분명합니다</b> — <b>시간은 채권 보유자의 편</b>입니다. 조급함만 아니라면.' },
+  { h:'줄이는 것도 답', color:'#8E6B3A',
+    t:'「버티기」가 언제나 정답인 것은 아닙니다',
+    p:'이 트랙이 <b>「무조건 버티라」</b>고 말한 적은 없습니다. <b>09편 4장</b>에서 계산했듯 <b>버텨도 손실인 경우</b>가 있습니다.<br><br>' +
+      '<b>줄이는 것이 맞는 경우</b><br>· <b>목적과 도구가 어긋나 있을 때</b> — 3년 뒤 쓸 돈에 듀레이션 17이면, 그건 <b>지금이라도 고칠 문제</b>입니다.<br>' +
+      '· <b>크기가 감당 안 될 때</b> — 손실을 확정하더라도 <b>남은 것을 끝까지 들 수 있게</b> 됩니다.<br>' +
+      '· <b>레버리지 상품일 때</b> — <b>버티는 것 자체가 손실</b>입니다(07편).<br>' +
+      '· <b>산 이유가 사라졌을 때</b> — 손실 여부와 무관합니다.<br><br>' +
+      '<b>반대로 줄이지 않아도 되는 경우</b> — <b>목적에 맞고, 크기가 감당되고, 산 이유가 지금도 유효할 때</b>입니다. 그때는 <b>아무것도 안 하는 것이 최선</b>입니다.<br><br>' +
+      '<b>구분 기준은 하나</b> — <b>「지금 새로 산다면 이걸 이만큼 살 것인가.」</b>' },
+  { h:'매일 보지 않기', color:'#4C6B7A',
+    t:'몇 년 단위의 이야기를 매일 보면 버티기만 어려워집니다',
+    p:'장기채는 <b>듀레이션이 17</b>이라 <b>매일 몇 %씩 움직입니다.</b> 그걸 매일 보면 <b>계속 무슨 일이 일어나는 것처럼</b> 느껴집니다.<br><br>' +
+      '<b>그런데 이 트랙에서 계산한 것들은 전부 몇 년 단위</b>였습니다. <b>회복까지 5년, 10년.</b> 그 시간표에서 <b>하루의 등락은 아무 정보도 아닙니다.</b><br><br>' +
+      '<b>매일 보는 것의 진짜 비용</b> — <b>팔고 싶어지는 순간이 그만큼 많아집니다.</b> 09편에서 본 대로 <b>실제 손실의 대부분이 거기서</b> 납니다.<br><br>' +
+      '<b>대신 정해두면 좋은 것</b><br>· <b>분기에 한 번</b> 정도 확인<br>· <b>볼 것은 가격이 아니라 「내 만기의 금리」와 「기대 인플레이션」</b>(05편)<br>· <b>확인 후에 아무것도 안 해도 됩니다</b> — 확인은 결정이 아닙니다<br><br>' +
+      '<b>이건 의지의 문제가 아니라 습관의 문제</b>입니다. <b>앱 알림을 끄는 것</b>만으로도 상당 부분 해결됩니다.' },
+  { h:'가족과 이야기하기', color:'#5F7A52',
+    t:'설명할 수 있으면 대체로 이해한 것입니다',
+    p:'이 트랙은 <b>가족과 함께 읽는 것</b>을 전제로 썼습니다. 마지막으로 그 이야기를 하겠습니다.<br><br>' +
+      '<b>왜 설명해보는 것이 도움이 되나</b> — <b>남에게 설명할 수 있으면 대체로 이해한 것</b>이고, <b>설명이 막히는 곳이 아직 모르는 곳</b>입니다. <b>「듀레이션이 뭔데?」</b>에 답할 수 있는지 해보세요.<br><br>' +
+      '<b>그리고 실용적인 이유</b> — <b>손실 상태를 혼자 안고 있으면 판단이 나빠집니다.</b> 조급해지고, 만회하려는 결정을 하게 됩니다. <b>말로 꺼내는 것만으로도 그게 줄어듭니다.</b><br><br>' +
+      '<b>아이와 함께라면</b> — 이 트랙의 <b>「아이 눈높이」 부분</b>만 읽어도 됩니다. <b>「빌려준 증서」</b>, <b>「이자를 많이 주는 건 그만큼 위험하다는 신호」</b>, <b>「2배 상품은 오래 들면 안 된다」</b> 같은 것들은 <b>평생 쓰이는 감각</b>입니다.<br><br>' +
+      '<b>마지막으로</b> — <b>이 돈이 흔들려도 가족의 생활이 흔들리지 않는가.</b> 이 트랙에서 계산한 어떤 숫자보다 중요한 질문입니다.' }
+];
+bindBtnRow('#mdBtns', function(v){
+  document.getElementById('mdVerdict').querySelector('.vh').textContent = MD[+v].h;
+  verdict('mdVerdict', MD[+v].color, MD[+v].t, MD[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#bsCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#bsCheck li.done').length;
+      document.getElementById('bsCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 채권 트랙 완주. 마지막 항목이 가장 중요합니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+dgDraw();
+document.querySelector('#mpBtns button[data-v="0"]').click();
+document.querySelector('#mdBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
