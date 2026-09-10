@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>원자재에서 돈을 잃는 방법</title>
+<meta name="description" content="원자재 손실이 실제로 어떤 경로로 만들어지는지를 요인별로 분해해 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --spot:#4C6B7A;--roll:#8E4B3A;--lev:#7A5C9E;--fx:#8E6B3A;--fee:#8A8474;--good:#5F7A52;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .tab{display:block;padding-left:16px;color:var(--ink-soft);font-size:14.2px;margin-top:3px;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--roll));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--roll));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--roll));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">원자재 09 · 실패 · 투자 공부 노트</div>
+    <h1>원자재에서<br>돈을 잃는 방법</h1>
+    <p class="lede">지금까지 여덟 편에 흩어져 있던 위험들을 <b>하나의 계산기로 모읍니다.</b> 원자재의 손실은 대개 <b>한 번에 오지 않습니다.</b> <b>다섯 갈래로 조금씩 새어나가다가</b>, 어느 날 계좌를 열면 이미 커져 있습니다.</p>
+    <div class="callout">
+      <p><b>손실을 만드는 다섯 가지</b>입니다.</p>
+      <p><b>① 현물 가격</b> — 내가 유일하게 신경 쓴 것.<br>
+         <b>② 롤 손실</b> — 06편. <b>보이지 않고 매달 나갑니다.</b><br>
+         <b>③ 레버리지</b> — 손실을 배수로 키우고 <b>버틸 시간을 줄입니다.</b><br>
+         <b>④ 환율</b> — 달러 자산이므로 <b>원화 기준으로는 다른 결과</b>가 나옵니다.<br>
+         <b>⑤ 수수료</b> — 가장 작지만 <b>확실하게</b> 나갑니다.</p>
+      <p><b>가장 흔한 실패는 ①만 보고 나머지를 안 본 것</b>입니다. 예를 들어 <b>현물이 +15% 올랐는데도 원화 기준 결과가 −1.3%</b>가 되는 조합이 있습니다. 1장에서 계산합니다.</p>
+      <p><b>⚠️ 이 편은 겁을 주려는 것이 아닙니다.</b> <b>손실이 어디서 오는지 알면 어디를 줄일 수 있는지도 알게</b> 됩니다. <b>다섯 중 넷은 내가 고를 수 있습니다.</b> 고를 수 없는 것은 <b>①뿐</b>입니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#decomp">1. 요인 분해</a>
+    <a href="#paths">2. 실패 경로 여섯</a>
+    <a href="#alt">3. 그때 이렇게 했다면</a>
+    <a href="#sum">4. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="decomp">
+    <div class="prod-head" style="--edge:var(--roll)">
+      <span class="prod-tag">01 · 분해</span>
+      <h2>손실이 어디서 왔는지 쪼개봅니다</h2>
+      <p class="one">한 덩어리로 보면 <b>고칠 수 없습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>물통에 물을 채우는데 <b>자꾸 줄어든다</b>고 하자. 그럼 뭘 해야 할까?</p>
+      <p><b>「물이 줄었다」</b>고만 하면 아무것도 못 고쳐. <b>어디서 새는지</b>를 찾아야 해.</p>
+      <p><b>바닥에 구멍이 났나? 옆이 갈라졌나? 누가 몰래 퍼갔나? 그냥 증발했나?</b> 원인마다 <b>고치는 방법이 달라.</b></p>
+      <p>원자재도 똑같아. <b>「손해 봤다」</b>가 아니라 <b>「값이 떨어져서 얼마, 갈아타느라 얼마, 환율 때문에 얼마」</b>로 쪼개야 해.</p>
+      <p>그러면 놀라운 걸 알게 돼. <b>대부분은 값이 떨어져서가 아니라 나머지 이유들 때문</b>인 경우가 많거든. 그리고 <b>나머지는 내가 고를 수 있어.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DECOMPOSE · 다섯 갈래로 쪼개보세요</div>
+      <p class="labsub">각 요인이 <b>내 원금에서 몇 %p를 가져갔는지</b>를 봅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="dcSpot">현물 가격 변화</label>
+        <input type="range" id="dcSpot" min="-60" max="80" step="5" value="0">
+        <output id="dcSpotOut">0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dcRoll">월 콘탱고</label>
+        <input type="range" id="dcRoll" min="-20" max="30" step="1" value="17">
+        <output id="dcRollOut">+1.7%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dcMonths">보유 기간</label>
+        <input type="range" id="dcMonths" min="1" max="60" step="1" value="36">
+        <output id="dcMonthsOut">36개월</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dcLev">레버리지</label>
+        <input type="range" id="dcLev" min="10" max="30" step="5" value="10">
+        <output id="dcLevOut">1배 (없음)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dcFx">원/달러 환율 변화</label>
+        <input type="range" id="dcFx" min="-25" max="25" step="1" value="0">
+        <output id="dcFxOut">0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dcFee">연 수수료</label>
+        <input type="range" id="dcFee" min="0" max="200" step="5" value="90">
+        <output id="dcFeeOut">0.90%</output>
+      </div>
+
+      <div class="steps-out" id="dcSteps"></div>
+
+      <svg viewBox="0 0 640 270" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="손익 요인 분해">
+        <g id="dcScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">최종 결과</span><span class="rv" id="dcTotal">—</span></div>
+        <div><span class="rk">가장 크게 깎은 것</span><span class="rv" id="dcTop">—</span></div>
+      </div>
+
+      <div class="verdict" id="dcVerdict" style="--vc:var(--roll)">
+        <div class="vh">분해</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준 (순차 적용).</b> 원금 1에서 시작해 <b>현물 → 롤 → 레버리지 → 환율 → 수수료</b> 순서로 곱해 나가고, <b>각 단계의 변화분</b>을 그 요인의 기여로 잡았습니다. <b>각 요인의 합 = 최종 결과</b>가 되도록 구성했습니다.<br><br>
+        <b>레버리지는 「원금 대비 손익」에 배수를 적용</b>했습니다. 그리고 <b>어느 단계에서든 가치가 0 아래로는 가지 않도록</b> 막았습니다 — 실제로는 <b>강제 청산</b>되기 때문입니다(05편).<br><br>
+        <b>⚠️ 순서를 바꾸면 각 요인의 몫이 조금씩 달라집니다.</b> <b>곱셈이라 딱 잘라 나눌 수 없기</b> 때문입니다. <b>「누가 얼마나 가져갔나」의 대략적 크기</b>로 보면 됩니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 「현물만 보는 것」이 그렇게 흔한 실수인가</h3>
+      <p><b>나머지 넷이 전부 눈에 안 보이기</b> 때문입니다.</p>
+      <p><b>· 롤 손실</b> — 어디에도 표시되지 않습니다. <b>「비용」이 아니라 「투자 성과」로 회계 처리</b>되기 때문입니다(06편).<br>
+         <b>· 레버리지</b> — 상품명에는 있지만, <b>「2배」가 「하루 단위 2배」라는 것</b>은 설명서 안쪽에 있습니다.<br>
+         <b>· 환율</b> — 원화 계좌에 원화로 표시되니 <b>환율이 섞여 있다는 것 자체를 잊기</b> 쉽습니다.<br>
+         <b>· 수수료</b> — 유일하게 잘 보이지만, <b>가장 작습니다.</b></p>
+      <p>반면 <b>현물 가격은 매일 뉴스에 나옵니다.</b> 그래서 <b>「내 수익률 = 현물 가격 변화」</b>라는 생각이 자연스럽게 굳어집니다.</p>
+      <p class="plain"><b>그 결과 이런 대화가 생깁니다.</b> <b>「유가가 올랐는데 왜 내 계좌는 마이너스지?」</b> 그리고 대개 <b>상품이 이상하다</b>거나 <b>운용사가 뭔가 한다</b>고 의심하게 됩니다.<br><br><b>사실은 처음부터 그렇게 설계된 상품</b>입니다. <b>숨긴 것이 아니라 안 본</b> 것입니다.<br><br><b>그래서 이 편의 계산기가 하는 일은 하나</b>입니다 — <b>보이지 않는 넷을 눈에 보이게</b> 만드는 것. <b>보이면 고를 수 있습니다.</b></p>
+
+      <h3>「이미 많이 빠졌으니 곧 오르겠지」가 특히 위험한 이유</h3>
+      <p>주식에서는 이 생각이 <b>가끔 맞습니다.</b> 회사가 망하지 않는 한 <b>이익이 쌓이면서 결국 회복되는</b> 경우가 있습니다. 채권에서도 <b>이자가 쌓이면서 회복</b>됩니다.</p>
+      <p><b>원자재 선물형 ETF에서는 이 논리가 성립하지 않습니다.</b> <b>기다리는 동안 롤 손실이 계속 나가기</b> 때문입니다. 06편에서 계산했듯 <b>기다릴수록 손익분기점이 올라갑니다.</b></p>
+      <p>그리고 더 나쁜 것이 있습니다. <b>「많이 빠진 국면」이 대체로 「재고가 넘치는 국면」</b>이고, <b>재고가 넘치면 콘탱고가 가장 심해집니다</b>(03·06편). <b>가장 싸 보이는 때가 가장 빨리 녹는 때</b>입니다.</p>
+      <p class="plain"><b>그럼 어떻게 해야 하나.</b> <b>「팔아라」가 답은 아닙니다.</b> 상황에 따라 다릅니다. 대신 <b>답할 수 있는 질문으로 바꿀 수</b> 있습니다.<br><br><b>· 지금 이 상품의 월 콘탱고가 얼마인가?</b> → 확인 가능합니다.<br><b>· 앞으로 N개월 더 들면 손익분기점이 얼마가 되나?</b> → 계산 가능합니다(06편 3장).<br><b>· 그 상승폭이 그 기간 안에 일어날 만한가?</b> → 여기서 비로소 판단이 필요합니다.<br><br><b>세 번째 질문에서 「모르겠다」가 나오면, 그건 「기다릴 근거가 없다」는 뜻</b>입니다. <b>「기다림」은 근거가 없어도 할 수 있는 유일한 행동이라서 위험합니다.</b><br><br><b>⚠️ 그리고 여기서 채권 트랙과의 차이를 다시 짚습니다.</b> 채권 ETF는 <b>기다리면 이자가 쌓여 실제로 회복</b>됩니다. 원자재 선물형 ETF는 <b>기다리는 것 자체가 비용</b>입니다. <b>같은 「존버」인데 한쪽은 전략이고 한쪽은 손실</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="paths">
+    <div class="prod-head" style="--edge:var(--lev)">
+      <span class="prod-tag">02 · 경로</span>
+      <h2>실제로 사람들이 잃는 여섯 가지 길</h2>
+      <p class="one">각각 <b>어느 편에서 이미 다뤘는지</b>도 함께 적었습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">PATHS · 눌러서 확인해보세요</div>
+      <p class="labsub">순서는 <b>흔한 정도</b>입니다.</p>
+
+      <div class="btnrow" id="pathBtns">
+        <button data-v="0" class="on">① 현물만 보고 장기 보유</button>
+        <button data-v="1">② 레버리지</button>
+        <button data-v="2">③ 비중 과다</button>
+        <button data-v="3">④ 뉴스 추격</button>
+        <button data-v="4">⑤ 환율 무시</button>
+        <button data-v="5">⑥ 상품 오해</button>
+      </div>
+
+      <div class="verdict" id="pathVerdict" style="--vc:var(--lev)">
+        <div class="vh">경로</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">여섯 경로의 공통점</div>
+      <div class="kb">전부 <b>사기 전에 확인할 수 있었던</b> 것들입니다.<br>맞혀야 하는 것은 <b>하나도 없습니다.</b></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="alt">
+    <div class="prod-head" style="--edge:var(--good)">
+      <span class="prod-tag">03 · 반사실</span>
+      <h2>같은 원자재, 다른 선택</h2>
+      <p class="one">가격은 그대로 두고 <b>내 선택만</b> 바꿔봅니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">WHAT IF · 네 가지 선택을 나란히</div>
+      <p class="labsub">원자재 가격 움직임은 <b>모두 똑같습니다.</b> 다른 것은 <b>어떻게 담았느냐</b>뿐입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="afSpot">현물 가격 변화</label>
+        <input type="range" id="afSpot" min="-50" max="80" step="5" value="10">
+        <output id="afSpotOut">+10%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="afMonths">보유 기간</label>
+        <input type="range" id="afMonths" min="1" max="60" step="1" value="24">
+        <output id="afMonthsOut">24개월</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="afFx">원/달러 환율 변화</label>
+        <input type="range" id="afFx" min="-25" max="25" step="1" value="0">
+        <output id="afFxOut">0%</output>
+      </div>
+
+      <div class="steps-out" id="afSteps"></div>
+
+      <svg viewBox="0 0 640 225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="선택별 결과 비교">
+        <g id="afScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">가장 나은 선택</span><span class="rv" id="afBest">—</span></div>
+        <div><span class="rk">가장 나쁜 선택과의 차이</span><span class="rv" id="afGap">—</span></div>
+      </div>
+
+      <div class="verdict" id="afVerdict" style="--vc:var(--good)">
+        <div class="vh">선택</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>네 가지 선택의 가정 (예시)</b><br>
+        · <b>천연가스 선물 ETF</b> — 월 콘탱고 1.67%, 보수 0.9%, 환헤지 없음<br>
+        · <b>원유 선물 ETF</b> — 월 콘탱고 0.33%, 보수 0.75%, 환헤지 없음<br>
+        · <b>금 현물 ETF</b> — 롤 없음, 보수 0.25%, 환헤지 없음 · <b>다만 금값 움직임은 원자재의 절반</b>으로 가정<br>
+        · <b>환헤지 원유 ETF</b> — 원유와 같되 <b>환율 영향 없음</b>, 헤지 비용 연 1%<br><br>
+        <b>⚠️ 금을 「절반」으로 잡은 이유</b> — 금은 다른 원자재와 <b>같이 움직이지 않습니다</b>(08편). <b>같은 폭으로 오른다고 가정하면 금에 유리하게 왜곡</b>되므로 보수적으로 줄였습니다. <b>실제 상관관계는 국면마다 다릅니다.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「환헤지를 해야 하나」에 대한 정직한 답</h3>
+      <p>3장에서 <b>환헤지형</b>이 선택지로 나왔습니다. <b>해야 할까요.</b> 답은 <b>「왜 담았는가」에 달렸습니다.</b></p>
+      <p><b>· 원자재를 「위기 대비 보험」으로 담았다면 → 헤지하지 않는 편이 낫습니다.</b><br>
+         <span class="tab">위기가 오면 <b>원화가 약해지는 경향</b>이 있고, 그러면 <b>달러 자산의 원화 환산 가치가 올라갑니다.</b> <b>이중 방어</b>가 됩니다. 헤지하면 <b>그 두 번째 방어를 스스로 없애는</b> 셈입니다.</span></p>
+      <p><b>· 원자재 가격 자체에 베팅한 것이라면 → 헤지하는 편이 낫습니다.</b><br>
+         <span class="tab">내가 보려는 것은 <b>원자재 가격</b>인데 <b>환율이라는 다른 변수가 결과를 흐리기</b> 때문입니다. <b>3장에서 「현물 +15%인데 환율 −10%로 최종 −1.3%」</b> 같은 일이 여기서 생깁니다.</span></p>
+      <p><b>· 잘 모르겠다면 → 헤지하지 않는 쪽이 무난합니다.</b><br>
+         <span class="tab">헤지에는 <b>비용</b>이 들고(대체로 두 나라 금리차), 한국 거주자에게는 <b>달러 자산을 갖는 것 자체에 분산 효과</b>가 있기 때문입니다.</span></p>
+      <p class="plain"><b>⚠️ 그리고 헤지 비용은 고정이 아닙니다.</b> <b>두 나라의 금리 차이</b>에 따라 변하고, <b>미국 금리가 한국보다 높으면 헤지 비용이 큽니다.</b> 채권 트랙 08편에서 계산한 것과 같은 구조입니다.<br><br><b>여기서 남길 원칙</b> — <b>「헤지형이 좋다/나쁘다」는 없습니다.</b> <b>「내가 무엇에 노출되고 싶은지」를 먼저 정하면 답이 따라옵니다.</b> 그리고 그 질문은 <b>10편의 첫 질문</b>이기도 합니다.</p>
+
+      <h3>손실이 났을 때 실제로 할 수 있는 것 — 세 갈래</h3>
+      <p>이 편의 계산기들은 <b>「어디서 새는지」</b>까지만 알려줍니다. <b>그다음에 무엇을 할지</b>는 별개입니다. 대체로 세 갈래입니다.</p>
+      <p><b>① 그대로 둔다</b> — <b>롤 손실이 작은 상품</b>(금 현물형 등)이고 <b>비중이 감당 가능한 크기</b>라면 합리적입니다. <b>기다리는 비용이 작기</b> 때문입니다.</p>
+      <p><b>② 형태를 바꾼다</b> — <b>같은 원자재에 대한 노출은 유지</b>하되 <b>선물형에서 실물형이나 생산기업으로 옮기는</b> 것입니다. <b>손실을 확정하지만 새는 구멍을 막습니다.</b><br>
+         <span class="tab">⚠️ 다만 <b>세금과 거래비용</b>이 발생하고, 옮기는 사이에 <b>가격이 움직일 위험</b>이 있습니다.</span></p>
+      <p><b>③ 줄이거나 정리한다</b> — <b>비중이 애초에 너무 컸다면</b> 이것이 답입니다. <b>「본전 오면 팔겠다」는 비중 문제를 해결하지 못합니다.</b></p>
+      <p class="plain"><b>세 갈래 중 무엇이 맞는지는 두 가지가 정합니다</b> — <b>지금 이 상품이 매년 얼마나 새는가</b>(계산 가능)와 <b>이 비중이 내가 견딜 수 있는 크기인가</b>(나에 대한 질문).<br><br><b>둘 다 「가격이 오를까」와는 무관</b>합니다. <b>맞힐 필요가 없는 질문들</b>입니다.<br><br><b>⚠️ 반대로 「본전만 오면」은 가장 흔하고 가장 위험한 기준</b>입니다. <b>내가 산 가격은 시장과 아무 상관이 없고</b>, <b>그 기준으로 기다리는 동안 롤 손실은 계속 나가기</b> 때문입니다. <b>매입가는 의사결정에 넣지 않는 것</b>이 원칙입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">04 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">다섯 중 <b>넷은 내가 고를 수 있습니다.</b></p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>손실은 다섯 갈래로 나뉜다</b>는 것.</li>
+      <li><b>그중 내가 못 고르는 것은 현물 가격 하나뿐</b>이라는 것.</li>
+      <li><b>롤 손실이 가장 크고 가장 안 보인다</b>는 것.</li>
+      <li><b>현물이 올라도 원화 기준으로는 손실일 수 있다</b>는 것.</li>
+      <li><b>레버리지는 버틸 시간을 줄인다</b>는 것.</li>
+      <li><b>「많이 빠졌으니 곧 오르겠지」가 원자재에선 위험</b>하다는 것.</li>
+      <li><b>가장 싸 보이는 때가 가장 빨리 녹는 때</b>라는 것.</li>
+      <li><b>환헤지 여부는 「왜 담았는가」로 정해진다</b>는 것.</li>
+      <li><b>매입가는 의사결정에 넣지 않는다</b>는 것.</li>
+      <li><b>여섯 경로 전부 사기 전에 확인 가능했다</b>는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 원자재에서 잃는 방식에는 <b>공통점</b>이 있습니다. <b>맞히지 못해서 잃는 것이 아니라, 확인하지 않아서 잃습니다.</b></p>
+      <p><b>여섯 실패 경로 어디에도 「예측이 틀려서」는 없습니다.</b> <b>롤 규칙을 안 봤고, 레버리지의 뜻을 안 봤고, 환율을 안 셌고, 비중을 안 정했고, 상품 종류를 안 봤습니다.</b> <b>전부 사기 전에 볼 수 있었던 것</b>들입니다.</p>
+      <p><b>그리고 그것이 이 트랙 전체의 입장</b>입니다 — <b>맞힐 수 없는 것에 시간을 쓰지 말고, 확인할 수 있는 것에 시간을 쓰는 것.</b></p>
+      <p><b>마지막 편은 10편 — 내 포트폴리오에서 몇 %인가</b>입니다. 지금까지의 모든 이야기가 <b>결국 하나의 숫자</b>로 모입니다. <b>「담을까 말까」가 아니라 「얼마나」</b>입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 원자재 09 · 실패<br>
+    <a href="index.html#commodity">← 원자재 목록으로</a> · <a href="commodity-gold.html">08 · 금은 정말 특별한가</a> · 10 · 내 포트폴리오에서 몇 %인가 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    콘탱고·보수·환율·상관관계는 모두 <b>예시 가정</b>이며 실제 시장 값이 아닙니다. 요인 분해는 곱셈 구조를 순차로 나눈 근사입니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 1. 요인 분해 ══════════ */
+function runCase(spot, cMonthly, months, lev, fx, feeAnnual){
+  var v = 1, out = {};
+  var years = months / 12;
+  var a = Math.max(0, v * (1 + spot / 100));            out.spot = (a - v) * 100; v = a;
+  a = Math.max(0, v / Math.pow(1 + cMonthly / 100, months)); out.roll = (a - v) * 100; v = a;
+  a = Math.max(0, 1 + (v - 1) * lev);                    out.lev  = (a - v) * 100; v = a;
+  a = Math.max(0, v * (1 + fx / 100));                   out.fx   = (a - v) * 100; v = a;
+  a = Math.max(0, v * Math.pow(1 - feeAnnual / 100, years)); out.fee = (a - v) * 100; v = a;
+  out.total = (v - 1) * 100;
+  return out;
+}
+function dcDraw(){
+  var spot = +document.getElementById('dcSpot').value;
+  var c = +document.getElementById('dcRoll').value / 10;
+  var m = +document.getElementById('dcMonths').value;
+  var lev = +document.getElementById('dcLev').value / 10;
+  var fx = +document.getElementById('dcFx').value;
+  var fee = +document.getElementById('dcFee').value / 100;
+  document.getElementById('dcSpotOut').textContent = sgn(spot, 0) + '%';
+  document.getElementById('dcRollOut').textContent = (c > 0 ? '+' : c < 0 ? '−' : '') + num(Math.abs(c), 1) + '%' +
+    (c > 0.05 ? ' (콘탱고)' : c < -0.05 ? ' (백워데이션)' : '');
+  document.getElementById('dcMonthsOut').textContent = m + '개월';
+  document.getElementById('dcLevOut').textContent = num(lev, 1) + '배' + (lev === 1 ? ' (없음)' : '');
+  document.getElementById('dcFxOut').textContent = sgn(fx, 0) + '%' + (fx > 0 ? ' (원화 약세)' : fx < 0 ? ' (원화 강세)' : '');
+  document.getElementById('dcFeeOut').textContent = num(fee, 2) + '%';
+
+  var r = runCase(spot, c, m, lev, fx, fee);
+  var parts = [
+    { n:'① 현물 가격',  v:r.spot, col:'#4C6B7A' },
+    { n:'② 롤 손익',    v:r.roll, col:'#8E4B3A' },
+    { n:'③ 레버리지',   v:r.lev,  col:'#7A5C9E' },
+    { n:'④ 환율',       v:r.fx,   col:'#8E6B3A' },
+    { n:'⑤ 수수료',     v:r.fee,  col:'#8A8474' }
+  ];
+  var worst = parts.slice().sort(function(a, b){ return a.v - b.v; })[0];
+
+  steps('dcSteps', parts.map(function(p){ return { k:p.n, v:sgn(p.v, 1) + '%p' }; })
+    .concat([{ k:'최종 결과', v:sgn(r.total, 1) + '%', total:true }]));
+
+  document.getElementById('dcTotal').textContent = sgn(r.total, 1) + '%';
+  document.getElementById('dcTotal').style.color = r.total >= 0 ? 'var(--pos)' : 'var(--neg)';
+  document.getElementById('dcTop').textContent = worst.v < -0.05 ? worst.n + ' (' + sgn(worst.v, 1) + '%p)' : '깎은 것 없음';
+  document.getElementById('dcTop').style.color = worst.v < -0.05 ? 'var(--neg)' : '';
+
+  var X0 = 120, W = 400, Y0 = 40;
+  var vals = parts.map(function(p){ return p.v; }).concat([r.total]);
+  var maxAbs = Math.max.apply(null, vals.map(Math.abs).concat([5]));
+  var zx = X0 + W / 2;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">요인별 기여 (원금 대비 %p)</text>';
+  parts.forEach(function(p, i){
+    var y = Y0 + i * 30;
+    var w = Math.abs(p.v) / maxAbs * (W / 2);
+    var bx = p.v >= 0 ? zx : zx - w;
+    g += '<rect x="' + bx.toFixed(1) + '" y="' + y + '" width="' + Math.max(1, w).toFixed(1) + '" height="20" rx="1.5" fill="' +
+         p.col + '" fill-opacity=".5" stroke="' + p.col + '" stroke-width="1.2"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end">' + p.n + '</text>';
+    var tx = p.v >= 0 ? Math.min(bx + w + 8, X0 + W - 2) : Math.max(bx - 8, X0 + 2);
+    g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + (y + 14) + '"' + (p.v >= 0 ? '' : ' text-anchor="end"') +
+         ' fill="' + p.col + '">' + sgn(p.v, 1) + '</text>';
+  });
+  var ty = Y0 + parts.length * 30 + 12;
+  var tw = Math.abs(r.total) / maxAbs * (W / 2);
+  var tbx = r.total >= 0 ? zx : zx - tw;
+  var tcol = r.total >= 0 ? '#5F7A52' : '#8E4B3A';
+  g += '<rect x="' + tbx.toFixed(1) + '" y="' + ty + '" width="' + Math.max(1, tw).toFixed(1) + '" height="24" rx="1.5" fill="' +
+       tcol + '" fill-opacity=".62" stroke="' + tcol + '" stroke-width="1.8"/>';
+  g += '<text class="lblb" x="' + (X0 - 10) + '" y="' + (ty + 17) + '" text-anchor="end" fill="' + tcol + '">최종</text>';
+  var ttx = r.total >= 0 ? Math.min(tbx + tw + 8, X0 + W - 2) : Math.max(tbx - 8, X0 + 2);
+  g += '<text class="lblb" x="' + ttx.toFixed(1) + '" y="' + (ty + 17) + '"' + (r.total >= 0 ? '' : ' text-anchor="end"') +
+       ' fill="' + tcol + '">' + sgn(r.total, 1) + '%</text>';
+  g += '<line x1="' + zx + '" y1="' + (Y0 - 6) + '" x2="' + zx + '" y2="' + (ty + 28) + '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (ty + 48) + '">다섯 막대의 합이 최종 결과입니다. 왼쪽으로 뻗은 것이 나를 깎은 것입니다.</text>';
+  document.getElementById('dcScene').innerHTML = g;
+
+  var title, body, col;
+  if(r.total <= -99.9){
+    col = '#8E4B3A';
+    title = '전멸 — 원금이 사라졌습니다';
+    body = '레버리지 <b>' + num(lev, 1) + '배</b>에 현물이 <b>' + sgn(spot, 0) + '%</b>, 롤 손실까지 겹쳐 <b>원금이 전부</b> 사라졌습니다.<br><br>' +
+      '<b>실제로는 그 전에 강제 청산</b>됩니다(05편). 그런데 <b>결과는 같습니다</b> — <b>남는 것이 없습니다.</b><br><br>' +
+      '<b>⚠️ 여기서 가장 중요한 것</b> — <b>이 뒤에 가격이 회복돼도 나는 없습니다.</b> <b>0에는 어떤 배수를 곱해도 0</b>입니다.<br><br>' +
+      '<b>「레버리지」 슬라이더를 1배로</b> 내려보세요. <b>같은 가격 하락인데 살아남습니다.</b> 그리고 살아남으면 <b>회복에 참여할 수</b> 있습니다.<br><br>' +
+      '<b>이것이 이 트랙이 레버리지를 반복해서 경고하는 이유</b>입니다. <b>레버리지는 수익률의 문제가 아니라 생존의 문제</b>입니다.';
+  } else if(spot > 0 && r.total < 0){
+    col = '#8E4B3A';
+    title = '현물은 ' + sgn(spot, 0) + '% 올랐는데 내 결과는 ' + sgn(r.total, 1) + '%';
+    body = '<b>방향을 맞혔는데 손실</b>입니다. <b>이 편에서 가장 중요한 화면</b>입니다.<br><br>' +
+      '<b>현물이 +' + spot + '%p를 벌어줬는데</b>, ' +
+      parts.filter(function(p){ return p.v < -0.5 && p.n !== '① 현물 가격'; })
+           .map(function(p){ return '<b>' + p.n.replace(/^[①-⑤]\\s*/, '') + '가 ' + num(Math.abs(p.v), 1) + '%p</b>'; }).join(', ') +
+      '를 가져갔습니다.<br><br>' +
+      '<b>가장 크게 깎은 것은 ' + worst.n + '</b>입니다.<br><br>' +
+      '<b>여기서 확인할 것</b> — <b>그 요인을 내가 고를 수 있었나?</b><br>' +
+      (worst.n === '② 롤 손익' ? '· <b>롤 손실은 상품 선택으로 크게 줄일 수</b> 있었습니다 — 실물형, 먼 만기, 생산기업(07편).'
+       : worst.n === '④ 환율' ? '· <b>환헤지형 상품</b>을 골랐다면 이 손실은 없었습니다. 다만 <b>헤지 비용</b>이 대신 들었을 것입니다(3장).'
+       : worst.n === '③ 레버리지' ? '· <b>레버리지를 안 쓰는 것</b>이 선택 가능했습니다.'
+       : '· <b>보수가 낮은 상품</b>을 고를 수 있었습니다.') + '<br><br>' +
+      '<b>「방향을 맞히는 것」은 어렵고 「이걸 고르는 것」은 쉽습니다.</b> 그런데 대부분 <b>어려운 쪽에 시간을 쓰고 쉬운 쪽을 안 봅니다.</b>';
+  } else if(r.total < -20){
+    col = '#8E4B3A';
+    title = '결과 ' + sgn(r.total, 1) + '% — 가장 크게 깎은 것은 ' + worst.n;
+    body = '<b>' + worst.n + '이(가) ' + num(Math.abs(worst.v), 1) + '%p</b>를 가져갔습니다.<br><br>' +
+      (worst.n === '② 롤 손익'
+        ? '<b>월 ' + num(c, 1) + '%의 콘탱고를 ' + m + '개월</b> 겪었습니다. <b>가격과 무관하게 나간 돈</b>입니다.<br><br>' +
+          '<b>「보유 기간」 슬라이더를 줄여보세요.</b> <b>같은 상품, 같은 가격인데 결과가 크게</b> 달라집니다. <b>원자재에서 시간은 비용</b>입니다(06편).<br><br>'
+        : worst.n === '① 현물 가격'
+        ? '<b>이건 내가 고를 수 없는 유일한 요인</b>입니다. <b>가격이 떨어진 것 자체는 실수가 아닙니다.</b><br><br>' +
+          '<b>그래서 여기서 물을 것은 하나</b>입니다 — <b>「이 크기의 하락이 내 계획을 흔드는가」</b>. 흔든다면 <b>비중이 컸던</b> 것입니다. 그건 <b>고를 수 있는 문제</b>였습니다(10편).<br><br>'
+        : '<b>이 요인은 상품 선택으로 줄일 수 있었던 것</b>입니다.<br><br>') +
+      '<b>다섯 막대를 다시 보세요.</b> <b>①만 「어쩔 수 없는 것」이고 나머지 넷은 「내가 정한 것」</b>입니다.<br><br>' +
+      '<b>그리고 실제 손실에서 ①이 차지하는 몫이 ' + num(Math.abs(r.spot) / (Math.abs(r.spot) + Math.abs(r.roll) + Math.abs(r.lev) + Math.abs(r.fx) + Math.abs(r.fee) || 1) * 100, 0) +
+      '%</b>입니다. <b>나머지는 선택의 결과</b>입니다.';
+  } else if(r.total >= 0){
+    col = '#5F7A52';
+    title = '결과 ' + sgn(r.total, 1) + '% — 비용을 이겼습니다';
+    body = '현물 <b>' + sgn(spot, 0) + '%</b>가 나머지 비용을 <b>이겨냈습니다.</b> 최종 <b>' + sgn(r.total, 1) + '%</b>입니다.<br><br>' +
+      (r.roll < -1 ? '<b>다만 롤에서 ' + num(Math.abs(r.roll), 1) + '%p를 냈습니다.</b> <b>같은 상승인데 그만큼 덜 가져간</b> 것입니다.<br><br>' : '') +
+      (c < 0 ? '<b>백워데이션이라 롤이 오히려 +' + num(r.roll, 1) + '%p를 보탰습니다.</b> <b>원자재가 가장 좋은 국면</b>입니다(06편).<br><br>' : '') +
+      '<b>여기서 조심할 것</b> — <b>이겼다고 해서 과정이 좋았던 것은 아닙니다.</b> <b>현물이 크게 올라서 비용을 덮은</b> 것뿐이고, <b>현물이 안 올랐다면 그대로 손실</b>이었습니다.<br><br>' +
+      '<b>「현물 가격 변화」를 0으로</b> 놓아보세요. <b>가격이 제자리일 때 남는 것이 실제 구조</b>입니다. 그것이 <b>플러스인지 마이너스인지</b>가 이 상품의 성격입니다.';
+  } else {
+    col = '#8E6B3A';
+    title = '결과 ' + sgn(r.total, 1) + '% — 작지만 새고 있습니다';
+    body = '큰 손실은 아니지만 <b>' + sgn(r.total, 1) + '%</b>입니다. <b>가장 크게 깎은 것은 ' + worst.n + '(' + sgn(worst.v, 1) + '%p)</b>입니다.<br><br>' +
+      '<b>이 상태가 위험한 이유</b> — <b>눈에 잘 안 띄기</b> 때문입니다. <b>「조금 마이너스네」</b> 하고 넘기게 됩니다.<br><br>' +
+      '<b>「보유 기간」 슬라이더를 60개월로</b> 늘려보세요. <b>같은 조건인데 결과가 완전히</b> 달라집니다. <b>작은 누수가 시간에 곱해지는</b> 것이 원자재의 성질입니다.<br><br>' +
+      '<b>그래서 확인해야 할 질문</b> — <b>「지금 마이너스가 얼마인가」가 아니라 「이대로 두면 1년 뒤 얼마인가」</b>입니다.';
+  }
+  verdict('dcVerdict', col, title, body);
+}
+['dcSpot', 'dcRoll', 'dcMonths', 'dcLev', 'dcFx', 'dcFee'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', dcDraw);
+});
+
+/* ══════════ 2. 실패 경로 ══════════ */
+var PATHS = [
+  { h:'현물만 보고 장기 보유', col:'#8E4B3A', ref:'06편',
+    t:'가장 흔하고, 가장 조용하고, 가장 큽니다',
+    p:'<b>「기름값이 오를 것 같다」</b>고 원유 ETF를 사서 <b>몇 년</b> 들고 있는 경우입니다.<br><br>' +
+      '<b>숫자로 보면</b> — 천연가스 ETF를 <b>3년</b> 들고 있으면, <b>가격이 전혀 안 변해도 −46%</b>입니다(월 콘탱고 1.67%, 보수 0.9% 가정).<br><br>' +
+      '<b>왜 이게 실수인가</b> — <b>손실이 나는 것 자체가 아니라, 그런 상품인 줄 몰랐다는 것</b>이 문제입니다. <b>총보수 0.9%를 보고 「연 1% 정도 나가겠네」라고 생각했는데 실제로는 연 19% 수준</b>이 나갔습니다.<br><br>' +
+      '<b>사기 전에 확인할 수 있었던 것</b><br>· <b>이 상품이 실물형인가 선물형인가</b> — 설명서 첫 장에 있습니다.<br>· <b>선물형이면 지금 곡선이 콘탱고인가</b> — 시세표에서 확인됩니다.<br>· <b>지난 3년 현물 대비 괴리가 얼마인가</b> — 가장 정직한 지표입니다(06편).<br><br>' +
+      '<b>고치는 법</b> — <b>금·은이면 실물형</b>으로, <b>다른 원자재면 보유 기간을 짧게</b> 하거나 <b>생산기업</b>으로 대신하거나 <b>담지 않는</b> 것입니다(07편).' },
+  { h:'레버리지', col:'#7A5C9E', ref:'05·07편',
+    t:'맞혀도 못 버티게 만드는 도구입니다',
+    p:'<b>「확신이 있으니 2배로」</b> 하는 경우입니다.<br><br>' +
+      '<b>숫자로 보면</b> — 현물이 <b>−20%</b>일 때 2배 상품은 <b>−66.5%</b>가 됩니다(월 콘탱고 1.5%, 12개월 가정). <b>2배가 아니라 3.3배</b>로 잃습니다. <b>변동성 손실과 롤 손실도 함께 2배</b>가 되기 때문입니다.<br><br>' +
+      '<b>더 중요한 문제</b> — <b>레버리지는 수익을 키우는 도구가 아니라 버틸 시간을 줄이는 도구</b>입니다. <b>같은 방향, 같은 최종 결과</b>인데도 <b>레버리지가 높으면 중간에 사라집니다.</b><br><br>' +
+      '<b>원자재에서 특히 나쁜 이유</b> — <b>변동성이 크기</b> 때문입니다. 천연가스는 연 70% 수준(02편)이라, <b>방향이 제자리여도 오르내리기만으로 크게 깎입니다.</b><br><br>' +
+      '<b>고치는 법</b> — <b>안 쓰는 것</b>입니다. <b>「확신이 크다」는 느낌은 검증할 수 없고</b>, 틀렸을 때 <b>회복에 참여할 기회 자체가 사라집니다.</b>' },
+  { h:'비중 과다', col:'#8E4B3A', ref:'10편',
+    t:'상품이 아니라 크기의 문제입니다',
+    p:'<b>이 경로에는 계산기가 없습니다.</b> <b>숫자가 아니라 행동의 문제</b>이기 때문입니다.<br><br>' +
+      '<b>같은 상품, 같은 시점, 같은 가격인데 결과가 갈립니다.</b> 자산의 <b>3%</b>면 <b>반토막이 나도 −1.5%</b>이고 그냥 둘 수 있습니다. <b>30%</b>면 <b>−15%</b>이고, <b>매일 그것만 보게</b> 됩니다.<br><br>' +
+      '<b>그러면 이런 순서가 생깁니다</b> — <b>급락에 견디지 못해 팔고</b>, <b>급등하면 다시 사고</b>, <b>더 급등하면 더 삽니다.</b> <b>가장 나쁜 순서</b>이고, <b>계산이 아니라 크기가 만든</b> 결과입니다.<br><br>' +
+      '<b>그리고 원자재는 이 문제가 특히 큽니다</b> — <b>변동성이 크고</b>, <b>배당도 이자도 없어 기다리는 동안 아무런 위로가 없기</b> 때문입니다.<br><br>' +
+      '<b>고치는 법</b> — <b>「반토막 나도 계획이 안 흔들릴 크기」로 미리 정하는 것</b>입니다. <b>사고 나서 정할 수는 없습니다.</b> 이미 그 크기에 감정이 붙어 있기 때문입니다. <b>10편의 주제</b>입니다.' },
+  { h:'뉴스 추격', col:'#8E6B3A', ref:'03·04편',
+    t:'내가 아는 시점에는 이미 반영돼 있습니다',
+    p:'<b>「인플레가 심하다」, 「에너지 위기다」</b> 같은 기사를 보고 사는 경우입니다.<br><br>' +
+      '<b>숫자로 보면</b> — 고점 근처에서 들어가 <b>현물 −25%</b>를 겪으면, 롤 손실까지 더해 <b>−33.9%</b>가 됩니다(월 콘탱고 1%, 12개월 가정).<br><br>' +
+      '<b>왜 늦나</b> — 04편에서 본 대로 <b>순서가 「원자재 → 물가 → 뉴스」</b>입니다. <b>물가 지표가 정점일 때 원자재는 이미 내려가고 있는</b> 경우가 흔합니다.<br><br>' +
+      '<b>그리고 그 시점부터 정책이 개입</b>합니다. <b>금리를 올려 수요를 눌러버립니다.</b> <b>물가를 잡으려는 정책이 내 원자재를 죽입니다.</b><br><br>' +
+      '<b>03편의 관점으로 보면</b> — 뉴스가 가장 뜨거울 때는 <b>「수요 파괴 영역」</b>일 가능성이 큽니다. 원가로 설명이 안 되는 구간이고, <b>끝은 대체로 급락</b>입니다.<br><br>' +
+      '<b>고치는 법</b> — <b>「지금 살까」를 뉴스로 정하지 않는 것</b>입니다. 대신 <b>비중을 미리 정해두고 정기적으로 맞추면</b>, <b>비쌀 때 자동으로 조금 팔고 쌀 때 자동으로 조금 삽니다</b>(10편).' },
+  { h:'환율 무시', col:'#8E6B3A', ref:'04·07편',
+    t:'현물이 올라도 원화로는 마이너스일 수 있습니다',
+    p:'원자재는 대부분 <b>달러로 거래</b>됩니다. 그런데 나는 <b>원화로 살고 원화로 평가</b>합니다. <b>그 사이에 환율이 끼어 있습니다.</b><br><br>' +
+      '<b>숫자로 보면</b> — 현물이 <b>+15%</b> 올랐는데 <b>원화가 10% 강해지면</b>, 롤 손실과 보수까지 더해 최종 <b>−1.3%</b>가 됩니다(월 콘탱고 0.33%, 12개월 가정). <b>방향을 맞히고도 본전 아래</b>입니다.<br><br>' +
+      '<b>그런데 반대로도 작동합니다</b> — <b>위기가 오면 원화가 약해지는 경향</b>이 있고, 그러면 <b>달러 자산의 원화 가치가 올라갑니다.</b> <b>이중 방어</b>가 됩니다.<br><br>' +
+      '<b>그래서 이건 「나쁜 것」이 아니라 「내가 알고 선택해야 하는 것」</b>입니다.<br><br>' +
+      '<b>고치는 법</b> — <b>「내가 무엇에 노출되고 싶은가」를 먼저 정하는 것</b>입니다. <b>위기 대비 보험이면 헤지하지 않고</b>, <b>원자재 가격 자체에 베팅한 것이면 헤지</b>하는 편이 목적에 맞습니다. 3장에서 다룹니다.' },
+  { h:'상품 오해', col:'#4C6B7A', ref:'07편',
+    t:'내가 산 것이 내가 생각한 것이 아닌 경우',
+    p:'<b>겉보기에는 같은데 안이 다른</b> 경우들입니다.<br><br>' +
+      '<b>· ETN을 ETF로 알고 산 경우</b> — ETN은 <b>발행 증권사의 약속</b>입니다. <b>담보 자산이 따로 없고</b>, <b>지표와 시장 가격이 크게 벌어지는</b> 일이 생깁니다.<br>' +
+      '<b>· 생산기업 ETF를 원자재 ETF로 알고 산 경우</b> — <b>그건 주식</b>입니다. <b>원자재가 올라도 주식시장이 무너지면 같이 무너집니다.</b> <b>분산 목적이었다면 목적을 배신</b>합니다.<br>' +
+      '<b>· 종합 원자재 ETF의 구성을 안 본 경우</b> — <b>에너지 비중이 절반을 넘는</b> 지수가 있습니다. <b>「원자재에 분산 투자」한 줄 알았는데 사실상 「기름에 투자」</b>한 것입니다.<br>' +
+      '<b>· 「2배」가 「하루 단위 2배」인 줄 몰랐던 경우</b> — 기간이 길어지면 <b>2배가 아닙니다.</b><br><br>' +
+      '<b>공통점</b> — <b>전부 상품 설명서 첫 장에 적혀 있습니다.</b> <b>숨긴 것이 아니라 안 본</b> 것입니다.<br><br>' +
+      '<b>고치는 법</b> — <b>사기 전에 세 가지만</b> 확인하면 대부분 걸러집니다. <b>① ETF인가 ETN인가 ② 실물인가 선물인가 주식인가 ③ 롤 규칙과 구성 비중이 무엇인가.</b>' }
+];
+bindBtnRow('#pathBtns', function(v){
+  var p = PATHS[+v];
+  document.getElementById('pathVerdict').querySelector('.vh').textContent = p.h + ' · ' + p.ref;
+  verdict('pathVerdict', p.col, p.t, p.p);
+});
+
+/* ══════════ 3. 반사실 ══════════ */
+function afDraw(){
+  var spot = +document.getElementById('afSpot').value;
+  var m = +document.getElementById('afMonths').value;
+  var fx = +document.getElementById('afFx').value;
+  document.getElementById('afSpotOut').textContent = sgn(spot, 0) + '%';
+  document.getElementById('afMonthsOut').textContent = m + '개월';
+  document.getElementById('afFxOut').textContent = sgn(fx, 0) + '%' + (fx > 0 ? ' (원화 약세)' : fx < 0 ? ' (원화 강세)' : '');
+
+  var opts = [
+    { n:'천연가스 선물 ETF', col:'#8E4B3A', c:1.67, fee:0.90, fx:fx,  mult:1.0 },
+    { n:'원유 선물 ETF',     col:'#8E6B3A', c:0.33, fee:0.75, fx:fx,  mult:1.0 },
+    { n:'금 현물 ETF',       col:'#8E6B3A', c:0,    fee:0.25, fx:fx,  mult:0.5 },
+    { n:'환헤지 원유 ETF',   col:'#4C6B7A', c:0.33, fee:1.75, fx:0,   mult:1.0 }
+  ];
+  var res = opts.map(function(o){
+    var r = runCase(spot * o.mult, o.c, m, 1, o.fx, o.fee);
+    return { n:o.n, col:o.col, v:r.total, roll:r.roll, fxv:r.fx };
+  });
+  var sorted = res.slice().sort(function(a, b){ return b.v - a.v; });
+  var best = sorted[0], worst = sorted[sorted.length - 1];
+
+  steps('afSteps', res.map(function(r){ return { k:r.n, v:sgn(r.v, 1) + '%' }; })
+    .concat([{ k:'가장 나은 것과 가장 나쁜 것의 차이', v:num(best.v - worst.v, 1) + '%p', total:true }]));
+
+  document.getElementById('afBest').textContent = best.n + ' (' + sgn(best.v, 1) + '%)';
+  document.getElementById('afBest').style.color = 'var(--pos)';
+  document.getElementById('afGap').textContent = num(best.v - worst.v, 1) + '%p';
+
+  var X0 = 135, W = 390, Y0 = 42;
+  var maxAbs = Math.max.apply(null, res.map(function(r){ return Math.abs(r.v); }).concat([5]));
+  var zx = X0 + W / 2;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">' + m + '개월 뒤 결과 (원자재 ' + sgn(spot, 0) + '%, 환율 ' + sgn(fx, 0) + '%)</text>';
+  res.forEach(function(r, i){
+    var y = Y0 + i * 34;
+    var w = Math.abs(r.v) / maxAbs * (W / 2);
+    var bx = r.v >= 0 ? zx : zx - w;
+    var on = (r.n === best.n);
+    g += '<rect x="' + bx.toFixed(1) + '" y="' + y + '" width="' + Math.max(1, w).toFixed(1) + '" height="22" rx="1.5" fill="' +
+         r.col + '" fill-opacity="' + (on ? '.58' : '.3') + '" stroke="' + r.col + '" stroke-width="' + (on ? '1.8' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 16) + '" text-anchor="end"' +
+         (on ? ' fill="' + r.col + '"' : '') + '>' + r.n + '</text>';
+    var tx = r.v >= 0 ? Math.min(bx + w + 8, X0 + W - 2) : Math.max(bx - 8, X0 + 2);
+    g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + (y + 16) + '"' + (r.v >= 0 ? '' : ' text-anchor="end"') +
+         ' fill="' + r.col + '">' + sgn(r.v, 1) + '%</text>';
+  });
+  g += '<line x1="' + zx + '" y1="' + (Y0 - 6) + '" x2="' + zx + '" y2="' + (Y0 + res.length * 34) + '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + res.length * 34 + 20) + '">가격 움직임은 모두 같습니다. 다른 것은 어떻게 담았느냐뿐입니다.</text>';
+  document.getElementById('afScene').innerHTML = g;
+
+  var gasR = res[0], oilR = res[1], goldR = res[2], hedgeR = res[3];
+  var title, body;
+  if(best.n === '금 현물 ETF'){
+    title = '금 현물 ETF가 앞섭니다 (' + sgn(best.v, 1) + '%)';
+    body = '<b>금은 가격 움직임을 절반으로 가정했는데도</b> 앞섰습니다. <b>롤 손실이 없고 보수가 낮기</b> 때문입니다.<br><br>' +
+      '<b>천연가스 선물 ETF와 비교하면</b> — 같은 기간에 <b>롤에서만 ' + num(Math.abs(gasR.roll), 1) + '%p</b>가 나갔습니다.<br><br>' +
+      '<b>여기서 이 트랙의 결론 하나</b> — <b>원자재에 「길게」 노출되고 싶다면 사실상 금·은뿐</b>입니다. 다른 원자재는 <b>길게 들도록 만들어진 상품이 없습니다.</b><br><br>' +
+      '<b>⚠️ 다만 이건 「금이 더 좋다」가 아닙니다.</b> <b>금은 다른 원자재와 다르게 움직이므로</b>(08편), <b>「에너지 위기에 대비」하려던 목적이었다면 금이 그 자리를 대신하지 못합니다.</b> <b>목적과 상품이 맞아야</b> 합니다.';
+  } else if(best.n === '환헤지 원유 ETF'){
+    title = '환헤지형이 앞섭니다 (' + sgn(best.v, 1) + '%)';
+    body = '<b>원화가 ' + Math.abs(fx) + '% ' + (fx < 0 ? '강해져서' : '약해져서') + '</b>, 환헤지를 한 쪽이 유리했습니다. 환헤지 안 한 원유 ETF는 <b>환율에서만 ' +
+      sgn(oilR.fxv, 1) + '%p</b>를 겪었습니다.<br><br>' +
+      '<b>「환율 변화」 슬라이더를 반대로</b> 움직여보세요. <b>결과가 뒤집힙니다.</b><br><br>' +
+      '<b>여기가 중요합니다</b> — <b>환헤지는 「좋다/나쁘다」가 아니라 「어느 쪽에 노출될 것인가」의 선택</b>입니다. 그리고 <b>환율 방향은 맞힐 수 없습니다.</b><br><br>' +
+      '<b>그래서 답은 방향이 아니라 목적에서 나옵니다</b> — <b>위기 대비 보험이면 헤지하지 않고, 원자재 가격 자체에 베팅한 것이면 헤지</b>합니다. 아래 「자세히 보기」에서 다룹니다.<br><br>' +
+      '<b>⚠️ 그리고 헤지에는 비용이 듭니다.</b> 여기서는 연 1%로 가정했지만, <b>두 나라 금리차에 따라 훨씬 커질 수</b> 있습니다.';
+  } else if(worst.n === '천연가스 선물 ETF'){
+    title = best.n + '이(가) 앞서고, 천연가스 선물 ETF가 ' + num(best.v - worst.v, 1) + '%p 뒤집니다';
+    body = '<b>같은 원자재 가격 움직임인데 결과가 ' + num(best.v - worst.v, 1) + '%p</b> 벌어졌습니다.<br><br>' +
+      '<b>천연가스 선물 ETF는 롤에서만 ' + num(Math.abs(gasR.roll), 1) + '%p</b>를 냈습니다. <b>' + m + '개월 × 월 1.67%</b>가 곱해진 결과입니다.<br><br>' +
+      '<b>「보유 기간」 슬라이더를 늘려보세요.</b> <b>격차가 계속 벌어집니다.</b> 그리고 <b>줄여보세요.</b> <b>짧으면 차이가 작습니다.</b><br><br>' +
+      '<b>그것이 이 계산기의 요지</b>입니다 — <b>선물형 상품의 문제는 「나쁜 상품」이 아니라 「오래 들면 나쁜 상품」</b>이라는 것입니다. <b>기간이 성격을 정합니다.</b><br><br>' +
+      '<b>그리고 기간은 내가 정합니다.</b> <b>가격은 못 정하지만.</b>';
+  } else {
+    title = best.n + '이(가) 앞섭니다 (' + sgn(best.v, 1) + '%)';
+    body = '지금 조건에서는 <b>' + best.n + '</b>이(가) 낫고, <b>' + worst.n + '</b>이(가) 가장 나쁩니다. 차이는 <b>' +
+      num(best.v - worst.v, 1) + '%p</b>입니다.<br><br>' +
+      '<b>세 슬라이더를 하나씩 움직여보세요.</b><br>' +
+      '· <b>「보유 기간」</b> — 늘릴수록 <b>롤 손실이 큰 상품이 뒤로</b> 밀립니다.<br>' +
+      '· <b>「환율」</b> — 움직이면 <b>헤지형과 비헤지형의 순위가 뒤집힙니다.</b><br>' +
+      '· <b>「현물 가격」</b> — 크게 오르면 <b>모든 비용이 덮이지만</b>, 제자리면 <b>비용만 남습니다.</b><br><br>' +
+      '<b>확인할 것은 하나</b>입니다 — <b>「현물 가격」을 0에 놓았을 때 무엇이 남는가.</b> 그것이 <b>내가 매년 내고 있는 값</b>입니다.';
+  }
+  verdict('afVerdict', best.col, title, body);
+}
+['afSpot', 'afMonths', 'afFx'].forEach(function(id){ document.getElementById(id).addEventListener('input', afDraw); });
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 이 편의 결론입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+dcDraw(); afDraw();
+document.querySelector('#pathBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
