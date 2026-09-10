@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>선물이라는 물건</title>
+<meta name="description" content="원자재를 산다는 것은 대체로 미래에 받기로 한 약속을 사는 것입니다. 증거금·레버리지·마진콜·만기의 구조를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --prom:#4C6B7A;--lev:#8E4B3A;--call:#8E6B3A;--exp:#7A5C9E;--good:#5F7A52;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:720px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--prom));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--prom));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--prom));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 0;}
+  .two-col > div{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--fc);border-radius:3px;padding:14px 15px;}
+  .two-col h4{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--fc);margin:0 0 6px;}
+  .two-col .it{font-size:13.4px;color:var(--ink);margin-bottom:5px;font-weight:600;}
+  .two-col .dr{font-size:12.4px;color:var(--ink-soft);line-height:1.55;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .two-col{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">원자재 05 · 선물 · 투자 공부 노트</div>
+    <h1>선물이라는<br>물건</h1>
+    <p class="lede">원자재를 산다는 것은 <b>대체로 실물을 사는 것이 아닙니다.</b> <b>「몇 월에 이 값으로 주고받기로 하는 약속」</b>을 사는 것입니다. 그 약속에는 <b>만기</b>가 있고, <b>보증금</b>이 있고, <b>값이 반대로 가면 돈을 더 넣어야 하는</b> 조항이 있습니다.</p>
+    <div class="callout">
+      <p><b>이 편을 읽는 이유는 두 가지</b>입니다.</p>
+      <p><b>① 선물을 직접 하려고가 아닙니다.</b> 개인이 원자재 선물을 직접 거래할 일은 대체로 없고, 이 트랙도 그걸 권하지 않습니다.</p>
+      <p><b>② 그런데 내가 산 ETF 안에 이미 선물이 들어 있습니다.</b> 원유 ETF·천연가스 ETF·대부분의 원자재 ETF가 <b>실물이 아니라 선물</b>을 담고 있습니다. <b>선물의 성질을 모르면 내 ETF가 왜 그렇게 움직이는지 알 수 없습니다.</b></p>
+      <p><b>⚠️ 미리 한 줄로 경고하면</b> — <b>선물은 손실이 내가 넣은 돈을 넘어설 수 있는 상품</b>입니다. 주식은 최악이 <b>0</b>이지만 선물은 <b>마이너스</b>가 됩니다. <b>3장에서 계산합니다.</b></p>
+      <p><b>그리고 균형을 위해</b> — <b>선물은 원래 도박 도구가 아니라 위험을 줄이려고 만들어진 것</b>입니다. 농부가 <b>수확 전에 값을 미리 확정</b>하려고 쓰던 계약입니다. <b>1장에서 그 이야기부터</b> 합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#what">1. 약속을 사고판다</a>
+    <a href="#lev">2. 증거금과 레버리지</a>
+    <a href="#call">3. 마진콜</a>
+    <a href="#exp">4. 만기와 실물 인수</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="what">
+    <div class="prod-head" style="--edge:var(--prom)">
+      <span class="prod-tag">01 · 정의</span>
+      <h2>원래는 위험을 줄이려고 만든 것입니다</h2>
+      <p class="one">투기 도구가 되기 전에 <b>보험</b>이었습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>붕어빵 가게</b>를 하는 아저씨가 있다고 하자. 겨울에 붕어빵을 팔려면 <b>밀가루</b>가 필요해.</p>
+      <p>그런데 걱정이 있어. <b>겨울에 밀가루값이 확 오르면 어떡하지?</b> 붕어빵 값은 이미 정해놨는데 재료값만 오르면 <b>손해</b>잖아.</p>
+      <p>그래서 <b>여름에 미리 약속</b>을 해. <b>「12월에 밀가루 100포대를 한 포대 3만원에 주세요」</b>라고. 밀가루 농부도 좋아해. <b>「12월에 값이 떨어져도 나는 3만원 받겠네」</b> 하고.</p>
+      <p><b>이게 선물이야.</b> <b>둘 다 「값이 어떻게 될지 모르는 불안」을 없앤</b> 거지. <b>도박이 아니라 보험</b>이었어.</p>
+      <p>그런데 여기 <b>제3의 인물</b>이 나타나. 붕어빵도 안 팔고 밀가루도 안 키우는 사람인데, <b>「12월에 밀가루값이 오를 것 같은데?」</b> 하고 그 약속을 사는 거야. <b>값이 오르면 약속을 비싸게 되팔아서 돈을 벌려고.</b></p>
+      <p><b>지금 원자재 시장의 대부분이 이 세 번째 사람들</b>이야. 그리고 <b>우리가 원자재 ETF를 사면 우리도 그 사람</b>이 되는 거야.</p>
+    </div>
+
+    <div class="two-col">
+      <div style="--fc:var(--good)">
+        <h4>원래 목적 — 헤지</h4>
+        <div class="it">가격을 미리 확정하기</div>
+        <div class="dr"><b>생산자</b>(농부·광산·정유사)는 <b>값이 떨어질까</b> 걱정하고,<br><b>수요자</b>(항공사·제빵사·제조업체)는 <b>값이 오를까</b> 걱정합니다.<br><br><b>둘이 미리 값을 정하면 둘 다 마음이 편해집니다.</b> 이것이 선물이 존재하는 이유입니다.<br><br><b>이 사람들은 「이익」이 목적이 아니라 「확정」이 목적</b>입니다.</div>
+      </div>
+      <div style="--fc:var(--lev)">
+        <h4>지금의 현실 — 투기와 유동성</h4>
+        <div class="it">방향에 베팅하기</div>
+        <div class="dr">실물과 무관한 참여자가 <b>훨씬 많습니다.</b><br><br><b>나쁜 것만은 아닙니다</b> — 이들이 있어야 <b>농부가 원할 때 바로 팔 수</b> 있습니다. <b>거래 상대를 만들어주는</b> 역할입니다.<br><br><b>다만 그 결과</b> — 가격이 <b>실제 수급보다 심하게</b> 움직이기도 하고, <b>기대와 심리가 크게</b> 반영됩니다.</div>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 편의 첫 문장</div>
+      <div class="kb">원자재 ETF를 샀다면<br>나는 이미 <b>선물 시장의 참여자</b>입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lev">
+    <div class="prod-head" style="--edge:var(--lev)">
+      <span class="prod-tag">02 · 증거금</span>
+      <h2>전액을 내지 않습니다 — 그래서 위험합니다</h2>
+      <p class="one">보증금만 걸고 <b>몇십 배 크기</b>를 움직입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CONTRACT · 품목을 눌러보세요</div>
+      <p class="labsub">계약 하나가 <b>얼마짜리</b>이고, <b>얼마를 걸면</b> 되는지입니다.</p>
+
+      <div class="btnrow" id="lvBtns">
+        <button data-v="0" class="on">WTI 원유</button>
+        <button data-v="1">천연가스</button>
+        <button data-v="2">금</button>
+        <button data-v="3">구리</button>
+        <button data-v="4">옥수수</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="lvMove">가격이 움직이면</label>
+        <input type="range" id="lvMove" min="-25" max="25" step="1" value="-5">
+        <output id="lvMoveOut">−5%</output>
+      </div>
+
+      <div class="steps-out" id="lvSteps"></div>
+
+      <svg viewBox="0 0 640 225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="품목별 실효 레버리지">
+        <g id="lvScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">실효 레버리지</span><span class="rv" id="lvLev">—</span></div>
+        <div><span class="rk">내 돈 대비 손익</span><span class="rv" id="lvPl">—</span></div>
+      </div>
+
+      <div class="verdict" id="lvVerdict" style="--vc:var(--lev)">
+        <div class="vh">계약</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 계약 크기·가격·증거금은 모두 근사 예시</b>이며, <b>증거금은 거래소가 변동성에 따라 수시로 바꿉니다.</b> 실제 수치는 증권사에서 확인해야 합니다.<br><br>
+        <b>용어.</b> <b>「명목가치」</b>는 <b>계약이 실제로 대표하는 금액</b>입니다. 원유 1계약은 <b>1,000배럴</b>이라, 배럴당 $70이면 <b>$70,000</b>짜리 계약입니다.<br><br>
+        <b>「증거금」</b>은 <b>그 계약을 잡기 위해 걸어두는 보증금</b>입니다. 명목의 <b>5~15%</b> 정도가 일반적입니다.<br><br>
+        <b>「실효 레버리지 = 명목 ÷ 증거금」</b>입니다. 이것이 <b>손익이 몇 배로 확대되는지</b>를 정합니다.
+      </div>
+    </div>
+    <div class="deep">
+      <h3>증거금은 왜 있고, 누가 정하나</h3>
+      <p><b>증거금 제도가 없으면</b> 선물 시장은 성립하지 않습니다. <b>약속을 지키지 않는 사람</b>이 나오면 <b>상대방이 고스란히 손해</b>를 보기 때문입니다.</p>
+      <p>그래서 거래소에는 <b>「청산소」</b>라는 기관이 있습니다. <b>모든 거래의 중간에 끼어들어 양쪽의 상대가 되어 줍니다.</b> 내가 누구와 거래했는지 알 필요가 없어지고, <b>상대가 망해도 청산소가 보장</b>합니다.</p>
+      <p><b>청산소가 그 보장을 감당하려면 담보가 필요합니다.</b> 그것이 <b>증거금</b>이고, <b>매일 정산하는 이유</b>도 그것입니다 — <b>손실이 쌓이기 전에 매일 털어내야</b> 안전하기 때문입니다.</p>
+      <p class="plain"><b>그래서 증거금은 「거래소가 나를 괴롭히는 규칙」이 아니라 「시장이 무너지지 않게 하는 장치」</b>입니다. <b>2008년 금융위기 때 이 장치가 없던 시장들이 크게 무너졌고, 선물 시장은 상대적으로 잘 버텼다</b>는 평가가 있습니다.</p>
+
+      <h3>⚠️ 그런데 이 장치가 개인에게 불리하게 작동하는 순간이 있습니다</h3>
+      <p><b>거래소는 변동성이 커지면 증거금을 올립니다.</b> 위험이 커졌으니 담보를 더 받는 것이고, <b>안전을 위해 당연한 조치</b>입니다.</p>
+      <p><b>그런데 타이밍을 보세요.</b> <b>가격이 크게 흔들려서 이미 손실이 난 바로 그때</b> 증거금이 오릅니다. 그러면 <b>더 넣거나 줄여야</b> 합니다.</p>
+      <p><b>그리고 모두가 동시에 그렇게 됩니다.</b> <b>돈을 못 넣는 사람들이 한꺼번에 포지션을 정리하고</b>, 그러면 <b>가격이 더 크게 움직이고</b>, 그러면 <b>거래소가 증거금을 또 올립니다.</b></p>
+      <p class="plain"><b>이 되먹임이 원자재 급등·급락의 마지막 국면을 만듭니다.</b> <b>수급과 무관하게 「버틸 수 없는 사람들이 강제로 정리하는 것」만으로 가격이 크게 움직이는</b> 구간입니다.<br><br><b>여기서 개인이 얻을 교훈은 하나</b>입니다 — <b>「증거금을 최대한 활용하는 것」은 이 되먹임의 가장 약한 고리가 되겠다는 뜻</b>입니다. <b>여유를 크게 두면 레버리지가 낮아지고, 레버리지가 낮으면 애초에 선물을 쓸 이유가 줄어듭니다.</b><br><br><b>그 결론이 이 트랙의 입장</b>입니다 — <b>개인은 선물을 직접 쓰지 않는 편이 낫고, 대신 ETF를 통해 간접적으로 접근하되, 그 ETF 안에서 벌어지는 일(06편)을 알고 있어야</b> 합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="call">
+    <div class="prod-head" style="--edge:var(--call)">
+      <span class="prod-tag">03 · 마진콜</span>
+      <h2>버티고 싶어도 버틸 수 없는 구조</h2>
+      <p class="one">이것이 선물과 현물의 <b>가장 큰 차이</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MARGIN CALL · 가격을 아래로 내려보세요</div>
+      <p class="labsub">현물이면 그냥 평가손실이지만, 선물이면 <b>돈을 더 넣으라는 연락</b>이 옵니다.</p>
+
+      <div class="ctrl-row">
+        <label for="mcNotional">계약 명목가치 ($)</label>
+        <input type="range" id="mcNotional" min="10000" max="200000" step="5000" value="70000">
+        <output id="mcNotionalOut">$70,000</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mcRate">증거금 비율</label>
+        <input type="range" id="mcRate" min="3" max="30" step="1" value="9">
+        <output id="mcRateOut">9% ($6,300)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mcMove">가격 변화</label>
+        <input type="range" id="mcMove" min="-25" max="15" step="1" value="-5">
+        <output id="mcMoveOut">−5%</output>
+      </div>
+
+      <div class="steps-out" id="mcSteps"></div>
+
+      <svg viewBox="0 0 640 205" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="증거금 잔액과 마진콜 구간">
+        <g id="mcScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">증거금 잔액</span><span class="rv" id="mcEq">—</span></div>
+        <div><span class="rk">상태</span><span class="rv" id="mcState">—</span></div>
+      </div>
+
+      <div class="verdict" id="mcVerdict" style="--vc:var(--call)">
+        <div class="vh">증거금</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>유지증거금은 개시증거금의 80%</b>로 잡았습니다(관행적으로 70~90% 범위, 거래소마다 다름).<br><br>
+        <b>「일일정산」</b>이라는 제도가 핵심입니다 — <b>매일 장이 끝나면 그날의 손익이 실제로 계좌에서 오갑니다.</b> 주식처럼 <b>「팔기 전까지는 장부상 손실」</b>이 아닙니다.<br><br>
+        <b>그래서 이런 차이가 생깁니다</b> — 현물이면 <b>「떨어져도 안 팔면 그만」</b>이지만, 선물은 <b>매일 돈이 빠져나가고, 모자라면 추가로 넣어야</b> 합니다. <b>못 넣으면 강제로 정리</b>됩니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「방향은 맞았는데 청산당했다」가 왜 생기나</h3>
+      <p>선물에서 가장 억울한 실패가 이것입니다. <b>결국 가격은 내가 생각한 방향으로 갔는데, 그 전에 계좌가 비었습니다.</b></p>
+      <p><b>구조를 보면 당연합니다.</b> 위 계산기에서 레버리지가 <b>11배</b>라면, 가격이 <b>9%</b>만 반대로 가도 <b>내 돈이 전부</b> 사라집니다. 그런데 <b>원유가 한 달에 9% 움직이는 것은 흔한 일</b>입니다.</p>
+      <p><b>그래서 선물에서는 「맞히는 것」보다 「버티는 것」이 어렵습니다.</b> 그리고 <b>버티려면 증거금을 훨씬 많이 넣어두는 수밖에</b> 없는데, 그러면 <b>레버리지를 쓰는 의미가 사라집니다.</b></p>
+      <p class="plain"><b>여기서 중요한 것을 하나 짚습니다.</b> <b>레버리지는 「수익을 키우는 도구」가 아니라 「버틸 수 있는 기간을 줄이는 도구」</b>입니다.<br><br><b>같은 확신, 같은 방향, 같은 최종 결과</b>인데도 <b>레버리지가 높으면 지고 낮으면 이깁니다.</b> 차이는 <b>중간에 얼마나 흔들려도 살아남느냐</b>뿐입니다.<br><br><b>이 구조는 원자재만의 이야기가 아닙니다</b> — 채권 트랙 09편의 <b>레버리지 변동성 손실</b>과 같은 이야기이고, 코인·주식의 신용거래도 똑같습니다. <b>자산이 무엇이든 레버리지의 성질은 하나</b>입니다.</p>
+
+      <h3>「선물은 왜 있어야 하나」에 대한 공정한 답</h3>
+      <p>여기까지 읽으면 <b>「선물은 위험한 도박판」</b>이라는 인상만 남을 수 있습니다. <b>균형을 맞추겠습니다.</b></p>
+      <p><b>① 선물이 없으면 실물 경제가 곤란해집니다.</b> 항공사는 <b>1년 뒤 기름값</b>을 모르면 <b>티켓 가격을 정할 수 없습니다.</b> 농부는 <b>수확기 곡물값</b>을 모르면 <b>얼마나 심을지 정할 수 없습니다.</b> 선물은 <b>이 불확실성을 없애주는 유일한 도구</b>입니다.</p>
+      <p><b>② 「가격 발견」 기능이 있습니다.</b> 만기별 선물 가격을 늘어놓으면 <b>시장 전체가 미래를 어떻게 보는지</b>가 드러납니다. 03편의 재고, 06편의 콘탱고를 읽는 것이 <b>이 정보 덕분</b>입니다.</p>
+      <p><b>③ 투기자도 필요합니다.</b> <b>헤지하려는 사람들끼리만으로는 거래가 성립하지 않습니다.</b> <b>「지금 팔고 싶은 농부」와 「지금 사고 싶은 제빵사」가 같은 날 같은 양으로 나타날 리가 없기</b> 때문입니다. <b>그 사이를 메우는 것이 투기자</b>입니다.</p>
+      <p class="plain"><b>그래서 이 편의 입장은 이렇습니다.</b> <b>「선물은 나쁘다」가 아니라 「선물은 개인 투자자가 쓸 도구가 아니다」</b>입니다.<br><br><b>선물의 원래 값어치는 「가격을 확정한다」</b>인데, <b>개인 투자자에게는 확정할 가격이 없습니다.</b> 밀가루를 사야 할 일도, 원유를 팔아야 할 일도 없기 때문입니다. <b>도구는 좋은데 내 용도가 아닌</b> 것입니다.<br><br><b>⚠️ 그런데 여기서 이 트랙의 핵심 문제가 나옵니다</b> — <b>원자재 ETF를 사면 그 ETF가 대신 선물을 굴려줍니다.</b> 마진콜의 위험은 없앤 대신, <b>다른 비용</b>이 생깁니다. <b>그것이 06편의 롤 손실</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="exp">
+    <div class="prod-head" style="--edge:var(--exp)">
+      <span class="prod-tag">04 · 만기</span>
+      <h2>모든 계약에는 끝나는 날이 있습니다</h2>
+      <p class="one">그리고 <b>그날 실제로 기름을 받아야 하는</b> 계약도 있습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">EXPIRY · 만기가 다가오면 무슨 일이 생기나</div>
+      <p class="labsub">선택지를 눌러보세요.</p>
+
+      <div class="btnrow" id="exBtns">
+        <button data-v="0" class="on">만기 전에 판다</button>
+        <button data-v="1">다음 달로 갈아탄다</button>
+        <button data-v="2">만기까지 들고 있는다</button>
+        <button data-v="3">저장할 곳이 없어졌다</button>
+      </div>
+
+      <div class="verdict" id="exVerdict" style="--vc:var(--exp)">
+        <div class="vh">선택</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>구분</th><th>결제 방식</th><th>만기까지 들고 있으면</th><th>개인에게 의미</th></tr></thead>
+        <tbody>
+          <tr><th>WTI 원유</th><td><b>실물 인수</b></td><td>지정된 장소에서 <b>실제 원유를 받아야</b> 함</td><td>사실상 불가능 — <b>반드시 미리 정리</b></td></tr>
+          <tr><th>천연가스</th><td><b>실물 인수</b></td><td>파이프라인 지점에서 인수</td><td>동일</td></tr>
+          <tr><th>금·구리</th><td><b>실물 인수</b></td><td>지정 창고의 실물로 결제</td><td>동일</td></tr>
+          <tr><th>곡물</th><td><b>실물 인수</b></td><td>지정 창고에서 곡물 인수</td><td>동일</td></tr>
+          <tr><th>일부 지수·금융 선물</th><td><b>현금 정산</b></td><td>차액만 주고받고 종료</td><td>인수 문제 없음</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 상품마다 다르며 <b>거래소 규정을 확인</b>해야 합니다</p>
+
+    <div class="note">
+      <p><b>2020년에 실제로 있었던 일.</b> 코로나로 <b>기름 수요가 갑자기 사라졌습니다.</b> 그런데 <b>생산은 바로 멈출 수 없어</b> 기름이 남았고, <b>저장 공간이 꽉 찼습니다.</b></p>
+      <p>만기가 다가오는데 <b>실물을 받아야 하는 계약을 들고 있던 사람들</b>은 곤란해졌습니다. <b>받을 곳이 없는데 받아야</b> 했으니까요. 그래서 <b>「돈을 줄 테니 대신 가져가 달라」</b>는 상황이 벌어졌고, <b>WTI 근월물 가격이 마이너스로 떨어졌습니다.</b></p>
+      <p><b>그때 원유 ETF를 들고 있던 개인 투자자들이 큰 손실</b>을 봤습니다. <b>기름값이 마이너스가 될 거라고 아무도 생각하지 않았기</b> 때문입니다.</p>
+      <p><b>여기서 남길 교훈</b> — <b>선물 가격은 「그 물건의 값어치」가 아닙니다.</b> <b>「그 날짜에 그것을 주고받을 약속의 값」</b>입니다. <b>주고받는 것 자체가 곤란해지면 값이 이상해집니다.</b> <b>「원유 ETF는 유가를 따라간다」는 전제가 무너지는 지점</b>이 여기입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one"><b>내 ETF 안에서 벌어지는 일</b>을 알기 위한 준비입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>선물은 원래 위험을 줄이려고 만든 계약</b>이라는 것.</li>
+      <li><b>원자재 ETF 대부분이 실물이 아니라 선물</b>을 담는다는 것.</li>
+      <li><b>증거금만 걸고 몇십 배 크기를 움직인다</b>는 것.</li>
+      <li><b>레버리지는 수익이 아니라 버틸 기간을 바꾼다</b>는 것.</li>
+      <li><b>일일정산 때문에 매일 실제로 돈이 오간다</b>는 것.</li>
+      <li><b>손실이 내가 넣은 돈을 넘을 수 있다</b>는 것.</li>
+      <li><b>「방향은 맞았는데 청산」이 구조적으로 생긴다</b>는 것.</li>
+      <li><b>모든 계약에 만기가 있고 대부분 실물 인수</b>라는 것.</li>
+      <li><b>2020년에 유가가 마이너스까지 간 이유</b>를 안다는 것.</li>
+      <li><b>선물 가격은 물건값이 아니라 약속의 값</b>이라는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 선물은 <b>「미래의 어느 날에 이 값으로 주고받자」는 약속</b>입니다. 그 약속에는 <b>만기</b>가 있고, <b>보증금</b>이 있고, <b>매일 정산</b>됩니다.</p>
+      <p><b>개인이 이걸 직접 할 이유는 거의 없습니다.</b> 선물의 원래 값어치는 <b>「가격을 확정한다」</b>인데, 개인에게는 <b>확정할 가격이 없기</b> 때문입니다.</p>
+      <p><b>그런데 원자재 ETF를 사면 그 안에서 이 일이 벌어집니다.</b> ETF가 <b>대신 선물을 사고, 만기가 오면 대신 갈아탑니다.</b> <b>마진콜 걱정은 없어졌지만</b>, 그 대신 <b>갈아탈 때마다 조용히 새어나가는 비용</b>이 생깁니다.</p>
+      <p><b>다음 편이 이 트랙에서 가장 중요합니다. 06편 — 콘탱고와 롤 손실.</b> <b>현물이 +10% 올랐는데 내 ETF는 −8%</b>인 일이 어떻게 가능한지를 계산합니다. <b>2023년에 미국 장기채 ETF를 샀는데 왜 계속 마이너스인가</b>를 채권 트랙에서 풀었던 것처럼, <b>원자재 ETF의 같은 질문</b>을 여기서 풉니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 원자재 05 · 선물<br>
+    <a href="index.html#commodity">← 원자재 목록으로</a> · <a href="commodity-inflation.html">04 · 인플레이션 헤지</a> · 06 · 콘탱고와 롤 손실 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 선물 직접 거래를 권하지 않습니다.<br>
+    계약 크기·증거금·유지증거금 비율은 <b>근사 예시</b>이며 거래소가 수시로 변경합니다. 실제 수치는 증권사에서 확인해야 합니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function usd(v){ return '$' + Math.round(v).toLocaleString('en-US'); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 2. 계약과 레버리지 ══════════ */
+var LV = [
+  { h:'WTI 원유',  unit:'1,000배럴',    px:70,   mult:1000,  im:6000,  col:'#8E4B3A' },
+  { h:'천연가스',  unit:'10,000 MMBtu', px:3,    mult:10000, im:4500,  col:'#8E6B3A' },
+  { h:'금',        unit:'100 트로이온스', px:2000, mult:100,   im:11000, col:'#8E6B3A' },
+  { h:'구리',      unit:'25,000 파운드', px:4,    mult:25000, im:6500,  col:'#4C6B7A' },
+  { h:'옥수수',    unit:'5,000 부셸',   px:5,    mult:5000,  im:2200,  col:'#5F7A52' }
+];
+var lvIdx = 0;
+function lvDraw(){
+  var c = LV[lvIdx];
+  var mv = +document.getElementById('lvMove').value;
+  document.getElementById('lvMoveOut').textContent = mv === 0 ? '변화 없음' : (mv > 0 ? '+' : '−') + Math.abs(mv) + '%';
+
+  var notional = c.px * c.mult;
+  var lev = notional / c.im;
+  var pl = notional * mv / 100;
+  var plPct = pl / c.im * 100;
+  var wipe = c.im / notional * 100;
+
+  steps('lvSteps', [
+    { k:'계약 1개의 크기', v:c.unit },
+    { k:'현재 가격 (예시)', v:'$' + c.px.toLocaleString('en-US') },
+    { k:'명목가치 = 가격 × 계약 크기', v:usd(notional) },
+    { k:'개시증거금 (내가 거는 돈)', v:usd(c.im) + ' (' + num(wipe, 1) + '%)' },
+    { k:'실효 레버리지 = 명목 ÷ 증거금', v:num(lev, 1) + '배' },
+    { k:'가격 ' + sgn(mv, 0) + '% → 손익', v:(pl >= 0 ? '+' : '−') + usd(Math.abs(pl)) },
+    { k:'내 돈 대비', v:sgn(plPct, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('lvLev').textContent = num(lev, 1) + '배';
+  document.getElementById('lvPl').textContent = sgn(plPct, 1) + '%';
+  document.getElementById('lvPl').style.color = plPct >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var X0 = 130, W = 330, Y0 = 38;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">품목별 실효 레버리지 (명목 ÷ 증거금)</text>';
+  var maxL = Math.max.apply(null, LV.map(function(x){ return x.px * x.mult / x.im; }));
+  LV.forEach(function(x, i){
+    var l = x.px * x.mult / x.im;
+    var y = Y0 + i * 28;
+    var w = Math.max(1, l / maxL * W);
+    var on = (i === lvIdx);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="19" rx="1.5" fill="' + x.col +
+         '" fill-opacity="' + (on ? '.55' : '.24') + '" stroke="' + x.col + '" stroke-width="' + (on ? '1.8' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end"' +
+         (on ? ' fill="' + x.col + '"' : '') + '>' + x.h + '</text>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + Math.min(X0 + w + 8, X0 + W - 2).toFixed(1) + '" y="' + (y + 14) + '"' +
+         (on ? ' fill="' + x.col + '"' : '') + '>' + num(l, 1) + '배 · ' + num(x.im / (x.px * x.mult) * 100, 1) + '%면 소진</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + LV.length * 28 + 18) + '">막대가 길수록 작은 가격 변화에 내 돈이 크게 흔들립니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + LV.length * 28 + 36) + '">「N%면 소진」은 그만큼 반대로 가면 증거금이 사라진다는 뜻입니다.</text>';
+  document.getElementById('lvScene').innerHTML = g;
+
+  var title, body;
+  if(mv === 0){
+    title = c.h + ' 1계약 = ' + usd(notional) + ', 증거금은 ' + usd(c.im);
+    body = '<b>' + c.unit + '</b>이 한 계약입니다. 가격이 <b>$' + c.px.toLocaleString('en-US') + '</b>이면 <b>' + usd(notional) +
+      '</b>짜리를 움직이는 셈인데, <b>실제로 거는 돈은 ' + usd(c.im) + '</b>뿐입니다.<br><br>' +
+      '<b>실효 레버리지가 ' + num(lev, 1) + '배</b>라는 뜻입니다. <b>가격이 1% 움직이면 내 돈은 ' + num(lev, 1) + '% 움직입니다.</b><br><br>' +
+      '<b>여기서 바로 보이는 위험</b> — 가격이 <b>' + num(wipe, 1) + '%</b>만 반대로 가면 <b>내 돈이 전부</b> 사라집니다. 그런데 <b>' + c.h +
+      '가 ' + num(wipe, 1) + '% 움직이는 것은 흔한 일</b>입니다.<br><br>' +
+      '<b>「가격이 움직이면」 슬라이더를 내려보세요.</b>';
+  } else if(plPct <= -100){
+    title = '가격 ' + sgn(mv, 0) + '% → 내 돈 ' + sgn(plPct, 1) + '% — 전액을 넘어섰습니다';
+    body = '<b>' + c.h + ' 가격이 ' + Math.abs(mv) + '% 떨어졌을 뿐</b>인데 손실이 <b>' + usd(Math.abs(pl)) +
+      '</b>입니다. 내가 건 돈은 <b>' + usd(c.im) + '</b>였습니다.<br><br>' +
+      '<b>즉 내 돈을 다 잃고도 ' + usd(Math.abs(pl) - c.im) + '을 더 내야 합니다.</b><br><br>' +
+      '<b>⚠️ 이것이 선물과 주식의 결정적 차이</b>입니다. <b>주식은 아무리 나빠도 0</b>입니다. 회사가 망해도 <b>내가 산 돈만</b> 잃습니다. <b>선물은 마이너스가 됩니다.</b><br><br>' +
+      '<b>실제로는 그 전에 강제 청산</b>됩니다(3장). 하지만 <b>가격이 하룻밤에 크게 뛰면 청산할 틈도 없이</b> 손실이 확정될 수 있습니다.<br><br>' +
+      '<b>이 하나의 성질 때문에 이 트랙은 개인의 선물 직접 거래를 권하지 않습니다.</b>';
+  } else if(plPct < 0){
+    title = '가격 ' + sgn(mv, 0) + '% → 내 돈 ' + sgn(plPct, 1) + '%';
+    body = '가격은 <b>' + Math.abs(mv) + '%</b> 움직였을 뿐인데 <b>내 돈은 ' + num(Math.abs(plPct), 1) + '%</b> 줄었습니다. <b>레버리지 ' +
+      num(lev, 1) + '배</b>가 그대로 곱해진 것입니다.<br><br>' +
+      '<b>같은 상황을 현물로 하면</b> — ' + usd(notional) + '어치 실물을 샀다면 손실은 <b>' + Math.abs(mv) +
+      '%</b>입니다. <b>가격 변화와 손실률이 같습니다.</b><br><br>' +
+      '<b>그런데 선물은 ' + num(Math.abs(plPct), 1) + '%</b>입니다. <b>같은 사건, 다른 체감</b>입니다.<br><br>' +
+      '<b>슬라이더를 −' + Math.ceil(wipe) + '% 아래로</b> 내려보세요. <b>내 돈이 전부 사라지는 지점</b>이 나옵니다.';
+  } else {
+    title = '가격 ' + sgn(mv, 0) + '% → 내 돈 ' + sgn(plPct, 1) + '%';
+    body = '<b>레버리지는 양쪽으로 똑같이 작동합니다.</b> 가격이 <b>' + mv + '%</b> 오르면 내 돈은 <b>' + num(plPct, 1) + '%</b> 늘어납니다.<br><br>' +
+      '<b>이 화면이 레버리지가 팔리는 이유</b>입니다. <b>작은 돈으로 큰 수익</b>이 나 보입니다.<br><br>' +
+      '<b>⚠️ 그런데 대칭이 아닙니다.</b> 두 가지 때문입니다.<br>' +
+      '· <b>손실 쪽에는 강제 청산이 있습니다.</b> 이익은 계속 커질 수 있지만, <b>손실은 중간에 끊깁니다</b> — <b>내 의사와 무관하게.</b><br>' +
+      '· <b>변동성 자체가 비용입니다.</b> 오르내리기를 반복하면 <b>방향이 제자리여도 돈이 줄어듭니다.</b> 채권 트랙 09편에서 계산한 것과 같은 구조입니다.<br><br>' +
+      '<b>슬라이더를 반대로 내려보세요.</b> <b>같은 크기의 반대 움직임이 훨씬 무섭습니다.</b>';
+  }
+  document.getElementById('lvVerdict').querySelector('.vh').textContent = c.h;
+  verdict('lvVerdict', c.col, title, body);
+}
+bindBtnRow('#lvBtns', function(v){ lvIdx = +v; lvDraw(); });
+document.getElementById('lvMove').addEventListener('input', lvDraw);
+
+/* ══════════ 3. 마진콜 ══════════ */
+function mcDraw(){
+  var notional = +document.getElementById('mcNotional').value;
+  var rate = +document.getElementById('mcRate').value;
+  var mv = +document.getElementById('mcMove').value;
+  var im = notional * rate / 100;
+  var mm = im * 0.8;
+  document.getElementById('mcNotionalOut').textContent = usd(notional);
+  document.getElementById('mcRateOut').textContent = rate + '% (' + usd(im) + ')';
+  document.getElementById('mcMoveOut').textContent = mv === 0 ? '변화 없음' : (mv > 0 ? '+' : '−') + Math.abs(mv) + '%';
+
+  var pl = notional * mv / 100;
+  var eq = im + pl;
+  var lev = notional / im;
+  var wipeAt = -rate;          // 증거금 전액 소진 가격 변화율
+  var callAt = -rate * 0.2;    // 유지증거금 하회 시작 (개시의 20% 손실)
+
+  var state, col, title, body;
+  if(eq <= 0){
+    state = '전액 소진 + 추가 손실';
+    col = '#8E4B3A';
+  } else if(eq < mm){
+    state = '마진콜 — ' + usd(im - eq) + ' 추가 납입';
+    col = '#8E6B3A';
+  } else {
+    state = '정상';
+    col = '#5F7A52';
+  }
+
+  steps('mcSteps', [
+    { k:'명목가치', v:usd(notional) },
+    { k:'개시증거금 (' + rate + '%)', v:usd(im) },
+    { k:'유지증거금 (개시의 80%)', v:usd(mm) },
+    { k:'실효 레버리지', v:num(lev, 1) + '배' },
+    { k:'가격 ' + sgn(mv, 0) + '% → 손익', v:(pl >= 0 ? '+' : '−') + usd(Math.abs(pl)) },
+    { k:'증거금 잔액', v:(eq < 0 ? '−' : '') + usd(Math.abs(eq)) },
+    { k:'상태', v:state, total:true }
+  ]);
+
+  document.getElementById('mcEq').textContent = (eq < 0 ? '−' : '') + usd(Math.abs(eq));
+  document.getElementById('mcEq').style.color = eq < mm ? 'var(--neg)' : '';
+  document.getElementById('mcState').textContent = state;
+  document.getElementById('mcState').style.color = col;
+
+  var X0 = 55, W = 550, Y = 62, Hh = 44;
+  var lo = -25, hi = 15;
+  function xp(v){ return X0 + (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * W; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="22">가격 변화별 계좌 상태 (레버리지 ' + num(lev, 1) + '배)</text>';
+  var zones = [
+    { a:lo, b:wipeAt, c:'#8E4B3A', n:'전액 소진' },
+    { a:wipeAt, b:callAt, c:'#8E6B3A', n:'마진콜' },
+    { a:callAt, b:hi, c:'#5F7A52', n:'정상' }
+  ];
+  zones.forEach(function(z){
+    var x1 = xp(z.a), x2 = xp(z.b);
+    if(x2 - x1 < 0.5) return;
+    g += '<rect x="' + x1.toFixed(1) + '" y="' + Y + '" width="' + (x2 - x1).toFixed(1) + '" height="' + Hh +
+         '" fill="' + z.c + '" fill-opacity=".18" stroke="' + z.c + '" stroke-width="1"/>';
+    if(x2 - x1 > 62) g += '<text class="axt" x="' + ((x1 + x2) / 2).toFixed(1) + '" y="' + (Y + 27) + '" text-anchor="middle">' + z.n + '</text>';
+  });
+  [-25, -20, -15, -10, -5, 0, 5, 10, 15].forEach(function(v){
+    g += '<text class="axt" x="' + xp(v).toFixed(1) + '" y="' + (Y + Hh + 17) + '" text-anchor="middle">' + v + '%</text>';
+  });
+  [{ v:wipeAt, n:'전액 소진' }, { v:callAt, n:'마진콜 시작' }].forEach(function(m, i){
+    if(m.v < lo || m.v > hi) return;
+    var x = xp(m.v);
+    g += '<line x1="' + x.toFixed(1) + '" y1="' + (Y - 6) + '" x2="' + x.toFixed(1) + '" y2="' + (Y + Hh + 4) + '" stroke="#5B5648" stroke-width="1.2" stroke-dasharray="3 2"/>';
+    g += '<text class="axt" x="' + x.toFixed(1) + '" y="' + (Y + Hh + (i === 0 ? 34 : 50)) + '" text-anchor="middle">' + m.n + ' ' + num(m.v, 1) + '%</text>';
+  });
+  var px = xp(mv);
+  g += '<line x1="' + px.toFixed(1) + '" y1="' + (Y - 24) + '" x2="' + px.toFixed(1) + '" y2="' + (Y + Hh) + '" stroke="' + col + '" stroke-width="2.4"/>';
+  g += '<circle cx="' + px.toFixed(1) + '" cy="' + (Y - 24) + '" r="5" fill="' + col + '"/>';
+  var lx = Math.min(Math.max(px, X0 + 36), X0 + W - 36);
+  g += '<text class="lblb" x="' + lx.toFixed(1) + '" y="' + (Y - 34) + '" text-anchor="middle" fill="' + col + '">' + sgn(mv, 0) + '%</text>';
+  document.getElementById('mcScene').innerHTML = g;
+
+  if(eq <= 0){
+    title = '증거금이 전부 사라지고 ' + usd(Math.abs(eq)) + '을 더 내야 합니다';
+    body = '가격이 <b>' + Math.abs(mv) + '%</b> 반대로 갔습니다. 손실 <b>' + usd(Math.abs(pl)) + '</b>이 증거금 <b>' + usd(im) +
+      '</b>을 넘어섰습니다.<br><br>' +
+      '<b>내 돈을 다 잃은 데다 ' + usd(Math.abs(eq)) + '의 빚이 생겼습니다.</b><br><br>' +
+      '<b>⚠️ 이것이 선물의 가장 무서운 성질</b>입니다. <b>주식은 최악이 0</b>이지만 <b>선물은 마이너스</b>입니다.<br><br>' +
+      '<b>실제로는 그 전에 강제 청산되는 것이 보통</b>입니다. 하지만 <b>가격이 하룻밤 사이에 크게 뛰면</b>(전쟁·사고·정책 발표) <b>청산할 기회 없이</b> 이 상태가 될 수 있습니다.<br><br>' +
+      '<b>2020년 원유가 마이너스로 갔을 때</b> 실제로 이런 일이 벌어졌습니다. <b>「가격이 0 아래로는 안 간다」는 전제로 만든 계산이 전부 틀렸습니다.</b>';
+  } else if(eq < mm){
+    title = '마진콜 — ' + usd(im - eq) + '을 오늘 안에 넣어야 합니다';
+    body = '가격이 <b>' + Math.abs(mv) + '%</b> 반대로 가서 증거금 잔액이 <b>' + usd(eq) + '</b>이 됐습니다. <b>유지증거금 ' + usd(mm) +
+      '</b>보다 낮습니다.<br><br>' +
+      '<b>그래서 연락이 옵니다</b> — <b>「' + usd(im - eq) + '을 채워 넣으세요」</b>. <b>못 넣으면 강제로 정리</b>됩니다.<br><br>' +
+      '<b>여기가 현물과 갈리는 지점</b>입니다. 현물이면 <b>「떨어졌네, 그냥 두자」</b>가 가능합니다. <b>선물은 그럴 수가 없습니다.</b><br><br>' +
+      '<b>그래서 이런 일이 생깁니다</b> — <b>결국 가격이 내 생각대로 돌아왔는데, 그 전에 계좌가 비어서 아무것도 남지 않는</b> 경우입니다.<br><br>' +
+      '<b>「증거금 비율」 슬라이더를 올려보세요.</b> <b>증거금을 많이 넣을수록 더 오래 버팁니다.</b> 대신 <b>레버리지가 낮아집니다.</b> <b>버티는 힘과 레버리지는 정확히 반대</b>입니다.';
+  } else if(mv < 0){
+    title = '아직 정상 — 잔액 ' + usd(eq) + '이 유지증거금 ' + usd(mm) + '보다 위입니다';
+    body = '가격이 <b>' + Math.abs(mv) + '%</b> 떨어졌지만 아직 <b>마진콜 구간은 아닙니다.</b><br><br>' +
+      '<b>그런데 여유가 얼마나 남았는지</b>를 봐야 합니다 — <b>' + num(Math.abs(callAt - mv), 1) +
+      '%p만 더 떨어지면 마진콜</b>이고, <b>' + num(Math.abs(wipeAt - mv), 1) + '%p면 전액 소진</b>입니다.<br><br>' +
+      '<b>이 여유가 생각보다 얇습니다.</b> 원자재는 <b>하루에 3~5% 움직이는 것이 드물지 않습니다.</b> <b>며칠이면 닿는 거리</b>입니다.<br><br>' +
+      '<b>슬라이더를 더 내려보세요.</b> 그리고 <b>「증거금 비율」을 20% 이상으로 올린 뒤 다시</b> 해보세요. <b>완전히 다른 그림</b>이 됩니다.';
+  } else {
+    title = mv === 0 ? '아직 아무 일도 일어나지 않았습니다' : '가격이 유리하게 움직여 잔액이 ' + usd(eq) + '입니다';
+    body = (mv === 0
+      ? '<b>가격 변화 슬라이더를 왼쪽으로</b> 내려보세요. <b>선물이 현물과 어떻게 다른지</b>가 거기서 드러납니다.<br><br>'
+      : '증거금이 <b>' + usd(im) + '</b>에서 <b>' + usd(eq) + '</b>이 됐습니다. <b>' + sgn(pl / im * 100, 1) + '%</b>입니다.<br><br>' +
+        '<b>일일정산 때문에 이 이익은 실제로 계좌에 들어옵니다.</b> 주식처럼 <b>「팔아야 확정」이 아닙니다.</b> 원하면 <b>빼서 쓸 수도</b> 있습니다.<br><br>') +
+      '<b>지금 이 계약의 구조를 정리하면</b><br>' +
+      '· 명목 <b>' + usd(notional) + '</b>을 <b>' + usd(im) + '</b>으로 움직이고 있습니다 (레버리지 <b>' + num(lev, 1) + '배</b>).<br>' +
+      '· 가격이 <b>' + num(Math.abs(callAt), 1) + '%</b> 떨어지면 <b>마진콜</b>, <b>' + num(Math.abs(wipeAt), 1) + '%</b>면 <b>전액 소진</b>입니다.<br><br>' +
+      '<b>이 두 숫자를 계약 전에 확인하는 것</b>이 선물에서 가장 기본적인 위험 관리입니다. <b>「얼마 벌 수 있나」보다 「몇 % 움직이면 끝나나」</b>입니다.';
+  }
+  verdict('mcVerdict', col, title, body);
+}
+['mcNotional', 'mcRate', 'mcMove'].forEach(function(id){ document.getElementById(id).addEventListener('input', mcDraw); });
+
+/* ══════════ 4. 만기 ══════════ */
+var EX = [
+  { h:'만기 전에 판다', col:'#5F7A52',
+    t:'가장 일반적이고 정상적인 선택입니다',
+    p:'<b>선물 계약의 절대다수가 만기 전에 정리</b>됩니다. <b>실물을 실제로 주고받는 비율은 매우 낮습니다.</b><br><br>' +
+      '<b>방법은 간단합니다</b> — <b>같은 계약을 반대로 거래</b>하면 됩니다. 샀으면 팔고, 팔았으면 삽니다. 그러면 <b>차액만 남고 계약이 사라집니다.</b><br><br>' +
+      '<b>이때의 손익 = (판 값 − 산 값) × 계약 크기</b>입니다. <b>실물은 한 번도 등장하지 않습니다.</b><br><br>' +
+      '<b>그래서 대부분의 사람에게 선물은 「실물 계약」이 아니라 「가격에 대한 계약」</b>처럼 작동합니다.<br><br>' +
+      '<b>다만 잊으면 안 되는 것</b> — <b>만기가 실제로 존재하고 다가옵니다.</b> <b>그 사실이 만기 근처의 가격을 이상하게 만들기도</b> 합니다(2020년 사례).' },
+  { h:'다음 달로 갈아탄다', col:'#4C6B7A',
+    t:'이것이 「롤오버」이고, 06편의 주제입니다',
+    p:'<b>계속 원자재를 들고 있고 싶다면</b> 어떻게 할까요. <b>만기가 오는 계약을 팔고, 다음 만기 계약을 사면</b> 됩니다. 이것을 <b>「롤오버」</b> 또는 <b>「롤」</b>이라고 합니다.<br><br>' +
+      '<b>원자재 ETF가 매달(또는 정해진 주기로) 하는 일이 바로 이것</b>입니다. 내가 아무것도 안 해도 <b>ETF가 알아서 갈아탑니다.</b><br><br>' +
+      '<b>⚠️ 그런데 여기서 돈이 샙니다.</b> <b>파는 계약과 사는 계약의 가격이 다르기</b> 때문입니다.<br><br>' +
+      '<b>보통 다음 달 계약이 더 비쌉니다</b>(02편의 보관비 논리). 그러면 <b>싼 걸 팔고 비싼 걸 사게</b> 됩니다. <b>매달 조금씩 손해</b>입니다.<br><br>' +
+      '<b>이것이 「롤 손실」</b>입니다. 그리고 <b>이 트랙에서 가장 중요한 개념</b>입니다.<br><br>' +
+      '<b>얼마나 큰가</b> — 02편에서 계산했듯 <b>금은 연 −0.4%지만 천연가스는 연 −18%</b> 수준입니다. <b>06편에서 정확히</b> 계산합니다.' },
+  { h:'만기까지 들고 있는다', col:'#8E6B3A',
+    t:'개인에게는 사실상 선택지가 아닙니다',
+    p:'<b>원자재 선물의 대부분은 실물 인수</b>입니다. 만기까지 사자 포지션을 들고 있으면 <b>실제로 그 물건을 받아야</b> 합니다.<br><br>' +
+      '<b>WTI 원유 1계약은 1,000배럴</b>입니다. <b>약 16만 리터</b>입니다. <b>정해진 저장 시설로 받으러 가야</b> 하고, <b>보관할 곳도 있어야</b> 합니다.<br><br>' +
+      '<b>현실적으로 불가능합니다.</b> 그래서 증권사는 대체로 <b>만기 며칠 전에 강제로 정리</b>합니다. <b>내가 원하든 아니든</b>입니다.<br><br>' +
+      '<b>여기서 실전 함의가 하나</b> 있습니다 — <b>「만기 직전에 억지로 정리해야 하는 참여자가 많다」</b>는 것 자체가 <b>가격을 왜곡</b>합니다. <b>팔 수밖에 없는 사람들이 몰리면 값이 눌립니다.</b><br><br>' +
+      '<b>그래서 ETF들이 만기 직전을 피해 미리 갈아탑니다.</b> 그리고 <b>모든 ETF가 비슷한 시기에 같은 일을 하니 그것도 가격에 영향</b>을 줍니다. <b>07편에서 상품마다 롤 규칙이 다른 이유</b>가 이것입니다.' },
+  { h:'저장할 곳이 없어졌다', col:'#8E4B3A',
+    t:'2020년에 실제로 벌어진 일 — 가격이 마이너스가 됐습니다',
+    p:'<b>평소에는 「만기까지 들고 있으면 실물을 받는다」가 그냥 번거로운 일</b>일 뿐입니다. <b>받아서 팔면</b> 되니까요.<br><br>' +
+      '<b>그런데 저장 공간이 꽉 차면 이야기가 달라집니다.</b> <b>받아도 넣을 곳이 없습니다.</b> 그러면 <b>계약을 들고 있는 것 자체가 재앙</b>이 됩니다.<br><br>' +
+      '<b>2020년 봄에 정확히 이 일이 벌어졌습니다.</b> 코로나로 <b>기름 수요가 사라졌는데 생산은 바로 못 멈췄고</b>, 미국의 저장 시설이 <b>한계에 닿았습니다.</b><br><br>' +
+      '<b>만기가 다가오는데 실물을 받아야 하는 사람들이 필사적으로 계약을 팔았습니다.</b> 그런데 <b>아무도 사려 하지 않았습니다.</b> 그래서 <b>「돈을 드릴 테니 가져가세요」</b>가 됐고, <b>WTI 근월물 가격이 마이너스로</b> 갔습니다.<br><br>' +
+      '<b>⚠️ 그때 원유 ETF를 들고 있던 개인들이 큰 손실</b>을 봤습니다. 어떤 상품은 <b>운용 규칙 자체를 바꿔야</b> 했습니다.<br><br>' +
+      '<b>여기서 남길 하나</b> — <b>「기름값이 이만큼 싼데 설마 더 떨어지겠어」는 안전한 생각이 아닙니다.</b> <b>선물 가격은 물건값이 아니라 「그 날짜에 주고받을 약속의 값」</b>이고, <b>주고받는 것 자체가 곤란해지면 값이 상식을 벗어납니다.</b>' }
+];
+bindBtnRow('#exBtns', function(v){
+  var e = EX[+v];
+  document.getElementById('exVerdict').querySelector('.vh').textContent = e.h;
+  verdict('exVerdict', e.col, e.t, e.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 06편으로 이어집니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+lvDraw(); mcDraw();
+document.querySelector('#exBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
