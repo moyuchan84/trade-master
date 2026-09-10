@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>원자재란 무엇인가</title>
+<meta name="description" content="원자재는 배당도 이자도 임대료도 없는 자산입니다. 다른 자산과 무엇이 근본적으로 다른지, 기본 용어와 투자 목적을 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --comm:#7A5C3A;--eq:#5B6E8E;--bond:#4C6B7A;--re:#5F7A52;--warn:#8E4B3A;--alt:#7A5C9E;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--comm));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--comm));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--comm));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  /* 용어 사전 */
+  .gloss{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:6px 20px;margin:22px 0 0;}
+  .gloss .row{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px dotted var(--rule);}
+  .gloss .row:last-child{border-bottom:0;}
+  .gloss .term{flex:0 0 108px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--comm);font-weight:500;}
+  .gloss .def{flex:1 1 auto;font-size:14px;color:var(--ink-soft);line-height:1.6;}
+  .gloss .def b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .gloss .row{flex-direction:column;gap:3px;}
+    .gloss .term{flex:none;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">원자재 01 · 기초 · 투자 공부 노트</div>
+    <h1>원자재란<br>무엇인가</h1>
+    <p class="lede">기름·구리·금·밀처럼 <b>실제로 쓰이는 물건</b>입니다. 그런데 투자 대상으로 보면 <b>주식·채권·부동산과 근본적으로 다릅니다</b> — <b>아무것도 나오지 않습니다.</b></p>
+    <div class="callout">
+      <p><b>이 한 가지가 전부를 바꿉니다.</b></p>
+      <p><b>주식</b>은 회사가 돈을 벌어 <b>배당</b>을 줍니다. <b>채권</b>은 <b>이자</b>가 나옵니다. <b>부동산</b>은 <b>임대료</b>가 나옵니다. <b>가만히 들고 있어도 무언가가 생깁니다.</b></p>
+      <p><b>원자재는 아무것도 나오지 않습니다.</b> 오히려 <b>보관비가 나갑니다.</b> 기름은 탱크에 넣어둬야 하고, 곡물은 창고가 필요하고, 금은 금고가 필요합니다.</p>
+      <p>그래서 원자재로 돈을 버는 방법은 <b>딱 하나</b>입니다 — <b>나보다 비싸게 사줄 사람이 나타나는 것.</b> 그 외에는 없습니다.</p>
+      <p><b>나쁘다는 뜻이 아닙니다.</b> <b>성격이 다르다</b>는 뜻입니다. 그리고 이 성격 때문에 <b>「사서 오래 묻어두기」가 주식처럼 작동하지 않습니다.</b> 이 트랙의 대부분이 그 이야기입니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#diff">1. 무엇이 다른가</a>
+    <a href="#cash">2. 현금흐름 비교</a>
+    <a href="#words">3. 용어 사전</a>
+    <a href="#why">4. 그럼 왜 사나</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="diff">
+    <div class="prod-head" style="--edge:var(--comm)">
+      <span class="prod-tag">01 · 차이</span>
+      <h2>「아무것도 나오지 않는다」의 의미</h2>
+      <p class="one">이 하나로 <b>투자 방식이 완전히 달라집니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>돈을 불리는 방법에 <b>두 가지</b>가 있어.</p>
+      <p><b>① 무언가를 낳는 것을 갖기</b> — <b>사과나무</b>를 사면 해마다 사과가 열려. 나무를 안 팔아도 사과를 팔아 돈이 생기지. <b>회사(주식)</b>, <b>빌려준 돈(채권)</b>, <b>집(부동산)</b>이 다 그래.</p>
+      <p><b>② 그냥 물건을 갖기</b> — <b>사과 한 상자</b>를 사면? 사과가 새로 생기지 않아. <b>더 비싸게 사줄 사람</b>이 나타나야만 돈을 벌어. 게다가 <b>썩기 전에</b> 팔아야 하고, 창고 값도 나가.</p>
+      <p>원자재는 <b>②</b>야. 기름도 구리도 금도, <b>가만히 두면 늘어나지 않아.</b> 오히려 <b>보관하는 데 돈이 들어.</b></p>
+      <p>그래서 이런 말이 나와. <b>「주식은 시간이 편이고, 원자재는 시간이 편이 아니다.」</b> 주식은 오래 들고 있으면 회사가 돈을 벌어주지만, 원자재는 <b>오래 들고 있는 것 자체가 비용</b>이거든.</p>
+      <p>그럼 왜 사냐고? <b>이유가 있어.</b> 4장에서 볼게.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th></th><th>주식</th><th>채권</th><th>부동산</th><th>원자재</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>들고 있으면 나오는 것</th><td>배당</td><td>이자</td><td>임대료</td><td><b>없음</b></td></tr>
+          <tr><th>들고 있으면 나가는 것</th><td>없음</td><td>없음</td><td>세금·수리비</td><td><b>보관비·롤 비용</b></td></tr>
+          <tr><th>가치가 스스로 커지나</th><td>회사가 이익을 쌓음</td><td>이자가 쌓임</td><td>임대료가 쌓임</td><td><b>커지지 않음</b></td></tr>
+          <tr><th>수익의 원천</th><td>이익 성장 + 배당</td><td>이자 + 만기 원금</td><td>임대료 + 시세</td><td><b>가격 차이만</b></td></tr>
+          <tr><th>「오래 묻어두기」</th><td>대체로 유리</td><td>만기까지면 확정</td><td>대체로 유리</td><td><b>비용이 쌓임</b></td></tr>
+          <tr><th>장기 실질가격</th><td>우상향 경향</td><td>—</td><td>우상향 경향</td><td><b>크게 오르지 않는 경향</b></td></tr>
+          <tr><th>주된 쓰임</th><td>자산 성장</td><td>확정 현금흐름</td><td>거주 + 성장</td><td><b>분산 · 물가 대비</b></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 일반적 경향이며 예외가 있습니다</p>
+
+    <div class="keyline">
+      <div class="kt">이 트랙의 첫 문장</div>
+      <div class="kb">주식은 <b>시간이 편</b>이고,<br>원자재는 <b>시간이 비용</b>입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="cash">
+    <div class="prod-head" style="--edge:var(--eq)">
+      <span class="prod-tag">02 · 계산</span>
+      <h2>가격이 그대로일 때 무슨 일이 일어나나</h2>
+      <p class="one">이 계산이 <b>원자재의 성격을 가장 분명하게</b> 보여줍니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">HOLD · 가격이 안 변한다고 가정해보세요</div>
+      <p class="labsub">네 자산을 <b>같은 기간 들고 있으면</b> 어떻게 되는지입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="hdYears">보유 기간</label>
+        <input type="range" id="hdYears" min="1" max="30" step="1" value="10">
+        <output id="hdYearsOut">10년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdDiv">주식 배당수익률</label>
+        <input type="range" id="hdDiv" min="0" max="60" step="1" value="20">
+        <output id="hdDivOut">2.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdBond">채권 수익률</label>
+        <input type="range" id="hdBond" min="0" max="80" step="1" value="40">
+        <output id="hdBondOut">4.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdRent">부동산 임대수익률 (비용 차감 후)</label>
+        <input type="range" id="hdRent" min="0" max="60" step="1" value="25">
+        <output id="hdRentOut">2.5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdCost">원자재 연간 비용 (보관 + 롤)</label>
+        <input type="range" id="hdCost" min="-30" max="80" step="1" value="20">
+        <output id="hdCostOut">2.0%</output>
+      </div>
+
+      <div class="steps-out" id="hdSteps"></div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="가격 불변 시 자산별 누적 결과">
+        <g id="hdScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">원자재 (가격 불변)</span><span class="rv" id="hdComm">—</span></div>
+        <div><span class="rk">주식과의 차이</span><span class="rv" id="hdGap">—</span></div>
+      </div>
+
+      <div class="verdict" id="hdVerdict" style="--vc:var(--eq)">
+        <div class="vh">보유</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>모든 자산의 가격이 전혀 변하지 않는다</b>고 가정하고, <b>들고 있는 것만으로 생기거나 나가는 것</b>만 누적했습니다. <b>주가 상승이나 원자재 가격 상승은 넣지 않았습니다.</b><br><br>
+        <b>이 가정이 이상해 보일 수 있습니다.</b> 목적은 <b>「가격 변동을 빼면 무엇이 남는가」</b>를 보는 것입니다. 주식·채권·부동산은 <b>남는 것이 있고</b>, 원자재는 <b>없거나 마이너스</b>입니다.<br><br>
+        <b>「원자재 연간 비용」에 무엇이 들어가나</b> — <b>보관비, 보험료, 그리고 대부분의 상품에서 훨씬 큰 「롤 비용」</b>입니다. 롤 비용은 <b>06편</b>에서 자세히 다룹니다. <b>슬라이더를 마이너스로</b> 하면 <b>백워데이션</b> 국면(비용이 아니라 수익이 되는 경우)도 볼 수 있습니다.
+      </div>
+    </div>
+    <div class="deep">
+      <h3>「장기적으로 실질가격이 크게 오르지 않는다」는 무슨 뜻인가</h3>
+      <p>표에 적어둔 이 항목은 <b>설명이 필요합니다.</b> 오해하기 쉽습니다.</p>
+      <p><b>명목 가격</b>은 오릅니다. 100년 전 기름값과 지금 기름값은 <b>숫자로는 크게 다릅니다.</b> 그런데 <b>그동안 모든 물가가 올랐습니다.</b> <b>물가 상승분을 빼고 본 것</b>이 <b>실질 가격</b>입니다.</p>
+      <p><b>왜 실질로는 크게 안 오르는 경향이 있나</b> — 세 가지 힘이 작동합니다.</p>
+      <p><b>① 기술이 생산 비용을 낮춥니다.</b> 예전에는 못 캐던 곳에서 캐게 되고, 같은 양을 <b>더 싸게</b> 만들게 됩니다.<br>
+         <b>② 비싸지면 공급이 늘어납니다.</b> 값이 오르면 <b>문 닫았던 광산이 다시 열리고</b> 새로 개발합니다. 그러면 값이 내려갑니다.<br>
+         <b>③ 비싸지면 대체재가 나옵니다.</b> 기름이 비싸면 <b>연비를 올리거나 다른 에너지</b>로 옮겨갑니다.</p>
+      <p class="plain"><b>반론도 있습니다.</b> <b>「좋은 광맥은 이미 다 캤고 앞으로는 점점 어려워진다」</b>, <b>「전기차·재생에너지 때문에 특정 금속 수요가 구조적으로 늘어난다」</b>는 주장입니다. <b>둘 다 근거가 있고, 어느 쪽이 맞는지는 아직 확인되지 않았습니다.</b><br><br><b>이 트랙의 입장은 이렇습니다</b> — <b>「장기 우상향」을 전제로 깔지 않습니다.</b> 주식·부동산에서는 그 전제가 어느 정도 통했지만, <b>원자재에서는 그렇게 단정할 근거가 약합니다.</b> 대신 <b>「국면마다 크게 움직인다」</b>는 것은 분명하고, 그 성질을 어떻게 쓸지가 이 트랙의 주제입니다.</p>
+
+    </div>
+
+    <div class="deep">
+      <h3>그럼 원자재는 사면 안 되는 자산인가</h3>
+      <p>여기까지 읽으면 <b>「아무것도 안 나오고 비용만 나가는 자산」</b>이라는 인상만 남을 수 있습니다. 균형을 맞추겠습니다.</p>
+      <p><b>① 다르게 움직인다는 것 자체가 값어치입니다.</b> 포트폴리오 전체로 보면 <b>기대 수익이 낮아도 흔들림을 줄여주는 자산</b>은 의미가 있습니다. <b>보험료를 내는 것</b>과 비슷합니다.</p>
+      <p><b>② 주식·채권이 동시에 무너지는 국면이 실제로 있습니다.</b> <b>물가가 튈 때</b>가 그렇습니다. 채권 트랙 03편에서 봤듯 <b>그때는 국채도 방어하지 못합니다.</b> 원자재는 <b>그 국면에서 오르는 경향</b>이 있는 몇 안 되는 자산입니다.</p>
+      <p><b>③ 비용은 상품 선택으로 크게 줄일 수 있습니다.</b> 2장에서 본 <b>연 2%</b>는 일반적인 수치일 뿐이고, <b>금 현물 ETF</b>는 훨씬 낮습니다. <b>어떤 원자재를, 어떤 형태로</b> 담느냐에 따라 <b>몇 배씩</b> 달라집니다(06·07·08편).</p>
+      <p class="plain"><b>그래서 결론은 「사지 말라」가 아닙니다.</b> <b>「주식처럼 다루면 안 된다」</b>입니다.<br><br>주식에서 통하는 <b>「좋은 걸 사서 오래 들기」</b>가 원자재에서는 <b>「매년 비용을 내며 기다리기」</b>가 됩니다. 대신 원자재에는 <b>「특정 국면에서 다른 자산이 못 하는 일을 한다」</b>는 쓰임이 있습니다.<br><br><b>그 쓰임에 맞게 쓰려면 세 가지를 정해야</b> 합니다 — <b>왜, 얼마나, 어떤 형태로.</b> 4장에서 첫 번째를, <b>10편에서 나머지 둘</b>을 정합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="words">
+    <div class="prod-head" style="--edge:var(--alt)">
+      <span class="prod-tag">03 · 용어</span>
+      <h2>먼저 알아야 할 말들</h2>
+      <p class="one">원자재는 <b>용어가 낯설어서</b> 시작이 어렵습니다. 여기만 넘으면 됩니다.</p>
+    </div>
+
+    <div class="gloss">
+      <div class="row"><span class="term">현물</span><span class="def"><b>지금 당장 사고파는 실제 물건</b>과 그 가격입니다. 뉴스에서 <b>「유가 $70」</b>이라고 할 때 대체로 이것 또는 <b>가장 가까운 선물</b> 가격입니다.</span></div>
+      <div class="row"><span class="term">선물</span><span class="def"><b>「몇 월에 이 가격으로 사고팔자」는 약속</b>입니다. 원자재는 <b>실물을 주고받기 번거로워</b> 대부분 선물로 거래됩니다. <b>05편</b>의 주제입니다.</span></div>
+      <div class="row"><span class="term">근월물 / 원월물</span><span class="def">만기가 <b>가까운</b> 선물과 <b>먼</b> 선물입니다. 같은 기름인데 <b>2월물과 8월물의 가격이 다릅니다.</b> 그 차이가 이 트랙의 핵심입니다.</span></div>
+      <div class="row"><span class="term">롤오버 (롤)</span><span class="def">들고 있던 선물의 <b>만기가 다가오면</b> 팔고 <b>다음 달 선물로 갈아타는</b> 것입니다. 원자재 ETF는 <b>이걸 계속 반복</b>합니다.</span></div>
+      <div class="row"><span class="term">콘탱고</span><span class="def"><b>먼 달 선물이 가까운 달보다 비싼</b> 상태입니다. 이때 롤하면 <b>싸게 팔고 비싸게 사게</b> 되어 <b>매번 손실</b>이 납니다. <b>06편</b>에서 계산합니다.</span></div>
+      <div class="row"><span class="term">백워데이션</span><span class="def">반대로 <b>먼 달이 더 싼</b> 상태입니다. 롤할 때마다 <b>이익</b>이 납니다. <b>공급이 급한 상황</b>에서 나타납니다.</span></div>
+      <div class="row"><span class="term">베이시스</span><span class="def"><b>현물 가격과 선물 가격의 차이</b>입니다. 만기가 다가올수록 <b>0으로 수렴</b>합니다.</span></div>
+      <div class="row"><span class="term">재고</span><span class="def">시장에 <b>얼마나 쌓여 있는가</b>입니다. 주식의 실적 발표처럼 <b>정기적으로 발표</b>되고 가격을 크게 움직입니다. <b>03편</b>에서 다룹니다.</span></div>
+      <div class="row"><span class="term">생산 원가</span><span class="def"><b>캐내는 데 드는 비용</b>입니다. 가격이 이보다 오래 낮으면 <b>생산이 멈춰 공급이 줄고</b> 가격이 돌아옵니다 — <b>바닥</b> 역할을 합니다.</span></div>
+      <div class="row"><span class="term">증거금</span><span class="def">선물을 거래할 때 <b>먼저 맡기는 돈</b>입니다. 전체 금액의 <b>일부만</b> 내므로 <b>레버리지</b>가 자동으로 붙습니다. <b>05편</b>에서 다룹니다.</span></div>
+      <div class="row"><span class="term">WTI / 브렌트</span><span class="def">대표적인 <b>원유 기준 가격</b> 두 가지입니다. WTI는 미국, 브렌트는 유럽·중동 쪽 기준입니다. <b>둘의 가격이 다릅니다.</b></span></div>
+      <div class="row"><span class="term">트로이온스</span><span class="def">금·은의 무게 단위입니다. <b>약 31.1그램</b>이고, 일반 온스(28.35g)와 <b>다릅니다.</b> 금 시세는 이 단위로 표시됩니다.</span></div>
+      <div class="row"><span class="term">부셸 / 배럴</span><span class="def">곡물은 <b>부셸</b>, 원유는 <b>배럴</b>로 셉니다. 배럴은 <b>약 159리터</b>입니다.</span></div>
+      <div class="row"><span class="term">슈퍼사이클</span><span class="def">원자재 가격이 <b>10년 이상 길게</b> 오르내리는 큰 흐름을 부르는 말입니다. <b>확인된 법칙이 아니라 사후 해석</b>인 경우가 많습니다.</span></div>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TERMS · 헷갈리기 쉬운 짝을 눌러보세요</div>
+      <p class="labsub">비슷해 보이는 말들이 <b>실제로는 크게 다릅니다.</b></p>
+
+      <div class="btnrow" id="tmBtns">
+        <button data-v="0" class="on">현물 vs 선물</button>
+        <button data-v="1">콘탱고 vs 백워데이션</button>
+        <button data-v="2">원자재 vs 원자재 기업</button>
+        <button data-v="3">금 vs 다른 원자재</button>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="용어 비교">
+        <g id="tmScene"></g>
+      </svg>
+
+      <div class="verdict" id="tmVerdict" style="--vc:var(--alt)">
+        <div class="vh">용어</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="why">
+    <div class="prod-head" style="--edge:var(--re)">
+      <span class="prod-tag">04 · 목적</span>
+      <h2>그럼 왜 사나</h2>
+      <p class="one">이유가 <b>세 가지</b>인데, <b>필요한 상품과 기간이 각각 다릅니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">PURPOSE · 목적을 눌러보세요</div>
+      <p class="labsub">목적이 다르면 <b>사야 할 것과 들고 있을 기간</b>이 달라집니다.</p>
+
+      <div class="btnrow" id="pwBtns">
+        <button data-v="0" class="on">① 물가 대비</button>
+        <button data-v="1">② 분산</button>
+        <button data-v="2">③ 국면 베팅</button>
+        <button data-v="3">④ 실물 보유</button>
+        <button data-v="4">목적이 없다면</button>
+      </div>
+
+      <div class="verdict" id="pwVerdict" style="--vc:var(--re)">
+        <div class="vh">목적</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>여기까지 확인하고 넘어가세요</h2>
+      <p class="one">02편부터는 <b>이것을 안다는 전제</b>로 시작합니다.</p>
+    </div>
+
+    <ul class="check" id="cbCheck">
+      <li><b>원자재는 배당·이자·임대료가 없다</b>는 것 — 가격 차이만이 수익원입니다.</li>
+      <li><b>오히려 보관비와 롤 비용이 나간다</b>는 것.</li>
+      <li><b>「오래 묻어두기」가 주식처럼 작동하지 않는다</b>는 것.</li>
+      <li><b>장기 실질가격이 크게 오르지 않는 경향</b>이 있다는 것.</li>
+      <li><b>대부분 선물로 거래된다</b>는 것 — 현물을 직접 사는 게 아닙니다.</li>
+      <li><b>콘탱고는 롤할 때마다 손해</b>, <b>백워데이션은 이익</b>이라는 것.</li>
+      <li><b>같은 「금 투자」에도 여러 방법이 있다</b>는 것(07편).</li>
+      <li><b>원자재 기업 주식은 원자재가 아니라는 것</b> — 성격이 다릅니다.</li>
+      <li><b>금은 다른 원자재와 성격이 다르다</b>는 것(08편).</li>
+      <li><b>내가 사려는 목적이 무엇인지</b> 정했나?</li>
+    </ul>
+    <div class="checkcount" id="cbCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 원자재는 <b>「아무것도 낳지 않는 물건」</b>입니다. 주식·채권·부동산이 <b>가만히 있어도 무언가를 만들어내는</b> 것과 달리, 원자재는 <b>더 비싸게 사줄 사람</b>이 있어야만 수익이 납니다. 그리고 그 사이 <b>보관비와 롤 비용</b>이 나갑니다.</p>
+      <p><b>그래서 접근 방식이 달라집니다.</b> 주식은 <b>「좋은 것을 사서 오래 들기」</b>가 통하지만, 원자재는 <b>「왜 지금 사는지」와 「언제까지 들지」</b>가 함께 정해져 있어야 합니다. <b>목적 없이 오래 들고 있는 것 자체가 비용</b>이기 때문입니다.</p>
+      <p><b>다만 이것이 「사면 안 된다」는 뜻은 아닙니다.</b> <b>물가가 튀는 국면에서 주식·채권이 동시에 무너질 때</b> 원자재가 버텨준 사례들이 있습니다. 그 역할을 하려면 <b>얼마를, 어떤 형태로</b> 들지가 중요하고, 그게 이 트랙의 나머지입니다.</p>
+      <p><b>다음 편은 02편 — 에너지·금속·농산물</b>입니다. 같은 「원자재」라도 <b>무엇이 가격을 움직이는지가 종류마다 완전히 다릅니다.</b> 기름은 <b>지정학</b>, 구리는 <b>경기</b>, 곡물은 <b>날씨</b>, 금은 <b>금리와 믿음</b>이 움직입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 원자재 01 · 기초<br>
+    <a href="index.html#commodity">← 원자재 목록으로</a> · 02 · 에너지·금속·농산물 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    계산기는 구조를 보기 위한 단순 모형입니다. 보관비·롤 비용·수익률은 상품과 시기에 따라 크게 다릅니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return (r >= 0 ? '+' : '') + r.toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 2. 보유 ══════════ */
+function hdDraw(){
+  var t = +document.getElementById('hdYears').value;
+  var div = +document.getElementById('hdDiv').value / 10;
+  var bd = +document.getElementById('hdBond').value / 10;
+  var rent = +document.getElementById('hdRent').value / 10;
+  var cost = +document.getElementById('hdCost').value / 10;
+  document.getElementById('hdYearsOut').textContent = t + '년';
+  document.getElementById('hdDivOut').textContent = num(div, 1) + '%';
+  document.getElementById('hdBondOut').textContent = num(bd, 1) + '%';
+  document.getElementById('hdRentOut').textContent = num(rent, 1) + '%';
+  document.getElementById('hdCostOut').textContent = num(cost, 1) + '%';
+
+  function grow(r){ return (Math.pow(1 + r / 100, t) - 1) * 100; }
+  var eq = grow(div), bo = grow(bd), re = grow(rent), cm = grow(-cost);
+
+  steps('hdSteps', [
+    { k:'주식 — 배당 ' + num(div, 1) + '% × ' + t + '년', v:sgn(eq, 1) + '%' },
+    { k:'채권 — 이자 ' + num(bd, 1) + '% × ' + t + '년', v:sgn(bo, 1) + '%' },
+    { k:'부동산 — 임대 ' + num(rent, 1) + '% × ' + t + '년', v:sgn(re, 1) + '%' },
+    { k:'원자재 — 비용 ' + num(cost, 1) + '% × ' + t + '년', v:sgn(cm, 1) + '%' },
+    { k:'주식과 원자재의 차이', v:sgn(eq - cm, 1) + '%p', total:true }
+  ]);
+
+  document.getElementById('hdComm').textContent = sgn(cm, 1) + '%';
+  document.getElementById('hdComm').style.color = cm < -0.05 ? 'var(--neg)' : (cm > 0.05 ? 'var(--pos)' : '');
+  document.getElementById('hdGap').textContent = sgn(eq - cm, 1) + '%p';
+
+  var X0 = 150, W = 380;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">가격이 전혀 안 변한다고 가정할 때 ' + t + '년 누적 (%)</text>';
+  var vals = [eq, bo, re, cm];
+  var posMax = Math.max(5, Math.max.apply(null, vals.concat([0])));
+  var negMax = Math.max(5, -Math.min.apply(null, vals.concat([0])));
+  var scale = (W - 80) / (posMax + negMax);
+  var ZERO = X0 + 40 + negMax * scale;
+  [{ n:'주식 (배당)', v:eq, c:'#5B6E8E' },
+   { n:'채권 (이자)', v:bo, c:'#4C6B7A' },
+   { n:'부동산 (임대료)', v:re, c:'#5F7A52' },
+   { n:'원자재 (비용)', v:cm, c:'#7A5C3A' }].forEach(function(b, i){
+    var y = 32 + i * 31;
+    var w = Math.abs(b.v) * scale;
+    var x = b.v >= 0 ? ZERO : ZERO - w;
+    var on = (i === 3);
+    g += '<rect x="' + x.toFixed(1) + '" y="' + y + '" width="' + Math.max(0.6, w).toFixed(1) +
+         '" height="21" rx="1.5" fill="' + b.c + '" fill-opacity="' + (on ? '.55' : '.28') + '" stroke="' + b.c +
+         '" stroke-width="' + (on ? '1.7' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 15) + '" text-anchor="end"' +
+         (on ? ' fill="' + b.c + '"' : '') + '>' + b.n + '</text>';
+    var tx = b.v >= 0 ? (x + w + 6) : (x - 6);
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + Math.max(X0 + 2, Math.min(tx, X0 + W - 2)).toFixed(1) +
+         '" y="' + (y + 15) + '" text-anchor="' + (b.v >= 0 ? 'start' : 'end') + '"' + (on ? ' fill="' + b.c + '"' : '') +
+         '>' + sgn(b.v, 1) + '</text>';
+  });
+  g += '<line x1="' + ZERO.toFixed(1) + '" y1="26" x2="' + ZERO.toFixed(1) + '" y2="' + (32 + 4 * 31) +
+       '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (32 + 4 * 31 + 22) + '">가격 변동을 빼면 무엇이 남는가 — 이것이 자산의 성격입니다.</text>';
+  document.getElementById('hdScene').innerHTML = g;
+
+  if(cost < -0.05){
+    verdict('hdVerdict', '#5F7A52',
+      '백워데이션이면 원자재도 「들고 있는 것」이 이익이 됩니다',
+      '비용을 <b>마이너스</b>로 놓으면 <b>백워데이션</b> 국면입니다 — 롤할 때마다 <b>이익</b>이 나는 상태입니다(06편). 그러면 <b>' +
+      t + '년에 ' + sgn(cm, 1) + '%</b>가 쌓입니다.<br><br>' +
+      '<b>이런 국면은 실제로 있습니다</b> — <b>지금 당장 물건이 급한</b> 상황에서 나타납니다. 전쟁·재해·공급 차질로 <b>「나중」보다 「지금」이 비싸지면</b> 백워데이션이 됩니다.<br><br>' +
+      '<b>다만 오래 유지되지 않는 경우가 많습니다.</b> 그리고 <b>어느 국면인지는 사후에 확실해집니다.</b> <b>「지금 백워데이션이니 사자」</b>는 이미 가격에 반영돼 있을 가능성이 큽니다.<br><br>' +
+      '<b>중요한 것은 이 구조를 안다는 것</b>입니다. <b>같은 원자재라도 어느 국면이냐에 따라 「들고 있는 비용」이 플러스도 마이너스도</b> 됩니다. 06편에서 계산합니다.');
+  } else if(t >= 15){
+    verdict('hdVerdict', '#8E4B3A',
+      t + '년이면 원자재는 ' + sgn(cm, 1) + '%, 주식은 ' + sgn(eq, 1) + '% — ' + num(eq - cm, 0) + '%p 차이',
+      '<b>가격이 전혀 안 변한다는 같은 조건</b>인데 결과가 <b>' + num(eq - cm, 0) + '%p</b> 벌어집니다.<br><br>' +
+      '<b>이것이 「시간이 편인가 비용인가」의 차이</b>입니다. 주식은 <b>배당이 쌓이고</b>, 원자재는 <b>비용이 쌓입니다.</b> 기간이 길수록 <b>복리로</b> 벌어집니다.<br><br>' +
+      '<b>여기서 이 트랙의 가장 중요한 실전 결론이 나옵니다</b> — <b>원자재는 「사서 잊어버리는」 자산이 아닙니다.</b> 주식에서 통하던 <b>「좋은 걸 사서 오래 들기」</b>가 여기서는 <b>매년 비용을 내는 것</b>이 됩니다.<br><br>' +
+      '<b>그럼 어떻게 접근하나</b> — <b>「왜 지금 사는지」와 「언제까지 들지」를 함께 정하는</b> 것입니다. 4장의 목적 구분이 그 이야기입니다.<br><br>' +
+      '<b>⚠️ 다만 이 계산은 「가격이 안 변한다」는 극단적 가정</b>입니다. 실제로는 <b>가격이 크게 움직이고</b>, 그 움직임이 비용보다 훨씬 클 수 있습니다. <b>비용은 바닥에 깔린 마이너스</b>일 뿐입니다.');
+  } else if(Math.abs(cost) < 0.05){
+    verdict('hdVerdict', '#5B5648',
+      '비용을 0으로 놓아도 원자재만 제자리입니다',
+      '비용이 없다고 가정해도 원자재는 <b>0%</b>입니다. 다른 셋은 <b>주식 ' + sgn(eq, 1) + '%, 채권 ' + sgn(bo, 1) +
+      '%, 부동산 ' + sgn(re, 1) + '%</b>가 쌓였습니다.<br><br>' +
+      '<b>이것이 「현금흐름이 없다」는 말의 뜻</b>입니다. 비용을 완전히 없애도 <b>0에서 출발</b>합니다. 나머지 셋은 <b>가만히 있어도 플러스</b>에서 출발합니다.<br><br>' +
+      '<b>즉 원자재는 「가격이 올라야만」 수익이 납니다.</b> 다른 자산은 <b>가격이 그대로여도</b> 수익이 납니다.<br><br>' +
+      '<b>비용 슬라이더를 올려보세요.</b> 현실에서는 <b>0이 아니라 마이너스에서</b> 출발합니다.');
+  } else {
+    verdict('hdVerdict', '#7A5C3A',
+      '가격이 그대로면 원자재만 ' + sgn(cm, 1) + '%입니다',
+      '<b>' + t + '년</b> 동안 가격이 전혀 안 변했다고 하면 — 주식은 배당으로 <b>' + sgn(eq, 1) +
+      '%</b>, 채권은 이자로 <b>' + sgn(bo, 1) + '%</b>, 부동산은 임대료로 <b>' + sgn(re, 1) +
+      '%</b>가 쌓였는데 <b>원자재만 ' + sgn(cm, 1) + '%</b>입니다.<br><br>' +
+      '<b>왜냐하면 원자재는 아무것도 낳지 않기</b> 때문입니다. 오히려 <b>보관비와 롤 비용</b>이 나갑니다.<br><br>' +
+      '<b>보유 기간 슬라이더를 늘려보세요.</b> 차이가 <b>복리로 벌어집니다.</b><br><br>' +
+      '<b>여기서 판단 기준이 하나 나옵니다</b> — <b>원자재는 「가격이 오를 이유」가 분명할 때만</b> 드는 자산입니다. <b>「일단 사두고 보자」</b>가 통하지 않습니다. <b>일단 사두는 것 자체가 매년 비용</b>이기 때문입니다.<br><br>' +
+      '<b>「원자재 연간 비용」을 마이너스로</b> 놓아보세요 — <b>백워데이션</b>이라는 반대 국면이 있고, 그때는 이야기가 달라집니다.');
+  }
+}
+['hdYears', 'hdDiv', 'hdBond', 'hdRent', 'hdCost'].forEach(function(id){ document.getElementById(id).addEventListener('input', hdDraw); });
+
+/* ══════════ 3. 용어 ══════════ */
+var TM = [
+  { h:'현물 vs 선물', color:'#7A5C9E', mode:0,
+    t:'뉴스의 「유가」와 내가 산 상품의 가격은 다를 수 있습니다',
+    p:'<b>현물</b>은 <b>지금 당장 실제 물건</b>을 사고파는 가격입니다. <b>선물</b>은 <b>「몇 월에 이 가격으로 거래하자」는 약속</b>입니다.<br><br>' +
+      '<b>왜 이 구분이 중요한가</b> — <b>개인이 원자재를 사는 거의 모든 방법이 선물</b>을 거칩니다. 기름 100배럴을 집에 둘 수는 없으니까요.<br><br>' +
+      '<b>그래서 이런 일이 생깁니다</b> — 뉴스에서 <b>「유가 10% 상승」</b>이라고 하는데 <b>내 상품은 안 오르거나 떨어지는</b> 경우입니다. <b>다른 물건의 가격을 보고 있었던</b> 것입니다.<br><br>' +
+      '<b>같은 기름인데 왜 가격이 다른가</b> — <b>언제 받느냐가 다르기</b> 때문입니다. 지금 받는 것과 <b>6개월 뒤 받는 것</b>은 그 사이 <b>보관비·이자·공급 사정</b>이 반영되어 값이 다릅니다.<br><br>' +
+      '<b>이 차이가 이 트랙의 절반</b>입니다. <b>05·06편</b>에서 자세히 다룹니다.' },
+  { h:'콘탱고 vs 백워데이션', color:'#8E4B3A', mode:1,
+    t:'선물 가격이 만기별로 어떤 모양인가 — 여기서 손익이 갈립니다',
+    p:'<b>콘탱고</b> — <b>먼 달이 더 비싼</b> 상태입니다. <b>「지금은 남아도는데 나중에는 보관비가 붙으니 비싸다」</b>는 정상적인 모양입니다.<br><br>' +
+      '<b>백워데이션</b> — <b>먼 달이 더 싼</b> 상태입니다. <b>「지금 당장이 급하다」</b>는 뜻입니다. 공급 차질이나 전쟁 때 나타납니다.<br><br>' +
+      '<b>왜 내 돈과 직결되나</b> — 원자재 ETF는 <b>만기가 오면 팔고 다음 달로 갈아탑니다</b>(롤오버).<br>' +
+      '· <b>콘탱고</b>면 <b>싼 걸 팔고 비싼 걸 사게</b> 됩니다 → <b>매번 손실</b><br>' +
+      '· <b>백워데이션</b>이면 <b>비싼 걸 팔고 싼 걸 사게</b> 됩니다 → <b>매번 이익</b><br><br>' +
+      '<b>크기가 작지 않습니다</b> — 월 <b>1.5%</b>의 콘탱고면 <b>현물이 전혀 안 움직여도 1년에 −16%</b>입니다. <b>3년이면 −41%</b>입니다.<br><br>' +
+      '<b>이것이 「원유 ETF를 샀는데 유가가 올라도 손실」의 정체</b>입니다. <b>06편이 이 트랙에서 가장 중요한 편</b>인 이유입니다.' },
+  { h:'원자재 vs 원자재 기업', color:'#5B6E8E', mode:2,
+    t:'금 ETF와 금광 회사 주식은 다른 물건입니다',
+    p:'<b>구리에 투자하고 싶다</b>고 할 때 방법이 둘입니다 — <b>구리 자체</b>를 사거나 <b>구리 캐는 회사 주식</b>을 사거나.<br><br>' +
+      '<b>완전히 다른 물건</b>입니다.<br><br>' +
+      '<b>원자재 자체</b><br>· 오직 <b>가격</b>만 따라갑니다<br>· <b>배당 없음</b>, 보관·롤 비용 있음<br>· 회사가 망할 위험은 없음<br><br>' +
+      '<b>생산 기업 주식</b><br>· <b>배당이 나옵니다</b><br>· 원자재 가격이 오르면 <b>이익이 더 크게</b> 늘어납니다(생산비는 고정이라) — <b>지렛대 효과</b><br>· 대신 <b>경영·부채·정치 위험</b>이 붙습니다. 광산이 <b>국유화</b>되는 일도 있습니다<br>· 그리고 <b>주식 시장 전체</b>와 함께 움직입니다 — <b>분산 효과가 약해집니다</b><br><br>' +
+      '<b>어느 쪽이 나은가</b> — <b>목적에 따라 다릅니다.</b> <b>「주식과 다르게 움직이는 것」</b>이 목적이면 <b>원자재 자체</b>가 맞고, <b>「원자재 상승에 크게 걸겠다」</b>면 기업 주식이 지렛대가 됩니다. <b>07편</b>에서 비교합니다.' },
+  { h:'금 vs 다른 원자재', color:'#8E6B3A', mode:3,
+    t:'금은 「원자재」라는 이름 안에서 가장 이질적입니다',
+    p:'대부분의 원자재는 <b>쓰면 없어집니다.</b> 기름은 태우고, 곡물은 먹고, 구리는 전선이 됩니다. 그래서 <b>수요와 공급</b>이 가격을 정합니다.<br><br>' +
+      '<b>금은 거의 없어지지 않습니다.</b> 인류가 캔 금의 <b>대부분이 아직 남아</b> 있습니다. 반지가 되고 금고에 들어갈 뿐입니다.<br><br>' +
+      '<b>그래서 가격을 정하는 것이 다릅니다</b> — 금은 <b>「산업에서 얼마나 쓰나」</b>보다 <b>「사람들이 얼마나 갖고 싶어 하나」</b>가 정합니다. 그리고 그건 <b>금리·물가·통화에 대한 믿음</b>에 달려 있습니다.<br><br>' +
+      '<b>실무적인 차이 셋</b><br>· <b>보관비가 매우 낮습니다</b> — 부피 대비 값이 커서 기름·곡물과 비교가 안 됩니다<br>· <b>콘탱고 문제가 훨씬 작습니다</b> — 그래서 <b>현물을 실제로 보관하는 ETF</b>가 가능합니다<br>· <b>「장기 보유」가 그나마 성립</b>합니다 — 다른 원자재와 달리<br><br>' +
+      '<b>그래서 이 트랙에서 금만 따로 08편</b>을 뒀습니다. <b>「원자재」라는 한 단어로 금과 기름을 같이 생각하면 판단이 어긋납니다.</b>' }
+];
+function tmScene(mode){
+  var g = '';
+  var X0 = 60, W = 500;
+  var titles = ['현물과 선물 — 언제 받느냐가 다르면 가격도 다릅니다',
+                '콘탱고와 백워데이션 — 만기별 가격의 모양',
+                '원자재 자체와 생산 기업 — 움직이는 힘이 다릅니다',
+                '금과 다른 원자재 — 소비되느냐 남느냐'];
+  g += '<text class="axt" x="' + X0 + '" y="22">' + titles[mode] + '</text>';
+
+  if(mode === 0){
+    var pts = [{ n:'현물', v:70 }, { n:'1개월', v:70.8 }, { n:'3개월', v:72.2 }, { n:'6개월', v:74 }, { n:'12개월', v:76.5 }];
+    var lo = 68, hi = 78, TOP = 40, H = 78;
+    function sy(v){ return TOP + H - (v - lo) / (hi - lo) * H; }
+    var d = '';
+    pts.forEach(function(p, i){ d += (i === 0 ? 'M' : 'L') + (X0 + i / (pts.length - 1) * W).toFixed(1) + ',' + sy(p.v).toFixed(1); });
+    g += '<path d="' + d + '" fill="none" stroke="#7A5C9E" stroke-width="2"/>';
+    pts.forEach(function(p, i){
+      var px = X0 + i / (pts.length - 1) * W;
+      g += '<circle cx="' + px.toFixed(1) + '" cy="' + sy(p.v).toFixed(1) + '" r="4" fill="#7A5C9E"/>';
+      g += '<text class="axt" x="' + px.toFixed(1) + '" y="' + (sy(p.v) - 9).toFixed(1) + '" text-anchor="middle">$' + p.v + '</text>';
+      g += '<text class="axt" x="' + px.toFixed(1) + '" y="' + (TOP + H + 16) + '" text-anchor="middle">' + p.n + '</text>';
+    });
+    g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 42) + '">같은 기름인데 「언제 받느냐」에 따라 가격이 다릅니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 62) + '">뉴스의 「유가」는 대체로 현물이나 가장 가까운 선물입니다.</text>';
+  } else if(mode === 1){
+    var TOP = 40, H = 74;
+    function sy2(v){ return TOP + H - (v - 62) / 18 * H; }
+    var con = [70, 71.5, 73, 74.5, 76], back = [70, 68.8, 67.8, 67, 66.4];
+    [{ a:con, c:'#8E4B3A', n:'콘탱고 (먼 달이 비쌈)' }, { a:back, c:'#5F7A52', n:'백워데이션 (먼 달이 쌈)' }].forEach(function(s, si){
+      var d = '';
+      s.a.forEach(function(v, i){ d += (i === 0 ? 'M' : 'L') + (X0 + i / 4 * W).toFixed(1) + ',' + sy2(v).toFixed(1); });
+      g += '<path d="' + d + '" fill="none" stroke="' + s.c + '" stroke-width="2.2"/>';
+      g += '<text class="lblb" x="' + (X0 + W + 4) + '" y="' + (sy2(s.a[4]) + 4).toFixed(1) + '" text-anchor="end" fill="' + s.c + '">' +
+           (si === 0 ? '콘탱고' : '백워데이션') + '</text>';
+    });
+    ['현물', '1개월', '3개월', '6개월', '12개월'].forEach(function(n, i){
+      g += '<text class="axt" x="' + (X0 + i / 4 * W).toFixed(1) + '" y="' + (TOP + H + 16) + '" text-anchor="middle">' + n + '</text>';
+    });
+    g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 42) + '">콘탱고면 롤할 때마다 손해, 백워데이션이면 이익입니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 62) + '">월 1.5% 콘탱고면 현물이 안 움직여도 1년에 −16%입니다.</text>';
+  } else if(mode === 2){
+    var BW = 220, GAP = 60;
+    [{ x:X0, n:'원자재 자체', c:'#7A5C3A', l:['가격만 따라감', '배당 없음 · 비용 있음', '주식과 다르게 움직임'] },
+     { x:X0 + BW + GAP, n:'생산 기업 주식', c:'#5B6E8E', l:['가격 × 지렛대', '배당 있음', '주식 시장과 함께 움직임'] }].forEach(function(b){
+      g += '<rect x="' + b.x + '" y="38" width="' + BW + '" height="34" rx="4" fill="' + b.c +
+           '" fill-opacity=".32" stroke="' + b.c + '" stroke-width="1.5"/>';
+      g += '<text class="lblb" x="' + (b.x + BW / 2) + '" y="60" text-anchor="middle" fill="' + b.c + '">' + b.n + '</text>';
+      b.l.forEach(function(s, i){
+        g += '<text class="axt" x="' + (b.x + BW / 2) + '" y="' + (94 + i * 20) + '" text-anchor="middle">' + s + '</text>';
+      });
+    });
+    g += '<text class="axt" x="' + X0 + '" y="168">「구리에 투자」라고 해도 어느 쪽이냐에 따라 결과가 크게 다릅니다.</text>';
+  } else {
+    var items = [
+      { n:'기름', use:92, c:'#8E4B3A' },
+      { n:'곡물', use:95, c:'#5F7A52' },
+      { n:'구리', use:70, c:'#7A5C3A' },
+      { n:'금', use:8, c:'#8E6B3A' }
+    ];
+    var BX = 150, BW2 = 380;
+    g += '<text class="axt" x="' + BX + '" y="40">쓰고 나면 없어지는 비율 (개념도)</text>';
+    items.forEach(function(it, i){
+      var y = 50 + i * 27;
+      var w = it.use / 100 * BW2;
+      g += '<rect x="' + BX + '" y="' + y + '" width="' + w.toFixed(1) + '" height="18" rx="1.5" fill="' + it.c +
+           '" fill-opacity="' + (it.n === '금' ? '.55' : '.3') + '" stroke="' + it.c + '" stroke-width="' + (it.n === '금' ? '1.7' : '1') + '"/>';
+      g += '<text class="' + (it.n === '금' ? 'lblb' : 'axt') + '" x="' + (BX - 10) + '" y="' + (y + 13) +
+           '" text-anchor="end"' + (it.n === '금' ? ' fill="' + it.c + '"' : '') + '>' + it.n + '</text>';
+    });
+    g += '<text class="axt" x="' + BX + '" y="168">금은 거의 없어지지 않아 「수급」보다 「믿음」이 가격을 정합니다.</text>';
+  }
+  document.getElementById('tmScene').innerHTML = g;
+}
+bindBtnRow('#tmBtns', function(v){
+  tmScene(TM[+v].mode);
+  document.getElementById('tmVerdict').querySelector('.vh').textContent = TM[+v].h;
+  verdict('tmVerdict', TM[+v].color, TM[+v].t, TM[+v].p);
+});
+
+/* ══════════ 4. 목적 ══════════ */
+var PW = [
+  { h:'① 물가 대비', color:'#8E6B3A',
+    t:'주식·채권이 동시에 무너지는 국면을 대비하는 것',
+    p:'가장 흔한 이유입니다. <b>물가가 튀면 주식도 채권도 떨어집니다</b>(채권 트랙 03편). 그때 <b>원자재는 오르는 경향</b>이 있습니다 — <b>물가가 오른다는 것이 곧 물건값이 오른다는 뜻</b>이니까요.<br><br>' +
+      '<b>2022년이 그 사례</b>였습니다. 주식과 채권이 함께 크게 떨어지는 동안 <b>에너지 관련 자산은 올랐습니다.</b><br><br>' +
+      '<b>그런데 조건이 붙습니다</b><br>· <b>「어떤 물가 상승이냐」</b>에 따라 다릅니다 — <b>공급 충격</b>(전쟁·에너지)이면 원자재가 강하고, <b>수요 과열</b>이면 덜합니다.<br>' +
+      '· <b>미리 들고 있어야</b> 합니다. 물가가 오른 뒤에 사면 이미 반영돼 있습니다.<br>' +
+      '· <b>그 사이 비용이 나갑니다</b> — 2장에서 본 그대로입니다. <b>보험료를 내는 것</b>과 같습니다.<br><br>' +
+      '<b>이 목적이라면</b> — <b>비중을 작게, 오래</b> 들고 가는 형태입니다. 그리고 <b>롤 비용이 낮은 상품</b>을 골라야 합니다(06·07편). <b>04편</b>에서 이 목적을 자세히 검증합니다.' },
+  { h:'② 분산', color:'#5F7A52',
+    t:'주식·채권과 다르게 움직이는 자산을 섞는 것',
+    p:'포트폴리오 전체의 <b>흔들림을 줄이려는</b> 목적입니다. 원자재는 <b>주식·채권과 상관관계가 낮은</b> 편이라 섞으면 <b>전체 변동이 줄어드는</b> 효과가 있습니다.<br><br>' +
+      '<b>다만 오해가 흔합니다</b><br>· <b>「원자재가 오를 것이라」</b>가 아니라 <b>「다르게 움직여서」</b> 담는 것입니다. <b>기대 수익이 아니라 상관관계</b>가 이유입니다.<br>' +
+      '· <b>원자재 자체가 아니라 생산 기업 주식</b>을 담으면 <b>분산 효과가 크게 줄어듭니다</b> — 주식 시장과 함께 움직이기 때문입니다.<br>' +
+      '· <b>비중이 크면 분산이 아니라 베팅</b>이 됩니다.<br><br>' +
+      '<b>이 목적이라면</b> — <b>여러 원자재를 섞은 지수형</b>이 개별 품목보다 맞습니다. 그리고 <b>정기적으로 비중을 맞추는 것(리밸런싱)</b>이 핵심입니다. <b>10편</b>에서 다룹니다.<br><br>' +
+      '<b>⚠️ 그리고 위기 때는 상관관계가 무너집니다</b> — 정말 큰 충격이 오면 <b>거의 모든 자산이 같이 떨어지는</b> 경우가 있습니다. <b>분산은 평상시의 도구</b>입니다.' },
+  { h:'③ 국면 베팅', color:'#8E4B3A',
+    t:'「지금 이 원자재가 오를 것」에 거는 것',
+    p:'<b>「전쟁이 나서 기름이 오를 것」</b>, <b>「전기차 때문에 구리가 부족할 것」</b> 같은 판단으로 사는 것입니다.<br><br>' +
+      '<b>이건 분산도 물가 대비도 아니라 방향성 투자</b>입니다. 성격이 <b>개별 주식 매매에 가깝습니다.</b><br><br>' +
+      '<b>여기서 필요한 것 셋</b><br>· <b>방향이 맞아야</b> 합니다<br>· <b>시점도 맞아야</b> 합니다 — 그전까지 <b>롤 비용을 내며 버텨야</b> 합니다<br>· <b>선반영을 이겨야</b> 합니다 — <b>내가 아는 뉴스는 이미 가격에</b> 있습니다(채권 트랙 06편)<br><br>' +
+      '<b>원자재에서 이게 특히 어려운 이유</b> — <b>기다리는 것 자체가 비용</b>이기 때문입니다. 주식은 방향이 맞을 때까지 기다려도 <b>배당이 나오지만</b>, 원자재는 <b>매달 롤 비용이 나갑니다.</b><br><br>' +
+      '<b>그래서 이 목적이라면</b> — <b>기간을 미리 정하고</b>, <b>작게</b> 하고, <b>롤 비용이 낮은 형태</b>를 골라야 합니다. <b>09편</b>에서 여기서 나는 실패를 다룹니다.' },
+  { h:'④ 실물 보유', color:'#7A5C9E',
+    t:'투자가 아니라 「가지고 있는 것」이 목적인 경우',
+    p:'<b>금붙이나 골드바를 실제로</b> 갖는 경우입니다. 수익률과는 다른 목적이 섞여 있습니다.<br><br>' +
+      '<b>실물이 갖는 것</b><br>· <b>거래상대방 위험이 없습니다</b> — 어떤 회사가 망해도 내 손에 있습니다<br>· <b>금융 시스템 밖에</b> 있습니다<br>· <b>물려줄 수</b> 있습니다<br><br>' +
+      '<b>실물이 치르는 비용</b><br>· <b>살 때와 팔 때의 가격 차이가 큽니다</b> — 몇 %씩 벌어지는 경우가 흔합니다<br>· <b>보관과 도난 위험</b>이 본인 몫입니다<br>· <b>세금과 부가세</b> 처리가 상품마다 다릅니다<br>· <b>진위 확인</b>이 필요할 수 있습니다<br><br>' +
+      '<b>이 목적은 정당합니다.</b> 다만 <b>「수익률을 위해」와 섞으면 안 됩니다.</b> 수익률만 보면 <b>거래 비용 때문에 대체로 불리</b>합니다.<br><br>' +
+      '<b>07편</b>에서 실물·현물 ETF·선물 ETF·기업 주식을 <b>비용까지 넣어</b> 비교합니다.' },
+  { h:'목적이 없다면', color:'#8E4B3A',
+    t:'원자재에서 이건 특히 위험합니다',
+    p:'<b>「요즘 유가가 오른다니까」</b>, <b>「금이 안전하다니까」</b> 같은 이유로 사는 경우입니다.<br><br>' +
+      '<b>다른 자산에서도 좋지 않지만, 원자재에서는 특히 위험합니다.</b> 이유는 <b>2장에서 계산한 그대로</b>입니다.<br><br>' +
+      '<b>주식이라면</b> — 목적 없이 산 우량주를 오래 들고 있어도 <b>배당이 나오고 회사가 이익을 쌓습니다.</b> <b>기다리는 것이 손해가 아닙니다.</b><br><br>' +
+      '<b>원자재라면</b> — 목적 없이 들고 있는 동안 <b>매년 비용이 나갑니다.</b> <b>기다리는 것 자체가 손해</b>입니다. 그리고 <b>언제 팔지도 정해져 있지 않아</b> 대체로 <b>가장 나쁜 때 팔게</b> 됩니다.<br><br>' +
+      '<b>그래서 이 트랙이 제안하는 순서</b> — <b>「사기 전에 세 가지를 정한다」</b>입니다.<br>· <b>왜 사는가</b> (위 네 목적 중 무엇)<br>· <b>얼마나</b> (전체 자산의 몇 %)<br>· <b>언제까지</b> (또는 어떤 조건이면 정리)<br><br>' +
+      '<b>셋 다 정할 수 없다면 아직 살 때가 아닙니다.</b> <b>사지 않는 것도 정당한 결론</b>입니다.' }
+];
+bindBtnRow('#pwBtns', function(v){
+  document.getElementById('pwVerdict').querySelector('.vh').textContent = PW[+v].h;
+  verdict('pwVerdict', PW[+v].color, PW[+v].t, PW[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#cbCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#cbCheck li.done').length;
+      document.getElementById('cbCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 02편으로 넘어갈 준비가 됐습니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+hdDraw();
+document.querySelector('#tmBtns button[data-v="0"]').click();
+document.querySelector('#pwBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
