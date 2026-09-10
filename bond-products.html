@@ -1,0 +1,1014 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>실물 채권과 채권 ETF</title>
+<meta name="description" content="채권 ETF에는 만기가 없습니다. 그것이 정확히 무엇을 바꾸고 무엇을 바꾸지 않는지, 선물형과 레버리지의 구조까지 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --real:#5F7A52;--etf:#4C6B7A;--fut:#8E6B3A;--lev:#8E4B3A;--alt:#7A5C9E;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--etf));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--etf));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--etf));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .pair{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0 0;}
+  .pair > div{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--pc);border-radius:3px;padding:15px 17px;}
+  .pair h4{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--pc);margin:0 0 8px;}
+  .pair p{font-size:13.8px;color:var(--ink-soft);margin:0 0 7px;max-width:none;}
+  .pair p:last-child{margin-bottom:0;}
+  .pair p b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .pair{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">채권 07 · 상품 · 투자 공부 노트</div>
+    <h1>실물 채권과<br>채권 ETF</h1>
+    <p class="lede">같은 채권을 담아도 <b>담는 그릇이 다르면 다른 물건</b>이 됩니다. 가장 큰 차이는 하나 — <b>만기가 있느냐 없느냐</b>입니다.</p>
+    <div class="callout">
+      <p><b>널리 퍼진 설명 하나를 먼저 정정하겠습니다.</b></p>
+      <p><b>「채권 ETF는 만기가 없어서 원금이 회복되지 않는다」</b> — 이 말은 <b>과장</b>입니다. 정확하지 않습니다.</p>
+      <p>계산해보면, <b>금리가 오른 뒤 그 수준에 머무는 경우</b> 개별 채권을 만기까지 든 결과와 ETF를 계속 든 결과가 <b>거의 같습니다.</b> 2장에서 직접 확인합니다.</p>
+      <p><b>그러면 만기의 유무는 무엇을 바꾸는가</b> — <b>「확정성」</b>입니다. 개별 채권은 <b>만기에 받을 금액이 정해져</b> 있습니다. ETF는 <b>어느 시점에도 정해진 금액이 없습니다.</b> 30년 뒤에도 여전히 <b>그때의 금리에 따라</b> 값이 정해집니다.</p>
+      <p><b>이 차이가 결정적인 경우는 「쓸 날짜가 정해진 돈」</b>입니다. 반대로 <b>날짜가 없는 돈</b>이라면 차이가 생각보다 작습니다. 어느 쪽인지가 판단을 가릅니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#kinds">1. 네 가지 그릇</a>
+    <a href="#recover">2. 만기가 바꾸는 것</a>
+    <a href="#roll">3. 롤과 추적</a>
+    <a href="#lev">4. 레버리지</a>
+    <a href="#check">5. 내 것 확인하기</a>
+    <a href="#sum">6. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="kinds">
+    <div class="prod-head" style="--edge:var(--etf)">
+      <span class="prod-tag">01 · 그릇</span>
+      <h2>같은 채권, 다른 그릇</h2>
+      <p class="one">이름이 비슷해도 <b>성격이 크게 다릅니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>친구한테 빌려준 <b>종이 한 장</b>을 갖고 있는 것과, <b>여러 사람의 종이를 모아둔 바구니</b>의 한 조각을 갖는 건 달라.</p>
+      <p><b>종이 한 장</b>은 <b>날짜가 적혀 있어.</b> 그날이 오면 돈을 돌려받고 끝나. 중간에 값이 오르내려도 <b>그날 받을 금액은 정해져</b> 있지.</p>
+      <p><b>바구니</b>는 달라. 관리하는 사람이 <b>날짜가 가까워진 종이는 팔고 새로 긴 종이를 사</b> 넣어. 그래서 바구니는 <b>영원히 「긴 종이 바구니」</b>로 남아. <b>끝나는 날이 없어.</b></p>
+      <p>그럼 바구니가 나쁠까? <b>꼭 그렇진 않아.</b> 바구니 안에서도 <b>이자는 계속 들어와.</b> 다만 <b>「이날 이만큼」이라고 정해진 게 없을</b> 뿐이야.</p>
+      <p>그래서 이렇게 정리하면 돼. <b>쓸 날짜가 정해진 돈</b>이면 <b>종이 한 장</b>, <b>날짜가 없는 돈</b>이면 <b>바구니</b>도 괜찮아.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">VESSELS · 눌러서 비교하세요</div>
+      <p class="labsub">각각 <b>무엇이 있고 무엇이 없는지</b>입니다.</p>
+
+      <div class="btnrow" id="vsBtns">
+        <button data-v="0" class="on">실물 채권</button>
+        <button data-v="1">일반 채권 ETF</button>
+        <button data-v="2">만기매칭 ETF</button>
+        <button data-v="3">선물형 ETF</button>
+        <button data-v="4">합성·레버리지</button>
+      </div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="상품 유형별 만기 구조">
+        <g id="vsScene"></g>
+      </svg>
+
+      <div class="verdict" id="vsVerdict" style="--vc:var(--etf)">
+        <div class="vh">그릇</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 편의 첫 문장</div>
+      <div class="kb">ETF에 없는 것은 <b>수익</b>이 아니라<br><b>「이날 이만큼」이라는 약속</b>입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="recover">
+    <div class="prod-head" style="--edge:var(--real)">
+      <span class="prod-tag">02 · 만기</span>
+      <h2>만기의 유무가 정확히 무엇을 바꾸나</h2>
+      <p class="one">직접 계산해보면 <b>흔한 설명과 다릅니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MATURITY · 같은 충격, 두 그릇</div>
+      <p class="labsub">낮은 금리에 산 장기채가 <b>금리 급등을 맞은 뒤</b> 어떻게 되는지 비교합니다.</p>
+
+      <div class="ctrl-row">
+        <label for="mtBuyY">매수 당시 금리 (= 표면금리)</label>
+        <input type="range" id="mtBuyY" min="1" max="60" step="1" value="15">
+        <output id="mtBuyYOut">1.5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mtNowY">지금 금리</label>
+        <input type="range" id="mtNowY" min="1" max="90" step="1" value="50">
+        <output id="mtNowYOut">5.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mtMat">채권 만기 (= ETF가 유지하는 만기)</label>
+        <input type="range" id="mtMat" min="3" max="30" step="1" value="30">
+        <output id="mtMatOut">30년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mtHold">앞으로 들고 있을 기간</label>
+        <input type="range" id="mtHold" min="1" max="30" step="1" value="30">
+        <output id="mtHoldOut">30년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mtFee">ETF의 연간 보수·비용</label>
+        <input type="range" id="mtFee" min="0" max="100" step="5" value="15">
+        <output id="mtFeeOut">0.15%</output>
+      </div>
+
+      <div class="steps-out" id="mtSteps"></div>
+
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="실물 채권과 ETF의 장기 결과 비교">
+        <g id="mtScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">실물 채권 / ETF</span><span class="rv" id="mtBoth">—</span></div>
+        <div><span class="rk">차이</span><span class="rv" id="mtGap">—</span></div>
+      </div>
+
+      <div class="verdict" id="mtVerdict" style="--vc:var(--real)">
+        <div class="vh">만기</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>금리가 지금 수준에서 계속 유지된다</b>고 가정했습니다.<br>
+        · <b>실물 채권</b> — 만기까지 보유하고 <b>받은 이자를 지금 금리로 재투자</b>합니다. 보유 기간이 만기보다 짧으면 <b>그 시점의 가격으로 매도</b>합니다.<br>
+        · <b>ETF</b> — 만기가 가까워진 채권을 팔고 <b>같은 만기의 새 채권으로 계속 교체</b>한다고 보고, <b>매년 그 시점의 수익률만큼</b> 쌓인다고 계산했습니다.<br><br>
+        <b>⚠️ 이 계산이 보여주는 것과 보여주지 않는 것.</b> <b>「금리가 고정」이라는 가정</b> 아래에서만 두 결과가 같습니다. <b>금리가 계속 움직이면</b> ETF는 그때마다 영향을 받고, <b>실물 채권은 만기 금액이 그대로</b>입니다. <b>그 차이가 이 장의 요점</b>입니다.<br><br>
+        <b>ETF의 보수는 슬라이더로 넣을 수 있습니다.</b> 실제로는 여기에 <b>거래비용과 추적오차</b>가 더해집니다. 3장에서 다룹니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 「만기가 없으면 회복이 안 된다」는 말이 틀리나</h3>
+      <p>이 오해는 <b>두 가지를 섞어서</b> 생깁니다.</p>
+      <p><b>① 「가격이 액면가로 돌아온다」와 「손실이 회복된다」를 같은 말로 봅니다.</b> 실물 채권의 가격이 만기에 100으로 수렴하는 것은 맞습니다. 그런데 <b>내가 100에 샀다면 100으로 돌아와도 이익은 이자뿐</b>입니다. <b>가격 수렴이 곧 손실 회복이 아닙니다.</b></p>
+      <p><b>② ETF에서 이자가 사라진다고 생각합니다.</b> 사라지지 않습니다. ETF가 담고 있는 채권들은 <b>계속 이자를 지급</b>하고, 그것이 <b>분배금으로 나오거나 기준가에 반영</b>됩니다. <b>연 5% 수익률의 채권을 담고 있으면 대략 연 5%가 쌓입니다.</b></p>
+      <p>2장 계산기에서 확인한 것이 이것입니다 — <b>금리가 고정되어 있으면 두 결과가 「거의」가 아니라 「정확히」 같습니다.</b> 보수를 0으로 두면 <b>차이가 0.0</b>이 나옵니다. 우연이 아니라 <b>항등식</b>입니다 — <b>「채권을 몇 년 들고 이자를 재투자한 값」</b>과 <b>「그 채권 가격에 수익률을 그만큼 곱한 값」</b>은 <b>같은 계산</b>이기 때문입니다.</p>
+      <p class="plain"><b>그러면 진짜 차이는 무엇인가.</b> <b>확정성</b>입니다.<br><br>· <b>실물 채권</b> — <b>만기일의 금액이 지금 정해집니다.</b> 그 사이 금리가 어떻게 되든 <b>그날 받을 돈은 바뀌지 않습니다</b>(부도만 없다면). 재투자 수익률만 불확실합니다.<br>· <b>ETF</b> — <b>어느 날에도 정해진 금액이 없습니다.</b> 10년 뒤든 30년 뒤든 <b>그때의 금리에 따라</b> 값이 정해집니다. <b>영원히 금리 위험에 노출</b>됩니다.<br><br><b>그래서 판단 기준은 「이 돈을 언제 쓸 것인가」</b>입니다. 04편의 만기 매칭이 그 이야기였습니다.</p>
+
+      <h3>ETF에 있는 것 — 실물 채권에 없는 것</h3>
+      <p>반대 방향도 봐야 균형이 맞습니다. <b>ETF가 더 나은 점</b>도 분명히 있습니다.</p>
+      <p><b>① 분산</b> — 국채는 부도 위험이 없어 큰 의미가 없지만, <b>회사채라면 결정적</b>입니다. 개인이 회사채를 <b>수백 종목으로 분산하는 것은 사실상 불가능</b>합니다(03편).</p>
+      <p><b>② 접근성과 거래 비용</b> — 개인이 <b>미국 30년 국채를 직접 사는 것</b>은 계좌·환전·최소 단위·호가 스프레드 문제가 있습니다. ETF는 <b>주식처럼 소액으로</b> 살 수 있습니다.</p>
+      <p><b>③ 듀레이션이 유지됩니다</b> — 이건 <b>양날</b>입니다. 실물 채권은 시간이 가면 <b>듀레이션이 저절로 줄어들어</b> 금리 하락의 수혜도 줄어듭니다. ETF는 <b>계속 30년 듀레이션</b>을 유지해 <b>금리가 언제 내려가든 같은 크기로 반응</b>합니다.</p>
+      <p class="plain"><b>③이 「금리 하락 베팅」에는 오히려 유리합니다.</b> 01편 5장의 <b>③번 목적</b>이라면 ETF가 <b>더 맞는 도구</b>일 수 있습니다. <b>언제 내려갈지 모르는데 듀레이션이 계속 유지되기</b> 때문입니다.<br><br><b>정리하면</b> — <b>「날짜가 정해진 저축」이면 실물 채권이나 만기매칭 ETF</b>, <b>「금리 방향에 거는 것」이면 일반 ETF</b>입니다. <b>둘 다 정당한 선택이고, 섞어 쓰면 안 되는 것</b>일 뿐입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="roll">
+    <div class="prod-head" style="--edge:var(--fut)">
+      <span class="prod-tag">03 · 롤</span>
+      <h2>갈아타는 데서 생기는 이익과 비용</h2>
+      <p class="one">ETF가 <b>계속 교체한다</b>는 것은 <b>비용이자 기회</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">ROLL · 곡선 모양이 만드는 차이</div>
+      <p class="labsub">만기가 짧아지면 그 만기의 금리로 값이 매겨집니다 — <b>곡선이 우상향이면 이득</b>입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="rlLong">긴 쪽(30년) 금리</label>
+        <input type="range" id="rlLong" min="5" max="80" step="1" value="45">
+        <output id="rlLongOut">4.5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rlSlope">1년 짧아질 때 금리 차이</label>
+        <input type="range" id="rlSlope" min="-20" max="20" step="1" value="5">
+        <output id="rlSlopeOut">−0.05%p</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rlFee">연간 보수·비용</label>
+        <input type="range" id="rlFee" min="0" max="150" step="5" value="15">
+        <output id="rlFeeOut">0.15%</output>
+      </div>
+
+      <div class="steps-out" id="rlSteps"></div>
+
+      <svg viewBox="0 0 640 175" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="롤 수익과 비용의 구성">
+        <g id="rlScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">연 기대 수익 (금리 불변 시)</span><span class="rv" id="rlTotal">—</span></div>
+        <div><span class="rk">롤 효과</span><span class="rv" id="rlRoll">—</span></div>
+      </div>
+
+      <div class="verdict" id="rlVerdict" style="--vc:var(--fut)">
+        <div class="vh">롤</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>연 수익 ≈ 수익률(이자) + 롤 효과 − 비용</b>입니다. 롤 효과는 <b>듀레이션 × (1년 짧아질 때의 금리 차이)</b>로 근사했습니다.<br><br>
+        <b>곡선이 우상향이면</b> 만기가 짧아질수록 금리가 낮아져 <b>가격이 오릅니다</b>(롤다운 이익). <b>역전 곡선이면 반대</b>로 손실이 됩니다.<br><br>
+        <b>「연간 보수·비용」에 넣을 것</b> — 운용보수뿐 아니라 <b>매매 비용, 호가 스프레드, 추적오차</b>가 실질적으로 여기 포함됩니다. <b>선물형이면 롤 비용</b>도 더해집니다.
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>구조</th><th>담는 것</th><th>만기</th><th>주의할 비용</th><th>맞는 목적</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>실물 채권</th><td>채권 자체</td><td><b>있음</b></td><td>매수 스프레드 · 환전</td><td>날짜가 정해진 저축</td></tr>
+          <tr><th>일반 채권 ETF</th><td>실제 채권 다수</td><td><b>없음</b></td><td>운용보수 · 추적오차</td><td>분산 · 금리 방향</td></tr>
+          <tr><th>만기매칭 ETF</th><td>같은 해 만기 채권들</td><td><b>있음</b></td><td>운용보수</td><td>날짜가 정해진 저축</td></tr>
+          <tr><th>선물형 ETF</th><td>국채 <b>선물</b></td><td>없음 (롤 반복)</td><td><b>롤 비용</b> · 증거금 운용</td><td>단기 방향성</td></tr>
+          <tr><th>합성(스왑) ETF</th><td>계약상 수익률</td><td>없음</td><td>거래상대 위험 · 스왑 비용</td><td>접근이 어려운 시장</td></tr>
+          <tr><th>레버리지 ETF</th><td>선물·스왑 등</td><td>없음</td><td><b>변동성 끌림</b> · 일간 리셋</td><td><b>단기 매매만</b></td></tr>
+          <tr><th>환헤지형 (H)</th><td>위 + 환 헤지</td><td>구조에 따름</td><td><b>헤지 비용</b> (금리차)</td><td>환율을 빼고 금리만</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 상품마다 세부 구조가 다르므로 설명서 확인 필요</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="lev">
+    <div class="prod-head" style="--edge:var(--lev)">
+      <span class="prod-tag">04 · 레버리지</span>
+      <h2>2배·3배 상품은 다른 물건입니다</h2>
+      <p class="one">여기서는 <b>버티는 것 자체가 손실</b>이 됩니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>2배 상품</b>은 <b>「오늘 하루」 움직임의 두 배</b>를 따라가. 오늘 1% 오르면 2% 오르고, 1% 내리면 2% 내려.</p>
+      <p>그럼 <b>한 달 뒤에도 두 배</b>일까? <b>아니야.</b> 여기가 함정이야.</p>
+      <p>예를 들어보자. 원래 것이 <b>−30% 떨어졌다가 다시 제자리로 돌아왔다</b>고 해. 원래 것은 <b>0%</b>지?</p>
+      <p>그런데 2배 상품은 <b>−26%</b>가 되어 있어. 3배는 <b>−77%</b>야. <b>원래 것은 제자리인데 내 것만 사라진</b> 거야.</p>
+      <p>왜 그럴까? <b>내려갈 때 두 배로 내려가면, 올라올 때 두 배로 올라도 부족</b>하기 때문이야. 100에서 반 토막 나면 60이 아니라 <b>두 배로 올라야</b> 원래대로 되잖아.</p>
+      <p>그래서 이런 상품은 <b>며칠짜리 매매용</b>이고, <b>오래 들고 있으면 안 돼.</b> 오래 들고 있는 것 자체가 <b>천천히 잃는 방법</b>이야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DECAY · 오르내림을 반복시켜보세요</div>
+      <p class="labsub">기초자산이 <b>제자리로 돌아와도</b> 레버리지 상품은 그렇지 않습니다.</p>
+
+      <div class="ctrl-row">
+        <label for="lvSwing">한 번에 오르내리는 폭</label>
+        <input type="range" id="lvSwing" min="1" max="30" step="1" value="10">
+        <output id="lvSwingOut">±10%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="lvTimes">오르내림 횟수</label>
+        <input type="range" id="lvTimes" min="2" max="40" step="2" value="10">
+        <output id="lvTimesOut">10회</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="lvDrift">전체 방향 (한 번당 추세)</label>
+        <input type="range" id="lvDrift" min="-30" max="30" step="1" value="0">
+        <output id="lvDriftOut">0.0%</output>
+      </div>
+
+      <div class="steps-out" id="lvSteps"></div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="레버리지 배수별 누적 경로">
+        <g id="lvScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">기초자산 / 2배 / 3배</span><span class="rv" id="lvAll">—</span></div>
+        <div><span class="rk">2배가 기초 2배와 차이나는 폭</span><span class="rv" id="lvGap">—</span></div>
+      </div>
+
+      <div class="verdict" id="lvVerdict" style="--vc:var(--lev)">
+        <div class="vh">레버리지</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 레버리지 상품이 <b>매 구간 기초자산 수익률의 배수를 그대로 따라간다</b>고 가정하고 <b>복리로 누적</b>했습니다. 실제 상품은 <b>일간 기준으로 리셋</b>되며, 여기에 <b>보수·롤 비용·자금 조달 비용</b>이 더해져 <b>실제 결과는 이보다 나쁩니다.</b><br><br>
+        <b>「변동성 끌림」이란</b> — 오르내림이 반복될수록 <b>배수가 클수록 누적 결과가 나빠지는</b> 현상입니다. 방향이 <b>한쪽으로 꾸준히</b> 가면 레버리지가 유리하지만, <b>왔다 갔다 하면</b> 구조적으로 깎입니다.<br><br>
+        <b>「전체 방향」 슬라이더를 크게 주면</b> 레버리지가 이기는 구간도 볼 수 있습니다. <b>추세가 강할 때만 유리하다</b>는 것이 요점입니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="check">
+    <div class="prod-head" style="--edge:var(--alt)">
+      <span class="prod-tag">05 · 확인</span>
+      <h2>내가 든 것을 확인하는 법</h2>
+      <p class="one">이름만으로는 알 수 없습니다. <b>설명서에서 다섯 가지</b>를 찾으세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CHECKLIST · 눌러서 확인하세요</div>
+      <p class="labsub">각 항목이 <b>어디에 적혀 있고 무엇을 뜻하는지</b>입니다.</p>
+
+      <div class="btnrow" id="ckBtns">
+        <button data-v="0" class="on">① 듀레이션</button>
+        <button data-v="1">② 실물이냐 선물이냐</button>
+        <button data-v="2">③ 환헤지 여부</button>
+        <button data-v="3">④ 총보수와 실질 비용</button>
+        <button data-v="4">⑤ 이름에 숨은 단서</button>
+      </div>
+
+      <div class="verdict" id="ckVerdict" style="--vc:var(--alt)">
+        <div class="vh">확인</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="pair">
+      <div style="--pc:var(--real)">
+        <h4>「날짜가 정해진 돈」이라면</h4>
+        <p><b>실물 채권</b>을 그 만기로 직접 사거나</p>
+        <p><b>만기매칭 ETF</b>(만기가 명시된 것)를 고릅니다.</p>
+        <p>핵심은 <b>듀레이션 ≈ 쓸 시점</b>입니다(04편).</p>
+        <p><b>일반 장기채 ETF는 이 목적에 맞지 않습니다.</b></p>
+      </div>
+      <div style="--pc:var(--etf)">
+        <h4>「금리 방향에 거는 것」이라면</h4>
+        <p><b>일반 장기채 ETF</b>가 오히려 적합합니다.</p>
+        <p><b>듀레이션이 계속 유지</b>되어 언제 내려가든 같은 크기로 반응합니다.</p>
+        <p>대신 <b>확정 금액이 없다</b>는 것을 받아들여야 합니다.</p>
+        <p><b>레버리지는 이 목적에도 맞지 않습니다</b> — 시점을 못 맞히면 끌림에 깎입니다.</p>
+      </div>
+    </div>
+    <div class="deep">
+      <h3>어디에 상장된 것이냐, 어느 계좌에 담느냐도 결과를 바꿉니다</h3>
+      <p>같은 미국 장기국채에 투자해도 <b>어디에 상장된 상품이냐</b>에 따라 세금이 달라집니다. 기대 수익이 <b>연 4~5%</b>인 자산에서는 <b>이 차이가 작지 않습니다.</b></p>
+      <p><b>국내 상장 채권 ETF</b> — 매매차익과 분배금에 <b>배당소득세</b>가 붙습니다. 그리고 이 소득은 <b>금융소득 종합과세 기준</b>에 포함됩니다(세금 트랙 07편).</p>
+      <p><b>해외 거래소 상장 ETF</b> — <b>양도소득세</b> 대상입니다. <b>연간 기본공제</b>가 있고 <b>손실과 이익을 합쳐</b> 계산할 수 있으며, <b>분리과세</b>라 금융소득 종합과세에 들어가지 않습니다. 대신 <b>5월에 직접 신고</b>해야 합니다.</p>
+      <p><b>그래서 금액이 커질수록</b> 해외 상장이 유리해지는 구간이 생깁니다 — <b>손익 통산</b>과 <b>분리과세</b> 때문입니다. 반대로 <b>금액이 작으면</b> 국내 상장이 간편합니다.</p>
+      <p><b>연금계좌(연금저축·IRP)</b>에 담으면 또 달라집니다 — <b>과세가 미뤄지고</b> 나중에 <b>연금으로 받을 때 낮은 세율</b>이 적용됩니다. 다만 <b>담을 수 있는 상품이 제한</b>되고 <b>55세까지 묶입니다</b>(세금 트랙 03편).</p>
+      <p class="plain"><b>⚠️ 세법은 자주 바뀝니다.</b> 위 내용은 <b>구조</b>이고, <b>세율·공제 한도·적용 대상은 반드시 최신 자료로</b> 확인해야 합니다. 세금 트랙에서 반복한 이야기입니다.<br><br><b>그리고 순서를 지키세요</b> — <b>세금 때문에 상품을 고르면 안 됩니다.</b> 세금 트랙 07편의 <b>「좋은 자산이 먼저, 계정은 그다음」</b>이 여기에도 그대로 적용됩니다. <b>듀레이션과 환헤지 여부가 세금보다 훨씬 큰 변수</b>입니다.</p>
+
+      <h3>「지금 갈아타야 하나」에 대하여</h3>
+      <p>이 편을 읽고 <b>「내가 든 상품이 목적에 안 맞는다」</b>는 결론이 났다면, 다음 질문은 <b>「지금 갈아타야 하나」</b>일 것입니다. 몇 가지를 함께 봐야 합니다.</p>
+      <p><b>① 손실 상태에서의 교체는 손실을 확정합니다.</b> 다만 06편에서 봤듯 <b>「본전」은 시장이 모르는 숫자</b>입니다. 판단 기준은 <b>「지금 새로 투자한다면 이걸 고를 것인가」</b>여야 합니다.</p>
+      <p><b>② 비슷한 자산끼리 옮기는 것이라면 교체 비용이 대부분입니다.</b> 예를 들어 <b>같은 미국 장기국채를 담은 다른 ETF</b>로 옮기는 것은 <b>듀레이션이 거의 같아</b> 위험이 그대로입니다. <b>수수료만 나가고 성격은 안 바뀝니다.</b></p>
+      <p><b>③ 성격을 바꾸는 교체라면 이야기가 다릅니다.</b> <b>듀레이션 17짜리에서 5짜리로</b> 옮기는 것은 <b>위험의 크기 자체를 줄이는</b> 것입니다. 그건 <b>정당한 결정</b>일 수 있습니다. <b>다만 금리가 내려갈 때의 수혜도 같이 포기</b>하는 것입니다.</p>
+      <p class="plain"><b>이 트랙은 「사라」거나 「팔라」고 말하지 않습니다.</b> 그건 <b>돈의 성격과 본인의 상황</b>이 정하는 것이고, 그 정보는 <b>본인만 갖고 있습니다.</b><br><br>대신 이 트랙이 하는 일은 <b>「무엇을 들고 있는지」와 「어떤 조건이면 어떻게 되는지」를 정확히 하는 것</b>입니다. 그 둘이 분명해지면 <b>결정은 훨씬 쉬워집니다.</b> <b>10편에서 그 점검을 순서대로</b> 함께 합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 6 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">06 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">과장도 안심도 아닌 <b>정확한 그림</b>입니다.</p>
+    </div>
+
+    <ul class="check" id="bpCheck">
+      <li><b>ETF에 없는 것은 수익이 아니라 「확정된 금액」</b>이라는 것.</li>
+      <li><b>금리가 고정이면 실물 채권과 ETF의 장기 결과가 비슷하다</b>는 것.</li>
+      <li><b>「만기가 없어서 회복이 안 된다」는 과장</b>이라는 것.</li>
+      <li><b>ETF는 영원히 금리 위험에 노출된다</b>는 것 — 이게 진짜 차이입니다.</li>
+      <li><b>쓸 날짜가 정해진 돈이면 만기가 있는 상품</b>이어야 한다는 것.</li>
+      <li><b>금리 방향에 거는 것이라면 ETF가 오히려 적합</b>하다는 것.</li>
+      <li><b>ETF는 분산·접근성·듀레이션 유지라는 장점</b>이 있다는 것.</li>
+      <li><b>곡선이 우상향이면 롤에서 이익, 역전이면 손실</b>이 난다는 것.</li>
+      <li><b>레버리지는 오르내림만으로도 깎인다</b>는 것 — 장기 보유 상품이 아닙니다.</li>
+      <li><b>내 상품의 듀레이션을 확인했나?</b></li>
+      <li><b>실물인지 선물인지, 환헤지인지 확인했나?</b></li>
+      <li><b>내 돈에 쓸 날짜가 있는지 스스로 답했나?</b></li>
+    </ul>
+    <div class="checkcount" id="bpCount">0 / 12 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> <b>「채권 ETF는 만기가 없어 원금이 회복되지 않는다」는 정확하지 않습니다.</b> 금리가 고정되어 있으면 <b>실물 채권을 만기까지 든 것과 결과가 거의 같습니다.</b> 둘 다 <b>같은 채권에서 나오는 같은 이자</b>를 받기 때문입니다.</p>
+      <p><b>진짜 차이는 「확정성」</b>입니다. 실물 채권은 <b>만기일의 금액이 지금 정해집니다.</b> ETF는 <b>어느 날에도 정해진 금액이 없고, 영원히 그때의 금리에 따라</b> 값이 매겨집니다.</p>
+      <p>그래서 판단은 <b>내 돈의 성격</b>이 정합니다. <b>쓸 날짜가 있는 돈</b>이라면 만기가 있는 상품이어야 하고, 그 경우 <b>일반 장기채 ETF는 애초에 맞지 않는 도구</b>입니다. 반대로 <b>날짜가 없고 금리 방향에 거는 것</b>이라면 <b>ETF가 오히려 적합</b>합니다 — 듀레이션이 계속 유지되기 때문입니다.</p>
+      <p><b>지금 장기채 ETF를 들고 있다면 물어야 할 것은 「회복될까」가 아닙니다.</b> <b>「이 돈에 쓸 날짜가 있는가」</b>입니다. 없다면 <b>ETF라는 선택 자체는 문제가 아니고</b>, 06편의 계산대로 <b>시간이 이자를 쌓아줍니다.</b> 있다면 <b>도구가 목적과 어긋나 있는 것</b>이고, 그건 지금이라도 조정할 수 있는 문제입니다.</p>
+      <p><b>다음 편은 08편 — 해외 채권과 환율</b>입니다. 미국 채권을 한국에서 사면 <b>금리와 환율 두 가지가 동시에</b> 움직입니다. 그리고 <b>환헤지형(H)과 언헤지형의 결과가 완전히 다릅니다.</b> <b>내가 든 것이 어느 쪽인지</b>부터 확인해야 하는 편입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 채권 07 · 상품<br>
+    <a href="index.html#bond">← 채권 목록으로</a> · <a href="bond-cycle.html">06 · 경기와 예측</a> · 08 · 해외 채권과 환율 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    계산기는 금리가 고정된다는 가정 아래의 단순 모형이며, 실제 상품의 보수·추적오차·롤 비용·세금을 완전히 반영하지 않습니다. 상품 구조는 반드시 투자설명서로 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return (r >= 0 ? '+' : '') + r.toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+function P(cpn, y, n){
+  var p = 0;
+  for(var t = 1; t <= n; t++) p += 100 * cpn / Math.pow(1 + y, t);
+  return p + 100 / Math.pow(1 + y, n);
+}
+function macaulay(cpn, y, n){
+  var pr = P(cpn, y, n), s = 0;
+  for(var t = 1; t <= n; t++) s += t * (100 * cpn / Math.pow(1 + y, t));
+  s += n * 100 / Math.pow(1 + y, n);
+  return s / pr;
+}
+function modDur(cpn, y, n){ return macaulay(cpn, y, n) / (1 + y); }
+
+/* ══════════ 1. 그릇 ══════════ */
+var VS = [
+  { h:'실물 채권', color:'#5F7A52', mode:0,
+    t:'만기가 있습니다 — 받을 금액이 지금 정해집니다',
+    p:'<b>채권 한 장을 직접 사는</b> 것입니다. 발행자·표면금리·만기가 <b>내 것으로 확정</b>됩니다.<br><br>' +
+      '<b>가장 큰 장점</b> — <b>만기일에 받을 금액이 지금 정해집니다.</b> 그 사이 금리가 어떻게 되든 <b>그날 받을 돈은 바뀌지 않습니다</b>(부도가 없다면).<br><br>' +
+      '<b>그래서 「3년 뒤에 얼마가 필요하다」에 정확히 맞출 수</b> 있습니다. 04편의 만기 매칭이 이 상품을 전제로 합니다.<br><br>' +
+      '<b>단점</b><br>· <b>분산이 어렵습니다</b> — 회사채라면 심각한 문제입니다(03편)<br>· <b>개인의 접근이 불편합니다</b> — 최소 단위, 호가 스프레드, 해외라면 환전까지<br>· <b>중간에 팔면 그때의 시장가격</b>입니다 — 만기 보유가 전제입니다<br><br>' +
+      '<b>재투자 위험은 남습니다</b> — 받은 이자를 <b>어떤 금리로 다시 넣을지</b>는 정해져 있지 않습니다(04편).' },
+  { h:'일반 채권 ETF', color:'#4C6B7A', mode:1,
+    t:'만기가 없습니다 — 대신 듀레이션이 계속 유지됩니다',
+    p:'<b>수많은 채권을 담은 바구니</b>입니다. 만기가 가까워진 채권을 팔고 <b>새 채권으로 계속 교체</b>합니다. 그래서 <b>바구니 자체에는 만기가 없습니다.</b><br><br>' +
+      '<b>「30년 국채 ETF」의 실제 의미</b> — <b>「항상 만기 30년 근처의 채권을 담아둔다」</b>는 뜻입니다. 30년 뒤에 끝나는 것이 아니라 <b>영원히 30년짜리</b>입니다.<br><br>' +
+      '<b>⚠️ 그래서 「기다리면 액면가로 돌아온다」는 안전장치가 없습니다.</b> 다만 <b>「그래서 회복이 안 된다」는 말은 과장</b>입니다 — <b>이자는 그대로 들어옵니다.</b> 2장에서 계산합니다.<br><br>' +
+      '<b>장점</b><br>· <b>분산</b> — 수백 종목<br>· <b>소액으로 주식처럼</b> 거래<br>· <b>듀레이션이 유지</b>되어 금리 하락에 <b>언제나 같은 크기로</b> 반응<br><br>' +
+      '<b>마지막 항목이 중요합니다</b> — <b>금리 하락에 거는 목적</b>이라면 이것이 <b>오히려 장점</b>입니다. 실물 채권은 시간이 가면 <b>듀레이션이 줄어들어</b> 수혜도 줄어듭니다.' },
+  { h:'만기매칭 ETF', color:'#7A5C9E', mode:2,
+    t:'ETF인데 만기가 있습니다 — 둘의 장점을 합친 구조',
+    p:'<b>같은 해에 만기가 돌아오는 채권들만</b> 담고, <b>그해가 되면 청산해 돌려주는</b> ETF입니다. 이름에 <b>연도</b>가 붙어 있는 경우가 많습니다.<br><br>' +
+      '<b>구조상 실물 채권에 가깝습니다</b> — <b>만기가 있어</b> 그 시점의 금액이 대략 정해지고, <b>ETF라서 분산과 접근성</b>이 좋습니다.<br><br>' +
+      '<b>그래서 「날짜가 정해진 돈」에 잘 맞습니다.</b> <b>3년 뒤 학비</b>, <b>5년 뒤 이사 자금</b> 같은 목적이라면 <b>일반 장기채 ETF보다 훨씬 적합</b>합니다.<br><br>' +
+      '<b>다만 확인할 것</b><br>· <b>담긴 채권들의 만기가 정확히 같지 않아</b> 완전히 확정되지는 않습니다<br>· <b>회사채가 섞였다면 부도 위험</b>이 있습니다<br>· <b>상품 수가 많지 않고</b> 거래가 활발하지 않을 수 있습니다<br><br>' +
+      '<b>국내에서도 만기 표시 상품이 나와 있습니다.</b> <b>「만기」나 연도가 이름에 있는지</b> 확인해보세요.' },
+  { h:'선물형 ETF', color:'#8E6B3A', mode:3,
+    t:'채권이 아니라 채권 「선물」을 담습니다',
+    p:'실제 채권 대신 <b>국채 선물 계약</b>을 담는 구조입니다. 이름에 <b>「선물」</b>이 들어가 있으면 이쪽입니다.<br><br>' +
+      '<b>왜 이렇게 만드나</b> — 해외 채권을 실제로 사고 보관하는 것보다 <b>선물이 간편하고 유동성이 좋기</b> 때문입니다.<br><br>' +
+      '<b>⚠️ 추가로 생기는 것들</b><br>· <b>롤 비용</b> — 선물은 만기가 있어 <b>주기적으로 갈아타야</b> 합니다. 그때 <b>비용이 들거나 이익이 날 수</b> 있습니다.<br>' +
+      '· <b>이자가 직접 들어오지 않습니다</b> — 선물 가격에 <b>간접 반영</b>되고, 남는 현금은 <b>단기 금리로 운용</b>됩니다.<br>' +
+      '· <b>기초지수와의 차이(추적오차)</b>가 실물형보다 커질 수 있습니다.<br><br>' +
+      '<b>실전에서의 의미</b> — <b>장기 보유에는 실물형이 더 단순</b>합니다. 선물형은 <b>단기 방향성 매매</b>에 맞는 구조입니다.<br><br>' +
+      '<b>내가 든 것이 어느 쪽인지</b>는 <b>상품명과 투자설명서</b>에서 바로 확인됩니다. 5장에서 다룹니다.' },
+  { h:'합성·레버리지', color:'#8E4B3A', mode:4,
+    t:'구조가 한 겹 더 있습니다 — 특히 레버리지는 다른 물건입니다',
+    p:'<b>합성(스왑)형</b>은 실제 자산 대신 <b>「이 수익률을 주겠다」는 계약</b>을 담습니다. 접근이 어려운 시장에 쓰이지만 <b>거래상대방 위험</b>이 생깁니다. 이름에 <b>「합성」</b>이 붙습니다.<br><br>' +
+      '<b>레버리지형은 완전히 다른 물건</b>입니다. <b>「하루」 수익률의 2배·3배</b>를 따라갑니다. <b>기간 수익률의 배수가 아닙니다.</b><br><br>' +
+      '<b>⚠️ 그래서 오래 들면 구조적으로 깎입니다.</b> 기초자산이 <b>제자리로 돌아와도</b> 레버리지 상품은 <b>마이너스</b>가 됩니다. 4장에서 계산합니다.<br><br>' +
+      '<b>인버스(역방향)도 같은 문제</b>가 있습니다. <b>금리 상승에 거는 인버스 채권 ETF</b>도 <b>장기 보유에는 맞지 않습니다.</b><br><br>' +
+      '<b>정리하면</b> — <b>레버리지·인버스는 며칠 단위의 매매 도구</b>입니다. <b>「금리가 언젠가 내려갈 테니 2배로 들고 기다리자」</b>는 <b>가장 위험한 조합</b>입니다. 06편에서 본 <b>시점의 불확실성</b>과 <b>변동성 끌림</b>이 곱해집니다.' }
+];
+function vsScene(mode){
+  var g = '';
+  var X0 = 60, W = 500, Y = 70;
+  var titles = ['실물 채권 — 만기가 있고 그날 끝납니다',
+                '일반 채권 ETF — 계속 교체되어 끝나지 않습니다',
+                '만기매칭 ETF — ETF인데 끝나는 날이 있습니다',
+                '선물형 ETF — 선물을 주기적으로 갈아탑니다',
+                '레버리지 — 매일 배수를 다시 맞춥니다'];
+  var colors = ['#5F7A52', '#4C6B7A', '#7A5C9E', '#8E6B3A', '#8E4B3A'];
+  var c = colors[mode];
+  g += '<text class="axt" x="' + X0 + '" y="22">' + titles[mode] + '</text>';
+  g += '<line x1="' + X0 + '" y1="' + (Y + 40) + '" x2="' + (X0 + W) + '" y2="' + (Y + 40) + '" stroke="#D9D2C0" stroke-width="1"/>';
+
+  if(mode === 0 || mode === 2){
+    g += '<rect x="' + X0 + '" y="' + (Y - 14) + '" width="' + (W - 60) + '" height="28" rx="3" fill="' + c +
+         '" fill-opacity=".38" stroke="' + c + '" stroke-width="1.4"/>';
+    g += '<text class="lblb" x="' + (X0 + (W - 60) / 2) + '" y="' + (Y + 5) + '" text-anchor="middle" fill="' + c + '">한 번 사서 만기까지</text>';
+    g += '<line x1="' + (X0 + W - 60) + '" y1="' + (Y - 26) + '" x2="' + (X0 + W - 60) + '" y2="' + (Y + 40) +
+         '" stroke="' + c + '" stroke-width="2"/>';
+    g += '<text class="lblb" x="' + (X0 + W - 56) + '" y="' + (Y - 30) + '" fill="' + c + '">만기 — 여기서 끝</text>';
+    g += '<text class="axt" x="' + X0 + '" y="' + (Y + 62) + '">이날 받을 금액이 지금 정해져 있습니다.</text>';
+    g += '<text class="axt" x="' + X0 + '" y="' + (Y + 82) + '">' +
+         (mode === 0 ? '중간 가격이 어떻든 만기까지 들면 계산대로 나옵니다.'
+                     : 'ETF지만 청산일이 있어 실물 채권과 비슷하게 쓸 수 있습니다.') + '</text>';
+  } else {
+    var seg = 5, sw = (W - 40) / seg;
+    for(var i = 0; i < seg; i++){
+      var x = X0 + i * sw;
+      g += '<rect x="' + (x + 3).toFixed(1) + '" y="' + (Y - 14) + '" width="' + (sw - 10).toFixed(1) +
+           '" height="28" rx="3" fill="' + c + '" fill-opacity="' + (0.18 + i * 0.05) + '" stroke="' + c + '" stroke-width="1.2"/>';
+      if(i < seg - 1){
+        g += '<text class="axt" x="' + (x + sw - 3).toFixed(1) + '" y="' + (Y + 5) + '" text-anchor="middle">→</text>';
+      }
+    }
+    g += '<text class="lblb" x="' + (X0 + W - 34) + '" y="' + (Y + 5) + '" fill="' + c + '">…계속</text>';
+    var caps = ['', '만기가 가까워진 채권을 팔고 새 장기채로 계속 교체합니다.', '',
+                '선물 만기마다 다음 계약으로 갈아탑니다 — 그때 롤 비용이 발생합니다.',
+                '매일 배수를 다시 맞추므로 오르내림이 반복되면 누적 결과가 깎입니다.'];
+    g += '<text class="axt" x="' + X0 + '" y="' + (Y + 62) + '">' + caps[mode] + '</text>';
+    g += '<text class="axt" x="' + X0 + '" y="' + (Y + 82) + '">' +
+         (mode === 1 ? '끝나는 날이 없어 「이날 이만큼」이라는 확정 금액이 없습니다.'
+                     : (mode === 3 ? '이자가 직접 들어오지 않고 선물 가격에 간접 반영됩니다.'
+                                   : '기초자산이 제자리로 와도 마이너스가 될 수 있습니다.')) + '</text>';
+  }
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y + 104) + '">' +
+       ['목적: 날짜가 정해진 저축', '목적: 분산 · 금리 방향에 거는 것', '목적: 날짜가 정해진 저축',
+        '목적: 단기 방향성 매매', '목적: 며칠 단위 매매 — 장기 보유 아님'][mode] + '</text>';
+  document.getElementById('vsScene').innerHTML = g;
+}
+bindBtnRow('#vsBtns', function(v){
+  vsScene(VS[+v].mode);
+  document.getElementById('vsVerdict').querySelector('.vh').textContent = VS[+v].h;
+  verdict('vsVerdict', VS[+v].color, VS[+v].t, VS[+v].p);
+});
+
+/* ══════════ 2. 만기 ══════════ */
+function mtDraw(){
+  var buyY = +document.getElementById('mtBuyY').value / 10;
+  var nowY = +document.getElementById('mtNowY').value / 10;
+  var mat = +document.getElementById('mtMat').value;
+  var hold = +document.getElementById('mtHold').value;
+  var fee = +document.getElementById('mtFee').value / 10000;
+  document.getElementById('mtBuyYOut').textContent = num(buyY, 1) + '%';
+  document.getElementById('mtNowYOut').textContent = num(nowY, 1) + '%';
+  document.getElementById('mtMatOut').textContent = mat + '년';
+  document.getElementById('mtHoldOut').textContent = hold + '년';
+  document.getElementById('mtFeeOut').textContent = (fee * 100).toFixed(2) + '%';
+
+  var cpn = buyY / 100, y1 = nowY / 100;
+  var buyPrice = 100;                                  // 액면가 매수
+  var nowPrice = P(cpn, y1, mat);
+  var shock = (nowPrice / buyPrice - 1) * 100;
+
+  // 실물 채권: hold년 뒤 (쿠폰은 nowY로 재투자)
+  var coup = 0;
+  var hb = Math.min(hold, mat);
+  for(var t = 1; t <= hb; t++) coup += 100 * cpn * Math.pow(1 + y1, hb - t);
+  var bondVal;
+  if(hold >= mat){
+    bondVal = (100 + coup) * Math.pow(1 + y1, hold - mat);
+  } else {
+    bondVal = P(cpn, y1, mat - hold) + coup;
+  }
+  // ETF: 지금 가격에서 매년 nowY 만큼
+  var etfNoFee = nowPrice * Math.pow(1 + y1, hold);
+  var etfVal = nowPrice * Math.pow(1 + y1 - fee, hold);
+
+  var bondPct = (bondVal / buyPrice - 1) * 100;
+  var etfPct = (etfVal / buyPrice - 1) * 100;
+
+  steps('mtSteps', [
+    { k:'매수가 (액면 100)', v:'100' },
+    { k:'금리 급등 후 지금 가격', v:num(nowPrice, 1) + ' (' + sgn(shock, 1) + '%)' },
+    { k:hold + '년 뒤 · 실물 채권', v:num(bondVal, 1) + ' (' + sgn(bondPct, 1) + '%)' },
+    { k:hold + '년 뒤 · ETF (보수 전)', v:num(etfNoFee, 1) },
+    { k:hold + '년 뒤 · ETF (보수 ' + (fee * 100).toFixed(2) + '% 반영)', v:num(etfVal, 1) + ' (' + sgn(etfPct, 1) + '%)' },
+    { k:'차이 (실물 − ETF)', v:sgn(bondVal - etfVal, 1), total:true }
+  ]);
+
+  document.getElementById('mtBoth').textContent = sgn(bondPct, 1) + '% / ' + sgn(etfPct, 1) + '%';
+  document.getElementById('mtGap').textContent = sgn(bondPct - etfPct, 1) + '%p';
+  document.getElementById('mtGap').style.color = Math.abs(bondPct - etfPct) < 1 ? 'var(--pos)' : '';
+
+  var X0 = 150, W = 380;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">매수가 100 기준 · 금리 ' + num(nowY, 1) + '%가 유지될 때</text>';
+  var maxV = Math.max(bondVal, etfVal, 120);
+  [{ n:'매수 시점', v:100, c:'#8A8474' },
+   { n:'금리 급등 직후', v:nowPrice, c:'#8E4B3A' },
+   { n:hold + '년 뒤 · 실물 채권', v:bondVal, c:'#5F7A52' },
+   { n:hold + '년 뒤 · ETF', v:etfVal, c:'#4C6B7A' }].forEach(function(b, i){
+    var y = 30 + i * 32;
+    var w = Math.max(1, b.v / maxV * W);
+    var on = (i >= 2);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="21" rx="2" fill="' + b.c +
+         '" fill-opacity="' + (on ? '.45' : '.2') + '" stroke="' + b.c + '" stroke-width="' + (on ? '1.5' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 15) + '" text-anchor="end"' +
+         (on ? ' fill="' + b.c + '"' : '') + '>' + b.n + '</text>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 + w + 8).toFixed(1) + '" y="' + (y + 15) + '"' +
+         (on ? ' fill="' + b.c + '"' : '') + '>' + num(b.v, 0) + '</text>';
+  });
+  var x100 = X0 + 100 / maxV * W;
+  g += '<line x1="' + x100.toFixed(1) + '" y1="26" x2="' + x100.toFixed(1) + '" y2="' + (30 + 4 * 32) +
+       '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (30 + 4 * 32 + 22) + '">금리가 고정이면 두 결과가 거의 같습니다 — 같은 이자를 받기 때문입니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (30 + 4 * 32 + 42) + '">차이는 「금리가 계속 움직일 때」와 「금액이 확정되느냐」에서 생깁니다.</text>';
+  document.getElementById('mtScene').innerHTML = g;
+
+  if(Math.abs(nowY - buyY) < 0.05){
+    verdict('mtVerdict', '#5B5648',
+      '금리가 그대로라 손실이 없습니다',
+      '<b>「지금 금리」 슬라이더를 올려보세요.</b> 매수 당시보다 금리가 오르면 <b>평가손실</b>이 생깁니다. 그 상태에서 <b>두 그릇의 장기 결과</b>를 비교하는 것이 이 계산기의 목적입니다.<br><br>' +
+      '<b>기본값</b>은 <b>1.5%에 산 30년채가 5%가 된</b> 상황입니다 — 2020~2023년에 실제로 일어난 일에 가깝습니다.');
+  } else if(fee < 0.00001){
+    verdict('mtVerdict', '#5F7A52',
+      '금리가 고정이면 두 결과가 수학적으로 정확히 같습니다',
+      '실물 채권 <b>' + sgn(bondPct, 1) + '%</b>, ETF <b>' + sgn(etfPct, 1) +
+      '%</b> — <b>차이가 0</b>입니다. 근사가 아니라 <b>항등식</b>입니다.<br><br>' +
+      '<b>왜 그런가</b> — <b>「채권을 몇 년 들고 이자를 재투자한 값」</b>과 <b>「그 채권 가격에 수익률을 그만큼 곱한 값」</b>은 <b>같은 계산</b>입니다. 둘 다 <b>같은 채권에서 나오는 같은 이자</b>를 세는 것이기 때문입니다.<br><br>' +
+      '<b>그래서 「ETF는 만기가 없어 회복이 안 된다」는 성립하지 않습니다.</b> 금리가 그 자리에 있는 한 <b>ETF도 똑같이 쌓입니다.</b><br><br>' +
+      '<b>그러면 차이는 어디서 나오나 — 두 곳뿐입니다.</b><br>' +
+      '· <b>보수와 비용</b> — <b>「ETF의 연간 보수」 슬라이더를 올려보세요.</b> 그만큼 정확히 벌어집니다.<br>' +
+      '· <b>금리가 움직일 때</b> — 이 계산은 <b>「금리 ' + num(nowY, 1) + '% 고정」</b>을 가정합니다. <b>실물 채권은 만기 금액이 확정</b>이고, <b>ETF는 그때의 금리에 따라</b> 값이 바뀝니다. <b>이것이 진짜 차이</b>입니다.');
+  } else if(hold >= mat){
+    verdict('mtVerdict', '#5F7A52',
+      '만기까지 들면 실물 ' + sgn(bondPct, 1) + '%, ETF ' + sgn(etfPct, 1) + '% — 차이는 보수뿐입니다',
+      '금리 급등으로 <b>' + sgn(shock, 1) + '%</b>의 평가손실이 났지만, <b>' + hold +
+      '년을 들고 있으면</b> 실물 채권은 <b>' + sgn(bondPct, 1) + '%</b>, ETF는 <b>' + sgn(etfPct, 1) + '%</b>가 됩니다. <b>차이가 ' +
+      num(Math.abs(bondPct - etfPct), 1) + '%p</b>에 그칩니다.<br><br>' +
+      '<b>이것이 이 편에서 가장 중요한 계산</b>입니다. <b>「ETF는 만기가 없어 회복이 안 된다」는 성립하지 않습니다.</b> 둘 다 <b>같은 채권에서 나오는 같은 이자</b>를 받기 때문입니다.<br><br>' +
+      '<b>보수를 0으로 내려보면 차이가 정확히 0</b>이 됩니다. <b>근사가 아니라 항등식</b>입니다 — 둘 다 <b>같은 채권에서 나오는 같은 이자</b>를 세기 때문입니다.<br><br>' +
+      '<b>그러면 차이가 없는가</b> — 있습니다. 다만 <b>이 계산의 가정 밖에</b> 있습니다.<br>' +
+      '· <b>보수와 비용</b> — 지금 <b>' + (fee * 100).toFixed(2) + '%</b>가 반영되어 <b>' + num(etfNoFee - etfVal, 1) +
+      '만큼</b> 깎였습니다. <b>기간이 길수록 복리로 커집니다.</b><br>' +
+      '· <b>금리가 움직일 때</b> — 이 계산은 <b>「금리 ' + num(nowY, 1) + '% 고정」</b>을 가정했습니다. 실제로는 계속 움직입니다.<br>' +
+      '· <b>실물 채권은 만기에 받을 금액이 확정</b>됩니다. 금리가 어떻게 되든 <b>' + num(100 + coup, 0) + ' 근처</b>가 나옵니다.<br>' +
+      '· <b>ETF는 ' + hold + '년 뒤에도 그때의 금리에 따라</b> 값이 정해집니다. <b>확정된 숫자가 없습니다.</b><br><br>' +
+      '<b>「지금 금리」 슬라이더를 여기저기 움직여보세요.</b> <b>ETF 결과는 계속 바뀌는데</b>, 만기까지 드는 실물 채권의 <b>「받을 금액」은 이미 정해져</b> 있습니다.');
+  } else if(Math.abs(bondPct - etfPct) < 2){
+    verdict('mtVerdict', '#4C6B7A',
+      hold + '년 뒤 실물 ' + sgn(bondPct, 1) + '%, ETF ' + sgn(etfPct, 1) + '% — 아직 비슷합니다',
+      '만기(<b>' + mat + '년</b>)보다 짧은 <b>' + hold + '년</b>만 들고 있어도, <b>금리가 고정이라면</b> 결과가 비슷합니다.<br><br>' +
+      '<b>왜 그런가</b> — 실물 채권도 <b>' + hold + '년 뒤에 팔아야</b> 하고, 그때 <b>남은 ' + (mat - hold) +
+      '년치를 시장가격으로</b> 받습니다. <b>「만기까지 들지 않으면 실물 채권도 확정이 아닙니다.」</b><br><br>' +
+      '<b>이것이 04편의 결론과 이어집니다</b> — <b>확정성은 「만기가 있다」에서 오는 것이 아니라 「만기까지 든다」에서</b> 옵니다. <b>30년채를 5년 뒤에 팔 계획이라면 실물이든 ETF든 마찬가지</b>입니다.<br><br>' +
+      '<b>「앞으로 들고 있을 기간」을 만기와 같게</b> 맞춰보세요. 그때 비로소 <b>실물 채권의 확정성</b>이 생깁니다.');
+  } else {
+    verdict('mtVerdict', '#7A5C9E',
+      hold + '년 뒤 실물 ' + sgn(bondPct, 1) + '%, ETF ' + sgn(etfPct, 1) + '% — 차이는 보수 ' +
+      num(bondPct - etfPct, 1) + '%p뿐입니다',
+      '만기(<b>' + mat + '년</b>)보다 짧은 <b>' + hold + '년</b>만 들고 있어도, <b>금리가 고정이라면</b> 결과가 <b>보수만큼만</b> 차이 납니다.<br><br>' +
+      '<b>왜 그런가</b> — 실물 채권도 <b>' + hold + '년 뒤에 팔아야</b> 하고, 그때 <b>남은 ' + (mat - hold) +
+      '년치를 시장가격으로</b> 받습니다. <b>「만기까지 들지 않으면 실물 채권도 확정이 아닙니다.」</b><br><br>' +
+      '<b>이것이 04편의 결론과 이어집니다</b> — <b>확정성은 「만기가 있다」에서 오는 것이 아니라 「만기까지 든다」에서</b> 옵니다. <b>30년채를 ' +
+      hold + '년 뒤에 팔 계획이라면 실물이든 ETF든 사실상 같은 물건</b>입니다.<br><br>' +
+      '<b>「앞으로 들고 있을 기간」을 만기와 같게</b> 맞춰보세요. 그때 비로소 <b>실물 채권의 확정성</b>이 생깁니다. <b>그리고 그 확정성이 이 편의 전부</b>입니다.');
+  }
+}
+['mtBuyY', 'mtNowY', 'mtMat', 'mtHold', 'mtFee'].forEach(function(id){ document.getElementById(id).addEventListener('input', mtDraw); });
+
+/* ══════════ 3. 롤 ══════════ */
+function rlDraw(){
+  var y = +document.getElementById('rlLong').value / 10;
+  var slope = +document.getElementById('rlSlope').value / 100;   // 1년 짧아질 때 금리 차이(%p)
+  var fee = +document.getElementById('rlFee').value / 100;
+  document.getElementById('rlLongOut').textContent = num(y, 1) + '%';
+  document.getElementById('rlSlopeOut').textContent = slope === 0 ? '평평 (0)' : sgn(-slope, 2) + '%p';
+  document.getElementById('rlFeeOut').textContent = num(fee, 2) + '%';
+
+  var y0 = y / 100;
+  var dur = modDur(y0, y0, 30);
+  var rollGain = dur * slope;      // 금리가 slope만큼 낮아지면 가격이 dur*slope 오른다
+  var total = y + rollGain - fee;
+
+  steps('rlSteps', [
+    { k:'이자 (수익률)', v:'+' + num(y, 2) + '%' },
+    { k:'롤 효과 (듀레이션 ' + num(dur, 1) + ' × ' + num(slope, 2) + '%p)', v:sgn(rollGain, 2) + '%' },
+    { k:'보수·비용', v:'−' + num(fee, 2) + '%' },
+    { k:'연 기대 수익 (금리 불변 시)', v:sgn(total, 2) + '%', total:true }
+  ]);
+
+  document.getElementById('rlTotal').textContent = sgn(total, 2) + '%';
+  document.getElementById('rlTotal').style.color = total > 0.05 ? 'var(--pos)' : (total < -0.05 ? 'var(--neg)' : '');
+  document.getElementById('rlRoll').textContent = sgn(rollGain, 2) + '%p';
+  document.getElementById('rlRoll').style.color = rollGain > 0.02 ? 'var(--pos)' : (rollGain < -0.02 ? 'var(--neg)' : '');
+
+  var X0 = 140, W = 400;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">연 기대 수익의 구성 (금리가 그대로일 때)</text>';
+  var vals = [y, rollGain, -fee, total];
+  var posMax = Math.max(0.2, Math.max.apply(null, vals.concat([0])));
+  var negMax = Math.max(0.2, -Math.min.apply(null, vals.concat([0])));
+  var scale = (W - 90) / (posMax + negMax);
+  var ZERO = X0 + 45 + negMax * scale;
+  [{ n:'이자', v:y, c:'#5F7A52' },
+   { n:'롤 효과', v:rollGain, c:rollGain >= 0 ? '#4C6B7A' : '#8E4B3A' },
+   { n:'비용', v:-fee, c:'#8E4B3A' },
+   { n:'합계', v:total, c:total >= 0 ? '#8E6B3A' : '#8E4B3A' }].forEach(function(b, i){
+    var yy = 30 + i * 27;
+    var w = Math.abs(b.v) * scale;
+    var x = b.v >= 0 ? ZERO : ZERO - w;
+    var on = (i === 3);
+    g += '<rect x="' + x.toFixed(1) + '" y="' + yy + '" width="' + Math.max(0.6, w).toFixed(1) +
+         '" height="18" rx="1.5" fill="' + b.c + '" fill-opacity="' + (on ? '.55' : '.28') + '" stroke="' + b.c +
+         '" stroke-width="' + (on ? '1.6' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (yy + 13) + '" text-anchor="end"' +
+         (on ? ' fill="' + b.c + '"' : '') + '>' + b.n + '</text>';
+    var tx = b.v >= 0 ? (x + w + 6) : (x - 6);
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + Math.max(X0 + 2, Math.min(tx, X0 + W - 2)).toFixed(1) +
+         '" y="' + (yy + 13) + '" text-anchor="' + (b.v >= 0 ? 'start' : 'end') + '"' + (on ? ' fill="' + b.c + '"' : '') +
+         '>' + sgn(b.v, 2) + '%</text>';
+  });
+  g += '<line x1="' + ZERO.toFixed(1) + '" y1="26" x2="' + ZERO.toFixed(1) + '" y2="' + (30 + 4 * 27) +
+       '" stroke="#8A8474" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (30 + 4 * 27 + 22) + '">' +
+       (slope > 0.001 ? '곡선이 우상향이라 만기가 짧아질수록 값이 오릅니다 — 롤 이익입니다.'
+                      : (slope < -0.001 ? '역전 곡선이라 만기가 짧아질수록 값이 내려갑니다 — 롤 손실입니다.'
+                                        : '곡선이 평평해 롤 효과가 없습니다.')) + '</text>';
+  document.getElementById('rlScene').innerHTML = g;
+
+  if(Math.abs(slope) < 0.001){
+    verdict('rlVerdict', '#5B5648',
+      '곡선이 평평해 롤 효과가 없습니다 — 연 ' + num(total, 2) + '%',
+      '이자 <b>' + num(y, 2) + '%</b>에서 비용 <b>' + num(fee, 2) + '%</b>를 뺀 것이 전부입니다.<br><br>' +
+      '<b>「1년 짧아질 때 금리 차이」 슬라이더를 움직여보세요.</b><br>· <b>우상향(플러스)</b> → 만기가 짧아지며 금리가 낮아져 <b>가격이 오릅니다</b><br>' +
+      '· <b>역전(마이너스)</b> → 반대로 <b>가격이 내려갑니다</b><br><br>' +
+      '<b>듀레이션이 ' + num(dur, 1) + '</b>이라 <b>작은 금리 차이도 크게 증폭</b>됩니다. 0.05%p만 움직여도 <b>' +
+      num(dur * 0.05, 2) + '%</b>가 됩니다.');
+  } else if(slope < 0){
+    verdict('rlVerdict', '#8E4B3A',
+      '역전 곡선이라 롤에서 ' + num(Math.abs(rollGain), 2) + '%를 잃습니다',
+      '만기가 1년 짧아지면 금리가 <b>' + num(Math.abs(slope), 2) + '%p 높아지는</b> 구간입니다(역전). 그래서 교체할 때마다 <b>' +
+      sgn(rollGain, 2) + '%</b>의 손실이 납니다.<br><br>' +
+      '<b>연 기대 수익은 ' + sgn(total, 2) + '%</b>입니다 — 이자 <b>' + num(y, 2) + '%</b>에서 <b>롤 손실과 비용</b>을 뺀 결과입니다.<br><br>' +
+      '<b>이것이 역전 국면에서 장기채 ETF를 드는 숨은 비용</b>입니다. 05편에서 <b>「역전 상태에서는 짧은 채권이 이자를 더 준다」</b>고 했는데, 여기에 <b>롤 손실까지</b> 더해집니다.<br><br>' +
+      '<b>그래도 드는 이유는 하나</b> — <b>금리가 크게 내려갈 때의 가격 상승</b>입니다. 그것 말고는 <b>대가를 치르고 있는</b> 상태입니다. 01편 5장의 <b>③ 금리 하락 베팅</b>이 정확히 이것입니다.');
+  } else {
+    verdict('rlVerdict', '#5F7A52',
+      '우상향 곡선이라 롤에서 ' + num(rollGain, 2) + '%가 더해집니다',
+      '만기가 1년 짧아지면 금리가 <b>' + num(slope, 2) + '%p 낮아지는</b> 구간입니다. 듀레이션 <b>' + num(dur, 1) +
+      '</b>을 곱하면 <b>' + sgn(rollGain, 2) + '%</b>의 추가 수익이 됩니다.<br><br>' +
+      '<b>연 기대 수익 ' + sgn(total, 2) + '%</b> = 이자 <b>' + num(y, 2) + '%</b> + 롤 <b>' + sgn(rollGain, 2) +
+      '%</b> − 비용 <b>' + num(fee, 2) + '%</b>입니다.<br><br>' +
+      '<b>이것이 「금리가 전혀 안 움직여도」 얻는 수익</b>입니다. 곡선이 우상향이기만 하면 <b>가만히 있어도</b> 이 정도가 쌓입니다.<br><br>' +
+      '<b>그래서 곡선의 모양이 ETF의 기대 수익을 바꿉니다</b> — 05편의 곡선 이야기가 <b>여기서 직접 돈으로 연결</b>됩니다.<br><br>' +
+      '<b>다만 이 롤 이익은 곡선이 그대로일 때</b>의 이야기입니다. 실제로는 곡선 자체가 계속 움직입니다.');
+  }
+}
+['rlLong', 'rlSlope', 'rlFee'].forEach(function(id){ document.getElementById(id).addEventListener('input', rlDraw); });
+
+/* ══════════ 4. 레버리지 ══════════ */
+function lvDraw(){
+  var swing = +document.getElementById('lvSwing').value / 100;
+  var times = +document.getElementById('lvTimes').value;
+  var drift = +document.getElementById('lvDrift').value / 1000;
+  document.getElementById('lvSwingOut').textContent = '±' + (swing * 100).toFixed(0) + '%';
+  document.getElementById('lvTimesOut').textContent = times + '회';
+  document.getElementById('lvDriftOut').textContent = sgn(drift * 100, 1) + '%';
+
+  var path = [];
+  for(var i = 0; i < times; i++) path.push((i % 2 === 0 ? swing : -swing) + drift);
+  function run(k){
+    var v = 1;
+    for(var i = 0; i < path.length; i++){ v *= (1 + k * path[i]); if(v < 0) v = 0; }
+    return (v - 1) * 100;
+  }
+  var r1 = run(1), r2 = run(2), r3 = run(3);
+  var naive2 = r1 * 2;
+
+  steps('lvSteps', [
+    { k:'기초자산 최종', v:sgn(r1, 1) + '%' },
+    { k:'단순히 2배라면', v:sgn(naive2, 1) + '%' },
+    { k:'실제 2배 상품', v:sgn(r2, 1) + '%' },
+    { k:'실제 3배 상품', v:sgn(r3, 1) + '%' },
+    { k:'2배 상품이 덜 번 폭', v:sgn(r2 - naive2, 1) + '%p', total:true }
+  ]);
+
+  document.getElementById('lvAll').textContent = sgn(r1, 1) + '% / ' + sgn(r2, 1) + '% / ' + sgn(r3, 1) + '%';
+  document.getElementById('lvGap').textContent = sgn(r2 - naive2, 1) + '%p';
+  document.getElementById('lvGap').style.color = (r2 - naive2) < -0.05 ? 'var(--neg)' : '';
+
+  var X0 = 70, W = 500, TOP = 34, H = 108;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">누적 경로 — 오르내림이 반복될수록 배수가 클수록 깎입니다</text>';
+  var series = [{ k:1, c:'#5F7A52' }, { k:2, c:'#8E6B3A' }, { k:3, c:'#8E4B3A' }];
+  var all = [];
+  series.forEach(function(s){
+    var v = 1, arr = [1];
+    for(var i = 0; i < path.length; i++){ v *= (1 + s.k * path[i]); if(v < 0) v = 0; arr.push(v); }
+    s.arr = arr;
+    all = all.concat(arr);
+  });
+  var lo = Math.min(0, Math.min.apply(null, all)), hi = Math.max(1.2, Math.max.apply(null, all));
+  var span = Math.max(0.2, hi - lo);
+  function sy(v){ return TOP + H - (v - lo) / span * H; }
+  series.forEach(function(s){
+    var d = '';
+    s.arr.forEach(function(v, i){ d += (i === 0 ? 'M' : 'L') + (X0 + i / path.length * W).toFixed(1) + ',' + sy(v).toFixed(1); });
+    g += '<path d="' + d + '" fill="none" stroke="' + s.c + '" stroke-width="' + (s.k === 1 ? 2.2 : 1.8) + '"/>';
+    var last = s.arr[s.arr.length - 1];
+    g += '<text class="lblb" x="' + (X0 + W + 4) + '" y="' + Math.max(TOP + 8, Math.min(sy(last) + 4, TOP + H)).toFixed(1) +
+         '" text-anchor="end" fill="' + s.c + '">' + s.k + '배</text>';
+  });
+  g += '<line x1="' + X0 + '" y1="' + sy(1).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + sy(1).toFixed(1) +
+       '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (sy(1) - 6).toFixed(1) + '">시작</text>';
+  g += '<line x1="' + X0 + '" y1="' + (TOP + H) + '" x2="' + (X0 + W) + '" y2="' + (TOP + H) + '" stroke="#D9D2C0" stroke-width="1"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 18) + '">기초 ' + sgn(r1, 1) + '% · 2배 ' + sgn(r2, 1) +
+       '% · 3배 ' + sgn(r3, 1) + '%</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (TOP + H + 38) + '">실제 상품에는 보수·롤 비용까지 더해져 이보다 나쁩니다.</text>';
+  document.getElementById('lvScene').innerHTML = g;
+
+  if(r2 <= -99 || r3 <= -99){
+    verdict('lvVerdict', '#8E4B3A',
+      '레버리지 상품이 사실상 전액 소멸했습니다',
+      '기초자산은 <b>' + sgn(r1, 1) + '%</b>인데 2배는 <b>' + sgn(r2, 1) + '%</b>, 3배는 <b>' + sgn(r3, 1) +
+      '%</b>입니다. <b>원금이 거의 남지 않았습니다.</b><br><br>' +
+      '<b>왜 이렇게까지 되나</b> — 배수가 곱해진 하락이 <b>연속으로</b> 오면, 한 번이라도 <b>−100%에 가까워지는 순간</b> 회복 경로가 사라집니다. 이후 아무리 올라도 <b>거의 0에 곱해질 뿐</b>입니다.<br><br>' +
+      '<b>이것이 레버리지의 진짜 위험</b>입니다. <b>기초자산은 아직 살아 있는데 내 상품만 없어지는</b> 것입니다.<br><br>' +
+      '<b>실제 상품에는 조기청산 조항</b>이 있어, 일정 수준 아래로 떨어지면 <b>강제로 정리되고 회복 기회 자체가 사라집니다.</b><br><br>' +
+      '<b>단순 배수와 비교하는 것 자체가 의미가 없는 구간</b>입니다 — 기초자산의 2배 손실은 <b>−100%를 넘을 수 없기</b> 때문입니다.');
+  } else if(Math.abs(r1) < 1 && r2 < -1){
+    verdict('lvVerdict', '#8E4B3A',
+      '기초자산은 제자리인데 2배는 ' + sgn(r2, 1) + '%, 3배는 ' + sgn(r3, 1) + '%입니다',
+      '<b>기초자산이 ' + sgn(r1, 1) + '%로 사실상 제자리</b>인데, 레버리지 상품만 <b>손실</b>이 났습니다.<br><br>' +
+      '<b>왜 그런가</b> — <b>내려갈 때 배수로 내려가면, 올라올 때 배수로 올라도 부족</b>하기 때문입니다. 100이 반 토막 나면 <b>두 배로 올라야</b> 원래대로 돌아옵니다. <b>이 비대칭이 매번 쌓입니다.</b><br><br>' +
+      '<b>이것을 「변동성 끌림」</b>이라고 합니다. <b>방향이 없어도 오르내림만으로</b> 깎입니다.<br><br>' +
+      '<b>그래서 레버리지·인버스는 며칠 단위의 매매 도구</b>이지 <b>장기 보유 상품이 아닙니다.</b><br><br>' +
+      '<b>⚠️ 가장 위험한 조합</b> — <b>「금리가 언젠가 내려갈 테니 2배로 들고 기다리자」</b>입니다. 06편에서 본 <b>시점의 불확실성</b>과 <b>이 끌림</b>이 곱해집니다. <b>기다리는 것 자체가 손실</b>이 됩니다.');
+  } else if(Math.abs(r1) < 0.5 && Math.abs(r2) < 0.5){
+    verdict('lvVerdict', '#5B5648',
+      '움직임이 작아 끌림이 거의 드러나지 않습니다',
+      '오르내림 폭과 횟수가 작아 <b>배수별 차이가 거의 없습니다.</b><br><br>' +
+      '<b>「한 번에 오르내리는 폭」과 「오르내림 횟수」를 늘려보세요.</b> <b>변동성 끌림</b>이 빠르게 드러납니다.<br><br>' +
+      '<b>끌림은 대체로 변동 폭의 제곱에 비례</b>합니다. 폭이 두 배가 되면 <b>끌림은 네 배 가까이</b> 커집니다. 그래서 <b>변동이 큰 자산일수록 레버리지가 위험</b>합니다. <b>장기채는 변동이 큰 자산</b>입니다(02편).');
+  } else if(r2 > naive2 - 0.5){
+    verdict('lvVerdict', '#8E6B3A',
+      '추세가 강해 단순 배수보다는 덜 깎였습니다',
+      '한 방향으로 <b>꾸준히</b> 움직이면 레버리지가 <b>단순 배수보다 더</b> 벌 수 있습니다. 2배 상품이 <b>' + sgn(r2, 1) +
+      '%</b>로, 단순 2배(<b>' + sgn(naive2, 1) + '%</b>)보다 <b>' + sgn(r2 - naive2, 1) + '%p</b>입니다.<br><br>' +
+      '<b>이것이 레버리지가 쓰이는 이유</b>입니다. <b>방향과 시점이 모두 맞으면</b> 보상이 큽니다.<br><br>' +
+      '<b>그런데 문제는 그 조건</b>입니다. <b>「전체 방향」 슬라이더를 0으로</b> 되돌려보세요. <b>오르내림만 있으면</b> 곧바로 손실로 바뀝니다.<br><br>' +
+      '<b>⚠️ 다만 이것이 「이익이 났다」는 뜻은 아닙니다.</b> 지금 2배 상품은 <b>' + sgn(r2, 1) +
+      '%</b>입니다. <b>「단순 배수보다 덜 깎였다」와 「돈을 벌었다」는 다른 말</b>입니다.<br><br>' +
+      '<b>06편의 결론과 연결됩니다</b> — <b>방향은 맞혀도 시점은 못 맞힙니다.</b> 그 사이 오르내림이 있으면 <b>끌림에 깎입니다.</b> <b>「방향만 맞으면 된다」가 성립하지 않는</b> 상품입니다.');
+  } else {
+    verdict('lvVerdict', '#8E6B3A',
+      '2배 상품이 단순 2배보다 ' + num(Math.abs(r2 - naive2), 1) + '%p 뒤처집니다',
+      '기초자산 <b>' + sgn(r1, 1) + '%</b>의 단순 2배는 <b>' + sgn(naive2, 1) + '%</b>인데, 실제 2배 상품은 <b>' +
+      sgn(r2, 1) + '%</b>입니다. <b>' + num(Math.abs(r2 - naive2), 1) + '%p</b>가 사라졌습니다.<br><br>' +
+      '<b>3배는 더 심합니다</b> — <b>' + sgn(r3, 1) + '%</b>입니다. <b>배수가 클수록 끌림이 커집니다.</b><br><br>' +
+      '<b>사라진 곳은 오르내림</b>입니다. 매 구간 배수로 움직이다 보면 <b>내려간 뒤 올라오는 데 더 큰 상승이 필요</b>해지고, 그 손해가 <b>누적</b>됩니다.<br><br>' +
+      '<b>「오르내림 횟수」를 늘려보세요.</b> 시간이 갈수록 <b>격차가 벌어집니다.</b> <b>오래 들고 있을수록 불리한</b> 구조입니다.<br><br>' +
+      '<b>그리고 실제 상품에는 보수·롤 비용까지</b> 더해집니다. 이 계산보다 <b>더 나쁩니다.</b>');
+  }
+}
+['lvSwing', 'lvTimes', 'lvDrift'].forEach(function(id){ document.getElementById(id).addEventListener('input', lvDraw); });
+
+/* ══════════ 5. 확인 ══════════ */
+var CK = [
+  { h:'① 듀레이션', color:'#4C6B7A',
+    t:'위험의 크기가 이 숫자 하나로 정해집니다',
+    p:'<b>어디서 보나</b> — 운용사 상품 페이지나 <b>투자설명서</b>에 <b>「듀레이션」</b> 또는 <b>「유효 듀레이션」</b>으로 적혀 있습니다. 월간 운용보고서에도 나옵니다.<br><br>' +
+      '<b>무엇을 뜻하나</b> — <b>금리 1%p당 몇 % 움직이는가</b>입니다(02편). 이 숫자를 모르면 <b>내가 얼마나 위험한 것을 들고 있는지 모르는</b> 것입니다.<br><br>' +
+      '<b>대략적인 기준</b><br>· 단기채 ETF <b>약 2</b><br>· 중기채 ETF <b>약 7~8</b><br>· 장기채(20년+) ETF <b>약 15~18</b><br>· <b>스트립·초장기</b> <b>20 이상</b><br><br>' +
+      '<b>⚠️ 이름의 「30년」과 듀레이션은 다릅니다.</b> 30년 만기 채권의 듀레이션은 <b>17 근처</b>입니다. 그런데 <b>스트립</b>이면 <b>29에 가까워집니다</b>(01편). <b>같은 「30년」인데 위험이 1.7배</b> 차이 납니다.<br><br>' +
+      '<b>이것만 확인해도</b> 02편의 계산기에 넣어 <b>내 상품이 금리에 얼마나 반응하는지</b> 바로 알 수 있습니다.' },
+  { h:'② 실물이냐 선물이냐', color:'#8E6B3A',
+    t:'상품명에 대체로 적혀 있습니다',
+    p:'<b>이름에 「선물」이 있으면 선물형</b>입니다. 없으면 대체로 실물형이지만 <b>설명서로 확인</b>하는 것이 정확합니다.<br><br>' +
+      '<b>왜 중요한가</b><br>· <b>선물형은 롤 비용</b>이 발생합니다 — 만기마다 갈아타야 합니다<br>· <b>이자가 직접 들어오지 않고</b> 선물 가격에 간접 반영됩니다<br>· <b>추적오차가 커질 수</b> 있습니다<br><br>' +
+      '<b>어느 쪽이 나은가</b> — <b>장기 보유라면 실물형이 단순</b>합니다. 선물형은 <b>단기 방향성 매매</b>에 맞는 구조입니다.<br><br>' +
+      '<b>다만 선물형이 나쁘다는 뜻은 아닙니다</b> — 해외 채권은 <b>실물로 담기가 어려워</b> 선물형이 만들어지는 것이고, <b>유동성이 좋은 경우도</b> 많습니다.<br><br>' +
+      '<b>확인할 점은 「내가 몇 년을 들 것인가」</b>입니다. <b>몇 년 단위라면 롤 비용이 누적</b>되므로 실물형과 비교해볼 값어치가 있습니다.' },
+  { h:'③ 환헤지 여부', color:'#7A5C9E',
+    t:'이름 끝의 (H)가 결과를 완전히 바꿉니다',
+    p:'해외 채권 상품이라면 <b>가장 먼저 확인할 것</b>입니다.<br><br>' +
+      '<b>· 이름에 (H)가 있으면 환헤지형</b> — 환율 변동을 <b>제거</b>합니다. <b>금리만</b> 남습니다.<br>' +
+      '<b>· (H)가 없으면 언헤지형</b> — <b>금리와 환율이 함께</b> 움직입니다.<br><br>' +
+      '<b>결과가 얼마나 다른가</b> — <b>완전히 다릅니다.</b> 미국 금리가 내려가 채권 가격이 올라도, <b>원/달러 환율이 함께 내려가면</b> 원화 기준 수익이 <b>사라지거나 마이너스</b>가 될 수 있습니다.<br><br>' +
+      '<b>그리고 헤지에는 비용이 듭니다</b> — 대체로 <b>두 나라의 단기 금리 차이</b>만큼입니다. 미국 금리가 한국보다 높으면 <b>그 차이만큼이 비용</b>으로 나갑니다.<br><br>' +
+      '<b>「미국 금리가 높으니 유리하다」는 헤지하면 대체로 사라집니다.</b> <b>08편에서 이 계산을 직접</b> 해봅니다.<br><br>' +
+      '<b>지금 미국 채권 상품을 들고 있다면 오늘 바로 확인하세요</b> — 이름 끝에 <b>(H)</b>가 있는지.' },
+  { h:'④ 총보수와 실질 비용', color:'#8E4B3A',
+    t:'표시된 보수가 전부가 아닙니다',
+    p:'상품 페이지에 <b>「총보수」</b>가 표시됩니다. 그런데 <b>실제로 나가는 비용은 그보다 큽니다.</b><br><br>' +
+      '<b>표시되지 않는 것들</b><br>· <b>매매 비용</b> — 펀드 안에서 채권을 사고팔 때 드는 비용<br>· <b>호가 스프레드</b> — 내가 살 때와 팔 때의 가격 차이<br>· <b>추적오차</b> — 기초지수와 벌어지는 정도<br>· <b>선물형이면 롤 비용</b><br>· <b>환헤지형이면 헤지 비용</b><br><br>' +
+      '<b>실질 비용을 보는 법</b> — <b>기초지수 수익률과 상품 수익률의 차이</b>를 몇 년치 비교하는 것이 가장 정확합니다. 운용보고서에 <b>비교 표</b>가 있습니다.<br><br>' +
+      '<b>얼마나 중요한가</b> — 3장에서 계산한 대로입니다. 연 <b>0.5%</b>의 차이도 <b>10년이면 5% 넘게</b> 벌어집니다. <b>특히 기대 수익이 4~5%인 채권에서는 비중이 큽니다.</b><br><br>' +
+      '<b>다만 비용만 보고 고르지는 마세요</b> — <b>거래가 잘 되는지(유동성)</b>가 더 중요한 경우가 많습니다. 팔고 싶을 때 <b>제값에 못 파는 것</b>이 더 큰 비용입니다.' },
+  { h:'⑤ 이름에 숨은 단서', color:'#5F7A52',
+    t:'상품명만 잘 읽어도 절반은 알 수 있습니다',
+    p:'국내 상장 채권 ETF의 이름에는 <b>구조가 상당히 드러나</b> 있습니다.<br><br>' +
+      '<b>· 「미국채」·「국고채」</b> — 발행자 (신용 위험 여부, 03편)<br>' +
+      '<b>· 「30년」·「10년」·「단기」</b> — 만기대 (듀레이션의 대략, 02편)<br>' +
+      '<b>· 「선물」</b> — 선물형 (롤 비용)<br>' +
+      '<b>· 「스트립」</b> — <b>듀레이션이 훨씬 깁니다</b> (01편) — 같은 30년이라도 <b>변동이 1.5배 이상</b><br>' +
+      '<b>· 「합성」</b> — 스왑 구조 (거래상대 위험)<br>' +
+      '<b>· 「액티브」</b> — 지수를 그대로 따르지 않고 <b>운용역이 조정</b>합니다<br>' +
+      '<b>· 「(H)」</b> — 환헤지형<br>' +
+      '<b>· 「2X」·「레버리지」·「인버스」</b> — <b>장기 보유 상품이 아닙니다</b> (4장)<br><br>' +
+      '<b>예를 들어</b> <b>「미국채30년선물(H)」</b>라면 — <b>미국 국채, 만기 30년대, 선물형, 환헤지</b>입니다. 그러면 <b>신용 위험 없음 · 듀레이션 17 근처 · 롤 비용 있음 · 환율 영향 없음</b>으로 성격이 거의 다 파악됩니다.<br><br>' +
+      '<b>이름을 읽는 것부터가 확인의 시작</b>입니다. 그다음 <b>설명서에서 듀레이션 숫자</b>만 찾으면 충분합니다.' }
+];
+bindBtnRow('#ckBtns', function(v){
+  document.getElementById('ckVerdict').querySelector('.vh').textContent = CK[+v].h;
+  verdict('ckVerdict', CK[+v].color, CK[+v].t, CK[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#bpCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#bpCheck li.done').length;
+      document.getElementById('bpCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 세 개가 오늘 바로 할 수 있는 일입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+document.querySelector('#vsBtns button[data-v="0"]').click();
+mtDraw();
+rlDraw();
+lvDraw();
+document.querySelector('#ckBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
