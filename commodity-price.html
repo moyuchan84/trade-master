@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>재고와 생산원가</title>
+<meta name="description" content="주식에 PER이 있다면 원자재에는 재고와 생산원가가 있습니다. 가격이 어디서 멈추는지를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --stock:#4C6B7A;--cost:#8E4B3A;--floor:#5F7A52;--ceil:#8E6B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--stock));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--stock));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--stock));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .three{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:20px 0 0;}
+  .three > div{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--fc);border-radius:3px;padding:14px 15px;}
+  .three h4{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--fc);margin:0 0 6px;}
+  .three .it{font-size:13.4px;color:var(--ink);margin-bottom:5px;font-weight:600;}
+  .three .dr{font-size:12.4px;color:var(--ink-soft);line-height:1.55;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .three{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">원자재 03 · 수급 · 투자 공부 노트</div>
+    <h1>재고와<br>생산원가</h1>
+    <p class="lede">주식에는 <b>실적</b>이 있고 부동산에는 <b>임대료</b>가 있습니다. 원자재에는 둘 다 없습니다. 대신 <b>재고</b>와 <b>생산원가</b>가 있습니다. <b>가격이 어디서 폭발하고 어디서 멈추는지</b>를 정하는 두 숫자입니다.</p>
+    <div class="callout">
+      <p><b>이 편의 두 문장</b>입니다.</p>
+      <p><b>① 재고가 탄력성을 만듭니다.</b> 02편에서 <b>「수요가 완고할수록 크게 튄다」</b>고 했는데, <b>그 완고함을 정하는 것이 재고</b>입니다. 재고가 넉넉하면 공급 차질을 흡수하고, <b>바닥나 있으면 같은 차질이 몇 배로</b> 터집니다. 같은 <b>공급 −5%</b>인데 재고 120일이면 <b>+17%</b>, 재고 10일이면 <b>+200%</b>입니다.</p>
+      <p><b>② 가격을 정하는 것은 「평균 원가」가 아니라 「가장 비싼 생산자의 원가」</b>입니다. 수요를 겨우 채우는 <b>마지막 한 통</b>을 누가 만드느냐가 가격이 됩니다. 그래서 <b>수요가 조금만 늘어도 가격이 계단처럼 뛸 수</b> 있습니다.</p>
+      <p><b>⚠️ 다만 이 편의 계산은 전부 단순 모형</b>입니다. <b>예측 도구가 아니라 「왜 그런 일이 벌어졌나」를 설명하는 틀</b>로 쓰는 것이 안전합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#what">1. 뭘 보나</a>
+    <a href="#stock">2. 재고</a>
+    <a href="#cost">3. 생산원가</a>
+    <a href="#band">4. 바닥과 천장</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="what">
+    <div class="prod-head" style="--edge:var(--stock)">
+      <span class="prod-tag">01 · 지표</span>
+      <h2>PER이 없는 자산은 무엇을 보나</h2>
+      <p class="one">세 가지입니다 — <b>재고 · 원가 · 정책.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>주식은 <b>「이 회사가 돈을 얼마나 버나」</b>를 보면 비싼지 싼지 짐작할 수 있어. 집은 <b>「월세를 얼마 받나」</b>를 보면 돼.</p>
+      <p>그런데 <b>기름은 돈을 벌어다 주지 않아.</b> 그럼 <b>「지금 기름값이 비싼가 싼가」</b>는 어떻게 알까?</p>
+      <p><b>첫째, 창고를 봐.</b> 창고에 기름이 가득하면 <b>남는다</b>는 뜻이고, 텅 비어 있으면 <b>모자란다</b>는 뜻이야. <b>창고가 비어 있을 때 사고가 나면 값이 폭발</b>해.</p>
+      <p><b>둘째, 만드는 데 얼마 드는지를 봐.</b> 만드는 데 5만원 드는 걸 3만원에 팔면 <b>계속 만들 수가 없어.</b> 그래서 <b>값이 원가 아래로 오래 머무르기는 어려워.</b></p>
+      <p><b>셋째, 나라들이 뭘 하는지 봐.</b> 산유국이 <b>「덜 캐자」</b>고 정하면 값이 오르고, 어떤 나라가 <b>「수출 안 해」</b>라고 하면 값이 뛰어.</p>
+      <p>이 셋이 <b>원자재의 「실적 발표」</b>야.</p>
+    </div>
+
+    <div class="three">
+      <div style="--fc:var(--stock)">
+        <h4>① 재고</h4>
+        <div class="it">지금 창고에 얼마나 있나</div>
+        <div class="dr"><b>주간·월간으로 공개</b>됩니다. 원유·천연가스·곡물·구리 모두 발표가 있습니다.<br><br><b>「재고 일수」</b>로 보는 것이 핵심입니다 — 양이 아니라 <b>「며칠 버틸 수 있나」</b>입니다.</div>
+      </div>
+      <div style="--fc:var(--cost)">
+        <h4>② 생산원가</h4>
+        <div class="it">만드는 데 얼마나 드나</div>
+        <div class="dr">가격이 여기 아래로 가면 <b>생산이 줄어듭니다.</b> 그래서 <b>바닥 역할</b>을 합니다.<br><br>단 <b>바닥이 두 개</b>입니다 — <b>현금원가</b>(즉시 반응)와 <b>전체원가</b>(몇 년 뒤 반응). 4장에서 나눕니다.</div>
+      </div>
+      <div style="--fc:var(--ceil)">
+        <h4>③ 정책</h4>
+        <div class="it">누가 무엇을 정하나</div>
+        <div class="dr"><b>산유국 감산·증산</b>, <b>수출 규제</b>, <b>전략비축유 방출</b>, <b>환경 규제</b>가 공급을 직접 바꿉니다.<br><br><b>예측이 거의 불가능</b>한 요소이고, <b>가장 크게 움직이는</b> 요소이기도 합니다.</div>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 편의 첫 문장</div>
+      <div class="kb">원자재의 실적 발표는<br><b>창고 재고 숫자</b>입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="stock">
+    <div class="prod-head" style="--edge:var(--stock)">
+      <span class="prod-tag">02 · 재고</span>
+      <h2>재고가 완고함을 만듭니다</h2>
+      <p class="one">02편의 <b>「탄력성」</b>이 어디서 나오는지의 답입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">INVENTORY · 재고가 적을수록 같은 사고가 크게 터집니다</div>
+      <p class="labsub">공급 차질은 그대로 두고 <b>재고만</b> 바꿔보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="ivDays">지금 재고 (며칠 분)</label>
+        <input type="range" id="ivDays" min="3" max="150" step="1" value="60">
+        <output id="ivDaysOut">60일 (정상)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ivShock">공급 차질</label>
+        <input type="range" id="ivShock" min="0" max="15" step="1" value="5">
+        <output id="ivShockOut">−5%</output>
+      </div>
+
+      <div class="steps-out" id="ivSteps"></div>
+
+      <svg viewBox="0 0 640 245" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="재고 수준별 가격 반응">
+        <g id="ivScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">유효 탄력성</span><span class="rv" id="ivElas">—</span></div>
+        <div><span class="rk">가격 반응</span><span class="rv" id="ivJump">—</span></div>
+      </div>
+
+      <div class="verdict" id="ivVerdict" style="--vc:var(--stock)">
+        <div class="vh">재고</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>유효 탄력성 = 기본 탄력성(0.15) × (재고 일수 ÷ 정상 재고 60일)</b>, 그리고 <b>가격 반응 = 공급 차질 ÷ 유효 탄력성</b>입니다.<br><br>
+        <b>왜 이렇게 두나</b> — <b>재고가 많으면 「당장 안 사도 된다」</b>가 성립합니다. 그래서 <b>수요가 유연해집니다.</b> 반대로 <b>재고가 없으면 「지금 당장 사야 한다」</b>가 되어 <b>얼마를 줘서라도</b> 삽니다.<br><br>
+        <b>⚠️ 매우 단순화한 모형입니다.</b> 실제 탄력성은 재고만으로 정해지지 않고, <b>기본값 0.15와 정상 재고 60일도 임의로 잡은 수치</b>입니다. <b>숫자 자체가 아니라 「방향과 크기의 감각」</b>만 가져가면 됩니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>그래서 재고 발표에 가격이 크게 움직입니다</h3>
+      <p>원자재 뉴스를 보면 <b>「주간 재고가 예상보다 늘어 유가 하락」</b> 같은 문장이 반복됩니다. <b>왜 그 숫자 하나에 가격이 몇 %씩 움직일까요.</b></p>
+      <p><b>두 가지가 동시에 바뀌기 때문</b>입니다.</p>
+      <p><b>① 수급의 방향을 알려줍니다.</b> 재고가 <b>늘었다</b>는 것은 <b>「생산이 소비보다 많았다」</b>는 뜻입니다. 생산량과 소비량을 직접 세는 것보다 <b>재고 변화를 보는 것이 훨씬 정확</b>합니다.</p>
+      <p><b>② 앞으로의 민감도를 바꿉니다.</b> 위 계산기가 보여준 것입니다. 재고가 줄면 <b>다음 사고가 터졌을 때의 반응 크기</b>가 커집니다. <b>지금 가격뿐 아니라 미래의 위험까지</b> 바뀝니다.</p>
+      <p class="plain"><b>그래서 이런 일이 생깁니다</b> — <b>공급 차질이 하나도 없었는데도 재고가 계속 줄어든다는 이유만으로 가격이 오르는</b> 경우가 있습니다. <b>「완충 장치가 얇아지고 있다」</b>는 것 자체가 위험이기 때문입니다.<br><br><b>실전에서 볼 것</b> — 절대량보다 <b>「평년 대비」</b>와 <b>「추세」</b>입니다. 재고 발표는 대개 <b>「5년 평균 대비 몇 %」</b> 형태로 함께 나옵니다.</p>
+
+      <h3>재고를 볼 수 없는 원자재도 많습니다</h3>
+      <p>여기까지 읽으면 <b>「재고를 확인하면 되겠네」</b> 싶지만, <b>확인할 수 있는 품목이 제한적</b>입니다.</p>
+      <p><b>· 잘 보이는 것</b> — <b>원유·천연가스</b>(미국 주간 발표), <b>구리·알루미늄</b>(거래소 창고 재고 공개), <b>곡물</b>(정기 수급 전망).<br>
+         <b>· 잘 안 보이는 것</b> — <b>중국이 얼마나 쌓아뒀는지</b>는 대체로 공개되지 않습니다. 그런데 <b>중국이 세계 소비의 큰 몫</b>을 차지하는 품목이 많습니다.<br>
+         <b>· 거래소 밖 재고</b> — 공개되는 것은 <b>거래소 창고</b>뿐이고, <b>기업이 자체 보유한 재고</b>는 안 보입니다.</p>
+      <p class="plain"><b>그래서 이런 오해가 생깁니다</b> — <b>「거래소 재고가 역대 최저」</b>라는 뉴스가 나오는데 가격은 안 오르는 경우가 있습니다. <b>거래소 밖에 쌓여 있었던</b> 것입니다.<br><br><b>⚠️ 개인 투자자에게 현실적인 결론</b> — <b>재고 숫자로 남보다 먼저 움직이는 것은 사실상 불가능</b>합니다. 전업으로 이것만 보는 사람들이 있습니다.<br><br><b>대신 이렇게 쓰는 것이 현실적</b>입니다 — <b>「지금 이 시장이 완충 장치가 두꺼운 상태인가 얇은 상태인가」</b>를 아는 용도입니다. 얇은 상태라면 <b>내 비중을 줄일 이유</b>가 됩니다. <b>맞히는 데 쓰는 게 아니라 크기를 정하는 데 쓰는</b> 것입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="cost">
+    <div class="prod-head" style="--edge:var(--cost)">
+      <span class="prod-tag">03 · 원가</span>
+      <h2>마지막 한 통을 누가 만드나</h2>
+      <p class="one">가격을 정하는 것은 <b>평균 원가가 아니라 가장 비싼 생산자의 원가</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COST CURVE · 수요를 움직여보세요</div>
+      <p class="labsub">싼 곳부터 차례로 켜지고, <b>수요를 겨우 채우는 마지막 생산자</b>의 원가가 가격이 됩니다.</p>
+
+      <div class="ctrl-row">
+        <label for="ccDemand">수요 (단위)</label>
+        <input type="range" id="ccDemand" min="10" max="95" step="1" value="70">
+        <output id="ccDemandOut">70</output>
+      </div>
+
+      <div class="steps-out" id="ccSteps"></div>
+
+      <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="생산원가 곡선과 한계 생산자">
+        <g id="ccScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">시장 가격</span><span class="rv" id="ccPrice">—</span></div>
+        <div><span class="rk">한계 생산자</span><span class="rv" id="ccMarg">—</span></div>
+      </div>
+
+      <div class="verdict" id="ccVerdict" style="--vc:var(--cost)">
+        <div class="vh">원가 곡선</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 여기 원가와 생산량은 구조를 보기 위한 예시</b>이며 <b>실제 수치가 아닙니다.</b> 실제 원가는 유가·환율·기술에 따라 계속 변합니다.<br><br>
+        <b>계산 기준.</b> 생산자를 <b>원가가 싼 순서</b>로 세우고, 누적 생산량이 <b>수요에 처음 닿는 생산자</b>의 원가를 가격으로 잡았습니다. 경제학에서 <b>「한계비용」</b>이라 부르는 개념입니다.<br><br>
+        <b>실제로는 더 복잡합니다</b> — 장기 계약, 운송비, 품질 차이, 정치적 이유로 원가와 무관하게 생산하는 경우가 있습니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="band">
+    <div class="prod-head" style="--edge:var(--floor)">
+      <span class="prod-tag">04 · 범위</span>
+      <h2>바닥은 두 개, 천장은 하나</h2>
+      <p class="one">그리고 <b>어느 쪽도 단단하지 않습니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">BAND · 지금 가격을 움직여보세요</div>
+      <p class="labsub">가격이 어느 구간에 있느냐에 따라 <b>앞으로 벌어질 일</b>이 다릅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="bdPrice">지금 가격 ($)</label>
+        <input type="range" id="bdPrice" min="10" max="160" step="1" value="70">
+        <output id="bdPriceOut">$70</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="bdCash">한계 생산자 현금원가 ($)</label>
+        <input type="range" id="bdCash" min="5" max="80" step="1" value="35">
+        <output id="bdCashOut">$35</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="bdFull">한계 생산자 전체원가 ($)</label>
+        <input type="range" id="bdFull" min="10" max="120" step="1" value="55">
+        <output id="bdFullOut">$55</output>
+      </div>
+
+      <div class="steps-out" id="bdSteps"></div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="가격 구간과 바닥·천장">
+        <g id="bdScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">지금 구간</span><span class="rv" id="bdZone">—</span></div>
+        <div><span class="rk">시간이 지나면</span><span class="rv" id="bdDir">—</span></div>
+      </div>
+
+      <div class="verdict" id="bdVerdict" style="--vc:var(--floor)">
+        <div class="vh">구간</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>용어.</b> <b>현금원가</b>는 <b>「이미 지은 시설로 계속 캐는 데 드는 돈」</b>입니다. <b>전체원가</b>는 여기에 <b>「시설을 짓는 데 든 돈까지 회수하는」</b> 수준입니다.<br><br>
+        <b>왜 둘을 나누나</b> — <b>이미 지은 유전은 값이 전체원가 밑이어도 계속 캡니다.</b> 세워두면 더 손해이기 때문입니다. 하지만 <b>새로 짓지는 않습니다.</b> 그래서 <b>공급이 줄어드는 데 몇 년</b>이 걸립니다.<br><br>
+        <b>⚠️ 천장은 바닥보다 훨씬 흐릿합니다.</b> <b>「이 값이면 사람들이 안 쓴다」</b>는 수준이 있긴 하지만, <b>그게 얼마인지는 아무도 모릅니다.</b> 그래서 <b>천장을 믿고 공매도하는 것은 매우 위험</b>합니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「원가 아래니까 싸다」가 틀리는 경우</h3>
+      <p>원자재 이야기에서 <b>「지금 생산원가 밑이니까 더 떨어질 수 없다」</b>는 말을 자주 봅니다. <b>구조적으로는 맞는 말</b>이지만, <b>투자 판단으로 쓰기에는 구멍이 많습니다.</b></p>
+      <p><b>① 「얼마나 오래」가 빠져 있습니다.</b> 원가 아래에서 <b>몇 년을</b> 머무를 수 있습니다. 그동안 나는 <b>보관비·롤 손실을 계속 냅니다</b>(02편). <b>결국 오르더라도 내가 못 버티면</b> 소용없습니다.</p>
+      <p><b>② 원가 자체가 내려갑니다.</b> 가격이 낮으면 생산자들은 <b>비용을 깎습니다.</b> 인건비를 줄이고, 효율을 올리고, 비싼 광구를 닫고 싼 곳에만 집중합니다. <b>몇 년 뒤 원가 곡선 자체가 아래로</b> 내려가 있습니다.</p>
+      <p><b>③ 환율이 원가를 바꿉니다.</b> 원가를 자국 통화로 쓰는 생산자는 <b>자국 통화가 약해지면 달러 기준 원가가 저절로 떨어집니다.</b> 달러 가격이 낮아도 <b>그들은 여전히 이익</b>일 수 있습니다.</p>
+      <p><b>④ 「원가」가 하나가 아닙니다.</b> 위 계산기가 보여준 대로 <b>현금원가와 전체원가</b>가 다르고, 생산자마다도 다릅니다. <b>「생산원가 $55」</b>라는 뉴스의 숫자가 <b>어느 원가인지</b>가 결론을 바꿉니다.</p>
+      <p class="plain"><b>그래서 이렇게 쓰는 것이 안전합니다.</b><br>· <b>「원가 밑이니 반드시 오른다」</b> → 쓰지 않습니다.<br>· <b>「원가 밑이니 여기서 더 크게 빠질 확률은 위쪽보다 낮아 보인다」</b> → 이 정도가 한계입니다.<br>· <b>그리고 그마저도 「내가 몇 년을 버틸 수 있나」와 함께</b> 판단해야 합니다.<br><br><b>반대쪽도 마찬가지</b>입니다 — <b>「원가 대비 너무 비싸니 떨어진다」</b>도 같은 이유로 위험합니다. <b>비싼 상태가 몇 년 갈 수</b> 있고, 공매도나 인버스는 <b>그 사이에 청산</b>당합니다(05·09편).</p>
+
+      <h3>수요 파괴 — 유일한 천장</h3>
+      <p>바닥은 <b>생산자가 만듭니다.</b> 그렇다면 <b>천장은 누가 만들까요.</b> <b>소비자</b>입니다.</p>
+      <p>가격이 충분히 오르면 <b>결국 수요가 줄어듭니다.</b> 이것을 <b>「수요 파괴」</b>라고 부릅니다. 02편에서 본 대로 <b>단기에는 거의 안 줄지만</b>, 시간이 지나면 반응합니다.</p>
+      <p><b>· 즉시</b> — 덜 쓰기. 난방 온도를 낮추고, 운전을 줄입니다. <b>효과가 작습니다.</b><br>
+         <b>· 몇 달~1년</b> — 대체하기. 다른 연료로 바꾸고, 다른 재료를 씁니다.<br>
+         <b>· 몇 년</b> — 구조를 바꾸기. 효율이 높은 설비로 교체하고, 아예 다른 기술로 넘어갑니다.<br>
+         <b>· 그리고 경기 침체</b> — 가격이 너무 높으면 <b>경제 전체가 위축</b>되고, 그러면 수요가 크게 줍니다.</p>
+      <p class="plain"><b>여기 원자재의 잔인한 성질</b>이 있습니다 — <b>가격이 높으면 그 자체가 수요를 죽입니다.</b> 그리고 <b>수요가 죽은 뒤에는 공급이 남습니다.</b> ①에서 뒤늦게 투자한 물량이 그때 나오기 때문입니다.<br><br><b>그래서 원자재 급등의 끝은 대체로 급락</b>입니다. <b>주식처럼 「높은 곳에서 안정되는」 일이 잘 없습니다.</b><br><br><b>⚠️ 그런데 「그러니 고점에서 팔면 되겠다」는 생각은 위험</b>합니다. <b>고점이 어디인지는 지나야 알 수 있고</b>, 그 전에 <b>가격은 「말이 안 되는 수준」까지 갈 수</b> 있습니다. <b>맞히려 하지 말고 비중으로 관리하는 것</b>이 이 트랙의 일관된 입장입니다(10편).</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">원자재의 <b>가격표를 읽는 법</b>입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>원자재에는 PER이 없고 재고·원가·정책을 본다</b>는 것.</li>
+      <li><b>재고는 양이 아니라 「며칠 분」으로 본다</b>는 것.</li>
+      <li><b>재고가 얇을수록 같은 사고가 몇 배로 터진다</b>는 것.</li>
+      <li><b>재고 발표에 가격이 크게 움직이는 이유</b>를 안다는 것.</li>
+      <li><b>가격은 평균 원가가 아니라 마지막 생산자의 원가</b>라는 것.</li>
+      <li><b>그래서 수요가 조금 늘어도 가격이 계단처럼 뛴다</b>는 것.</li>
+      <li><b>바닥이 두 개(현금원가·전체원가)</b>라는 것.</li>
+      <li><b>「원가 밑이니 반드시 오른다」는 성립하지 않는다</b>는 것.</li>
+      <li><b>천장은 「수요 파괴」이고 위치를 알 수 없다</b>는 것.</li>
+      <li><b>이 지표들은 맞히는 용도가 아니라 비중을 정하는 용도</b>라는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 원자재 가격은 <b>「재고라는 완충 장치」와 「원가라는 바닥」 사이</b>에서 움직입니다. <b>완충이 두꺼우면 조용하고, 얇아지면 폭발적</b>입니다. 그리고 <b>바닥은 있지만 천장은 없습니다.</b></p>
+      <p><b>이 비대칭이 원자재의 성격을 정합니다</b> — <b>아래로는 원가가 어느 정도 받쳐주지만, 위로는 얼마까지 갈지 모릅니다.</b> 그래서 <b>급등이 급락보다 극적</b>입니다.</p>
+      <p><b>⚠️ 그런데 그 비대칭이 내 수익률의 비대칭은 아닙니다.</b> 01·02편에서 본 <b>보관비와 롤 손실</b>이 <b>매년 나를 깎기</b> 때문입니다. <b>가격의 비대칭은 위쪽이 유리하지만, 비용의 비대칭은 나에게 불리</b>합니다. <b>둘을 합쳐야</b> 실제 결과가 나옵니다 — <b>06편</b>에서 계산합니다.</p>
+      <p><b>다음 편은 04편 — 인플레이션 헤지라는 말의 진실</b>입니다. <b>「원자재는 물가에 강하다」</b>는 말이 <b>언제 맞고 언제 완전히 틀리는지</b>를 나눠 봅니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 원자재 03 · 수급<br>
+    <a href="index.html#commodity">← 원자재 목록으로</a> · <a href="commodity-kinds.html">02 · 에너지·금속·농산물</a> · 04 · 인플레이션 헤지 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    탄력성·재고 기준·생산원가는 모두 <b>구조를 보기 위한 예시 수치</b>이며 실제 시장 값이 아닙니다. 계산기는 예측 도구가 아닙니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 2. 재고 ══════════ */
+var BASE_E = 0.15, NORM_D = 60;
+function effElas(days){ return Math.max(0.005, BASE_E * (Math.max(3, days) / NORM_D)); }
+function ivDraw(){
+  var d = +document.getElementById('ivDays').value;
+  var s = +document.getElementById('ivShock').value;
+  var lbl = d >= 100 ? '넉넉' : d >= 70 ? '여유' : d >= 45 ? '정상' : d >= 25 ? '빠듯' : '바닥';
+  document.getElementById('ivDaysOut').textContent = d + '일 (' + lbl + ')';
+  document.getElementById('ivShockOut').textContent = s === 0 ? '없음' : '−' + s + '%';
+
+  var e = effElas(d);
+  var j = s / e;
+
+  steps('ivSteps', [
+    { k:'재고', v:d + '일 분' },
+    { k:'정상 재고 대비', v:num(d / NORM_D * 100, 0) + '%' },
+    { k:'유효 탄력성 = 0.15 × (재고 ÷ 60)', v:num(e, 3) },
+    { k:'공급 차질', v:'−' + s + '%' },
+    { k:'가격 반응 = 차질 ÷ 탄력성', v:'+' + num(j, 0) + '%', total:true }
+  ]);
+
+  document.getElementById('ivElas').textContent = num(e, 3) + (e < BASE_E ? ' (정상보다 낮음)' : e > BASE_E ? ' (정상보다 높음)' : ' (정상)');
+  document.getElementById('ivJump').textContent = '+' + num(j, 0) + '%';
+  document.getElementById('ivJump').style.color = j > 60 ? 'var(--neg)' : '';
+
+  var X0 = 60, Y0 = 200, W = 540, H = 155;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">재고 일수에 따른 가격 반응 (공급 −' + s + '%)</text>';
+  var pts = [];
+  var maxJ = s > 0 ? s / effElas(3) : 10;
+  for(var dd = 3; dd <= 150; dd += 1){
+    var jj = s / effElas(dd);
+    var x = X0 + (dd - 3) / 147 * W;
+    var y = Y0 - Math.min(1, jj / maxJ) * H;
+    pts.push([x, y]);
+  }
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  g += '<line x1="' + X0 + '" y1="' + (Y0 - H) + '" x2="' + X0 + '" y2="' + Y0 + '" class="axis"/>';
+  [30, 60, 90, 120, 150].forEach(function(t){
+    var x = X0 + (t - 3) / 147 * W;
+    g += '<line x1="' + x.toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + x.toFixed(1) + '" y2="' + Y0 + '" class="gridl"/>';
+    g += '<text class="axt" x="' + x.toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + t + '일</text>';
+  });
+  g += '<path d="M' + pts.map(function(p){ return p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' L') +
+       '" fill="none" stroke="#4C6B7A" stroke-width="2"/>';
+  var cx = X0 + (Math.max(3, d) - 3) / 147 * W;
+  var cy = Y0 - Math.min(1, j / maxJ) * H;
+  g += '<line x1="' + cx.toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + cx.toFixed(1) + '" y2="' + Y0 + '" stroke="#8E4B3A" stroke-width="1.2" stroke-dasharray="3 3"/>';
+  g += '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="#8E4B3A"/>';
+  var tx = Math.min(cx + 10, X0 + W - 70);
+  g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + Math.max(Y0 - H + 12, cy - 10).toFixed(1) + '" fill="#8E4B3A">+' + num(j, 0) + '%</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 32) + '">왼쪽으로 갈수록(재고가 얇을수록) 같은 사고에 가격이 가파르게 반응합니다.</text>';
+  document.getElementById('ivScene').innerHTML = g;
+
+  if(s === 0){
+    verdict('ivVerdict', '#5B5648',
+      '공급 차질을 넣어보세요',
+      '<b>재고가 왜 중요한지</b>는 <b>사고가 났을 때</b> 드러납니다. <b>「공급 차질」 슬라이더</b>를 올려보세요.<br><br>' +
+      '<b>평소에는 재고가 얇아도 아무 일이 없습니다.</b> 그래서 <b>「재고가 낮다」는 뉴스만으로는 가격이 잘 안 움직입니다.</b><br><br>' +
+      '<b>그런데 완충 장치가 얇아진 상태에서 사고가 나면</b> 그때 <b>몇 배로</b> 터집니다. <b>재고는 「지금의 가격」이 아니라 「앞으로의 위험」</b>을 알려주는 숫자입니다.');
+  } else if(d <= 20){
+    verdict('ivVerdict', '#8E4B3A',
+      '재고 ' + d + '일 — 완충 장치가 사라진 상태입니다',
+      '재고가 <b>' + d + '일 분</b>밖에 없어 유효 탄력성이 <b>' + num(e, 3) + '</b>까지 떨어졌습니다. 그래서 <b>' + s +
+      '%의 공급 차질</b>이 <b>+' + num(j, 0) + '%</b>의 급등을 만듭니다.<br><br>' +
+      '<b>왜 이런 일이 벌어지나</b> — 재고가 있으면 <b>「일단 창고에서 꺼내 쓰고 나중에 사자」</b>가 됩니다. 그런데 <b>창고가 비어 있으면 「지금 당장 사야 한다」</b>가 되고, 그러면 <b>얼마를 줘서라도</b> 삽니다.<br><br>' +
+      '<b>재고 슬라이더를 120일로 올려보세요.</b> <b>같은 사고인데 반응이 몇 분의 일</b>로 줄어듭니다.<br><br>' +
+      '<b>⚠️ 투자 관점에서의 의미</b> — <b>「재고가 역대 최저」라는 뉴스는 「지금 사라」는 신호가 아니라 「지금은 변동성이 극단적일 수 있다」는 경고</b>로 읽는 것이 맞습니다. <b>위로도 아래로도</b> 크게 움직일 수 있습니다.');
+  } else if(d >= 100){
+    verdict('ivVerdict', '#5F7A52',
+      '재고 ' + d + '일 — 웬만한 사고는 흡수됩니다',
+      '재고가 <b>' + d + '일 분</b>으로 넉넉해 유효 탄력성이 <b>' + num(e, 3) + '</b>입니다. <b>' + s +
+      '%의 차질에도</b> 가격은 <b>+' + num(j, 0) + '%</b>에 그칩니다.<br><br>' +
+      '<b>창고에 여유가 있으면</b> 사람들은 <b>급하게 사지 않습니다.</b> <b>「일단 있는 걸 쓰지」</b>가 되기 때문입니다.<br><br>' +
+      '<b>그런데 여기에 반대쪽 문제</b>가 있습니다 — <b>재고가 넘치는 국면은 가격이 오르기 어려운 국면</b>이기도 합니다. <b>남아돈다</b>는 뜻이니까요.<br><br>' +
+      '<b>그리고 재고가 넘칠 때 콘탱고가 심해집니다</b> — 보관할 곳이 부족해지면 <b>보관비가 치솟고</b>, 그것이 <b>롤 손실</b>이 됩니다(02·06편). <b>「조용한 시장」이 내 상품에는 가장 비싼 시장</b>일 수 있습니다.');
+  } else {
+    verdict('ivVerdict', '#4C6B7A',
+      '재고 ' + d + '일 — 가격 반응 +' + num(j, 0) + '%',
+      '유효 탄력성 <b>' + num(e, 3) + '</b>에서 <b>' + s + '%</b>의 차질은 <b>+' + num(j, 0) + '%</b>가 됩니다.<br><br>' +
+      '<b>여기서 확인할 것은 곡선의 모양</b>입니다. 그림에서 보듯 <b>직선이 아니라 왼쪽 끝에서 급격히 치솟습니다.</b><br><br>' +
+      '<b>이것이 원자재의 핵심 성질</b>입니다 — <b>재고가 절반으로 줄면 반응이 두 배가 되는 게 아니라 그 이상</b>이 됩니다. <b>완충 장치는 마지막에 사라질 때 가장 무섭습니다.</b><br><br>' +
+      '<b>슬라이더를 20일 아래로</b> 내려보세요. <b>같은 사고, 전혀 다른 결과</b>입니다.');
+  }
+}
+['ivDays', 'ivShock'].forEach(function(id){ document.getElementById(id).addEventListener('input', ivDraw); });
+
+/* ══════════ 3. 원가 곡선 ══════════ */
+var PROD = [
+  { n:'중동 재래유전', c:15, q:30, col:'#5F7A52' },
+  { n:'러시아·기타',   c:25, q:14, col:'#6B7A52' },
+  { n:'북해·심해',     c:45, q:12, col:'#4C6B7A' },
+  { n:'미국 셰일',     c:55, q:20, col:'#8E6B3A' },
+  { n:'오일샌드',      c:70, q:8,  col:'#8E5B3A' },
+  { n:'초고비용',      c:95, q:6,  col:'#8E4B3A' }
+];
+var CAP = PROD.reduce(function(a, b){ return a + b.q; }, 0);
+function ccDraw(){
+  var dem = +document.getElementById('ccDemand').value;
+  document.getElementById('ccDemandOut').textContent = dem + ' / 생산능력 ' + CAP;
+
+  var cum = 0, price = null, marg = null, mi = -1;
+  for(var i = 0; i < PROD.length; i++){
+    cum += PROD[i].q;
+    if(cum >= dem){ price = PROD[i].c; marg = PROD[i].n; mi = i; break; }
+  }
+  var over = (price === null);
+  if(over){ price = PROD[PROD.length - 1].c; marg = '공급능력 초과'; mi = PROD.length - 1; }
+
+  var thr = 0;
+  for(var k = 0; k <= mi; k++){ thr += PROD[k].q; }
+
+  steps('ccSteps', [
+    { k:'수요', v:dem + ' 단위' },
+    { k:'전체 생산능력', v:CAP + ' 단위' },
+    { k:'가동되는 생산자', v:(mi + 1) + ' / ' + PROD.length + '곳' },
+    { k:'수요를 채우는 마지막 생산자', v:marg },
+    { k:'시장 가격 = 그 생산자의 원가', v:over ? '$' + price + ' 이상' : '$' + price, total:true }
+  ]);
+
+  document.getElementById('ccPrice').textContent = over ? '$' + price + ' 이상 (제한 없음)' : '$' + price;
+  document.getElementById('ccPrice').style.color = over ? 'var(--neg)' : '';
+  document.getElementById('ccMarg').textContent = marg;
+
+  var X0 = 55, Y0 = 205, W = 545, H = 165;
+  var maxC = 110;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">생산원가 곡선 — 싼 곳부터 차례로 켜집니다</text>';
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  g += '<line x1="' + X0 + '" y1="' + (Y0 - H) + '" x2="' + X0 + '" y2="' + Y0 + '" class="axis"/>';
+  [0, 25, 50, 75, 100].forEach(function(v){
+    var y = Y0 - v / maxC * H;
+    g += '<line x1="' + X0 + '" y1="' + y.toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + y.toFixed(1) + '" class="gridl"/>';
+    g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end">$' + v + '</text>';
+  });
+  var acc = 0;
+  PROD.forEach(function(p, i){
+    var x1 = X0 + acc / CAP * W;
+    acc += p.q;
+    var x2 = X0 + acc / CAP * W;
+    var y = Y0 - p.c / maxC * H;
+    var on = (i <= mi);
+    g += '<rect x="' + x1.toFixed(1) + '" y="' + y.toFixed(1) + '" width="' + (x2 - x1).toFixed(1) +
+         '" height="' + (Y0 - y).toFixed(1) + '" fill="' + p.col + '" fill-opacity="' + (on ? '.42' : '.12') +
+         '" stroke="' + p.col + '" stroke-width="' + (i === mi ? '2' : '1') + '"/>';
+    g += '<text class="axt" x="' + ((x1 + x2) / 2).toFixed(1) + '" y="' + (y - 6).toFixed(1) +
+         '" text-anchor="middle"' + (i === mi ? ' fill="#8E4B3A"' : '') + '>$' + p.c + '</text>';
+  });
+  var dx = X0 + Math.min(dem, CAP) / CAP * W;
+  g += '<line x1="' + dx.toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + dx.toFixed(1) + '" y2="' + Y0 +
+       '" stroke="#8E4B3A" stroke-width="2" stroke-dasharray="4 3"/>';
+  g += '<text class="lblb" x="' + Math.min(dx + 6, X0 + W - 46).toFixed(1) + '" y="' + (Y0 - H + 12) + '" fill="#8E4B3A">수요</text>';
+  var py = Y0 - price / maxC * H;
+  g += '<line x1="' + X0 + '" y1="' + py.toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + py.toFixed(1) +
+       '" stroke="#8E4B3A" stroke-width="1.4" stroke-dasharray="2 3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 18) + '">싼 생산자 →                                                            → 비싼 생산자</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 36) + '">가격은 ' + (over ? '생산능력을 넘어 제한이 없습니다' : '「' + marg + '」의 원가인 $' + price + '에서 정해집니다') + '.</text>';
+  document.getElementById('ccScene').innerHTML = g;
+
+  if(over){
+    verdict('ccVerdict', '#8E4B3A',
+      '수요가 생산능력을 넘었습니다 — 가격에 상한이 없습니다',
+      '수요 <b>' + dem + '</b>이 전체 생산능력 <b>' + CAP + '</b>을 넘었습니다. <b>아무리 비싸게 쳐줘도 만들 수가 없는</b> 상태입니다.<br><br>' +
+      '<b>이때 가격은 원가와 무관해집니다.</b> <b>「누가 더 절실한가」</b>로 정해집니다. 원가 곡선은 <b>더 이상 아무것도 알려주지 않습니다.</b><br><br>' +
+      '<b>역사적으로 실제 벌어진 일</b>입니다 — 전쟁이나 극단적 이상기후로 <b>물리적으로 물량이 없을 때</b> 가격이 <b>평소의 몇 배</b>로 간 사례들이 있습니다.<br><br>' +
+      '<b>⚠️ 그리고 이런 국면은 대체로 짧고 격렬하게 끝납니다.</b> 수요 파괴가 시작되고(4장), 뒤늦은 공급이 들어오면 <b>급락</b>합니다. <b>이 구간에서 추격 매수하는 것이 원자재에서 가장 흔한 실패</b>입니다(09편).');
+  } else {
+    var next = PROD[mi + 1];
+    var prevC = mi > 0 ? PROD[mi - 1].c : null;
+    verdict('ccVerdict', PROD[mi].col,
+      '가격 $' + price + ' — 「' + marg + '」이 마지막 한 통을 만듭니다',
+      '수요 <b>' + dem + '</b>을 채우려면 <b>' + (mi + 1) + '곳</b>이 가동돼야 하고, <b>마지막으로 켜진 곳이 「' + marg +
+      '」($' + price + ')</b>입니다. <b>그래서 시장 가격이 $' + price + '</b>이 됩니다.<br><br>' +
+      '<b>왜 더 싼 곳의 원가가 가격이 되지 않나</b> — <b>$' + PROD[0].c + '에 만드는 곳이 있어도</b> 그곳 물량만으로는 <b>수요를 다 못 채웁니다.</b> 모자란 만큼은 <b>비싼 곳에서 사야</b> 하고, 그러면 <b>모두가 그 값을 받습니다.</b> <b>싼 곳은 그 차액만큼 큰 이익</b>을 냅니다.<br><br>' +
+      (next
+        ? '<b>수요를 ' + thr + '보다 조금만 더 올려보세요.</b> <b>다음 생산자가 켜지는 순간</b> 가격이 <b>$' + price + ' → $' + next.c +
+          '</b>로 <b>계단처럼</b> 뜁니다. <b>수요는 1만큼 늘었는데 가격은 ' + (next.c - price) + '달러</b> 뛰는 것입니다.<br><br>'
+        : '<b>여기가 마지막 생산자</b>입니다. 수요가 더 늘면 <b>가격에 상한이 사라집니다.</b><br><br>') +
+      (prevC
+        ? '<b>반대로 수요를 조금 줄이면</b> 가격이 <b>$' + prevC + '</b>로 <b>계단처럼 떨어집니다.</b> <b>원자재 가격이 「완만하게」 움직이지 않는 이유</b>가 이것입니다.'
+        : '<b>지금은 가장 싼 생산자만으로 수요가 채워지는 상태</b>입니다. <b>공급이 크게 남는</b> 국면이고, 가격이 오르기 어렵습니다.'));
+  }
+}
+document.getElementById('ccDemand').addEventListener('input', ccDraw);
+
+/* ══════════ 4. 바닥과 천장 ══════════ */
+function bdDraw(){
+  var p = +document.getElementById('bdPrice').value;
+  var cash = +document.getElementById('bdCash').value;
+  var full = +document.getElementById('bdFull').value;
+  if(full < cash){ full = cash; document.getElementById('bdFull').value = full; }
+  document.getElementById('bdPriceOut').textContent = '$' + p;
+  document.getElementById('bdCashOut').textContent = '$' + cash;
+  document.getElementById('bdFullOut').textContent = '$' + full + (full === cash ? ' (현금원가와 같음)' : '');
+
+  var zone, dir, col, title, body;
+  if(p < cash){
+    zone = '현금원가 아래';
+    dir = '즉시 감산 → 반등 압력';
+    col = '#8E4B3A';
+    title = '$' + p + ' — 캘수록 손해입니다';
+    body = '가격이 <b>현금원가 $' + cash + '</b>보다 낮습니다. <b>이미 지은 시설로 캐는 것조차 손해</b>인 상태입니다.<br><br>' +
+      '<b>그래서 즉시 반응이 나옵니다</b> — 생산자들이 <b>당장 가동을 멈춥니다.</b> 세워두는 편이 <b>덜 손해</b>이기 때문입니다.<br><br>' +
+      '<b>이 구간은 대체로 오래 못 갑니다.</b> 몇 주~몇 달 안에 공급이 줄고 가격이 올라옵니다.<br><br>' +
+      '<b>⚠️ 그런데 「그러니 사면 된다」가 아닙니다.</b> 두 가지가 걸립니다.<br>· <b>여기까지 온 이유</b>가 있습니다 — 대개 <b>수요가 무너진 국면</b>이고, 그러면 <b>공급이 줄어도 가격이 안 오를 수</b> 있습니다.<br>· <b>내 상품은 현물이 아닙니다</b> — 이 구간은 <b>재고가 넘쳐 콘탱고가 극심한</b> 때이기도 합니다. <b>현물이 올라도 내 ETF는 안 오를 수</b> 있습니다(06편).';
+  } else if(p < full){
+    zone = '현금원가 ~ 전체원가';
+    dir = '신규 투자 중단 → 몇 년 뒤 공급 감소';
+    col = '#8E6B3A';
+    title = '$' + p + ' — 캐긴 캐지만 새로 짓지는 않습니다';
+    body = '가격이 <b>현금원가 $' + cash + '</b>보다는 높고 <b>전체원가 $' + full + '</b>보다는 낮습니다. <b>가장 흔하고 가장 오래 지속되는 구간</b>입니다.<br><br>' +
+      '<b>왜 오래 가나</b> — <b>이미 지은 시설은 계속 돌립니다.</b> 멈추면 더 손해니까요. 그래서 <b>공급이 당장 줄지 않습니다.</b><br><br>' +
+      '<b>하지만 새로 짓지는 않습니다.</b> 그래서 <b>몇 년 뒤에</b> 공급이 줄어듭니다. <b>02편의 사이클 ①단계</b>가 바로 여기입니다.<br><br>' +
+      '<b>⚠️ 투자 관점에서 가장 중요한 경고</b> — <b>이 구간이 몇 년씩 이어질 수</b> 있습니다. 그동안 <b>나는 매년 보관비·롤 손실을 냅니다.</b><br><br>' +
+      '<b>「언젠가는 오른다」가 맞더라도 「그때까지 내가 얼마를 잃는가」가 별개</b>입니다. <b>이 트랙이 반복해서 말하는 지점</b>입니다.';
+  } else if(p < full * 1.6){
+    zone = '전체원가 ~ 그 위';
+    dir = '신규 투자 유입 → 몇 년 뒤 공급 증가';
+    col = '#5F7A52';
+    title = '$' + p + ' — 새로 지을 만한 값입니다';
+    body = '가격이 <b>전체원가 $' + full + '</b>를 넘었습니다. <b>새 광산이나 유전을 지어도 돈이 되는</b> 수준입니다.<br><br>' +
+      '<b>그래서 투자가 들어옵니다.</b> 그리고 <b>몇 년 뒤에 그 물량이 나옵니다.</b> <b>02편 사이클의 ④단계</b>입니다.<br><br>' +
+      '<b>여기서 원자재 특유의 함정</b>이 있습니다 — <b>가격이 좋아 보이는 바로 그 시점에 미래의 공급 과잉이 만들어지고 있습니다.</b> 뉴스가 좋을수록 <b>몇 년 뒤가 나빠집니다.</b><br><br>' +
+      '<b>다만 이 구간 자체는 정상적</b>입니다. <b>「전체원가보다 조금 위」</b>가 <b>장기적으로 가장 흔한 상태</b>입니다. 생산자가 <b>겨우 유지될 만큼만</b> 받는 것이 균형이기 때문입니다.';
+  } else {
+    zone = '수요 파괴 영역';
+    dir = '수요 감소 + 공급 증가 → 급락 위험';
+    col = '#8E4B3A';
+    title = '$' + p + ' — 원가로는 설명이 안 되는 값입니다';
+    body = '가격이 전체원가 <b>$' + full + '</b>의 <b>' + num(p / full, 1) + '배</b>입니다. <b>원가 곡선으로는 설명되지 않는</b> 수준입니다.<br><br>' +
+      '<b>이런 값이 나오는 이유는 하나</b>입니다 — <b>지금 당장 물건이 부족</b>하기 때문입니다. 원가가 얼마든 <b>없으면 못 삽니다.</b> 3장의 <b>「생산능력 초과」</b> 상태입니다.<br><br>' +
+      '<b>여기서 두 가지가 동시에 시작됩니다</b><br>· <b>수요 파괴</b> — 이 값이면 사람들이 <b>정말로 덜 씁니다.</b> 대체하고, 아끼고, 심하면 <b>경기가 꺾입니다.</b><br>· <b>공급 유입</b> — 이 값이면 <b>안 캐던 곳까지 다 캡니다.</b><br><br>' +
+      '<b>⚠️ 그래서 이 구간의 끝은 대체로 급락</b>입니다. 그런데 <b>「언제」는 알 수 없습니다.</b> 여기서 <b>더 올라가는 경우</b>도 흔합니다.<br><br>' +
+      '<b>그래서 이 구간에서 할 수 있는 현실적인 것</b> — <b>맞히려 하지 말고 비중을 줄이는 것</b>입니다. <b>공매도나 인버스는 「방향이 맞아도 시점이 틀리면 청산」</b>이라 특히 위험합니다(05·09편).';
+  }
+
+  steps('bdSteps', [
+    { k:'지금 가격', v:'$' + p },
+    { k:'현금원가 (즉시 반응 기준)', v:'$' + cash },
+    { k:'전체원가 (신규 투자 기준)', v:'$' + full },
+    { k:'전체원가 대비', v:num(p / full * 100, 0) + '%' },
+    { k:'지금 구간', v:zone, total:true }
+  ]);
+
+  document.getElementById('bdZone').textContent = zone;
+  document.getElementById('bdZone').style.color = col;
+  document.getElementById('bdDir').textContent = dir;
+
+  var X0 = 55, W = 545, Y = 60, Hh = 46;
+  var maxP = 165;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="24">가격 구간 지도 ($)</text>';
+  function xp(v){ return X0 + Math.min(v, maxP) / maxP * W; }
+  var segs = [
+    { a:0, b:cash, c:'#8E4B3A', n:'캘수록 손해' },
+    { a:cash, b:full, c:'#8E6B3A', n:'캐지만 새로 안 지음' },
+    { a:full, b:full * 1.6, c:'#5F7A52', n:'새로 지을 만함' },
+    { a:full * 1.6, b:maxP, c:'#8E4B3A', n:'수요 파괴' }
+  ];
+  segs.forEach(function(s){
+    if(s.b <= s.a) return;
+    var x1 = xp(s.a), x2 = xp(s.b);
+    if(x2 - x1 < 0.5) return;
+    g += '<rect x="' + x1.toFixed(1) + '" y="' + Y + '" width="' + (x2 - x1).toFixed(1) + '" height="' + Hh +
+         '" fill="' + s.c + '" fill-opacity=".18" stroke="' + s.c + '" stroke-width="1"/>';
+    if(x2 - x1 > 84){
+      g += '<text class="axt" x="' + ((x1 + x2) / 2).toFixed(1) + '" y="' + (Y + 28) + '" text-anchor="middle">' + s.n + '</text>';
+    }
+  });
+  [{ v:cash, n:'현금원가' }, { v:full, n:'전체원가' }].forEach(function(m, i){
+    var x = xp(m.v);
+    g += '<line x1="' + x.toFixed(1) + '" y1="' + (Y - 8) + '" x2="' + x.toFixed(1) + '" y2="' + (Y + Hh + 8) + '" stroke="#5B5648" stroke-width="1.3"/>';
+    g += '<text class="axt" x="' + x.toFixed(1) + '" y="' + (Y + Hh + (i === 0 ? 22 : 38)) + '" text-anchor="middle">' + m.n + ' $' + m.v + '</text>';
+  });
+  var px = xp(p);
+  g += '<line x1="' + px.toFixed(1) + '" y1="' + (Y - 22) + '" x2="' + px.toFixed(1) + '" y2="' + (Y + Hh) + '" stroke="' + col + '" stroke-width="2.4"/>';
+  g += '<circle cx="' + px.toFixed(1) + '" cy="' + (Y - 22) + '" r="5" fill="' + col + '"/>';
+  var lx = Math.min(Math.max(px, X0 + 30), X0 + W - 30);
+  g += '<text class="lblb" x="' + lx.toFixed(1) + '" y="' + (Y - 32) + '" text-anchor="middle" fill="' + col + '">$' + p + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y + Hh + 62) + '">바닥은 생산자가, 천장은 소비자가 만듭니다. 그리고 천장의 위치는 아무도 모릅니다.</text>';
+  document.getElementById('bdScene').innerHTML = g;
+
+  verdict('bdVerdict', col, title, body);
+}
+['bdPrice', 'bdCash', 'bdFull'].forEach(function(id){ document.getElementById(id).addEventListener('input', bdDraw); });
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 이 편의 결론입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+ivDraw(); ccDraw(); bdDraw();
+</script>
+</body>
+</html>
