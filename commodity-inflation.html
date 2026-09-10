@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>인플레이션 헤지의 진실</title>
+<meta name="description" content="「원자재는 물가에 강하다」는 말이 언제 맞고 언제 완전히 틀리는지를 인플레 원인별로 나눠 계산하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --sup:#8E4B3A;--dem:#8E6B3A;--mon:#7A5C9E;--wage:#4C6B7A;--good:#5F7A52;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--sup));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--sup));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--sup));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .quad{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 0;}
+  .quad > div{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--fc);border-radius:3px;padding:14px 15px;}
+  .quad h4{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--fc);margin:0 0 6px;}
+  .quad .it{font-size:13.4px;color:var(--ink);margin-bottom:5px;font-weight:600;}
+  .quad .dr{font-size:12.4px;color:var(--ink-soft);line-height:1.55;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .quad{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">원자재 04 · 물가 · 투자 공부 노트</div>
+    <h1>인플레이션 헤지라는<br>말의 진실</h1>
+    <p class="lede"><b>「원자재는 물가에 강하다」</b> — 원자재를 권하는 거의 모든 글에 나오는 문장입니다. <b>절반만 맞습니다.</b> 이 편은 <b>어느 절반이 맞고 어느 절반이 틀리는지</b>를 나눕니다.</p>
+    <div class="callout">
+      <p><b>결론부터 말하면 이렇습니다.</b></p>
+      <p><b>원자재가 물가를 막아주는 것은 「원자재가 물가 상승의 원인일 때」뿐</b>입니다. <b>기름값이 올라서 물가가 오른 것</b>이라면, 기름을 들고 있던 사람은 당연히 이깁니다. <b>동어반복에 가까울 만큼 당연</b>합니다.</p>
+      <p><b>그런데 물가가 오르는 이유가 그것만이 아닙니다.</b> <b>임금이 올라서</b>, <b>집세가 올라서</b>, <b>돈이 많이 풀려서</b> 오르는 경우가 있습니다. <b>이때는 원자재가 거의 도움이 되지 않습니다.</b> 오히려 <b>보관비만큼 손해</b>가 납니다.</p>
+      <p><b>숫자로 보면 이렇습니다</b>(단순 모형) — 물가가 <b>5%</b> 올랐을 때, <b>공급발</b>이면 원자재는 <b>+15%</b>라서 비용을 빼고도 <b>실질 +6%</b>입니다. 그런데 <b>임금·서비스발</b>이면 원자재는 <b>+1%</b>에 그쳐 <b>실질 −8%</b>가 됩니다. <b>같은 「물가 5%」인데 정반대</b>입니다.</p>
+      <p><b>⚠️ 이 편의 모든 계수는 구조를 보기 위한 예시</b>이며 실측치가 아닙니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#what">1. 헤지란</a>
+    <a href="#kind">2. 물가의 네 가지 원인</a>
+    <a href="#cpi">3. 물가 안의 원자재</a>
+    <a href="#lag">4. 시차와 「이미 반영」</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="what">
+    <div class="prod-head" style="--edge:var(--sup)">
+      <span class="prod-tag">01 · 정의</span>
+      <h2>「헤지」는 「오른다」가 아닙니다</h2>
+      <p class="one"><b>같은 방향으로 같이 움직인다</b>는 뜻입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>「헤지」</b>는 <b>우산</b> 같은 거야. 우산은 <b>돈을 벌어다 주지 않아.</b> 그냥 <b>비가 올 때 안 젖게</b> 해줄 뿐이지.</p>
+      <p>그런데 여기서 중요한 게 있어. <b>「비」가 뭐냐</b>에 따라 우산이 소용없을 수도 있거든.</p>
+      <p><b>하늘에서 비가 오면</b> 우산이 딱 맞아. 그런데 <b>바닥에서 물이 차오르면?</b> 우산을 써도 발이 젖어. <b>우산이 나쁜 게 아니라, 이 비가 우산으로 막는 종류가 아닌</b> 거야.</p>
+      <p>물가도 똑같아. <b>기름값이 올라서 물가가 오른 거면</b> 기름을 갖고 있는 게 우산이 돼. 그런데 <b>어른들 월급이 올라서 물가가 오른 거면?</b> 기름을 갖고 있어도 아무 소용이 없어.</p>
+      <p>그리고 <b>우산도 공짜가 아니야.</b> 기름을 갖고 있으려면 <b>매년 보관비를 내야</b> 하거든(01·02편). 그래서 <b>비가 안 오는 해에는 우산값만 나가는</b> 거지.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>자산</th><th>물가가 오를 때</th><th>평소에 주는 것</th><th>「우산」으로서의 성격</th></tr></thead>
+        <tbody>
+          <tr><th>원자재</th><td><b>원인일 때만</b> 크게 오름</td><td><b>없음</b> (오히려 보관비)</td><td>특정 종류의 비에만 맞는 우산</td></tr>
+          <tr><th>물가연동채</th><td><b>정의상 따라감</b></td><td>실질 이자</td><td>가장 직접적인 우산</td></tr>
+          <tr><th>주식</th><td><b>초기엔 약함</b>, 길게는 따라감</td><td>이익·배당</td><td>느리지만 스스로 자라는 우산</td></tr>
+          <tr><th>부동산</th><td>임대료가 <b>시차를 두고</b> 따라감</td><td>임대료</td><td>느린 우산, 대신 거래가 어려움</td></tr>
+          <tr><th>일반 채권</th><td><b>오히려 손해</b></td><td>고정 이자</td><td>비가 오면 젖는 쪽</td></tr>
+          <tr><th>현금</th><td><b>정확히 물가만큼 손해</b></td><td>이자 (있을 때)</td><td>우산 없음</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 채권 트랙 03편에서 다룬 내용과 이어집니다</p>
+
+    <div class="keyline">
+      <div class="kt">이 편의 첫 문장</div>
+      <div class="kb">원자재는 <b>모든 비를 막는 우산</b>이 아니라<br><b>한 종류의 비를 막는 우산</b>입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="kind">
+    <div class="prod-head" style="--edge:var(--dem)">
+      <span class="prod-tag">02 · 원인</span>
+      <h2>물가가 오르는 이유는 네 가지</h2>
+      <p class="one">그리고 <b>원자재는 그중 하나에만 강합니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TYPE · 물가가 왜 오르고 있는지를 골라보세요</div>
+      <p class="labsub">같은 물가 상승률인데 <b>결과가 정반대</b>가 됩니다.</p>
+
+      <div class="btnrow" id="tpBtns">
+        <button data-v="0" class="on">공급발</button>
+        <button data-v="1">수요발</button>
+        <button data-v="2">통화발</button>
+        <button data-v="3">임금·서비스발</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="tpInfl">물가 상승률</label>
+        <input type="range" id="tpInfl" min="0" max="15" step="1" value="5">
+        <output id="tpInflOut">5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="tpCost">내 상품의 연 비용 (보관 + 롤 + 수수료)</label>
+        <input type="range" id="tpCost" min="0" max="20" step="1" value="4">
+        <output id="tpCostOut">4%</output>
+      </div>
+
+      <div class="steps-out" id="tpSteps"></div>
+
+      <svg viewBox="0 0 640 228" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인플레 유형별 원자재 실질 수익">
+        <g id="tpScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">원자재 명목</span><span class="rv" id="tpNom">—</span></div>
+        <div><span class="rk">비용·물가 빼고 실질</span><span class="rv" id="tpReal">—</span></div>
+      </div>
+
+      <div class="verdict" id="tpVerdict" style="--vc:var(--dem)">
+        <div class="vh">유형</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>원자재 명목 = 물가 상승률 × 베타</b>, <b>실질 = 명목 − 물가 − 연 비용</b>입니다.<br><br>
+        <b>「베타」</b>는 <b>물가가 1% 오를 때 원자재가 몇 % 오르는가</b>입니다. <b>공급발 3.0 / 수요발 2.0 / 통화발 1.2 / 임금·서비스발 0.2</b>로 잡았습니다.<br><br>
+        <b>⚠️ 이 베타는 실측치가 아니라 구조를 보여주기 위한 예시</b>입니다. 실제로는 같은 유형 안에서도 크게 다르고, <b>여러 원인이 섞여 있는 것이 보통</b>입니다.<br><br>
+        <b>그래도 순서는 견고합니다</b> — <b>원자재가 원인일수록 원자재가 잘 방어하고, 원인에서 멀수록 방어하지 못합니다.</b>
+      </div>
+    </div>
+
+    <div class="quad">
+      <div style="--fc:var(--sup)">
+        <h4>① 공급발</h4>
+        <div class="it">원자재가 물가의 원인일 때</div>
+        <div class="dr">전쟁·산유국 감산·이상기후·공급망 마비.<br><br><b>원자재가 가장 크게 오릅니다.</b> 헤지가 확실히 성립합니다.<br><br><b>다만</b> 이런 국면은 <b>대체로 짧고</b>, 끝나면 <b>급락</b>합니다(03편).</div>
+      </div>
+      <div style="--fc:var(--dem)">
+        <h4>② 수요발</h4>
+        <div class="it">경기가 과열될 때</div>
+        <div class="dr">경제가 빠르게 성장하며 모든 것의 수요가 늘어납니다.<br><br><b>원자재도 오릅니다.</b> 헤지가 대체로 성립합니다.<br><br><b>다만</b> 이때는 <b>주식도 함께 오릅니다.</b> 굳이 원자재가 필요한지 물어야 합니다.</div>
+      </div>
+      <div style="--fc:var(--mon)">
+        <h4>③ 통화발</h4>
+        <div class="it">돈이 많이 풀렸을 때</div>
+        <div class="dr">돈의 가치가 떨어져 <b>모든 실물 가격</b>이 함께 오릅니다.<br><br><b>원자재도 오르지만 특별히 더 오르지는 않습니다.</b><br><br>비용을 빼면 <b>실질로 손해</b>일 수 있습니다. <b>금은 이 국면에 특히 강한 편</b>입니다(08편).</div>
+      </div>
+      <div style="--fc:var(--wage)">
+        <h4>④ 임금·서비스발</h4>
+        <div class="it">사람값이 오를 때</div>
+        <div class="dr">임금·집세·의료비·교육비가 오릅니다. <b>선진국 물가의 큰 부분</b>입니다.<br><br><b>원자재와 거의 무관합니다.</b> 헤지가 성립하지 않습니다.<br><br><b>이 경우에는 물가연동채나 주식이 낫습니다.</b></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="cpi">
+    <div class="prod-head" style="--edge:var(--wage)">
+      <span class="prod-tag">03 · 구성</span>
+      <h2>물가 안에 원자재는 얼마나 있나</h2>
+      <p class="one">생각보다 <b>훨씬 적습니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">BASKET · 원자재가 100% 올라도 물가는 얼마나 오르나</div>
+      <p class="labsub">물가 바구니의 <b>대부분은 원자재와 상관이 없습니다.</b></p>
+
+      <div class="ctrl-row">
+        <label for="bkUp">원자재 가격 상승</label>
+        <input type="range" id="bkUp" min="0" max="200" step="5" value="100">
+        <output id="bkUpOut">+100%</output>
+      </div>
+
+      <div class="steps-out" id="bkSteps"></div>
+
+      <svg viewBox="0 0 640 265" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="물가 바구니 구성과 원자재 기여">
+        <g id="bkScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">물가에 대한 기여</span><span class="rv" id="bkTotal">—</span></div>
+        <div><span class="rk">가장 크게 기여하는 항목</span><span class="rv" id="bkTop">—</span></div>
+      </div>
+
+      <div class="verdict" id="bkVerdict" style="--vc:var(--wage)">
+        <div class="vh">바구니</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 가중치와 전가율은 모두 근사·예시</b>입니다. 나라마다 다르고 해마다 조정됩니다. <b>한국은 미국보다 주거 비중이 낮고 식품 비중이 높은 편</b>이라 원자재 민감도가 더 큽니다.<br><br>
+        <b>「전가율」</b>은 <b>원자재 가격이 그 항목의 가격에 얼마나 전달되는가</b>입니다. 예를 들어 <b>빵값에서 밀 원가가 차지하는 몫은 크지 않습니다.</b> 인건비·임대료·가공·유통이 대부분입니다.<br><br>
+        <b>계산에 넣지 않은 것</b> — <b>2차 효과</b>입니다. 에너지가 비싸지면 <b>운송비를 통해 모든 것이 조금씩</b> 오릅니다. 시간이 지나면 실제 기여는 <b>여기 계산보다 커집니다.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>그래서 「원자재 급등 = 물가 급등」이 아닙니다</h3>
+      <p>위 계산에서 <b>원자재가 100% 올라도 물가 기여는 14%p 남짓</b>입니다. 그런데 <b>물가 상승률이 14%가 되는 일은 드뭅니다.</b> 왜일까요.</p>
+      <p><b>① 원자재가 100% 오르는 일 자체가 드뭅니다.</b> 전체 원자재 지수가 두 배가 되려면 <b>에너지·금속·농산물이 동시에</b> 올라야 합니다.<br>
+         <b>② 다른 항목이 동시에 내려가기도 합니다.</b> 에너지가 비싸면 <b>사람들이 다른 소비를 줄입니다.</b> 그러면 그쪽 물가가 눌립니다.<br>
+         <b>③ 정책이 개입합니다.</b> 금리를 올려 <b>수요 전체를 눌러버립니다.</b> 그러면 원자재 말고 <b>나머지 80%가 식습니다.</b></p>
+      <p class="plain"><b>③이 특히 중요합니다.</b> <b>중앙은행은 원자재 가격을 내릴 수 없습니다.</b> 기름을 만들어낼 수는 없으니까요. <b>대신 나머지를 눌러서 전체 물가를 맞춥니다.</b><br><br><b>그 결과가 원자재 투자자에게 잔인합니다</b> — <b>금리가 오르고 경기가 꺾이면 원자재 수요도 결국 꺾입니다.</b> <b>물가를 잡으려는 정책이 내 원자재 투자를 죽이는</b> 구조입니다.<br><br><b>그래서 「물가가 높으니 원자재」라는 논리에는 한 단계가 빠져 있습니다</b> — <b>「그 물가에 정책이 어떻게 반응할 것인가」</b>입니다.</p>
+
+      <h3>「원자재는 장기적으로 물가를 이긴다」는 검증되지 않았습니다</h3>
+      <p>01편에서 <b>「장기 실질가격이 크게 오르지 않는 경향」</b>을 언급했습니다. 여기서 <b>인플레 헤지 주장과 정면으로 부딪힙니다.</b></p>
+      <p><b>둘 다 성립할 수는 없습니다.</b> <b>물가를 계속 이긴다</b>면 실질가격이 계속 올라야 하는데, <b>실질가격이 제자리</b>라면 <b>딱 물가만큼만 오른다</b>는 뜻이기 때문입니다.</p>
+      <p><b>그리고 「딱 물가만큼」이면 투자자에게는 손해</b>입니다. <b>보관비와 롤 손실이 그 위에서 빠져나가기</b> 때문입니다. 2장 계산기의 <b>통화발·임금발 칸</b>이 정확히 그 상황입니다.</p>
+      <p class="plain"><b>그럼 이 편은 「원자재는 인플레 헤지가 안 된다」로 끝나야 할까요.</b> 그렇지는 않습니다. <b>구분이 필요합니다.</b><br><br><b>· 「장기적으로 물가를 이기는 자산」으로서</b> → <b>근거가 약합니다.</b> 그 목적이라면 <b>물가연동채나 주식</b>이 낫습니다.<br><b>· 「특정 국면에서 급격한 물가 충격을 막는 보험」으로서</b> → <b>여기는 실제 값어치가 있습니다.</b> 공급발 충격이 왔을 때 <b>다른 자산이 전부 무너지는데 이것만 오르는</b> 국면이 있습니다.<br><br><b>이 구분이 비중을 정합니다</b> — <b>「장기 수익원」이면 크게 담아야 하지만, 「특정 국면의 보험」이면 작게 담아야</b> 합니다. <b>보험료는 작게 내는 것</b>이니까요. <b>10편의 결론이 여기서 나옵니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="lag">
+    <div class="prod-head" style="--edge:var(--mon)">
+      <span class="prod-tag">04 · 시차</span>
+      <h2>「물가가 높다」는 뉴스를 보고 사면 늦습니다</h2>
+      <p class="one">순서가 <b>원자재 → 물가</b>이지, <b>물가 → 원자재</b>가 아니기 때문입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TIMING · 언제 들어갔느냐로 결과가 갈립니다</div>
+      <p class="labsub">같은 인플레 국면인데 <b>진입 시점</b>만 다릅니다.</p>
+
+      <div class="btnrow" id="tmBtns">
+        <button data-v="0" class="on">원자재가 막 오르기 시작할 때</button>
+        <button data-v="1">물가 지표가 나오기 시작할 때</button>
+        <button data-v="2">「인플레」가 뉴스 1면일 때</button>
+        <button data-v="3">중앙은행이 금리를 올린 뒤</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="tmHold">보유 기간</label>
+        <input type="range" id="tmHold" min="1" max="36" step="1" value="12">
+        <output id="tmHoldOut">12개월</output>
+      </div>
+
+      <div class="steps-out" id="tmSteps"></div>
+
+      <svg viewBox="0 0 640 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="인플레 국면과 진입 시점">
+        <g id="tmScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">가격 변화</span><span class="rv" id="tmPx">—</span></div>
+        <div><span class="rk">비용 빼고</span><span class="rv" id="tmNet">—</span></div>
+      </div>
+
+      <div class="verdict" id="tmVerdict" style="--vc:var(--mon)">
+        <div class="vh">시점</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 이 곡선은 「전형적인 인플레 사이클」을 단순화해 그린 가상의 경로</b>이며, 실제 데이터가 아닙니다. <b>모든 사이클이 이렇게 흘러가지도 않습니다.</b><br><br>
+        <b>여기서 보여주려는 것은 하나</b>입니다 — <b>내가 「인플레가 왔다」고 인식하는 시점은 이미 가격에 상당 부분 반영된 뒤</b>라는 구조입니다. 채권 트랙 06편의 <b>「선반영」</b>과 같은 이야기입니다.<br><br>
+        <b>연 비용은 4%로 고정</b>해 계산했습니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 순서가 「원자재 → 물가」인가</h3>
+      <p>물가 지표는 <b>소비자가 실제로 낸 값</b>을 모아서 만듭니다. 그런데 <b>원자재 가격이 소비자 가격이 되기까지 여러 단계</b>를 거칩니다.</p>
+      <p><b>원유 가격 상승 → 정유사 원가 상승 → 주유소 가격 상승 → 운송비 상승 → 상품 가격 상승 → 물가 지표 반영.</b> 각 단계마다 <b>몇 주에서 몇 달</b>이 걸립니다.</p>
+      <p>게다가 <b>물가 지표 자체가 늦게 나옵니다.</b> 한 달치 물가는 <b>다음 달에</b> 발표됩니다. <b>「지난달 물가가 높았다」</b>는 뉴스를 볼 때, 원자재 시장은 <b>이미 몇 달 전에 그 정보를 반영</b>했습니다.</p>
+      <p class="plain"><b>그래서 이런 일이 벌어집니다</b> — <b>물가 지표가 정점을 찍는 시점에 원자재는 이미 내려가고 있는</b> 경우가 흔합니다. <b>뉴스가 가장 무서울 때 시장은 이미 반대로</b> 가는 것입니다.<br><br><b>⚠️ 그렇다고 「그러니 먼저 사면 되겠다」도 아닙니다.</b> <b>먼저 산다는 것은 「인플레가 올 것을 미리 안다」</b>는 뜻인데, <b>그걸 아는 사람은 없습니다.</b><br><br><b>현실적인 결론은 하나뿐</b>입니다 — <b>「인플레가 올 것 같아서 지금 산다」는 타이밍 전략은 성립하기 어렵습니다.</b> 대신 <b>「인플레가 언제 올지 모르니 평소에 조금 들고 있는다」</b>는 보험 전략은 성립합니다. <b>둘은 완전히 다른 행동</b>이고, <b>비중과 진입 방식이 다릅니다</b>(10편).</p>
+
+      <h3>한국에 사는 사람에게는 한 겹이 더 있습니다</h3>
+      <p>지금까지의 이야기는 <b>달러 기준</b>입니다. 그런데 <b>한국에 살면서 원화로 생활하는 사람</b>에게는 <b>환율</b>이 끼어듭니다.</p>
+      <p><b>다행인 쪽으로 작동하는 경우가 많습니다.</b> <b>위기가 오면 원화가 약해지는</b> 경향이 있는데, 그러면 <b>달러 자산인 원자재의 원화 환산 가치가 올라갑니다.</b> <b>이중 방어</b>가 되는 셈입니다.</p>
+      <p><b>그런데 반대로도 작동합니다.</b> <b>세계 경기가 좋아 원화가 강해지는</b> 국면에서는, <b>원자재가 달러로 올라도 원화로는 덜 오르거나 오히려 내릴 수</b> 있습니다.</p>
+      <p class="plain"><b>그리고 한국 물가는 미국 물가와 다릅니다.</b> <b>한국은 에너지와 식량을 거의 다 수입</b>합니다. 그래서 <b>원자재 가격이 한국 물가에 미치는 영향이 미국보다 큽니다.</b> 3장 계산기의 <b>전가율이 한국에서는 더 높다</b>고 보면 됩니다.<br><br><b>정리하면</b> — <b>한국 거주자에게 원자재의 인플레 방어 효과는 미국 거주자보다 조금 더 큽니다.</b> <b>수입 의존도가 높고, 위기에 원화가 약해지는 경향까지 겹치기</b> 때문입니다.<br><br><b>⚠️ 다만 「조금 더 크다」이지 「확실하다」가 아닙니다.</b> 그리고 <b>보관비·롤 손실은 똑같이 나갑니다.</b> 08편에서 <b>환헤지 여부</b>를 함께 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one"><b>「인플레 헤지」라는 말을 쪼개는 것</b>이 전부입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>헤지는 「오른다」가 아니라 「같이 움직인다」</b>라는 것.</li>
+      <li><b>물가가 오르는 이유가 네 가지</b>라는 것.</li>
+      <li><b>원자재가 강한 것은 「공급발」일 때뿐</b>이라는 것.</li>
+      <li><b>임금·서비스발 물가에는 거의 무력하다</b>는 것.</li>
+      <li><b>선진국 물가의 큰 부분이 주거·서비스</b>라는 것.</li>
+      <li><b>원자재가 100% 올라도 물가 기여는 14%p 남짓</b>이라는 것 (예시).</li>
+      <li><b>중앙은행은 원자재 대신 나머지를 눌러 물가를 잡는다</b>는 것.</li>
+      <li><b>순서가 「원자재 → 물가」이지 그 반대가 아니다</b>라는 것.</li>
+      <li><b>「물가 뉴스를 보고 사는 것」은 대체로 늦다</b>는 것.</li>
+      <li><b>장기 수익원이 아니라 특정 국면의 보험</b>이라는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> <b>「원자재는 인플레에 강하다」</b>는 <b>문장이 너무 짧아서 틀립니다.</b> 정확히 쓰면 <b>「원자재는 원자재발 인플레에 강하다」</b>입니다. 그리고 그건 <b>거의 동어반복</b>입니다.</p>
+      <p><b>그런데 그 동어반복이 쓸모가 없는 것은 아닙니다.</b> <b>주식과 채권이 동시에 무너지는 국면</b>이 실제로 있고, 그 국면이 대체로 <b>공급발 물가 충격</b>이기 때문입니다. <b>그때 이것만 오릅니다.</b></p>
+      <p><b>그래서 이 편의 결론은 방향이 아니라 크기</b>입니다 — <b>「담을까 말까」가 아니라 「보험으로서 얼마나」</b>입니다. <b>보험은 작게 드는 것</b>이고, <b>보험료(보관비·롤 손실)를 감당할 수 있는 만큼만</b> 드는 것입니다.</p>
+      <p><b>다음 편부터가 이 트랙의 핵심 구간</b>입니다. <b>05편 — 선물이라는 물건.</b> 원자재를 산다는 것이 실제로는 <b>「미래에 받기로 한 약속」을 사는 것</b>이라는 이야기입니다. 그리고 <b>06편에서 그 약속을 갈아탈 때 돈이 새어나가는</b> 구조를 계산합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 원자재 04 · 물가<br>
+    <a href="index.html#commodity">← 원자재 목록으로</a> · <a href="commodity-price.html">03 · 재고와 생산원가</a> · 05 · 선물이라는 물건 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    베타·가중치·전가율·가격 경로는 모두 <b>구조를 보기 위한 예시</b>이며 실측 데이터가 아닙니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 2. 인플레 유형 ══════════ */
+var TP = [
+  { h:'공급발', col:'#8E4B3A', beta:3.0, ex:'전쟁 · 산유국 감산 · 이상기후 · 공급망 마비',
+    t:'원자재가 물가의 원인일 때 — 헤지가 확실히 성립합니다' },
+  { h:'수요발', col:'#8E6B3A', beta:2.0, ex:'경기 과열 · 빠른 성장 · 소비 급증',
+    t:'경기가 원자재도 함께 끌어올립니다 — 다만 주식도 오릅니다' },
+  { h:'통화발', col:'#7A5C9E', beta:1.2, ex:'대규모 통화 완화 · 재정 지출 · 통화 가치 하락',
+    t:'모든 실물이 함께 오릅니다 — 특별히 더 오르지는 않습니다' },
+  { h:'임금·서비스발', col:'#4C6B7A', beta:0.2, ex:'임금 상승 · 집세 · 의료비 · 교육비',
+    t:'원자재와 거의 무관합니다 — 헤지가 성립하지 않습니다' }
+];
+var tpIdx = 0;
+function tpDraw(){
+  var t = TP[tpIdx];
+  var inf = +document.getElementById('tpInfl').value;
+  var cost = +document.getElementById('tpCost').value;
+  document.getElementById('tpInflOut').textContent = inf + '%';
+  document.getElementById('tpCostOut').textContent = cost + '%';
+
+  var nom = inf * t.beta;
+  var real = nom - inf - cost;
+
+  steps('tpSteps', [
+    { k:'물가가 오르는 이유', v:t.h },
+    { k:'물가 상승률', v:'+' + inf + '%' },
+    { k:'베타 (물가 1%당 원자재 반응)', v:num(t.beta, 1) },
+    { k:'원자재 명목 = 물가 × 베타', v:'+' + num(nom, 1) + '%' },
+    { k:'물가만큼 빼기', v:'−' + inf + '%' },
+    { k:'연 비용 빼기', v:'−' + cost + '%' },
+    { k:'실질 결과', v:sgn(real, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('tpNom').textContent = '+' + num(nom, 1) + '%';
+  document.getElementById('tpReal').textContent = sgn(real, 1) + '%';
+  document.getElementById('tpReal').style.color = real >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var X0 = 130, W = 400, Y0 = 40;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">유형별 실질 결과 (물가 +' + inf + '%, 비용 ' + cost + '%)</text>';
+  var vals = TP.map(function(x){ return x.beta * inf - inf - cost; });
+  var maxAbs = Math.max.apply(null, vals.map(Math.abs).concat([3]));
+  var zx = X0 + W / 2;
+  TP.forEach(function(x, i){
+    var v = vals[i];
+    var y = Y0 + i * 34;
+    var w = Math.abs(v) / maxAbs * (W / 2);
+    var bx = v >= 0 ? zx : zx - w;
+    var on = (i === tpIdx);
+    g += '<rect x="' + bx.toFixed(1) + '" y="' + y + '" width="' + Math.max(1, w).toFixed(1) + '" height="22" rx="1.5" fill="' +
+         x.col + '" fill-opacity="' + (on ? '.55' : '.24') + '" stroke="' + x.col + '" stroke-width="' + (on ? '1.8' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 16) + '" text-anchor="end"' +
+         (on ? ' fill="' + x.col + '"' : '') + '>' + x.h + ' (β' + num(x.beta, 1) + ')</text>';
+    var tx = v >= 0 ? Math.min(bx + w + 8, X0 + W - 4) : Math.max(bx - 8, X0 + 4);
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + tx.toFixed(1) + '" y="' + (y + 16) + '"' +
+         (v >= 0 ? '' : ' text-anchor="end"') + (on ? ' fill="' + x.col + '"' : '') + '>' + sgn(v, 1) + '%</text>';
+  });
+  g += '<line x1="' + zx + '" y1="' + (Y0 - 6) + '" x2="' + zx + '" y2="' + (Y0 + TP.length * 34) + '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + zx + '" y="' + (Y0 + TP.length * 34 + 18) + '" text-anchor="middle">0 (물가만큼만 방어)</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + TP.length * 34 + 38) + '">오른쪽이면 물가를 이긴 것, 왼쪽이면 진 것입니다.</text>';
+  document.getElementById('tpScene').innerHTML = g;
+
+  var body, title;
+  if(inf === 0){
+    title = '물가가 오르지 않고 있습니다 — 비용만 나갑니다';
+    body = '물가 상승률이 <b>0%</b>이므로 원자재도 오르지 않습니다. 그런데 <b>연 비용 ' + cost + '%는 그대로 나갑니다.</b><br><br>' +
+      '<b>이것이 「보험료」</b>입니다. <b>비가 안 오는 해에도 우산값은 나가는</b> 것입니다.<br><br>' +
+      '<b>여기서 두 가지를 봐야 합니다.</b><br>· <b>보험료가 얼마인가</b> — 상품에 따라 <b>연 0.4%부터 20%까지</b> 다릅니다(02편). <b>어떤 원자재를 어떤 형태로</b> 담느냐가 전부입니다.<br>· <b>보험이 필요한 사건이 얼마나 자주 오는가</b> — 공급발 인플레 충격은 <b>몇 년에 한 번</b> 옵니다.<br><br>' +
+      '<b>「물가 상승률」 슬라이더를 올려보세요.</b> 그리고 <b>유형을 바꿔가며</b> 비교해보세요. <b>같은 물가인데 결과가 정반대</b>입니다.';
+  } else if(real >= 3){
+    title = t.h + ' — 실질 ' + sgn(real, 1) + '%, 헤지가 제대로 작동합니다';
+    body = '<b>' + t.h + '</b> 물가입니다. <b>' + t.ex + '</b> 같은 상황입니다.<br><br>' +
+      '베타가 <b>' + num(t.beta, 1) + '</b>이라 물가 <b>+' + inf + '%</b>에 원자재는 <b>+' + num(nom, 1) +
+      '%</b> 오릅니다. <b>물가와 비용을 빼고도 ' + sgn(real, 1) + '%</b>가 남습니다.<br><br>' +
+      '<b>왜 이렇게 크게 오르나</b> — <b>원자재 자체가 물가 상승의 원인</b>이기 때문입니다. <b>기름값이 올라서 물가가 오른 상황</b>에서 기름을 들고 있으면 당연히 이깁니다.<br><br>' +
+      '<b>⚠️ 그런데 여기에 함정이 하나</b> 있습니다. <b>이 국면은 대체로 짧습니다.</b> 03편에서 본 대로 <b>수요 파괴와 뒤늦은 공급이 시작되면 급락</b>합니다.<br><br>' +
+      '<b>그리고 더 중요한 것</b> — <b>이런 국면이 올 것을 미리 알 수는 없습니다.</b> <b>사후에 「그때 원자재가 좋았다」고 말하는 것과, 사전에 그 국면에 이미 들고 있는 것은 완전히 다릅니다.</b> 4장에서 다룹니다.';
+  } else if(real >= -1){
+    title = t.h + ' — 실질 ' + sgn(real, 1) + '%, 겨우 본전입니다';
+    body = '<b>' + t.h + '</b> 물가입니다. <b>' + t.ex + '</b> 같은 상황입니다.<br><br>' +
+      '베타 <b>' + num(t.beta, 1) + '</b>로 원자재가 <b>+' + num(nom, 1) + '%</b> 오르지만, <b>물가 ' + inf + '%와 비용 ' + cost +
+      '%를 빼면 ' + sgn(real, 1) + '%</b>입니다.<br><br>' +
+      '<b>「물가는 방어했지만 그게 전부」</b>인 상태입니다. <b>손해는 아니지만 이득도 아닙니다.</b><br><br>' +
+      '<b>여기서 물어야 할 것</b> — <b>같은 국면에서 다른 자산은 어땠나</b>입니다. <b>수요발이나 통화발 인플레에서는 주식도 함께 오르는 경우가 많습니다.</b> 그렇다면 <b>굳이 원자재를 담을 이유</b>가 약해집니다.<br><br>' +
+      '<b>「연 비용」 슬라이더를 움직여보세요.</b> <b>비용이 결과를 완전히 뒤집습니다.</b> 같은 국면인데 <b>금 현물 ETF(연 0.4%)와 천연가스 ETF(연 20%)의 결과가 전혀 다릅니다.</b>';
+  } else {
+    title = t.h + ' — 실질 ' + sgn(real, 1) + '%, 헤지가 성립하지 않습니다';
+    body = '<b>' + t.h + '</b> 물가입니다. <b>' + t.ex + '</b> 같은 상황입니다.<br><br>' +
+      '베타가 <b>' + num(t.beta, 1) + '</b>밖에 안 돼 원자재는 <b>+' + num(nom, 1) + '%</b>에 그칩니다. <b>물가 ' + inf +
+      '%도 못 따라가는데 비용까지 ' + cost + '%가 나가니 실질 ' + sgn(real, 1) + '%</b>입니다.<br><br>' +
+      '<b>왜 안 오르나</b> — <b>이 물가 상승의 원인이 원자재가 아니기</b> 때문입니다. <b>집세와 의료비가 올라서 생긴 물가</b>를 <b>기름을 사서 막을 수는 없습니다.</b><br><br>' +
+      '<b>그리고 이것이 선진국 물가의 큰 부분</b>입니다. 3장에서 보듯 <b>주거와 서비스가 물가 바구니의 대부분</b>을 차지합니다.<br><br>' +
+      '<b>⚠️ 이 칸이 이 편에서 가장 중요합니다.</b> <b>「인플레가 걱정돼서 원자재를 샀는데 물가는 오르고 내 원자재는 안 오르는」</b> 일이 실제로 벌어집니다. <b>그건 상품을 잘못 고른 게 아니라 물가의 종류를 안 본</b> 것입니다.<br><br>' +
+      '<b>이 종류의 물가에는</b> — <b>물가연동채</b>가 가장 직접적이고, <b>주식</b>이 그다음입니다. <b>원자재는 여기에 맞는 도구가 아닙니다.</b>';
+  }
+  document.getElementById('tpVerdict').querySelector('.vh').textContent = t.h;
+  verdict('tpVerdict', t.col, title, body);
+}
+bindBtnRow('#tpBtns', function(v){ tpIdx = +v; tpDraw(); });
+['tpInfl', 'tpCost'].forEach(function(id){ document.getElementById(id).addEventListener('input', tpDraw); });
+
+/* ══════════ 3. 물가 바구니 ══════════ */
+var BASKET = [
+  { n:'주거 (집세·자가귀속)', w:34, pass:0.02, col:'#4C6B7A' },
+  { n:'기타 상품·서비스',     w:28, pass:0.08, col:'#5B7A6B' },
+  { n:'식품',                 w:13, pass:0.20, col:'#5F7A52' },
+  { n:'교통 (차량·서비스)',   w:10, pass:0.15, col:'#7A5C9E' },
+  { n:'의료',                 w:8,  pass:0.02, col:'#8E6B8A' },
+  { n:'에너지',               w:7,  pass:1.00, col:'#8E4B3A' }
+];
+function bkDraw(){
+  var up = +document.getElementById('bkUp').value;
+  document.getElementById('bkUpOut').textContent = '+' + up + '%';
+
+  var parts = BASKET.map(function(b){ return { b:b, c:b.w / 100 * b.pass * up }; });
+  var tot = parts.reduce(function(a, x){ return a + x.c; }, 0);
+  var top = parts.slice().sort(function(a, x){ return x.c - a.c; })[0];
+
+  steps('bkSteps', [
+    { k:'원자재 가격 상승', v:'+' + up + '%' },
+    { k:'에너지 (비중 7% × 전가율 100%)', v:'+' + num(7 / 100 * 1.00 * up, 2) + '%p' },
+    { k:'식품 (비중 13% × 전가율 20%)', v:'+' + num(13 / 100 * 0.20 * up, 2) + '%p' },
+    { k:'주거 (비중 34% × 전가율 2%)', v:'+' + num(34 / 100 * 0.02 * up, 2) + '%p' },
+    { k:'나머지 항목 합', v:'+' + num(tot - (7 * 1.00 + 13 * 0.20 + 34 * 0.02) / 100 * up, 2) + '%p' },
+    { k:'물가에 대한 총 기여', v:'+' + num(tot, 2) + '%p', total:true }
+  ]);
+
+  document.getElementById('bkTotal').textContent = '+' + num(tot, 2) + '%p';
+  document.getElementById('bkTop').textContent = top.b.n + ' (+' + num(top.c, 2) + '%p)';
+
+  var X0 = 145, W = 400, Y0 = 44;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">물가 바구니 — 회색이 비중, 색이 원자재 기여</text>';
+  var maxW = 34;
+  BASKET.forEach(function(b, i){
+    var y = Y0 + i * 30;
+    var wFull = b.w / maxW * W;
+    var wPass = wFull * b.pass;
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + wFull.toFixed(1) + '" height="20" rx="1.5" fill="#8A8474" fill-opacity=".14" stroke="#C8C1AF" stroke-width="1"/>';
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + Math.max(0.6, wPass).toFixed(1) + '" height="20" rx="1.5" fill="' + b.col + '" fill-opacity=".62" stroke="' + b.col + '" stroke-width="1"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end">' + b.n + '</text>';
+    g += '<text class="axt" x="' + Math.min(X0 + wFull + 8, X0 + W - 2).toFixed(1) + '" y="' + (y + 14) + '">' + b.w + '% · 전가 ' + num(b.pass * 100, 0) + '%</text>';
+  });
+  var yb = Y0 + BASKET.length * 30 + 14;
+  g += '<text class="axt" x="' + X0 + '" y="' + yb + '">원자재가 +' + up + '% 올라도 물가에는 +' + num(tot, 2) + '%p만 더해집니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (yb + 18) + '">바구니의 대부분(주거·서비스)은 원자재와 거의 상관이 없습니다.</text>';
+  document.getElementById('bkScene').innerHTML = g;
+
+  if(up === 0){
+    verdict('bkVerdict', '#5B5648',
+      '원자재 상승률을 올려보세요',
+      '<b>물가 바구니</b>가 어떻게 구성돼 있는지가 이 계산기의 핵심입니다.<br><br>' +
+      '<b>회색 막대</b>가 <b>그 항목이 물가에서 차지하는 비중</b>이고, <b>색 막대</b>가 <b>그중 원자재가 실제로 영향을 주는 부분</b>입니다.<br><br>' +
+      '<b>주거를 보세요.</b> 비중이 <b>34%</b>로 가장 크지만 색 막대는 <b>거의 보이지 않습니다.</b> <b>집세는 원자재 가격과 거의 무관</b>하기 때문입니다.<br><br>' +
+      '<b>에너지를 보세요.</b> 비중은 <b>7%</b>로 작지만 <b>회색과 색이 거의 같습니다.</b> <b>원자재 가격이 그대로 전달</b>되기 때문입니다.<br><br>' +
+      '<b>이 대비가 이 편의 핵심</b>입니다 — <b>원자재가 직접 움직일 수 있는 물가는 전체의 일부</b>입니다.');
+  } else {
+    verdict('bkVerdict', '#4C6B7A',
+      '원자재 +' + up + '% → 물가 기여는 +' + num(tot, 2) + '%p뿐입니다',
+      '원자재 전체가 <b>' + up + '%</b> 올라도 물가에 더해지는 것은 <b>' + num(tot, 2) + '%p</b>입니다.<br><br>' +
+      '<b>가장 많이 기여하는 것은 「' + top.b.n + '」(' + num(top.c, 2) + '%p)</b>입니다. ' +
+      (top.b.n === '에너지'
+        ? '<b>비중은 7%로 작지만 전가율이 100%</b>라 그렇습니다. <b>기름값이 오르면 주유소 가격이 바로 오릅니다.</b>'
+        : '<b>비중이 커서</b> 전가율이 낮아도 기여가 큽니다.') + '<br><br>' +
+      '<b>여기서 중요한 것은 그 반대편</b>입니다 — <b>비중 34%인 주거는 ' + num(34 / 100 * 0.02 * up, 2) +
+      '%p밖에 기여하지 않습니다.</b> <b>물가 바구니에서 가장 큰 항목이 원자재와 거의 무관</b>합니다.<br><br>' +
+      '<b>그래서 두 가지 결론이 나옵니다.</b><br>' +
+      '· <b>원자재는 물가를 크게 움직일 수 없습니다</b> — 물가가 크게 오르려면 <b>임금과 집세가 함께</b> 올라야 합니다.<br>' +
+      '· <b>그래서 원자재로 물가 전체를 막을 수도 없습니다</b> — <b>내가 실제로 겪는 물가의 대부분이 원자재와 무관</b>하기 때문입니다.<br><br>' +
+      '<b>⚠️ 다만 2차 효과는 여기 계산에 없습니다.</b> 에너지가 비싸지면 <b>운송비를 통해 모든 것이 조금씩</b> 오릅니다. 시간이 지나면 실제 기여는 <b>이 숫자보다 커집니다.</b>');
+  }
+}
+document.getElementById('bkUp').addEventListener('input', bkDraw);
+
+/* ══════════ 4. 시점 ══════════ */
+/* 가상의 인플레 사이클 경로 (36개월). 지수 100에서 시작 */
+var PATH = [];
+(function(){
+  for(var m = 0; m <= 60; m++){
+    var v;
+    if(m <= 12)      v = 100 + m * 5;                 // 조용히 상승 (100 → 160)
+    else if(m <= 20) v = 160 + (m - 12) * 6.25;       // 가속 (160 → 210)
+    else if(m <= 26) v = 210 - (m - 20) * 1.667;      // 고원 (210 → 200)
+    else if(m <= 40) v = 200 - (m - 26) * 4.286;      // 하락 (200 → 140)
+    else             v = 140 - (m - 40) * 1.0;        // 완만한 하락 (140 → 120)
+    PATH.push(v);
+  }
+})();
+var TM = [
+  { h:'원자재가 막 오르기 시작할 때', at:2,  col:'#5F7A52',
+    d:'물가 지표에는 아직 아무것도 안 나옵니다. 뉴스도 조용합니다.' },
+  { h:'물가 지표가 나오기 시작할 때', at:14, col:'#8E6B3A',
+    d:'「물가가 예상보다 높다」는 기사가 나오기 시작합니다.' },
+  { h:'「인플레」가 뉴스 1면일 때',   at:22, col:'#8E4B3A',
+    d:'모두가 인플레를 이야기합니다. 원자재 펀드에 돈이 몰립니다.' },
+  { h:'중앙은행이 금리를 올린 뒤',    at:28, col:'#7A5C9E',
+    d:'정책이 나왔고, 시장은 이미 경기 둔화를 보기 시작합니다.' }
+];
+var tmIdx = 0;
+function tmDraw(){
+  var t = TM[tmIdx];
+  var hold = +document.getElementById('tmHold').value;
+  document.getElementById('tmHoldOut').textContent = hold + '개월';
+
+  var i0 = t.at, i1 = Math.min(PATH.length - 1, t.at + hold);
+  var p0 = PATH[i0], p1 = PATH[i1];
+  var px = (p1 / p0 - 1) * 100;
+  var cost = 4 * (hold / 12);
+  var net = px - cost;
+
+  steps('tmSteps', [
+    { k:'진입 시점', v:t.h },
+    { k:'진입 가격 (지수)', v:num(p0, 0) },
+    { k:hold + '개월 뒤 가격', v:num(p1, 0) },
+    { k:'가격 변화', v:sgn(px, 1) + '%' },
+    { k:'연 비용 4% × ' + num(hold / 12, 2) + '년', v:'−' + num(cost, 1) + '%' },
+    { k:'결과', v:sgn(net, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('tmPx').textContent = sgn(px, 1) + '%';
+  document.getElementById('tmNet').textContent = sgn(net, 1) + '%';
+  document.getElementById('tmNet').style.color = net >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var X0 = 55, Y0 = 190, W = 550, H = 150;
+  var vmin = 90, vmax = 220;
+  function xx(m){ return X0 + m / 60 * W; }
+  function yy(v){ return Y0 - (v - vmin) / (vmax - vmin) * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">가상의 인플레 사이클 (원자재 가격 지수)</text>';
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  [0, 12, 24, 36, 48, 60].forEach(function(m){
+    g += '<line x1="' + xx(m).toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + xx(m).toFixed(1) + '" y2="' + Y0 + '" class="gridl"/>';
+    g += '<text class="axt" x="' + xx(m).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + m + '개월</text>';
+  });
+  g += '<path d="M' + PATH.map(function(v, m){ return xx(m).toFixed(1) + ' ' + yy(v).toFixed(1); }).join(' L') +
+       '" fill="none" stroke="#8A8474" stroke-width="1.8"/>';
+  var segPts = [];
+  for(var m = i0; m <= i1; m++){ segPts.push(xx(m).toFixed(1) + ' ' + yy(PATH[m]).toFixed(1)); }
+  g += '<path d="M' + segPts.join(' L') + '" fill="none" stroke="' + t.col + '" stroke-width="3"/>';
+  TM.forEach(function(x, i){
+    var on = (i === tmIdx);
+    g += '<circle cx="' + xx(x.at).toFixed(1) + '" cy="' + yy(PATH[x.at]).toFixed(1) + '" r="' + (on ? 6 : 3.5) +
+         '" fill="' + (on ? x.col : '#C8C1AF') + '"/>';
+  });
+  g += '<circle cx="' + xx(i1).toFixed(1) + '" cy="' + yy(PATH[i1]).toFixed(1) + '" r="5" fill="none" stroke="' + t.col + '" stroke-width="2.2"/>';
+  var lx = Math.min(Math.max(xx(i0), X0 + 24), X0 + W - 40);
+  g += '<text class="lblb" x="' + lx.toFixed(1) + '" y="' + Math.max(Y0 - H + 12, yy(PATH[i0]) - 12).toFixed(1) + '" text-anchor="middle" fill="' + t.col + '">진입</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">굵은 선이 내가 들고 있던 구간입니다. 같은 사이클, 다른 시작점.</text>';
+  document.getElementById('tmScene').innerHTML = g;
+
+  var title, body;
+  if(net >= 15){
+    title = t.h + ' → ' + sgn(net, 1) + '%';
+    body = '<b>' + t.d + '</b><br><br>' +
+      '<b>' + hold + '개월</b> 들고 있어 가격이 <b>' + sgn(px, 1) + '%</b>, 비용을 빼고 <b>' + sgn(net, 1) + '%</b>입니다.<br><br>' +
+      '<b>가장 좋은 결과가 나오는 시점</b>입니다. 그런데 <b>여기가 왜 어려운지</b>를 봐야 합니다.<br><br>' +
+      '<b>이 시점에는 아무 신호가 없습니다.</b> 물가 지표는 조용하고, 뉴스에 인플레 이야기가 없고, <b>원자재는 몇 년째 지루하게 싼 상태</b>였습니다. <b>「지금 원자재를 사자」고 생각할 이유가 하나도 없는</b> 때입니다.<br><br>' +
+      '<b>⚠️ 그래서 이 결과는 「이때 사면 된다」는 교훈이 아닙니다.</b> <b>「좋은 진입점은 사고 싶지 않은 때에 있다」</b>는 것이고, 결국 <b>「타이밍으로는 잡기 어렵다」</b>는 뜻입니다.<br><br>' +
+      '<b>이것을 실행 가능한 형태로 바꾸면</b> — <b>「미리 알아서 사는 것」이 아니라 「항상 조금 들고 있는 것」</b>입니다. 그러면 <b>이 구간에 자동으로 들어와 있게</b> 됩니다. <b>10편의 결론</b>입니다.';
+  } else if(net >= 0){
+    title = t.h + ' → ' + sgn(net, 1) + '%';
+    body = '<b>' + t.d + '</b><br><br>' +
+      '<b>' + hold + '개월</b>에 가격 <b>' + sgn(px, 1) + '%</b>, 비용 <b>' + num(cost, 1) + '%</b>를 빼고 <b>' + sgn(net, 1) + '%</b>입니다.<br><br>' +
+      '<b>손해는 아니지만 기대만큼은 아닙니다.</b> <b>이미 상당 부분 오른 뒤에 들어갔기</b> 때문입니다.<br><br>' +
+      '<b>「보유 기간」 슬라이더를 늘려보세요.</b> <b>길게 들수록 결과가 나빠지는</b> 것을 볼 수 있습니다. 사이클이 <b>꺾이는 구간을 함께 겪기</b> 때문이고, <b>비용도 시간에 비례해 쌓이기</b> 때문입니다.<br><br>' +
+      '<b>이것이 원자재와 주식의 결정적 차이</b>입니다 — <b>주식은 오래 들면 대체로 유리했지만, 원자재는 오래 들수록 비용이 쌓입니다.</b>';
+  } else {
+    title = t.h + ' → ' + sgn(net, 1) + '%';
+    body = '<b>' + t.d + '</b><br><br>' +
+      '<b>' + hold + '개월</b>에 가격이 <b>' + sgn(px, 1) + '%</b>, 비용까지 빼면 <b>' + sgn(net, 1) + '%</b>입니다. <b>손실</b>입니다.<br><br>' +
+      (tmIdx >= 2
+        ? '<b>가장 흔한 실패 경로</b>입니다. <b>뉴스가 가장 뜨거울 때가 대체로 고점 근처</b>입니다. 그리고 <b>그때가 사고 싶은 마음이 가장 큰 때</b>이기도 합니다.<br><br>' +
+          '<b>왜 그렇게 되나</b> — <b>물가 지표는 늦게 나옵니다.</b> 「지난달 물가가 높았다」는 기사를 볼 때, <b>원자재 시장은 이미 몇 달 전에 반영</b>했습니다. <b>내가 아는 정보는 이미 가격에 있습니다.</b><br><br>' +
+          '<b>그리고 이 시점부터 정책이 개입합니다.</b> 금리가 오르고, 경기가 꺾이고, <b>수요가 줄어듭니다.</b> 3장 deep에서 본 대로 <b>물가를 잡으려는 정책이 원자재를 죽입니다.</b><br><br>'
+        : '<b>진입 시점 자체는 나쁘지 않았는데 보유 기간이 사이클을 넘어섰습니다.</b> <b>「보유 기간」을 줄여보세요.</b><br><br>' +
+          '<b>여기서 배울 것</b> — <b>원자재는 「사서 잊는」 자산이 아닙니다.</b> 사이클이 꺾이면 <b>되돌림이 급격</b>하고, 그동안 <b>비용은 계속 나갑니다.</b><br><br>') +
+      '<b>⚠️ 그렇다고 「고점에서 팔면 된다」는 답도 아닙니다.</b> <b>고점은 지나야 보입니다.</b><br><br>' +
+      '<b>실행 가능한 답은 하나</b>입니다 — <b>비중을 미리 정해두고 정기적으로 맞추는 것</b>입니다. 그러면 <b>오를 때 자동으로 조금 팔고 내릴 때 자동으로 조금 삽니다.</b> <b>맞히지 않아도 되는 방법</b>입니다(10편).';
+  }
+  document.getElementById('tmVerdict').querySelector('.vh').textContent = '진입 ' + t.at + '개월차';
+  verdict('tmVerdict', t.col, title, body);
+}
+bindBtnRow('#tmBtns', function(v){ tmIdx = +v; tmDraw(); });
+document.getElementById('tmHold').addEventListener('input', tmDraw);
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 이 편의 결론입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+tpDraw(); bkDraw(); tmDraw();
+</script>
+</body>
+</html>
