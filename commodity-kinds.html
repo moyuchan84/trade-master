@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>에너지 · 금속 · 농산물</title>
+<meta name="description" content="같은 원자재인데 무엇이 가격을 움직이는지가 종류마다 다릅니다. 공급 충격의 크기와 저장성이 만드는 차이를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --energy:#8E4B3A;--metal:#4C6B7A;--precious:#8E6B3A;--agri:#5F7A52;--alt:#7A5C9E;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:760px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--energy));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--energy));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--energy));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .fam{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:20px 0 0;}
+  .fam > div{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--fc);border-radius:3px;padding:13px 14px;}
+  .fam h4{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--fc);margin:0 0 6px;}
+  .fam .it{font-size:13px;color:var(--ink);margin-bottom:4px;font-weight:600;}
+  .fam .dr{font-size:12.3px;color:var(--ink-soft);line-height:1.5;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .fam{grid-template-columns:1fr 1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">원자재 02 · 종류 · 투자 공부 노트</div>
+    <h1>에너지 · 금속 ·<br>농산물</h1>
+    <p class="lede">같은 「원자재」라는 이름을 쓰지만 <b>가격을 움직이는 힘이 전혀 다릅니다.</b> 기름은 <b>지정학</b>, 구리는 <b>경기</b>, 곡물은 <b>날씨</b>, 금은 <b>금리와 믿음</b>이 움직입니다.</p>
+    <div class="callout">
+      <p><b>이 편에서 확인할 두 가지 성질</b>이 나머지 편들의 바탕이 됩니다.</p>
+      <p><b>① 수요가 얼마나 완고한가</b> — 기름값이 두 배가 돼도 <b>출퇴근을 반으로 줄일 수는 없습니다.</b> 그래서 <b>공급이 조금만 모자라도 가격이 폭등</b>합니다. 공급이 <b>5%</b> 줄면 원유 가격은 <b>+100%</b>까지 갈 수 있습니다. 2장에서 계산합니다.</p>
+      <p><b>② 저장이 얼마나 쉬운가</b> — 금은 금고에 넣으면 끝이지만 <b>천연가스는 저장이 어렵습니다.</b> 그래서 <b>보관 비용이 완전히 다르고</b>, 그것이 곧 <b>ETF의 연간 손실</b>로 연결됩니다. <b>금은 연 −0.4%</b>인데 <b>천연가스는 연 −18%</b> 수준입니다(근사).</p>
+      <p><b>그래서 「원자재에 투자한다」는 말은 너무 뭉뚱그린 표현</b>입니다. <b>어떤 원자재냐</b>가 결과의 대부분을 정합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#four">1. 네 갈래</a>
+    <a href="#shock">2. 왜 폭등하나</a>
+    <a href="#store">3. 저장성과 비용</a>
+    <a href="#cat">4. 품목 도감</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="four">
+    <div class="prod-head" style="--edge:var(--energy)">
+      <span class="prod-tag">01 · 지도</span>
+      <h2>크게 네 갈래로 나뉩니다</h2>
+      <p class="one">각각 <b>다른 뉴스</b>를 봐야 합니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>「원자재」라고 한 단어로 부르지만, 사실 <b>완전히 다른 것들</b>이 섞여 있어.</p>
+      <p><b>에너지</b>(기름·가스) — <b>안 쓸 수가 없는</b> 것들이야. 그래서 조금만 모자라도 <b>값이 미친 듯이 뛰어.</b></p>
+      <p><b>산업금속</b>(구리·알루미늄) — <b>공장이 물건 만들 때</b> 쓰는 재료야. 그래서 <b>경기가 좋으면 오르고 나쁘면 내려.</b></p>
+      <p><b>귀금속</b>(금·은) — 이건 <b>거의 안 써서 없어지지 않아.</b> 그래서 <b>사람들이 불안해할 때</b> 오르지.</p>
+      <p><b>농산물</b>(밀·옥수수·콩) — <b>날씨</b>가 거의 전부야. 가뭄이 오면 값이 뛰고, 다음 해에 많이 심으면 다시 내려가.</p>
+      <p>그러니까 <b>「원자재 오른대」</b>라는 말은 사실 정보가 거의 없어. <b>「어떤 게, 왜」</b>를 물어야 해.</p>
+    </div>
+
+    <div class="fam">
+      <div style="--fc:var(--energy)">
+        <h4>에너지</h4>
+        <div class="it">원유 · 천연가스 · 석탄</div>
+        <div class="dr">움직이는 힘 — <b>지정학 · 산유국 결정 · 경기 · 날씨</b><br><br>수요가 <b>매우 완고</b>해 급등이 크고, <b>저장이 어려워</b> 보관 비용이 큽니다.</div>
+      </div>
+      <div style="--fc:var(--metal)">
+        <h4>산업금속</h4>
+        <div class="it">구리 · 알루미늄 · 니켈</div>
+        <div class="dr">움직이는 힘 — <b>제조업 경기 · 중국 · 전기화</b><br><br><b>경기 지표</b>처럼 읽히기도 합니다. 저장은 <b>비교적 쉽습니다.</b></div>
+      </div>
+      <div style="--fc:var(--precious)">
+        <h4>귀금속</h4>
+        <div class="it">금 · 은 · 백금</div>
+        <div class="dr">움직이는 힘 — <b>실질금리 · 통화 불안 · 중앙은행</b><br><br>거의 <b>소비되지 않아</b> 수급보다 <b>믿음</b>이 정합니다(08편).</div>
+      </div>
+      <div style="--fc:var(--agri)">
+        <h4>농산물</h4>
+        <div class="it">밀 · 옥수수 · 대두 · 커피</div>
+        <div class="dr">움직이는 힘 — <b>날씨 · 작황 · 수출 정책</b><br><br><b>계절성</b>이 뚜렷하고, 공급이 <b>1년 안에</b> 반응합니다.</div>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead>
+          <tr><th>갈래</th><th>주된 동인</th><th>수요의 완고함</th><th>공급 반응 시간</th><th>저장</th><th>연 변동성 (근사)</th></tr>
+        </thead>
+        <tbody>
+          <tr><th>원유</th><td>지정학 · 산유국 · 경기</td><td><b>매우 완고</b></td><td>셰일 6개월 / 유전 3년</td><td>보통</td><td>약 40%</td></tr>
+          <tr><th>천연가스</th><td>날씨 · 지역 수급 · 저장량</td><td><b>매우 완고</b></td><td>3년</td><td><b>어려움</b></td><td><b>약 70%</b></td></tr>
+          <tr><th>구리</th><td>제조업 경기 · 중국 · 전기화</td><td>보통</td><td><b>7년</b> (신규 광산)</td><td>쉬움</td><td>약 25%</td></tr>
+          <tr><th>금</th><td>실질금리 · 통화 불안 · 중앙은행</td><td>—</td><td>7년 (다만 재고가 방대)</td><td><b>매우 쉬움</b></td><td>약 15%</td></tr>
+          <tr><th>은</th><td>금 + 산업 수요</td><td>보통</td><td>—</td><td>쉬움</td><td>약 30%</td></tr>
+          <tr><th>곡물</th><td>날씨 · 작황 · 수출 규제</td><td>완고</td><td><b>1년</b> (다음 작기)</td><td>제한적</td><td>약 22%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · <b>변동성과 반응 시간은 모두 근사치</b>이며 시기에 따라 크게 다릅니다</p>
+
+    <div class="keyline">
+      <div class="kt">이 편의 첫 문장</div>
+      <div class="kb">「원자재가 오른다」는 <b>정보가 아닙니다.</b><br><b>무엇이, 왜</b>를 물어야 합니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="shock">
+    <div class="prod-head" style="--edge:var(--metal)">
+      <span class="prod-tag">02 · 폭등</span>
+      <h2>왜 에너지는 유독 크게 튀나</h2>
+      <p class="one">이유는 하나입니다 — <b>수요를 줄일 수가 없기</b> 때문입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SHOCK · 공급이 줄면 가격이 얼마나 오르나</div>
+      <p class="labsub">같은 공급 차질인데 <b>품목에 따라 결과가 몇 배씩</b> 다릅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="skDrop">공급 차질</label>
+        <input type="range" id="skDrop" min="0" max="20" step="1" value="5">
+        <output id="skDropOut">−5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="skElas">수요의 완고함 (탄력성)</label>
+        <input type="range" id="skElas" min="3" max="150" step="1" value="5">
+        <output id="skElasOut">0.05 (원유 · 단기)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="skLag">공급이 반응하는 데 걸리는 시간</label>
+        <input type="range" id="skLag" min="1" max="100" step="1" value="30">
+        <output id="skLagOut">3.0년</output>
+      </div>
+
+      <div class="steps-out" id="skSteps"></div>
+
+      <svg viewBox="0 0 640 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="탄력성별 가격 반응 비교">
+        <g id="skScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">단기 가격 반응</span><span class="rv" id="skJump">—</span></div>
+        <div><span class="rk">공급이 돌아온 뒤</span><span class="rv" id="skAfter">—</span></div>
+      </div>
+
+      <div class="verdict" id="skVerdict" style="--vc:var(--metal)">
+        <div class="vh">공급 충격</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>가격 반응 ≈ 공급 차질 ÷ 수요 탄력성</b>입니다. <b>탄력성</b>은 <b>「가격이 1% 오르면 수요가 몇 % 줄어드는가」</b>입니다. 0.05면 <b>가격이 1% 올라도 수요가 0.05%만</b> 줄어든다는 뜻입니다.<br><br>
+        <b>⚠️ 매우 단순화한 모형입니다.</b> 실제로는 <b>재고</b>가 완충하고, <b>대체재</b>가 나오고, <b>기대 심리</b>가 증폭시킵니다. <b>이 숫자가 실제 예측치는 아닙니다.</b><br><br>
+        <b>그래도 구조는 정확합니다</b> — <b>수요가 완고할수록 작은 차질이 큰 급등</b>을 만듭니다. 그리고 <b>공급 반응이 느릴수록 그 상태가 오래</b> 갑니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>이 구조가 만드는 원자재 특유의 사이클</h3>
+      <p>2장의 두 성질 — <b>완고한 수요</b>와 <b>느린 공급</b> — 이 합쳐지면 <b>원자재 특유의 사이클</b>이 만들어집니다. 대체로 이런 순서입니다.</p>
+      <p><b>① 오랜 저가 → 투자 중단</b> — 값이 낮으면 <b>새 광산이나 유전을 개발하지 않습니다.</b> 몇 년간 아무도 투자하지 않습니다.<br>
+         <b>② 수요가 늘거나 공급 차질</b> — 그런데 공급을 늘릴 수가 없습니다. <b>이미 몇 년 전에 투자를 안 했으니까요.</b><br>
+         <b>③ 폭등</b> — 수요가 완고해 <b>가격이 크게 올라야 겨우 균형</b>이 맞습니다.<br>
+         <b>④ 뒤늦은 투자 붐</b> — 가격이 높으니 너도나도 개발합니다.<br>
+         <b>⑤ 몇 년 뒤 공급 과잉 → 폭락</b> — 그리고 다시 ①로 돌아갑니다.</p>
+      <p class="plain"><b>부동산 트랙에서 본 「공급 시차」와 정확히 같은 구조</b>입니다. 다른 점은 <b>주기가 더 길고 진폭이 더 크다</b>는 것입니다.<br><br><b>여기서 실전 함의 두 가지</b><br>· <b>가장 좋은 매수 시점은 ①</b>입니다 — 값이 싸고 아무도 관심이 없을 때. 그런데 그때가 <b>가장 사기 싫은 때</b>입니다.<br>· <b>가장 나쁜 매수 시점은 ③~④</b>입니다 — 뉴스가 가득하고 모두가 이야기할 때. 그런데 그때가 <b>가장 사고 싶은 때</b>입니다.<br><br><b>⚠️ 다만 「지금이 몇 단계인가」는 지나고 나서야 알 수 있습니다.</b> 채권 트랙 06편에서 경고한 것과 같습니다. <b>이 사이클을 「예측 도구」로 쓰면 안 되고, 「지금 벌어진 일을 설명하는 틀」로 쓰는 것</b>이 안전합니다.</p>
+
+      <h3>「슈퍼사이클」이라는 말에 대하여</h3>
+      <p>원자재 이야기에서 <b>「슈퍼사이클이 왔다」</b>는 표현을 자주 봅니다. <b>10년 이상 이어지는 큰 상승기</b>를 뜻합니다.</p>
+      <p><b>과거에 그런 시기가 있었던 것은 사실</b>입니다. 대규모 산업화나 전쟁 같은 <b>구조적 수요 변화</b>가 있을 때 나타났다고 봅니다.</p>
+      <p><b>그런데 조심할 점이 있습니다.</b></p>
+      <p><b>· 표본이 매우 적습니다</b> — 100년에 몇 번뿐입니다. 채권 트랙 05편의 <b>「역전 사례 여섯 개」</b>와 같은 문제입니다.<br>
+         <b>· 사후에 붙이는 이름입니다</b> — 지나고 나서 <b>「그게 슈퍼사이클이었다」</b>고 부릅니다. <b>진행 중에는 알 수 없습니다.</b><br>
+         <b>· 시작될 때마다 「이번엔 진짜」라고 합니다</b> — 그리고 상당수는 몇 년 만에 끝났습니다.</p>
+      <p class="plain"><b>그래서 이 트랙의 입장은 이렇습니다.</b> <b>「슈퍼사이클이니 오래 들고 가자」는 근거로 삼기에 약합니다.</b> 01편에서 계산했듯 <b>오래 드는 것 자체가 비용</b>이기 때문에, <b>확실하지 않은 전제로 비용을 계속 내는</b> 것이 됩니다.<br><br><b>대신 쓸 수 있는 방법</b> — <b>비중을 정해두고 정기적으로 맞추는 것</b>입니다. 그러면 <b>사이클을 맞히지 않아도</b> 오를 때 자동으로 팔고 내릴 때 자동으로 삽니다. <b>10편</b>에서 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="store">
+    <div class="prod-head" style="--edge:var(--precious)">
+      <span class="prod-tag">03 · 저장</span>
+      <h2>저장이 쉬우냐가 비용을 정합니다</h2>
+      <p class="one">그리고 그 비용이 <b>내 상품의 연간 손실</b>이 됩니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">STORAGE · 품목을 눌러보세요</div>
+      <p class="labsub">보관이 어려울수록 <b>「들고 있는 비용」</b>이 커집니다.</p>
+
+      <div class="btnrow" id="stBtns">
+        <button data-v="0" class="on">금</button>
+        <button data-v="1">구리</button>
+        <button data-v="2">원유</button>
+        <button data-v="3">곡물</button>
+        <button data-v="4">천연가스</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="stYears">보유 기간</label>
+        <input type="range" id="stYears" min="1" max="10" step="1" value="3">
+        <output id="stYearsOut">3년</output>
+      </div>
+
+      <div class="steps-out" id="stSteps"></div>
+
+      <svg viewBox="0 0 640 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="품목별 보관 비용과 누적 손실">
+        <g id="stScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">연 비용 / 누적</span><span class="rv" id="stCost">—</span></div>
+        <div><span class="rk">본전이 되려면 가격이</span><span class="rv" id="stNeed">—</span></div>
+      </div>
+
+      <div class="verdict" id="stVerdict" style="--vc:var(--precious)">
+        <div class="vh">저장</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 여기 숫자는 모두 근사치</b>이며 <b>시기에 따라 크게 다릅니다.</b> 특히 <b>천연가스</b>는 계절과 저장 여유에 따라 <b>몇 배씩</b> 변합니다.<br><br>
+        <b>계산 기준.</b> 실제로는 <b>순수한 보관비</b>보다 <b>선물을 갈아탈 때 생기는 손실(롤 손실)</b>이 훨씬 큽니다. 여기서는 <b>둘을 합쳐 「연 비용」</b>으로 단순화했습니다. <b>06편에서 롤 손실을 정확히</b> 계산합니다.<br><br>
+        <b>그리고 방향이 반대일 때도 있습니다</b> — <b>백워데이션</b> 국면에서는 <b>비용이 아니라 수익</b>이 됩니다(01·06편).
+      </div>
+    </div>
+    <div class="deep">
+      <h3>왜 보관비가 「내 손실」이 되나 — 06편으로 가는 다리</h3>
+      <p>3장 계산기가 <b>「보관비가 내 수익을 깎는다」</b>고 계산했는데, <b>이상하게 들릴 수 있습니다.</b> <b>「나는 창고를 빌린 적이 없는데?」</b></p>
+      <p><b>맞습니다. 직접 내지는 않습니다.</b> 그런데 <b>가격 구조 안에 이미 들어 있습니다.</b> 순서를 따라가면 이렇습니다.</p>
+      <p><b>① 누군가는 실제로 보관합니다.</b> 원유든 곡물이든 <b>실물을 창고나 탱크에 넣어두는 사람</b>이 있습니다. 그 사람은 <b>보관비·보험료·묶인 돈의 이자</b>를 씁니다.<br>
+         <b>② 그래서 「1년 뒤에 받는 값」이 「지금 받는 값」보다 비쌉니다.</b> 1년 뒤에 넘겨주려면 <b>1년치 보관비만큼 더 받아야</b> 손해가 안 나기 때문입니다.<br>
+         <b>③ 이 차이가 「콘탱고」입니다.</b> 뒤 만기가 비싼 상태를 그렇게 부릅니다.<br>
+         <b>④ 그런데 ETF는 만기가 오면 갈아타야 합니다.</b> <b>싼 것(가까운 만기)을 팔고 비싼 것(먼 만기)을 삽니다.</b><br>
+         <b>⑤ 그게 반복되면 손실이 쌓입니다.</b> 가격이 <b>전혀 안 변해도</b> 그렇습니다.</p>
+      <p class="plain"><b>그래서 「보관비」와 「롤 손실」은 사실상 같은 것의 두 얼굴</b>입니다. <b>보관이 어려운 품목일수록 콘탱고가 크고, 콘탱고가 클수록 ETF가 빨리 녹습니다.</b> 3장 표의 순서가 <b>정확히 그 순서</b>입니다 — 금이 가장 덜 녹고 천연가스가 가장 빨리 녹습니다.<br><br><b>⚠️ 다만 단순화한 설명입니다.</b> 실제 콘탱고 크기는 보관비뿐 아니라 <b>금리·재고 여유·계절·시장 심리</b>가 함께 정합니다. 그래서 <b>보관비보다 훨씬 클 때도, 거꾸로 뒤 만기가 더 쌀 때(백워데이션)도</b> 있습니다. <b>06편에서 정확히</b> 계산합니다.</p>
+
+      <h3>계절이 있는 품목은 이 그림이 다릅니다</h3>
+      <p>지금까지의 설명은 <b>「만기가 멀수록 비싸다」</b>는 단순한 우상향을 전제했습니다. 그런데 <b>천연가스와 곡물</b>은 다릅니다.</p>
+      <p><b>천연가스</b> — <b>겨울에 난방 수요가 폭증</b>합니다. 그래서 <b>겨울 만기가 여름 만기보다 비쌉니다.</b> 만기별 가격을 늘어놓으면 <b>매년 겨울마다 봉우리가 생기는 톱니 모양</b>이 됩니다.</p>
+      <p><b>곡물</b> — <b>수확 직후에는 공급이 넘칩니다.</b> 그래서 <b>수확기 만기가 가장 쌉니다.</b> 그리고 다음 수확 전까지 재고를 소진하며 <b>서서히 비싸집니다.</b> 역시 <b>톱니 모양</b>입니다.</p>
+      <p class="plain"><b>실전에서 중요한 이유</b> — <b>「지금 콘탱고니까 손해」라고 단순히 말할 수 없습니다.</b> <b>어느 만기에서 어느 만기로 갈아타느냐</b>에 따라 결과가 다릅니다. <b>여름 만기를 팔고 겨울 만기를 사면 크게 손해</b>지만, 반대라면 이득일 수도 있습니다.<br><br><b>그래서 상품마다 「어떤 만기를 담느냐」의 규칙이 다르고, 같은 천연가스 ETF라도 결과가 갈립니다.</b> <b>07편</b>에서 그 규칙을 확인하는 법을 다룹니다.<br><br><b>여기서 얻을 교훈은 하나</b>입니다 — <b>「원자재 ETF를 샀다」는 것만으로는 내가 무엇을 샀는지 모릅니다.</b> <b>어떤 품목의, 어떤 만기를, 어떤 규칙으로</b> 담는 상품인지까지 알아야 합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="cat">
+    <div class="prod-head" style="--edge:var(--agri)">
+      <span class="prod-tag">04 · 도감</span>
+      <h2>주요 품목 하나씩</h2>
+      <p class="one">각각 <b>무엇을 봐야 하는지</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CATALOG · 품목을 눌러보세요</div>
+      <p class="labsub">이름·단위·움직이는 힘·조심할 점을 함께 봅니다.</p>
+
+      <div class="btnrow" id="ctBtns">
+        <button data-v="0" class="on">원유</button>
+        <button data-v="1">천연가스</button>
+        <button data-v="2">구리</button>
+        <button data-v="3">금·은</button>
+        <button data-v="4">곡물</button>
+        <button data-v="5">그 밖의 것들</button>
+      </div>
+
+      <div class="verdict" id="ctVerdict" style="--vc:var(--agri)">
+        <div class="vh">품목</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">「원자재」를 <b>하나로 묶지 않는 것</b>이 전부입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>에너지·산업금속·귀금속·농산물은 다른 자산</b>이라는 것.</li>
+      <li><b>각각 봐야 할 뉴스가 다르다</b>는 것 — 지정학·경기·금리·날씨.</li>
+      <li><b>수요가 완고할수록 작은 공급 차질이 큰 급등</b>을 만든다는 것.</li>
+      <li><b>공급 반응이 느릴수록 고점이 오래 간다</b>는 것.</li>
+      <li><b>저장이 어려울수록 들고 있는 비용이 크다</b>는 것.</li>
+      <li><b>금은 연 −0.4%, 천연가스는 연 −18% 수준</b>이라는 것 (근사).</li>
+      <li><b>천연가스는 변동성이 주식의 서너 배</b>라는 것.</li>
+      <li><b>구리는 경기 지표처럼 읽히기도 한다</b>는 것.</li>
+      <li><b>「슈퍼사이클」은 사후에 붙는 이름</b>이라는 것.</li>
+      <li><b>내가 사려는 것이 어느 갈래인지</b> 알고 있나?</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> <b>「원자재」는 하나의 자산이 아닙니다.</b> 기름과 금은 <b>같은 범주에 넣는 것이 이상할 만큼</b> 다릅니다. 하나는 <b>태우면 없어지고 저장이 어렵고 지정학이 움직이고</b>, 다른 하나는 <b>거의 없어지지 않고 저장이 쉽고 금리가 움직입니다.</b></p>
+      <p><b>그래서 「원자재를 담아야 할까」라는 질문은 답할 수 없습니다.</b> <b>「어떤 원자재를, 왜」</b>로 바꿔야 답이 나옵니다.</p>
+      <p><b>그리고 이 편의 두 숫자가 뒤 편들의 바탕</b>입니다 — <b>수요의 완고함</b>(왜 폭등하는가)과 <b>저장의 난이도</b>(왜 들고 있는 것이 비싼가)입니다. <b>03편</b>에서 앞의 것을, <b>06편</b>에서 뒤의 것을 정확히 계산합니다.</p>
+      <p><b>다음 편은 03편 — 재고와 생산원가</b>입니다. 주식에 <b>PER</b>이 있다면 원자재에는 <b>재고와 생산원가</b>가 있습니다. <b>가격이 어디서 멈추는지</b>를 보는 법입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 원자재 02 · 종류<br>
+    <a href="index.html#commodity">← 원자재 목록으로</a> · <a href="commodity-basics.html">01 · 원자재란</a> · 03 · 재고와 생산원가 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    변동성·탄력성·보관비·공급 반응 시간은 모두 <b>근사치</b>이며 시기와 자료에 따라 크게 다릅니다. 계산기는 구조를 보기 위한 단순 모형입니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 2. 공급 충격 ══════════ */
+var ELAS_NAME = [
+  { max:8,   n:'원유 · 단기' }, { max:15, n:'천연가스 · 단기' }, { max:40, n:'구리' },
+  { max:70,  n:'곡물' },        { max:200, n:'대체가 쉬운 재화' }
+];
+function skDraw(){
+  var drop = +document.getElementById('skDrop').value;
+  var e = +document.getElementById('skElas').value / 100;
+  var lag = +document.getElementById('skLag').value / 10;
+  var eRaw = +document.getElementById('skElas').value;
+  var lbl = ELAS_NAME.find(function(x){ return eRaw <= x.max; });
+  document.getElementById('skDropOut').textContent = drop === 0 ? '없음' : '−' + drop + '%';
+  document.getElementById('skElasOut').textContent = num(e, 2) + (lbl ? ' (' + lbl.n + ')' : '');
+  document.getElementById('skLagOut').textContent = num(lag, 1) + '년';
+
+  var jump = drop / e;
+  var after = jump * 0.25;   // 공급이 돌아오면 대부분 되돌아간다는 단순 가정
+
+  steps('skSteps', [
+    { k:'공급 차질', v:'−' + drop + '%' },
+    { k:'수요 탄력성', v:num(e, 2) },
+    { k:'가격 반응 = 차질 ÷ 탄력성', v:'+' + num(jump, 0) + '%' },
+    { k:'공급이 반응하는 데', v:num(lag, 1) + '년' },
+    { k:'그 뒤 남는 상승분 (단순 가정)', v:'+' + num(after, 0) + '%', total:true }
+  ]);
+
+  document.getElementById('skJump').textContent = '+' + num(jump, 0) + '%';
+  document.getElementById('skJump').style.color = jump > 50 ? 'var(--neg)' : '';
+  document.getElementById('skAfter').textContent = '+' + num(after, 0) + '% (' + num(lag, 1) + '년 뒤)';
+
+  var X0 = 150, W = 380;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">공급 −' + drop + '%일 때 품목별 가격 반응 (%)</text>';
+  var rows = [
+    { n:'원유 (0.05)', e:0.05, c:'#8E4B3A' },
+    { n:'천연가스 (0.10)', e:0.10, c:'#8E6B3A' },
+    { n:'구리 (0.30)', e:0.30, c:'#4C6B7A' },
+    { n:'곡물 (0.50)', e:0.50, c:'#5F7A52' },
+    { n:'내가 넣은 값 (' + num(e, 2) + ')', e:e, c:'#7A5C9E', mine:true }
+  ];
+  var maxV = Math.max.apply(null, rows.map(function(r){ return drop / r.e; }).concat([10]));
+  rows.forEach(function(r, i){
+    var v = drop / r.e;
+    var y = 30 + i * 30;
+    var w = Math.max(1, v / maxV * W);
+    var on = !!r.mine;
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="20" rx="1.5" fill="' + r.c +
+         '" fill-opacity="' + (on ? '.55' : '.28') + '" stroke="' + r.c + '" stroke-width="' + (on ? '1.7' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end"' +
+         (on ? ' fill="' + r.c + '"' : '') + '>' + r.n + '</text>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + Math.min(X0 + w + 8, X0 + W - 4).toFixed(1) + '" y="' + (y + 14) + '"' +
+         (on ? ' fill="' + r.c + '"' : '') + '>+' + num(v, 0) + '%</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="' + (30 + rows.length * 30 + 20) + '">수요가 완고할수록(탄력성이 작을수록) 같은 차질에 더 크게 반응합니다.</text>';
+  document.getElementById('skScene').innerHTML = g;
+
+  if(drop === 0){
+    verdict('skVerdict', '#5B5648',
+      '공급 차질을 넣어보세요',
+      '<b>「공급 차질」 슬라이더</b>를 움직이면 품목별 반응이 비교됩니다.<br><br>' +
+      '<b>탄력성이란</b> — <b>「가격이 1% 오르면 수요가 몇 % 줄어드는가」</b>입니다. <b>0.05</b>면 가격이 1% 올라도 수요가 <b>0.05%만</b> 줄어든다는 뜻입니다. <b>거의 안 줄어드는</b> 것입니다.<br><br>' +
+      '<b>왜 원유가 그렇게 낮은가</b> — <b>기름값이 두 배가 돼도 당장 출퇴근을 반으로 줄일 수는 없기</b> 때문입니다. 차를 바꾸거나 이사하는 데는 <b>몇 년</b>이 걸립니다.');
+  } else if(jump > 80){
+    verdict('skVerdict', '#8E4B3A',
+      '공급 ' + drop + '% 차질에 가격이 +' + num(jump, 0) + '% — 이것이 에너지 위기의 산수입니다',
+      '수요 탄력성이 <b>' + num(e, 2) + '</b>로 매우 낮아, <b>' + drop + '%의 공급 차질</b>이 <b>+' + num(jump, 0) +
+      '%</b>의 가격 급등을 만듭니다.<br><br>' +
+      '<b>왜 이렇게 되나</b> — 공급이 <b>' + drop + '%</b> 줄었으면 <b>수요도 ' + drop +
+      '% 줄어야</b> 균형이 맞습니다. 그런데 <b>가격이 1% 올라도 수요는 ' + num(e, 2) +
+      '%밖에 안 줄어듭니다.</b> 그래서 <b>가격이 어마어마하게 올라야</b> 겨우 그만큼 줄어듭니다.<br><br>' +
+      '<b>역사적으로 실제 일어난 일</b>입니다 — <b>전쟁이나 산유국의 감산</b>으로 공급이 몇 % 줄었을 때 유가가 <b>몇 배로</b> 뛴 사례들이 있습니다.<br><br>' +
+      '<b>그런데 이건 반대로도 작동합니다</b> — <b>공급이 조금 남으면 가격이 폭락</b>합니다. <b>수요가 안 늘어나니까</b>요. <b>「공급 차질」을 0 근처로</b> 놓고 생각해보면, 에너지 가격이 <b>왜 그렇게 극단적으로 오르내리는지</b>가 설명됩니다.<br><br>' +
+      '<b>투자 관점에서의 의미</b> — <b>에너지는 방향이 맞아도 폭이 예측 불가</b>합니다. 그래서 <b>비중이 특히 중요</b>합니다(10편).');
+  } else if(jump > 20){
+    verdict('skVerdict', '#8E6B3A',
+      '가격이 +' + num(jump, 0) + '% 오릅니다 — 그리고 ' + num(lag, 1) + '년은 유지됩니다',
+      '탄력성 <b>' + num(e, 2) + '</b>에서 <b>' + drop + '%</b>의 차질이면 <b>+' + num(jump, 0) + '%</b>입니다.<br><br>' +
+      '<b>여기서 두 번째 성질이 중요해집니다</b> — <b>공급이 반응하는 데 ' + num(lag, 1) + '년</b>이 걸립니다. 그동안 <b>높은 가격이 유지</b>됩니다.<br><br>' +
+      '<b>반응이 느린 이유</b> — 새 광산이나 유전을 개발하는 데 <b>몇 년</b>이 걸립니다. <b>구리 신규 광산은 7년</b> 정도로 봅니다. 반면 <b>셰일 원유는 6개월</b> 남짓이라 훨씬 빠릅니다.<br><br>' +
+      '<b>그래서 이런 차이가 생깁니다</b> — <b>셰일이 늘어난 뒤 유가 급등이 예전만큼 오래 가지 않는다</b>는 관찰이 있습니다. <b>공급이 빨리 반응하기</b> 때문입니다.<br><br>' +
+      '<b>「공급 반응 시간」을 7년으로</b> 올려보세요. 같은 급등이 <b>훨씬 오래</b> 유지됩니다. <b>구리 같은 금속에서 상승기가 길게 가는</b> 이유입니다.');
+  } else {
+    verdict('skVerdict', '#5F7A52',
+      '수요가 유연해서 가격 반응이 +' + num(jump, 0) + '%에 그칩니다',
+      '탄력성이 <b>' + num(e, 2) + '</b>로 <b>비교적 높습니다</b> — 가격이 오르면 <b>수요가 실제로 줄어든다</b>는 뜻입니다.<br><br>' +
+      '<b>그래서 같은 공급 차질에도 가격이 크게 안 튑니다.</b> <b>대체재가 있거나</b>, <b>덜 써도 되는</b> 품목입니다.<br><br>' +
+      '<b>탄력성 슬라이더를 0.05까지 내려보세요.</b> <b>같은 차질인데 반응이 몇 배</b>로 커집니다. <b>그것이 에너지와 다른 원자재의 차이</b>입니다.<br><br>' +
+      '<b>투자 관점에서</b> — 탄력성이 높은 품목은 <b>덜 튀지만 덜 무섭습니다.</b> <b>큰 수익을 기대하기도 어렵다</b>는 뜻이기도 합니다.');
+  }
+}
+['skDrop', 'skElas', 'skLag'].forEach(function(id){ document.getElementById(id).addEventListener('input', skDraw); });
+
+/* ══════════ 3. 저장 ══════════ */
+var ST = [
+  { h:'금', color:'#8E6B3A', cost:0.4, ease:'매우 쉬움',
+    t:'부피 대비 값이 커서 보관이 사실상 문제가 안 됩니다',
+    p:'<b>금 1억원어치는 손바닥에 올라갑니다.</b> 그래서 <b>보관비가 값의 0.5% 미만</b>입니다.<br><br>' +
+      '<b>여기서 큰 결과가 나옵니다</b> — <b>금은 실제 금괴를 보관하는 ETF</b>가 가능합니다. 선물을 굴릴 필요가 없으니 <b>롤 손실이 없습니다.</b><br><br>' +
+      '<b>그래서 금만은 「사서 오래 들기」가 그나마 성립</b>합니다. 다른 원자재와 결정적으로 다른 점입니다.<br><br>' +
+      '<b>다만 여전히 배당은 없습니다.</b> 01편의 기본 성질은 그대로입니다 — <b>가격이 올라야만</b> 수익이 납니다.<br><br>' +
+      '<b>08편에서 금을 따로</b> 다루는 이유가 이것입니다.' },
+  { h:'구리', color:'#4C6B7A', cost:1.5, ease:'쉬움',
+    t:'창고에 쌓아두면 되고 썩지도 않습니다',
+    p:'금속은 <b>부패하지 않고 부피도 관리 가능</b>합니다. 그래서 보관비가 <b>연 1~2%</b> 수준입니다(근사).<br><br>' +
+      '<b>그래서 콘탱고가 심하지 않습니다</b> — 만기별 가격 차이가 <b>에너지만큼 벌어지지 않습니다.</b> 롤 손실이 상대적으로 작습니다.<br><br>' +
+      '<b>구리의 특별한 점</b> — <b>세계 곳곳의 창고 재고가 공개</b>됩니다. 그래서 <b>수급을 눈으로 확인</b>할 수 있습니다. 03편에서 다룹니다.<br><br>' +
+      '<b>다만 「닥터 코퍼」라는 별명</b>이 있습니다 — <b>경기를 진단한다</b>는 뜻입니다. 전선·건설·전자에 다 쓰이니 <b>경기가 좋으면 오르고 나쁘면 내립니다.</b><br><br>' +
+      '<b>이게 분산 관점에서는 약점</b>입니다 — <b>주식과 같은 방향</b>으로 움직이기 쉽습니다.' },
+  { h:'원유', color:'#8E4B3A', cost:4, ease:'보통',
+    t:'탱크가 필요하고, 저장 공간이 한계에 닿으면 극단이 됩니다',
+    p:'기름은 <b>탱크나 유조선</b>에 저장합니다. 가능하지만 <b>공간이 한정</b>되어 있고 <b>비용이 듭니다.</b><br><br>' +
+      '<b>연 4% 안팎</b>의 보관비가 일반적입니다(근사). 그런데 <b>이건 평상시</b>입니다.<br><br>' +
+      '<b>⚠️ 저장 공간이 꽉 차면 극단적인 일이 벌어집니다</b> — 수요가 갑자기 사라지고 <b>넣을 곳이 없어지면</b>, <b>「가져가 주면 돈을 주겠다」</b>는 상황까지 갈 수 있습니다. <b>2020년에 실제로 원유 선물 가격이 마이너스로 간 적</b>이 있습니다.<br><br>' +
+      '<b>그때 원유 ETF를 들고 있던 사람들이 큰 손실</b>을 봤습니다. <b>현물 가격이 아니라 선물 구조 때문</b>이었습니다. <b>06편과 09편</b>에서 다룹니다.<br><br>' +
+      '<b>기억할 것</b> — <b>원유 ETF는 「기름값」을 따라가지 않습니다.</b> <b>「기름 선물의 롤 결과」</b>를 따라갑니다.' },
+  { h:'곡물', color:'#5F7A52', cost:8, ease:'제한적',
+    t:'썩고, 벌레가 먹고, 계절이 있습니다',
+    p:'곡물은 <b>보관할 수 있지만 한계</b>가 있습니다. <b>습도 관리·해충·품질 저하</b>가 있고, <b>보관 기간이 제한</b>됩니다.<br><br>' +
+      '<b>그래서 보관비가 연 8% 안팎</b>으로 큽니다(근사). <b>롤 손실도 그만큼</b> 큽니다.<br><br>' +
+      '<b>그리고 계절성이 강합니다</b> — <b>수확기에는 공급이 넘치고</b> 그 뒤로는 재고를 소진합니다. 그래서 <b>만기별 가격이 단순한 우상향이 아니라 톱니 모양</b>이 됩니다.<br><br>' +
+      '<b>공급이 빨리 반응합니다</b> — 값이 오르면 <b>다음 작기에 더 심습니다.</b> <b>1년이면</b> 공급이 늘어납니다. 그래서 <b>급등이 오래 가지 않는 경우가 많습니다.</b><br><br>' +
+      '<b>투자 관점에서</b> — <b>보관비가 크고 급등이 짧다</b>는 조합이라, <b>장기 보유에 특히 불리</b>합니다.' },
+  { h:'천연가스', color:'#8E4B3A', cost:20, ease:'어려움',
+    t:'이 트랙에서 가장 극단적인 품목입니다',
+    p:'가스는 <b>액화하거나 지하 저장고에 넣어야</b> 합니다. <b>매우 비싸고 용량이 제한</b>됩니다.<br><br>' +
+      '<b>그래서 보관비가 연 20% 안팎</b>까지 갑니다(근사, 시기에 따라 몇 배 차이). <b>롤 손실이 어마어마</b>합니다.<br><br>' +
+      '<b>3장 계산기에서 확인해보세요</b> — <b>가격이 전혀 안 변해도</b> 3년이면 <b>절반 가까이</b> 사라집니다.<br><br>' +
+      '<b>게다가 변동성이 연 70% 수준</b>입니다(근사). <b>주식의 서너 배</b>입니다.<br><br>' +
+      '<b>그리고 지역성이 강합니다</b> — 기름은 배로 실어 나르기 쉬워 <b>세계 가격이 비슷</b>하지만, 가스는 <b>운송이 어려워 지역마다 가격이 크게 다릅니다.</b> 미국이 싸도 유럽이 비쌀 수 있습니다.<br><br>' +
+      '<b>⚠️ 결론</b> — <b>천연가스 ETF는 「장기 보유」에 가장 맞지 않는 상품</b>입니다. 09편에서 실패 사례로 다시 다룹니다.' }
+];
+function stDraw(idx){
+  var s = ST[idx];
+  var t = +document.getElementById('stYears').value;
+  document.getElementById('stYearsOut').textContent = t + '년';
+
+  var cum = (Math.pow(1 - s.cost / 100, t) - 1) * 100;
+  var need = (1 / Math.pow(1 - s.cost / 100, t) - 1) * 100;
+
+  steps('stSteps', [
+    { k:'품목', v:s.h },
+    { k:'저장 난이도', v:s.ease },
+    { k:'연 비용 (보관 + 롤, 근사)', v:'−' + num(s.cost, 1) + '%' },
+    { k:t + '년 누적 (가격 불변 가정)', v:sgn(cum, 1) + '%' },
+    { k:'본전이 되려면 가격이', v:'+' + num(need, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('stCost').textContent = '−' + num(s.cost, 1) + '% / ' + sgn(cum, 1) + '%';
+  document.getElementById('stCost').style.color = 'var(--neg)';
+  document.getElementById('stNeed').textContent = '+' + num(need, 1) + '% 올라야';
+  document.getElementById('stNeed').style.color = need > 30 ? 'var(--neg)' : '';
+
+  var X0 = 150, W = 380;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">가격이 전혀 안 변할 때 ' + t + '년 누적 (%)</text>';
+  var maxAbs = Math.max.apply(null, ST.map(function(x){ return Math.abs((Math.pow(1 - x.cost / 100, t) - 1) * 100); }).concat([5]));
+  ST.forEach(function(x, i){
+    var v = (Math.pow(1 - x.cost / 100, t) - 1) * 100;
+    var y = 30 + i * 30;
+    var w = Math.max(1, Math.abs(v) / maxAbs * W);
+    var on = (i === idx);
+    g += '<rect x="' + (X0 + W - w).toFixed(1) + '" y="' + y + '" width="' + w.toFixed(1) +
+         '" height="20" rx="1.5" fill="' + x.color + '" fill-opacity="' + (on ? '.55' : '.24') + '" stroke="' + x.color +
+         '" stroke-width="' + (on ? '1.7' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end"' +
+         (on ? ' fill="' + x.color + '"' : '') + '>' + x.h + ' (연 ' + num(x.cost, 1) + '%)</text>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 + W - w - 8).toFixed(1) + '" y="' + (y + 14) +
+         '" text-anchor="end"' + (on ? ' fill="' + x.color + '"' : '') + '>' + sgn(v, 1) + '</text>';
+  });
+  g += '<line x1="' + (X0 + W) + '" y1="24" x2="' + (X0 + W) + '" y2="' + (30 + ST.length * 30) + '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (30 + ST.length * 30 + 22) + '">같은 「원자재 ETF」인데 들고 있는 비용이 몇십 배 차이 납니다.</text>';
+  document.getElementById('stScene').innerHTML = g;
+
+  document.getElementById('stVerdict').querySelector('.vh').textContent = s.h;
+  verdict('stVerdict', s.color, s.t, s.p);
+}
+var stIdx = 0;
+bindBtnRow('#stBtns', function(v){ stIdx = +v; stDraw(stIdx); });
+document.getElementById('stYears').addEventListener('input', function(){ stDraw(stIdx); });
+
+/* ══════════ 4. 도감 ══════════ */
+var CT = [
+  { h:'원유', color:'#8E4B3A',
+    t:'세계에서 가장 많이 거래되는 원자재입니다',
+    p:'<b>단위</b> — <b>배럴</b>(약 159리터). 가격은 <b>배럴당 달러</b>로 표시합니다.<br><br>' +
+      '<b>기준 가격 두 가지</b> — <b>WTI</b>(미국 기준)와 <b>브렌트</b>(유럽·중동 기준)입니다. <b>둘의 가격이 다르고</b>, 내가 산 상품이 <b>어느 쪽을 따라가는지</b> 확인해야 합니다.<br><br>' +
+      '<b>봐야 할 것</b><br>· <b>산유국 회의 결과</b> — 감산·증산 결정<br>· <b>미국 재고 발표</b> — 주간으로 나오고 가격을 크게 움직입니다<br>· <b>지정학</b> — 중동·러시아 관련 사건<br>· <b>경기 지표</b> — 수요 쪽<br><br>' +
+      '<b>⚠️ 조심할 점</b> — <b>원유 ETF는 유가를 따라가지 않습니다.</b> 선물을 계속 갈아타므로 <b>롤 손실</b>이 큽니다. <b>2020년에는 선물 가격이 마이너스</b>까지 간 적이 있고, 그때 관련 상품에서 큰 손실이 났습니다. <b>06·09편</b>에서 다룹니다.' },
+  { h:'천연가스', color:'#8E6B3A',
+    t:'변동성이 가장 크고 장기 보유에 가장 불리합니다',
+    p:'<b>단위</b> — 미국 기준으로 <b>MMBtu</b>(열량 단위)당 달러입니다. <b>헨리허브</b>가 미국 기준 가격입니다.<br><br>' +
+      '<b>가장 큰 특징 셋</b><br>· <b>변동성이 연 70% 수준</b>(근사) — 주식의 서너 배<br>· <b>저장이 어려워 보관·롤 비용이 매우 큼</b><br>· <b>지역마다 가격이 크게 다름</b> — 운송이 어렵기 때문<br><br>' +
+      '<b>봐야 할 것</b> — <b>날씨 예보</b>가 거의 전부입니다. <b>추운 겨울</b>이면 난방 수요가 폭증하고, <b>더운 여름</b>이면 냉방 전력 수요가 늘어납니다. 그리고 <b>주간 저장량 발표</b>입니다.<br><br>' +
+      '<b>⚠️ 이 트랙에서 가장 강한 경고를 붙이는 품목</b>입니다. <b>천연가스 ETF를 장기로 들고 있으면 가격이 제자리여도 계속 녹습니다.</b> 3장 계산기에서 확인하세요.' },
+  { h:'구리', color:'#4C6B7A',
+    t:'「닥터 코퍼」 — 경기를 진단한다는 별명이 있습니다',
+    p:'<b>단위</b> — 미국은 <b>파운드당 센트</b>, 런던은 <b>톤당 달러</b>로 표시합니다.<br><br>' +
+      '<b>왜 경기 지표처럼 읽히나</b> — <b>전선·배관·건설·전자</b>에 두루 쓰여 <b>산업 활동 전반</b>을 반영하기 때문입니다.<br><br>' +
+      '<b>봐야 할 것</b><br>· <b>중국 경기</b> — 세계 소비의 큰 몫을 차지합니다<br>· <b>거래소 창고 재고</b> — 공개됩니다<br>· <b>전기화 흐름</b> — 전기차·재생에너지·데이터센터가 <b>구조적 수요</b>로 거론됩니다<br>· <b>주요 광산의 파업·정치 불안</b> — 생산이 몇몇 나라에 몰려 있습니다<br><br>' +
+      '<b>공급이 매우 느립니다</b> — 새 광산에 <b>7년 안팎</b>이 걸립니다. 그래서 <b>부족해지면 오래 갑니다.</b><br><br>' +
+      '<b>⚠️ 분산 관점의 약점</b> — <b>경기와 함께 움직이므로 주식과 같은 방향</b>이 되기 쉽습니다. <b>「주식 위험을 줄이려고」</b> 담는 것이라면 목적에 잘 맞지 않습니다.' },
+  { h:'금·은', color:'#8E6B3A',
+    t:'금은 「믿음」이, 은은 「금 + 산업」이 움직입니다',
+    p:'<b>단위</b> — <b>트로이온스</b>(약 31.1g)당 달러입니다. 일반 온스와 <b>다릅니다.</b><br><br>' +
+      '<b>금이 특별한 이유</b> — 거의 <b>소비되지 않습니다.</b> 캔 금의 대부분이 <b>아직 남아</b> 있습니다. 그래서 <b>「올해 얼마나 캤나」보다 「사람들이 얼마나 갖고 싶어 하나」</b>가 가격을 정합니다.<br><br>' +
+      '<b>금이 오르는 조건</b><br>· <b>실질금리가 낮아질 때</b> — 이자 없는 금의 상대적 매력이 커집니다<br>· <b>통화 가치에 불안이 생길 때</b><br>· <b>중앙은행이 사들일 때</b><br><br>' +
+      '<b>은은 다릅니다</b> — <b>산업 수요가 절반 가까이</b>입니다(태양광·전자). 그래서 <b>금보다 경기에 민감하고 변동이 큽니다.</b> 금이 오를 때 <b>은이 더 크게 오르고 더 크게 떨어지는</b> 경향이 있습니다.<br><br>' +
+      '<b>보관이 쉬워 실물 ETF가 가능</b>합니다 — <b>롤 손실이 없습니다.</b> 원자재 중 <b>거의 유일하게 장기 보유가 성립</b>하는 이유입니다. <b>08편</b>에서 자세히 다룹니다.' },
+  { h:'곡물', color:'#5F7A52',
+    t:'날씨가 거의 전부이고, 공급이 1년이면 반응합니다',
+    p:'<b>주요 품목</b> — <b>밀·옥수수·대두</b>가 3대이고, <b>커피·설탕·면화</b> 등도 거래됩니다.<br><br>' +
+      '<b>단위</b> — <b>부셸</b>당 센트가 일반적입니다. 품목마다 <b>부셸의 무게가 다릅니다.</b><br><br>' +
+      '<b>봐야 할 것</b><br>· <b>날씨</b> — 주요 산지의 가뭄·홍수·이상기온<br>· <b>파종·수확 면적</b> — 정기적으로 발표됩니다<br>· <b>수출 규제</b> — 자국 물가를 걱정한 나라가 <b>수출을 막으면</b> 국제 가격이 급등합니다<br>· <b>비료와 에너지 가격</b> — 생산비에 직결됩니다<br><br>' +
+      '<b>공급이 비교적 빨리 반응합니다</b> — 값이 오르면 <b>다음 작기에 더 심습니다.</b> <b>1년</b>이면 공급이 늘어납니다. 그래서 <b>급등이 오래 가지 않는 경우가 많습니다.</b><br><br>' +
+      '<b>⚠️ 그런데 보관비는 큽니다</b> — <b>급등은 짧고 비용은 크다</b>는 조합이라 <b>장기 보유에 특히 불리</b>합니다.' },
+  { h:'그 밖의 것들', color:'#7A5C9E',
+    t:'개인이 접근하기 어렵거나 성격이 다른 것들',
+    p:'<b>· 우라늄</b> — 원자력 연료입니다. <b>거래가 매우 제한적</b>이라 개인은 대체로 <b>관련 기업 주식이나 전용 펀드</b>로 접근합니다.<br><br>' +
+      '<b>· 희토류</b> — 이름과 달리 <b>희귀하지는 않지만 정제가 어렵고</b> 생산이 <b>몇몇 나라에 몰려</b> 있습니다. <b>가격보다 공급망 이슈</b>로 주목받습니다. <b>직접 투자 수단이 거의 없어</b> 기업 주식으로 접근합니다.<br><br>' +
+      '<b>· 리튬·코발트</b> — 배터리 재료입니다. <b>거래소 선물 시장이 얕아</b> 개인 접근이 어렵습니다.<br><br>' +
+      '<b>· 전력</b> — <b>저장이 거의 불가능</b>해 가격이 <b>극단적으로</b> 움직입니다. 지역별 시장이고 개인 투자 수단은 사실상 없습니다.<br><br>' +
+      '<b>· 탄소배출권</b> — 원자재는 아니지만 유사하게 거래됩니다. <b>정책이 가격을 정한다</b>는 점이 결정적으로 다릅니다.<br><br>' +
+      '<b>공통된 주의</b> — <b>「유망하다」는 이야기가 많은 품목일수록 직접 투자 수단이 없거나 나쁩니다.</b> 그래서 <b>관련 기업 주식</b>으로 사게 되는데, <b>그건 원자재가 아니라 주식</b>입니다(01편 3장). <b>07편</b>에서 이 구분을 다룹니다.' }
+];
+bindBtnRow('#ctBtns', function(v){
+  document.getElementById('ctVerdict').querySelector('.vh').textContent = CT[+v].h;
+  verdict('ctVerdict', CT[+v].color, CT[+v].t, CT[+v].p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 질문이 이 편의 요지입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+/* ══════════ 초기화 ══════════ */
+skDraw();
+document.querySelector('#stBtns button[data-v="0"]').click();
+document.querySelector('#ctBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
