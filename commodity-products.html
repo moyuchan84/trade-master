@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETF · 생산기업 · 실물</title>
+<meta name="description" content="같은 「금에 투자」인데 네 가지 방법이 있고 결과가 다릅니다. 무엇을 고를지의 기준을 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --phys:#8E6B3A;--fut:#8E4B3A;--eq:#4C6B7A;--real:#5F7A52;--tax:#7A5C9E;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:760px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .tab{display:block;padding-left:16px;color:var(--ink-soft);font-size:14.2px;margin-top:3px;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--phys));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--phys));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--phys));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .quad{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 0;}
+  .quad > div{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--fc);border-radius:3px;padding:14px 15px;}
+  .quad h4{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--fc);margin:0 0 6px;}
+  .quad .it{font-size:13.4px;color:var(--ink);margin-bottom:5px;font-weight:600;}
+  .quad .dr{font-size:12.4px;color:var(--ink-soft);line-height:1.55;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .quad{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">원자재 07 · 상품 · 투자 공부 노트</div>
+    <h1>ETF · 생산기업 ·<br>실물</h1>
+    <p class="lede"><b>「금에 투자한다」</b>는 말 하나에 <b>네 가지 전혀 다른 행동</b>이 들어 있습니다. 그리고 <b>몇 년이 지나면 결과가 크게 벌어집니다.</b> 06편에서 본 롤 손실이 <b>어떤 방법에서는 아예 없고 어떤 방법에서는 치명적</b>이기 때문입니다.</p>
+    <div class="callout">
+      <p><b>네 가지는 이렇습니다.</b></p>
+      <p><b>① 실물을 담는 ETF</b> — 창고에 진짜 금괴가 있습니다. <b>롤 손실이 없습니다.</b><br>
+         <b>② 선물을 담는 ETF</b> — 06편에서 본 그 상품입니다. <b>롤 손실이 있습니다.</b><br>
+         <b>③ 생산기업 주식</b> — 금광회사를 삽니다. <b>롤 손실이 없고 배당도 나오지만, 그건 원자재가 아니라 주식</b>입니다.<br>
+         <b>④ 실물 그 자체</b> — 골드바를 삽니다. <b>보관 문제와 매매 비용</b>이 큽니다.</p>
+      <p><b>같은 금값 +30%인데</b>(5년, 예시 가정) <b>실물 ETF +28% / 선물 ETF +23% / 금광주 +84% / 골드바 +14%</b>로 갈립니다. <b>2장에서 계산합니다.</b></p>
+      <p><b>⚠️ 그리고 여기에 세금이 한 겹 더 붙습니다.</b> 한국에서는 <b>어디에 상장된 상품이냐</b>에 따라 세금이 <b>0%부터 22%까지</b> 다릅니다. <b>4장에서 정리합니다.</b></p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#four">1. 네 가지 방법</a>
+    <a href="#cmp">2. 비교 계산기</a>
+    <a href="#eq">3. 생산기업의 레버리지</a>
+    <a href="#tax">4. 세금과 조심할 상품</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="four">
+    <div class="prod-head" style="--edge:var(--phys)">
+      <span class="prod-tag">01 · 갈래</span>
+      <h2>같은 말인데 네 가지 행동입니다</h2>
+      <p class="one">각각 <b>다른 위험</b>을 지게 됩니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>「사과에 투자하고 싶다」</b>고 하자. 방법이 네 가지야.</p>
+      <p><b>① 진짜 사과를 사서 창고에 넣어둔다</b> — 확실해. 사과값이 오르면 내 사과도 오르지. 대신 <b>창고비가 들어.</b></p>
+      <p><b>② 「12월에 사과 받을 표」를 산다</b> — 창고비는 안 들지만, <b>표가 만기되면 다음 달 표로 바꿔야</b> 해. 그때마다 <b>조금씩 손해</b>야(06편).</p>
+      <p><b>③ 사과 농장 회사의 주식을 산다</b> — 사과값이 오르면 농장이 돈을 더 벌어. <b>사과값보다 더 크게</b> 오르기도 해. 대신 <b>농장 사장이 잘못하면</b> 사과값이 올라도 망할 수 있어.</p>
+      <p><b>④ 사과를 사서 집에 둔다</b> — 확실하지만 <b>썩고</b>, <b>팔 때 제값 받기 어려워.</b></p>
+      <p>어느 게 제일 좋을까? <b>정답이 없어.</b> <b>「얼마나 오래 들 건지」와 「어떤 위험을 지고 싶은지」</b>에 따라 달라져.</p>
+    </div>
+
+    <div class="quad">
+      <div style="--fc:var(--phys)">
+        <h4>① 실물 담는 ETF</h4>
+        <div class="it">창고에 진짜 금괴가 있음</div>
+        <div class="dr"><b>롤 손실 없음.</b> 비용은 <b>운용보수(연 0.2~0.5% 수준)</b>뿐입니다.<br><br><b>원자재 중 「오래 들 수 있는」 유일한 형태</b>에 가깝습니다.<br><br><b>⚠️ 가능한 품목이 제한</b>됩니다 — <b>금·은·백금</b> 정도. 원유·가스·곡물은 <b>실물 보관이 현실적이지 않습니다.</b></div>
+      </div>
+      <div style="--fc:var(--fut)">
+        <h4>② 선물 담는 ETF</h4>
+        <div class="it">가장 흔하고 가장 오해가 많음</div>
+        <div class="dr"><b>거의 모든 원자재 ETF</b>가 이것입니다. 원유·가스·구리·곡물 모두.<br><br><b>롤 손실</b>이 붙습니다(06편). <b>총보수에는 안 나옵니다.</b><br><br><b>짧게 쓰면 문제없고 길게 들면 치명적</b>입니다. <b>기간이 전부</b>입니다.</div>
+      </div>
+      <div style="--fc:var(--eq)">
+        <h4>③ 생산기업 주식</h4>
+        <div class="it">원자재가 아니라 주식</div>
+        <div class="dr"><b>롤 손실 없고 배당도</b> 나옵니다. 그리고 <b>원자재보다 더 크게</b> 움직입니다(3장).<br><br><b>⚠️ 대신 주식의 위험이 전부 따라옵니다</b> — 부채, 경영, 사고, 정치 위험, 그리고 <b>주식시장 전체의 분위기</b>.<br><br><b>「원자재로 주식 위험을 분산」하려던 목적과 충돌</b>합니다.</div>
+      </div>
+      <div style="--fc:var(--real)">
+        <h4>④ 실물 그 자체</h4>
+        <div class="it">골드바 · 실버바</div>
+        <div class="dr"><b>완전한 소유</b>입니다. 금융 시스템에 의존하지 않습니다.<br><br><b>⚠️ 대신 비용이 큽니다</b> — <b>부가세</b>, <b>살 때와 팔 때의 가격 차이</b>, <b>보관</b>, <b>진위 확인</b>.<br><br><b>투자 목적이라면 대체로 불리</b>하고, <b>「극단적 상황 대비」라는 목적</b>에서만 의미가 있습니다.</div>
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">이 편의 첫 문장</div>
+      <div class="kb">무엇을 사느냐만큼<br><b>어떤 형태로 사느냐</b>가 중요합니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="cmp">
+    <div class="prod-head" style="--edge:var(--fut)">
+      <span class="prod-tag">02 · 비교</span>
+      <h2>같은 금값, 다른 결과</h2>
+      <p class="one">기간이 길어질수록 <b>차이가 벌어집니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COMPARE · 네 가지를 동시에 굴려보세요</div>
+      <p class="labsub">원자재 가격은 똑같이 움직인다고 가정합니다.</p>
+
+      <div class="ctrl-row">
+        <label for="cpSpot">원자재 가격 변화 (전체 기간)</label>
+        <input type="range" id="cpSpot" min="-50" max="100" step="5" value="30">
+        <output id="cpSpotOut">+30%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cpYears">보유 기간</label>
+        <input type="range" id="cpYears" min="1" max="15" step="1" value="5">
+        <output id="cpYearsOut">5년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cpRoll">선물형의 연 롤 손실</label>
+        <input type="range" id="cpRoll" min="0" max="200" step="5" value="40">
+        <output id="cpRollOut">0.4%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cpBeta">생산기업의 레버리지</label>
+        <input type="range" id="cpBeta" min="10" max="50" step="1" value="25">
+        <output id="cpBetaOut">2.5배</output>
+      </div>
+
+      <div class="steps-out" id="cpSteps"></div>
+
+      <svg viewBox="0 0 640 225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="네 가지 방법의 결과 비교">
+        <g id="cpScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">가장 나은 방법</span><span class="rv" id="cpBest">—</span></div>
+        <div><span class="rk">가장 나쁜 방법</span><span class="rv" id="cpWorst">—</span></div>
+      </div>
+
+      <div class="verdict" id="cpVerdict" style="--vc:var(--fut)">
+        <div class="vh">비교</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 가정 (모두 예시)</b> — 운용보수는 <b>실물 ETF 0.25% / 선물 ETF 0.75% / 기업 ETF 0.5%</b>, 기업 배당 <b>연 1.5%</b>, 골드바는 <b>살 때·팔 때 합쳐 12%</b>의 매매 손실로 잡았습니다. <b>세금은 여기 포함하지 않았습니다</b>(4장에서 따로).<br><br>
+        <b>「생산기업의 레버리지」</b>는 <b>원자재 가격이 1% 움직일 때 기업 이익이 몇 % 움직이는가</b>입니다. <b>3장에서 이 숫자가 어디서 나오는지</b>를 계산합니다.<br><br>
+        <b>실제로는 훨씬 복잡합니다</b> — 기업의 레버리지는 <b>고정된 값이 아니고</b>, 주가는 이익만으로 정해지지 않으며, 롤 손실은 <b>해마다 크게 변합니다.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>이 계산기에서 방법이 바뀌는 세 개의 분기점</h3>
+      <p>슬라이더를 움직이다 보면 <b>순위가 뒤집히는 지점</b>이 보입니다. 그 지점들이 <b>실제 선택 기준</b>입니다.</p>
+      <p><b>① 원자재가 오르느냐 내리느냐 — 생산기업의 순위가 뒤집힙니다.</b><br>
+         <span class="tab">레버리지는 <b>양방향</b>입니다. 원자재가 오르면 <b>가장 크게 벌고</b>, 내리면 <b>가장 크게 잃습니다.</b> <b>「원자재가 오를 것 같다」는 확신의 크기</b>가 이 선택을 정합니다.</span></p>
+      <p><b>② 기간이 길어지느냐 — 선물형이 뒤로 밀립니다.</b><br>
+         <span class="tab">롤 손실은 <b>매년 곱해집니다.</b> 1년이면 차이가 작지만 <b>10년이면 결정적</b>입니다. <b>「몇 년 들 것인가」</b>가 이 선택을 정합니다.</span></p>
+      <p><b>③ 롤 손실이 크냐 작냐 — 실물형과 선물형이 갈립니다.</b><br>
+         <span class="tab">금은 연 0.4% 수준이라 차이가 작지만, <b>천연가스는 연 18%</b> 수준입니다(06편). <b>「어떤 원자재냐」</b>가 이 선택을 정합니다.</span></p>
+      <p class="plain"><b>정리하면 선택 기준은 세 질문</b>입니다.<br>· <b>얼마나 확신하는가</b> → 확신이 크면 생산기업, 작으면 실물형.<br>· <b>얼마나 오래 들 것인가</b> → 길면 실물형 또는 생산기업, 짧으면 선물형도 가능.<br>· <b>어떤 원자재인가</b> → 롤 손실이 크면 선물형은 배제.<br><br><b>⚠️ 그런데 첫 번째 질문이 함정</b>입니다. <b>「확신이 크다」는 느낌은 대체로 근거가 없습니다.</b> 그리고 <b>확신이 클수록 큰 레버리지를 선택</b>하게 되는데, <b>확신이 틀렸을 때 손실도 그만큼</b> 커집니다.<br><br><b>그래서 이 트랙의 권고는 「확신의 크기로 상품을 고르지 말고, 기간과 품목으로 고르라」</b>는 것입니다. <b>앞의 둘은 내가 정할 수 있지만 확신은 검증할 수 없기</b> 때문입니다.</p>
+
+      <h3>「원자재 종합 ETF」는 어떤가</h3>
+      <p>여러 원자재를 한꺼번에 담는 상품이 있습니다. <b>에너지·금속·농산물을 정해진 비중으로</b> 섞습니다.</p>
+      <p><b>장점은 분명합니다</b> — <b>어느 품목이 오를지 고르지 않아도</b> 되고, <b>한 품목이 무너져도 전체가 무너지지 않습니다.</b> 02편에서 본 <b>「원자재는 하나가 아니다」</b>는 문제를 <b>고르지 않는 방식으로</b> 해결합니다.</p>
+      <p><b>그런데 확인할 것이 있습니다.</b></p>
+      <p><b>· 안에 무엇이 얼마나 들었나</b> — 상품마다 크게 다릅니다. <b>에너지 비중이 절반을 넘는 지수</b>도 있고, <b>골고루 나눈 지수</b>도 있습니다. <b>「원자재에 투자한다」고 샀는데 사실상 「기름에 투자한 것」</b>일 수 있습니다.<br>
+         <b>· 롤 손실은 그대로 있습니다</b> — 섞는다고 없어지지 않습니다. <b>각 품목의 롤 손실이 비중대로 합쳐집니다.</b> 에너지 비중이 높으면 <b>롤 손실도 큽니다.</b><br>
+         <b>· 롤 규칙이 다릅니다</b> — 어떤 지수는 <b>근월물만</b> 담고, 어떤 지수는 <b>여러 만기에 분산</b>하며, 어떤 지수는 <b>콘탱고가 작은 만기를 골라</b> 담습니다. <b>같은 「원자재 지수」인데 결과가 몇 %씩 달라집니다.</b></p>
+      <p class="plain"><b>그래서 종합 ETF를 고를 때 확인할 것은 두 가지</b>입니다.<br>· <b>구성 비중</b> — 무엇이 얼마나 들었나.<br>· <b>롤 규칙</b> — 근월물만인가, 분산하는가, 최적화하는가.<br><br><b>둘 다 상품 설명서나 지수 홈페이지에 공개</b>돼 있습니다. <b>사기 전에 확인할 수 있는 사실</b>이고, <b>예측이 필요 없습니다.</b><br><br><b>이 트랙이 반복하는 원칙</b>입니다 — <b>맞힐 수 없는 것(가격)에 시간을 쓰지 말고, 확인할 수 있는 것(비용·구조)에 시간을 쓰는 것.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="eq">
+    <div class="prod-head" style="--edge:var(--eq)">
+      <span class="prod-tag">03 · 기업</span>
+      <h2>생산기업이 더 크게 움직이는 이유</h2>
+      <p class="one">신비한 일이 아니라 <b>뺄셈</b> 때문입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">OPERATING LEVERAGE · 원가를 움직여보세요</div>
+      <p class="labsub"><b>이익 = (가격 − 원가) × 생산량.</b> 여기서 모든 것이 나옵니다.</p>
+
+      <div class="ctrl-row">
+        <label for="olPrice">원자재 가격 ($)</label>
+        <input type="range" id="olPrice" min="500" max="3000" step="50" value="2000">
+        <output id="olPriceOut">$2,000</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="olCost">이 회사의 생산원가 ($)</label>
+        <input type="range" id="olCost" min="200" max="2800" step="50" value="1200">
+        <output id="olCostOut">$1,200</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="olMove">원자재 가격이 움직이면</label>
+        <input type="range" id="olMove" min="-50" max="50" step="1" value="10">
+        <output id="olMoveOut">+10%</output>
+      </div>
+
+      <div class="steps-out" id="olSteps"></div>
+
+      <svg viewBox="0 0 640 248" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="원가와 영업 레버리지">
+        <g id="olScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">영업 레버리지</span><span class="rv" id="olLev">—</span></div>
+        <div><span class="rk">기업 이익 변화</span><span class="rv" id="olProfit">—</span></div>
+      </div>
+
+      <div class="verdict" id="olVerdict" style="--vc:var(--eq)">
+        <div class="vh">레버리지</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>공식.</b> <b>영업 레버리지 = 가격 ÷ (가격 − 원가)</b>입니다.<br><br>
+        <b>유도.</b> 이익 = (가격 − 원가) × 생산량입니다. 원가와 생산량이 고정이면, 가격이 <b>Δ</b>만큼 오를 때 이익도 <b>Δ×생산량</b>만큼 늘어납니다. 이익 대비 비율로 보면 <b>Δ/(가격−원가)</b>이고, 가격 대비 비율은 <b>Δ/가격</b>이므로, <b>비율의 비 = 가격/(가격−원가)</b>입니다.<br><br>
+        <b>⚠️ 단순화한 모형입니다.</b> 실제로는 <b>원가도 함께 움직이고</b>(연료비·인건비), <b>생산량도 변하며</b>, <b>주가는 이익만으로 정해지지 않습니다.</b> 그래도 <b>「왜 원자재 기업이 더 크게 움직이는가」의 핵심은 정확히 이것</b>입니다.
+      </div>
+    </div>
+    <div class="deep">
+      <h3>그럼 생산기업이 더 나은 선택인가 — 세 가지 조건</h3>
+      <p>레버리지가 크다는 것만 보면 <b>「원자재가 오를 것 같으면 기업을 사면 되겠다」</b>가 됩니다. <b>절반만 맞습니다.</b> 조건이 셋 붙습니다.</p>
+      <p><b>① 그 회사가 실제로 그 원자재를 그만큼 파는가.</b> 대형 자원기업은 <b>여러 원자재를 함께</b> 생산하고, <b>일부는 이미 선물로 헤지</b>해두었습니다. <b>가격이 올라도 이미 팔아둔 몫은 그 값을 못 받습니다.</b> 회사가 <b>얼마나 헤지했는지</b>는 사업보고서에 나옵니다.</p>
+      <p><b>② 그 회사가 그 사이에 버티는가.</b> 3장에서 본 대로 <b>원가가 높은 회사일수록 크게 움직이지만, 동시에 먼저 무너집니다.</b> 그리고 <b>부채가 많으면 더 빨리</b> 무너집니다. <b>「가격이 얼마까지 떨어져도 이자를 낼 수 있나」</b>가 실질적인 질문입니다.</p>
+      <p><b>③ 번 돈을 어디에 쓰는가.</b> 이것이 <b>가장 자주 문제가 되는 지점</b>입니다. 원자재 기업들은 <b>가격이 높을 때 번 돈으로 비싼 자산을 사들이는</b> 경향이 반복적으로 관찰됐습니다. 그리고 <b>몇 년 뒤 가격이 내려가면 그 자산을 손실 처리</b>합니다. <b>주주가 원자재 상승분을 온전히 받지 못하는</b> 것입니다.</p>
+      <p class="plain"><b>그래서 생산기업은 「원자재의 대체재」가 아니라 「원자재에 노출된 주식」</b>입니다. <b>주식을 고르는 일</b>이 됩니다 — 재무제표를 보고, 경영진을 평가하고, 자본 배분을 판단해야 합니다.<br><br><b>그 일을 할 생각이 없다면 개별 기업보다 관련 ETF</b>가 낫고, <b>주식 위험을 늘리고 싶지 않다면 실물형</b>이 낫습니다.<br><br><b>⚠️ 그리고 이 트랙의 관점에서 가장 중요한 것</b> — <b>원자재를 담는 이유가 「주식과 다르게 움직이는 자산이 필요해서」였다면, 생산기업 주식은 그 목적을 정면으로 배신합니다.</b> <b>주식시장이 무너질 때 같이 무너지기</b> 때문입니다. <b>목적을 먼저 정하고 상품을 고르는</b> 순서여야 합니다(10편).</p>
+
+      <h3>「원가」는 어디서 확인하나 — 그리고 왜 숫자가 제각각인가</h3>
+      <p>3장 계산기의 핵심 입력이 <b>생산원가</b>입니다. 그런데 <b>실제로 찾아보면 같은 회사에 대해 여러 숫자</b>가 나옵니다. <b>정의가 여러 개</b>이기 때문입니다.</p>
+      <p><b>· 현금원가</b> — 캐는 데 드는 <b>현금 지출</b>만. 가장 낮게 나옵니다.<br>
+         <b>· 총유지원가</b> — 여기에 <b>기존 설비 유지·탐사·본사 비용</b>까지. 광산업에서 널리 쓰입니다.<br>
+         <b>· 전체원가</b> — <b>신규 개발비까지 회수</b>하는 수준. 가장 높게 나옵니다.</p>
+      <p><b>03편에서 「바닥이 두 개」라고 한 것이 정확히 이 구분</b>입니다. <b>현금원가 아래면 당장 멈추고, 전체원가 아래면 새로 안 짓습니다.</b></p>
+      <p class="plain"><b>실무적으로는 「총유지원가」를 기준으로 보는 것이 무난</b>합니다. <b>회사가 실제로 계속 굴러가는 데 필요한 수준</b>에 가깝기 때문입니다. 광산기업은 <b>분기 실적 발표에서 이 숫자를 공시</b>합니다.<br><br><b>확인할 것은 두 가지</b>입니다.<br>· <b>지금 가격이 이 회사의 원가에서 얼마나 위인가</b> → 여유의 크기.<br>· <b>이 원가가 해마다 오르고 있나 내리고 있나</b> → 광맥의 품질이 떨어지면 원가는 <b>계속 오릅니다.</b><br><br><b>⚠️ 두 번째가 자주 무시됩니다.</b> <b>「원가가 낮아 안전한 회사」였는데 몇 년 뒤 원가가 크게 올라 있는</b> 경우가 흔합니다. <b>좋은 광맥부터 캐기</b> 때문입니다. <b>한 시점의 원가가 아니라 추세를 봐야</b> 합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="tax">
+    <div class="prod-head" style="--edge:var(--tax)">
+      <span class="prod-tag">04 · 실무</span>
+      <h2>세금과, 절대 오래 들면 안 되는 상품</h2>
+      <p class="one">한국에서는 <b>어디에 상장됐느냐</b>로 세금이 갈립니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>방법</th><th>세금 (일반 원칙)</th><th>손실 상계</th><th>건강보험료·종합과세</th><th>메모</th></tr></thead>
+        <tbody>
+          <tr><th>국내 상장<br>원자재 ETF</th><td>매매차익에 <b>배당소득세 15.4%</b></td><td><b>안 됨</b></td><td><b>금융소득종합과세 대상</b></td><td>연 2천만원 초과 시 다른 소득과 합산</td></tr>
+          <tr><th>해외 상장<br>원자재 ETF</th><td><b>양도소득세 22%</b><br>(연 250만원 기본공제)</td><td><b>같은 해 내 상계 가능</b></td><td><b>분류과세</b> — 합산 안 됨</td><td>5월 종합소득세 신고 때 직접 신고</td></tr>
+          <tr><th>KRX 금시장</th><td><b>매매차익 비과세</b></td><td>—</td><td>해당 없음</td><td>실물 인출 시 <b>부가세 10%</b></td></tr>
+          <tr><th>금 통장<br>(골드뱅킹)</th><td><b>배당소득세 15.4%</b></td><td><b>안 됨</b></td><td><b>금융소득종합과세 대상</b></td><td>예금자보호 대상 아님</td></tr>
+          <tr><th>실물 골드바</th><td>살 때 <b>부가세 10%</b><br>차익은 비과세</td><td>—</td><td>해당 없음</td><td>매매 스프레드가 큼</td></tr>
+          <tr><th>생산기업 주식</th><td>국내주식은 <b>배당만 과세</b><br>해외주식은 <b>양도세 22%</b></td><td>해외는 <b>가능</b></td><td>배당은 <b>종합과세 대상</b></td><td>주식 세제를 따름</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · <b>⚠️ 2026년 기준 일반 원칙</b>이며 <b>세법은 자주 바뀌고 개인 상황에 따라 다릅니다.</b> 실제 판단은 <b>국세청 자료나 세무 전문가</b>를 확인하세요.</p>
+
+    <div class="note">
+      <p><b>여기서 실무적으로 큰 차이 하나.</b> <b>KRX 금시장은 매매차익이 비과세</b>입니다. <b>금에 장기로 투자하려는 한국 거주자에게는 상당한 이점</b>입니다.</p>
+      <p><b>단순 비교</b> — 차익 <b>1,000만원</b>일 때 국내 상장 ETF는 <b>154만원</b>, 해외 상장 ETF는 <b>165만원</b>(250만원 공제 후 22%)의 세금이 나오는데, <b>KRX 금시장은 0원</b>입니다.</p>
+      <p><b>⚠️ 다만 그것만으로 정하면 안 됩니다.</b> <b>거래 편의성, 스프레드, 최소 거래 단위, 실물 인출 시 부가세</b> 등 다른 조건이 함께 걸립니다. 그리고 <b>세제는 바뀝니다.</b></p>
+      <p><b>그리고 손실 상계</b> — 해외 상장 ETF는 <b>같은 해에 다른 해외주식 손실과 상계</b>가 됩니다. 국내 상장 ETF는 <b>안 됩니다.</b> <b>여러 자산을 함께 굴리는 사람에게는 이쪽이 더 중요할 수</b> 있습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">⚠️ DANGER · 특히 조심해야 할 상품</div>
+      <p class="labsub">눌러서 확인해보세요.</p>
+
+      <div class="btnrow" id="dgBtns">
+        <button data-v="0" class="on">레버리지 ETF (2배·3배)</button>
+        <button data-v="1">인버스 ETF</button>
+        <button data-v="2">ETN</button>
+        <button data-v="3">단일 품목 집중</button>
+      </div>
+
+      <div class="verdict" id="dgVerdict" style="--vc:var(--fut)">
+        <div class="vh">상품</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">사기 전에 <b>확인할 수 있는 것들</b>입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>「금에 투자」에 네 가지 다른 행동</b>이 있다는 것.</li>
+      <li><b>실물형 ETF는 롤 손실이 없다</b>는 것.</li>
+      <li><b>선물형은 기간이 길수록 불리해진다</b>는 것.</li>
+      <li><b>생산기업 레버리지 = 가격 ÷ (가격 − 원가)</b>라는 것.</li>
+      <li><b>원가가 높은 기업일수록 더 크게 움직이고 더 위험</b>하다는 것.</li>
+      <li><b>생산기업은 원자재가 아니라 주식</b>이라는 것.</li>
+      <li><b>종합 ETF도 구성 비중과 롤 규칙을 확인해야</b> 한다는 것.</li>
+      <li><b>한국에서는 상장 위치에 따라 세금이 0~22%</b>라는 것.</li>
+      <li><b>레버리지·인버스 상품은 장기 보유용이 아니다</b>라는 것.</li>
+      <li><b>확신이 아니라 기간과 품목으로 골라야</b> 한다는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> <b>원자재에서는 「무엇을 사느냐」와 「어떤 형태로 사느냐」가 거의 같은 무게</b>입니다. 같은 금값 움직임인데 <b>몇 년이면 결과가 몇십 %씩</b> 갈립니다.</p>
+      <p><b>그리고 그 차이의 대부분은 사기 전에 확인할 수 있습니다.</b> <b>실물이냐 선물이냐, 롤 규칙이 무엇이냐, 총보수가 얼마냐, 세금이 어떻게 붙느냐</b> — 전부 <b>공개된 사실</b>입니다. <b>예측이 필요 없습니다.</b></p>
+      <p><b>반대로 「금값이 오를까」는 아무도 모릅니다.</b> <b>그래서 시간을 쓸 곳은 정해져 있습니다</b> — <b>맞힐 수 없는 쪽이 아니라 확인할 수 있는 쪽</b>입니다.</p>
+      <p><b>다음 편은 08편 — 금은 정말 특별한가</b>입니다. 이 트랙에서 <b>금만 계속 예외</b>였습니다. <b>롤 손실이 없고, 소비되지 않고, 실물 ETF가 가능하고, 세금까지 다릅니다.</b> <b>왜 그런지, 그리고 그것이 정말 「특별함」인지</b>를 따로 봅니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 원자재 07 · 상품<br>
+    <a href="index.html#commodity">← 원자재 목록으로</a> · <a href="commodity-roll.html">06 · 콘탱고와 롤 손실</a> · 08 · 금은 정말 특별한가 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 특정 상품을 추천하지 않습니다.<br>
+    <b>세금 정보는 2026년 기준 일반 원칙</b>이며 <b>세법은 자주 바뀌고 개인 상황에 따라 다릅니다.</b> 실제 판단은 국세청 자료나 세무 전문가를 확인하세요. 보수·배당·스프레드는 예시 수치입니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 2. 네 가지 비교 ══════════ */
+function cpDraw(){
+  var sp = +document.getElementById('cpSpot').value;
+  var y = +document.getElementById('cpYears').value;
+  var roll = +document.getElementById('cpRoll').value / 100;
+  var beta = +document.getElementById('cpBeta').value / 10;
+  document.getElementById('cpSpotOut').textContent = sgn(sp, 0) + '%';
+  document.getElementById('cpYearsOut').textContent = y + '년';
+  document.getElementById('cpRollOut').textContent = num(roll, 2) + '%';
+  document.getElementById('cpBetaOut').textContent = num(beta, 1) + '배';
+
+  var s = 1 + sp / 100;
+  var ways = [
+    { n:'실물 ETF',    col:'#8E6B3A', v:(s * Math.pow(1 - 0.25 / 100, y) - 1) * 100,
+      d:'롤 없음 · 보수 0.25%' },
+    { n:'선물 ETF',    col:'#8E4B3A', v:(s * Math.pow(1 - roll / 100, y) * Math.pow(1 - 0.75 / 100, y) - 1) * 100,
+      d:'롤 ' + num(roll, 2) + '% · 보수 0.75%' },
+    { n:'생산기업 주식', col:'#4C6B7A', v:((1 + sp / 100 * beta) * Math.pow(1 + 1.5 / 100, y) * Math.pow(1 - 0.5 / 100, y) - 1) * 100,
+      d:'레버리지 ' + num(beta, 1) + '배 · 배당 1.5%' },
+    { n:'실물 골드바',  col:'#5F7A52', v:(s * (1 - 12 / 100) - 1) * 100,
+      d:'매매 손실 12% · 보관비 별도' }
+  ];
+  var sorted = ways.slice().sort(function(a, b){ return b.v - a.v; });
+  var best = sorted[0], worst = sorted[sorted.length - 1];
+
+  steps('cpSteps', ways.map(function(w){ return { k:w.n + ' — ' + w.d, v:sgn(w.v, 1) + '%' }; })
+    .concat([{ k:'가장 나은 것과 가장 나쁜 것의 차이', v:num(best.v - worst.v, 1) + '%p', total:true }]));
+
+  document.getElementById('cpBest').textContent = best.n + ' (' + sgn(best.v, 1) + '%)';
+  document.getElementById('cpBest').style.color = 'var(--pos)';
+  document.getElementById('cpWorst').textContent = worst.n + ' (' + sgn(worst.v, 1) + '%)';
+  document.getElementById('cpWorst').style.color = 'var(--neg)';
+
+  var X0 = 125, W = 400, Y0 = 42;
+  var vals = ways.map(function(w){ return w.v; });
+  var maxAbs = Math.max.apply(null, vals.map(Math.abs).concat([5]));
+  var zx = X0 + W / 2;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">' + y + '년 뒤 결과 (원자재 ' + sgn(sp, 0) + '%)</text>';
+  ways.forEach(function(w, i) {
+    var yy = Y0 + i * 34;
+    var wd = Math.abs(w.v) / maxAbs * (W / 2);
+    var bx = w.v >= 0 ? zx : zx - wd;
+    g += '<rect x="' + bx.toFixed(1) + '" y="' + yy + '" width="' + Math.max(1, wd).toFixed(1) + '" height="22" rx="1.5" fill="' +
+         w.col + '" fill-opacity=".5" stroke="' + w.col + '" stroke-width="1.3"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (yy + 16) + '" text-anchor="end">' + w.n + '</text>';
+    var tx = w.v >= 0 ? Math.min(bx + wd + 8, X0 + W - 2) : Math.max(bx - 8, X0 + 2);
+    g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + (yy + 16) + '"' + (w.v >= 0 ? '' : ' text-anchor="end"') +
+         ' fill="' + w.col + '">' + sgn(w.v, 1) + '%</text>';
+  });
+  g += '<line x1="' + zx + '" y1="' + (Y0 - 6) + '" x2="' + zx + '" y2="' + (Y0 + ways.length * 34) + '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + ways.length * 34 + 20) + '">같은 원자재 가격 변화인데 결과가 ' + num(best.v - worst.v, 0) + '%p 갈립니다.</text>';
+  document.getElementById('cpScene').innerHTML = g;
+
+  var title, body, col = best.col;
+  if(best.n === '생산기업 주식' && sp > 0){
+    title = '생산기업이 앞섭니다 (' + sgn(best.v, 1) + '%) — 그런데 같은 이유로 가장 위험합니다';
+    body = '원자재가 <b>' + sgn(sp, 0) + '%</b> 오르는 국면에서는 <b>레버리지 ' + num(beta, 1) + '배</b>가 그대로 이익이 됩니다. 여기에 <b>배당</b>까지 붙습니다.<br><br>' +
+      '<b>「원자재가 오를 것 같으면 기업을 사라」</b>는 말이 여기서 나옵니다.<br><br>' +
+      '<b>⚠️ 그런데 「원자재 가격 변화」 슬라이더를 마이너스로</b> 내려보세요. <b>같은 배수로 잃습니다.</b> 그리고 <b>가격이 원가 아래로 가면 회사가 적자</b>가 되어 <b>주가는 그보다 더</b> 빠집니다(3장).<br><br>' +
+      '<b>그리고 더 중요한 문제</b> — 원자재를 담는 목적이 <b>「주식 위험을 줄이기 위해」</b>였다면, <b>생산기업 주식은 그 목적에 맞지 않습니다.</b> <b>주식시장이 무너질 때 같이 무너집니다.</b><br><br>' +
+      '<b>목적이 「수익」이면 기업, 목적이 「분산」이면 실물형</b>입니다. <b>둘을 헷갈리면 안 됩니다.</b>';
+  } else if(best.n === '실물 ETF'){
+    title = '실물 ETF가 앞섭니다 (' + sgn(best.v, 1) + '%)';
+    body = '<b>롤 손실이 없고 보수도 낮아</b> 원자재 가격을 거의 그대로 가져갑니다. <b>' + y + '년 동안 잃은 것은 보수 ' +
+      num((1 - Math.pow(1 - 0.25 / 100, y)) * 100, 1) + '%뿐</b>입니다.<br><br>' +
+      (sp <= 0
+        ? '<b>지금은 원자재가 ' + sgn(sp, 0) + '%인 국면</b>이라 <b>덜 잃는 것이 이기는 것</b>입니다. <b>레버리지가 붙은 생산기업은 더 크게 잃고, 선물형은 롤 손실까지 겹칩니다.</b><br><br>'
+        : '<b>선물형과의 차이가 ' + num(ways[0].v - ways[1].v, 1) + '%p</b>입니다. <b>롤 손실이 ' + y + '년 동안 쌓인 결과</b>입니다.<br><br>') +
+      '<b>다만 이 선택지가 있는 품목은 제한적</b>입니다 — <b>금·은·백금</b> 정도입니다. <b>원유·천연가스·구리·곡물에는 실물 ETF가 사실상 없습니다.</b><br><br>' +
+      '<b>그래서 결론이 이렇게 갈립니다</b> — <b>금이라면 실물형을 고르면 되고, 다른 원자재라면 「선물형의 비용을 감수할 것인가, 생산기업으로 갈 것인가, 아예 담지 않을 것인가」</b>를 정해야 합니다.';
+  } else if(best.n === '실물 골드바'){
+    title = '골드바가 앞섭니다 (' + sgn(best.v, 1) + '%) — 다만 조건이 특이합니다';
+    body = '<b>' + y + '년</b>이라는 기간에 <b>매매 손실 12%</b>가 <b>한 번만</b> 발생하기 때문에, <b>매년 나가는 비용이 있는 상품들을 이겼습니다.</b><br><br>' +
+      '<b>「길게 들수록 유리해지는」 유일한 방법</b>입니다. 다른 것들은 <b>매년 깎이지만</b> 골드바는 <b>살 때와 팔 때 한 번씩</b>이기 때문입니다.<br><br>' +
+      '<b>⚠️ 그런데 계산에 안 들어간 것들이 있습니다.</b><br>· <b>보관</b> — 집에 두면 도난 위험, 은행 대여금고면 연 비용.<br>· <b>진위와 유동성</b> — 팔 때 <b>제값 받기가 생각보다 어렵습니다.</b><br>· <b>부가세 10%</b> — 살 때 이미 냈습니다. 계산의 12%에 포함시켰지만 <b>실제로는 더 클 수</b> 있습니다.<br>· <b>분할 매도가 어렵습니다</b> — <b>리밸런싱(10편)이 사실상 불가능</b>합니다.<br><br>' +
+      '<b>그래서 골드바의 진짜 용도는 「투자」가 아니라 「금융 시스템 자체를 못 믿을 때의 대비」</b>에 가깝습니다. <b>그 목적이라면 의미가 있고, 수익 목적이라면 대체로 불리합니다.</b>';
+  } else {
+    title = best.n + '이(가) 앞섭니다 (' + sgn(best.v, 1) + '%)';
+    body = '지금 조건에서는 <b>' + best.n + '</b>이(가) 가장 낫고 <b>' + worst.n + '</b>이(가) 가장 나쁩니다. 차이는 <b>' +
+      num(best.v - worst.v, 1) + '%p</b>입니다.<br><br>' +
+      '<b>슬라이더를 하나씩 움직여 순위가 뒤집히는 지점을 찾아보세요.</b><br>' +
+      '· <b>「원자재 가격 변화」</b>를 마이너스로 → <b>생산기업이 최하위</b>로 떨어집니다.<br>' +
+      '· <b>「보유 기간」</b>을 늘려서 → <b>선물형이 뒤로</b> 밀립니다.<br>' +
+      '· <b>「연 롤 손실」</b>을 2%로 → <b>선물형이 크게</b> 나빠집니다.<br><br>' +
+      '<b>이 세 지점이 실제 선택 기준</b>입니다. <b>「어느 것이 좋은가」가 아니라 「내 조건에서 어느 것이 맞는가」</b>입니다.';
+  }
+  verdict('cpVerdict', col, title, body);
+}
+['cpSpot', 'cpYears', 'cpRoll', 'cpBeta'].forEach(function(id){ document.getElementById(id).addEventListener('input', cpDraw); });
+
+/* ══════════ 3. 영업 레버리지 ══════════ */
+function olDraw(){
+  var p = +document.getElementById('olPrice').value;
+  var c = +document.getElementById('olCost').value;
+  var mv = +document.getElementById('olMove').value;
+  document.getElementById('olPriceOut').textContent = '$' + p.toLocaleString('en-US');
+  document.getElementById('olCostOut').textContent = '$' + c.toLocaleString('en-US') +
+    (c >= p ? ' (지금도 적자)' : c > p * 0.85 ? ' (고비용)' : c < p * 0.5 ? ' (저비용)' : '');
+  document.getElementById('olMoveOut').textContent = sgn(mv, 0) + '%';
+
+  var margin = p - c;
+  var lev = margin > 0 ? p / margin : Infinity;
+  var np = p * (1 + mv / 100);
+  var nMargin = np - c;
+  var profitChange = margin !== 0 ? (nMargin / margin - 1) * 100 : 0;
+
+  steps('olSteps', [
+    { k:'원자재 가격', v:'$' + p.toLocaleString('en-US') },
+    { k:'이 회사의 생산원가', v:'$' + c.toLocaleString('en-US') },
+    { k:'단위당 이익 = 가격 − 원가', v:(margin >= 0 ? '$' : '−$') + Math.abs(margin).toLocaleString('en-US') },
+    { k:'영업 레버리지 = 가격 ÷ 이익', v:margin > 0 ? num(lev, 2) + '배' : '계산 불가 (적자)' },
+    { k:'가격 ' + sgn(mv, 0) + '% → 새 가격', v:'$' + Math.round(np).toLocaleString('en-US') },
+    { k:'새 단위당 이익', v:(nMargin >= 0 ? '$' : '−$') + Math.abs(Math.round(nMargin)).toLocaleString('en-US') },
+    { k:'기업 이익 변화', v:margin > 0 ? sgn(profitChange, 1) + '%' : '—', total:true }
+  ]);
+
+  document.getElementById('olLev').textContent = margin > 0 ? num(lev, 2) + '배' : '적자 (레버리지 무의미)';
+  document.getElementById('olLev').style.color = margin <= 0 ? 'var(--neg)' : lev > 5 ? 'var(--neg)' : '';
+  document.getElementById('olProfit').textContent = margin > 0 ? sgn(profitChange, 1) + '%' : '적자 지속';
+  document.getElementById('olProfit').style.color = margin > 0 ? (profitChange >= 0 ? 'var(--pos)' : 'var(--neg)') : 'var(--neg)';
+
+  var X0 = 60, Y0 = 185, W = 545, H = 140;
+  var vmax = 3200;
+  function yy(v){ return Y0 - Math.max(0, Math.min(vmax, v)) / vmax * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">가격을 원가와 이익으로 쪼개면</text>';
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  var bw = 110, gap = 90;
+  var bars = [
+    { n:'지금', price:p, x:X0 + gap },
+    { n:'가격 ' + sgn(mv, 0) + '% 뒤', price:np, x:X0 + gap * 2 + bw }
+  ];
+  bars.forEach(function(b){
+    var cy = yy(Math.min(c, b.price));
+    var costH = Y0 - cy;
+    g += '<rect x="' + b.x + '" y="' + cy.toFixed(1) + '" width="' + bw + '" height="' + costH.toFixed(1) +
+         '" fill="#8A8474" fill-opacity=".25" stroke="#8A8474" stroke-width="1"/>';
+    var m = b.price - c;
+    if(m > 0){
+      var my = yy(b.price);
+      g += '<rect x="' + b.x + '" y="' + my.toFixed(1) + '" width="' + bw + '" height="' + (cy - my).toFixed(1) +
+           '" fill="#4C6B7A" fill-opacity=".55" stroke="#4C6B7A" stroke-width="1.3"/>';
+      g += '<text class="lblb" x="' + (b.x + bw / 2) + '" y="' + (my - 8).toFixed(1) + '" text-anchor="middle" fill="#4C6B7A">이익 $' +
+           Math.round(m).toLocaleString('en-US') + '</text>';
+    } else {
+      var ly = yy(b.price);
+      g += '<rect x="' + b.x + '" y="' + ly.toFixed(1) + '" width="' + bw + '" height="' + (Y0 - ly).toFixed(1) +
+           '" fill="none" stroke="#8E4B3A" stroke-width="1.6" stroke-dasharray="3 2"/>';
+      g += '<text class="lblb" x="' + (b.x + bw / 2) + '" y="' + Math.max(Y0 - H + 12, ly - 8).toFixed(1) +
+           '" text-anchor="middle" fill="#8E4B3A">적자 −$' + Math.round(Math.abs(m)).toLocaleString('en-US') + '</text>';
+    }
+    g += '<text class="axt" x="' + (b.x + bw / 2) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + b.n + '</text>';
+    g += '<text class="axt" x="' + (b.x + bw / 2) + '" y="' + (Y0 + 31) + '" text-anchor="middle">가격 $' +
+         Math.round(b.price).toLocaleString('en-US') + '</text>';
+  });
+  g += '<line x1="' + X0 + '" y1="' + yy(c).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(c).toFixed(1) +
+       '" stroke="#8A8474" stroke-width="1.2" stroke-dasharray="4 3"/>';
+  g += '<text class="axt" x="' + (X0 + W - 2) + '" y="' + (yy(c) - 6).toFixed(1) + '" text-anchor="end">원가 $' + c.toLocaleString('en-US') + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 50) + '">회색이 원가, 파란색이 이익입니다. 가격이 조금 움직여도 파란 칸은 크게 변합니다.</text>';
+  document.getElementById('olScene').innerHTML = g;
+
+  var title, body, col;
+  if(margin <= 0){
+    col = '#8E4B3A';
+    title = '이 회사는 지금 적자입니다 — 원가 $' + c.toLocaleString('en-US') + ' > 가격 $' + p.toLocaleString('en-US');
+    body = '<b>캘수록 손해</b>인 상태입니다. 03편에서 본 <b>「현금원가 아래」</b> 구간에 해당합니다.<br><br>' +
+      '<b>이런 회사의 주가는 원자재 가격에 극단적으로 반응합니다.</b> <b>가격이 조금만 올라 흑자로 돌아서면 주가가 몇 배</b>가 되고, <b>조금만 더 떨어지면 부도 위험</b>이 됩니다.<br><br>' +
+      '<b>⚠️ 「원자재가 오르면 이 회사가 제일 많이 오른다」는 말은 사실입니다.</b> 그런데 <b>「원자재가 안 오르면 이 회사가 제일 먼저 망한다」도 같이 사실</b>입니다.<br><br>' +
+      '<b>여기서 원자재 기업 투자의 핵심 위험</b>이 드러납니다 — <b>내가 방향을 맞혀도 「그 전에 회사가 버티지 못하면」 소용이 없습니다.</b> 05편의 <b>「방향은 맞았는데 청산」</b>과 같은 구조입니다.<br><br>' +
+      '<b>그래서 원자재 기업을 고를 때는 「얼마나 크게 오를까」보다 「가격이 얼마까지 떨어져도 버티나」</b>를 먼저 봐야 합니다.';
+  } else if(lev > 5){
+    col = '#8E4B3A';
+    title = '레버리지 ' + num(lev, 2) + '배 — 고비용 기업의 양날';
+    body = '원가가 <b>$' + c.toLocaleString('en-US') + '</b>로 가격 <b>$' + p.toLocaleString('en-US') + '</b>에 가까워 <b>이익이 $' +
+      margin.toLocaleString('en-US') + '</b>밖에 안 됩니다. 그래서 <b>영업 레버리지가 ' + num(lev, 2) + '배</b>입니다.<br><br>' +
+      '<b>가격 ' + sgn(mv, 0) + '%에 이익이 ' + sgn(profitChange, 1) + '%</b> 변합니다.<br><br>' +
+      '<b>왜 이렇게 되나</b> — <b>이익은 뺄셈의 결과</b>이기 때문입니다. <b>큰 수에서 큰 수를 빼면 작은 수</b>가 나오고, <b>작은 수는 조금만 변해도 비율이 크게</b> 변합니다.<br><br>' +
+      '<b>⚠️ 이 구조에서 조심할 것</b> — 가격이 <b>' + num((c / p - 1) * 100, 1) +
+      '%</b>만 떨어지면 <b>적자</b>가 됩니다. <b>여유가 얼마 없습니다.</b><br><br>' +
+      '<b>「원가」 슬라이더를 낮춰보세요.</b> <b>저비용 기업은 덜 오르지만 훨씬 안전</b>합니다. <b>원자재 기업 투자의 선택은 결국 「얼마나 오를까」와 「얼마나 버틸까」의 교환</b>입니다.';
+  } else {
+    col = '#4C6B7A';
+    title = '레버리지 ' + num(lev, 2) + '배 — 가격 ' + sgn(mv, 0) + '%에 이익 ' + sgn(profitChange, 1) + '%';
+    body = '이익이 <b>$' + margin.toLocaleString('en-US') + '</b>이고 가격이 <b>$' + p.toLocaleString('en-US') +
+      '</b>이므로 <b>영업 레버리지 = ' + p.toLocaleString('en-US') + ' ÷ ' + margin.toLocaleString('en-US') + ' = ' + num(lev, 2) + '배</b>입니다.<br><br>' +
+      '<b>이것이 「금광주가 금보다 크게 움직인다」는 말의 정체</b>입니다. 신비한 일이 아니라 <b>뺄셈</b> 때문입니다.<br><br>' +
+      '<b>여기서 중요한 결론 두 개</b>가 나옵니다.<br>' +
+      '· <b>레버리지는 회사마다 다릅니다.</b> <b>원가가 낮은 회사는 덜 움직이고 높은 회사는 크게 움직입니다.</b> <b>「금광주」를 하나로 묶어 말할 수 없습니다.</b><br>' +
+      '· <b>레버리지는 고정이 아닙니다.</b> <b>가격이 오르면 마진이 커져 레버리지가 낮아지고, 떨어지면 높아집니다.</b> <b>나쁜 국면일수록 더 크게 흔들립니다.</b><br><br>' +
+      '<b>「원가」 슬라이더를 가격 가까이 올려보세요.</b> <b>레버리지가 폭발적으로</b> 커집니다. 그리고 <b>가격 아래로 넘기면 적자</b>가 됩니다.';
+  }
+  verdict('olVerdict', col, title, body);
+}
+['olPrice', 'olCost', 'olMove'].forEach(function(id){ document.getElementById(id).addEventListener('input', olDraw); });
+
+/* ══════════ 4. 위험 상품 ══════════ */
+var DG = [
+  { h:'레버리지 ETF (2배·3배)', col:'#8E4B3A',
+    t:'하루 단위로 2배이지, 기간 전체로 2배가 아닙니다',
+    p:'<b>가장 흔한 오해</b>입니다. <b>「2배 ETF니까 원자재가 10% 오르면 20% 오르겠지」</b> — <b>하루면 맞지만 한 달·1년이면 틀립니다.</b><br><br>' +
+      '<b>왜냐면 매일 배수를 다시 맞추기</b> 때문입니다. 그래서 <b>오르내리기를 반복하면 방향이 제자리여도 돈이 줄어듭니다.</b><br><br>' +
+      '<b>간단한 예</b> — 100이 <b>+10% → −10%</b>면 원본은 <b>99</b>입니다. 2배 상품은 <b>+20% → −20%</b>라 <b>96</b>이 됩니다. <b>이것이 반복되면 격차가 계속 벌어집니다.</b><br><br>' +
+      '<b>⚠️ 원자재는 변동성이 크기 때문에 이 손실이 특히 큽니다.</b> 천연가스처럼 <b>연 변동성 70%</b> 수준(02편)인 품목에 <b>2배·3배를 붙이면</b> 결과가 극단적입니다.<br><br>' +
+      '<b>그리고 여기에 롤 손실까지 2배·3배로</b> 붙습니다. <b>두 개의 손실이 겹칩니다.</b><br><br>' +
+      '<b>결론</b> — <b>레버리지 상품은 며칠 단위의 거래 도구</b>이고, <b>이 트랙이 다루는 「투자」의 범위가 아닙니다.</b> 채권 트랙 09편에서 계산한 것과 같은 구조입니다.' },
+  { h:'인버스 ETF', col:'#8E4B3A',
+    t:'레버리지의 문제에 더해 「손실이 무한」이라는 문제가 있습니다',
+    p:'<b>원자재가 떨어질 때 오르는 상품</b>입니다. 위의 <b>변동성 손실 문제가 똑같이</b> 있고, 여기에 <b>하나가 더</b> 붙습니다.<br><br>' +
+      '<b>「위쪽에는 한계가 없다」</b>는 것입니다. 03편에서 본 대로 <b>원자재의 바닥은 원가가 받쳐주지만 천장은 없습니다.</b> 그래서 <b>내려가는 쪽에 베팅하면 최대 이익은 제한적이고 최대 손실은 무제한</b>입니다.<br><br>' +
+      '<b>비대칭이 나에게 불리한 방향</b>입니다.<br><br>' +
+      '<b>⚠️ 그리고 「지금 너무 비싸니까 떨어질 것」이라는 판단이 특히 위험</b>합니다. 03편에서 본 대로 <b>수요 파괴 구간에서 가격이 「말이 안 되는 수준」까지 갈 수</b> 있고, <b>방향이 결국 맞더라도 그 전에 다 잃습니다.</b><br><br>' +
+      '<b>롤 방향도 반대로 작동</b>합니다 — 콘탱고 국면에서 <b>인버스는 롤에서 벌기도</b> 합니다. 다만 <b>그 이득이 변동성 손실을 덮을 만큼인지는 별개</b>이고, 대체로 그렇지 않습니다.' },
+  { h:'ETN', col:'#8E6B3A',
+    t:'ETF와 비슷해 보이지만 「발행사의 약속」입니다',
+    p:'<b>ETN(상장지수증권)</b>은 겉보기에 ETF와 거의 같습니다. 거래소에서 사고팔고, 지수를 따라갑니다.<br><br>' +
+      '<b>그런데 안이 다릅니다.</b> <b>ETF는 실제로 자산을 담고</b> 있지만, <b>ETN은 발행 증권사가 「이 지수 수익률을 지급하겠다」고 약속한 채권</b>입니다.<br><br>' +
+      '<b>차이가 두 가지</b>입니다.<br>· <b>발행사 신용 위험</b> — <b>증권사가 망하면 돈을 못 받습니다.</b> 담보 자산이 따로 없기 때문입니다.<br>· <b>괴리율</b> — 시장 가격이 <b>지표 가치에서 크게 벗어나는</b> 일이 생깁니다. <b>발행사가 신규 발행을 중단하면</b> 특히 그렇습니다.<br><br>' +
+      '<b>⚠️ 실제로 원자재 ETN에서 큰 괴리가 발생한 사례들이 있습니다.</b> <b>지수는 제자리인데 상품 가격만 급등락</b>하는 일입니다.<br><br>' +
+      '<b>다만 ETN이 무조건 나쁜 것은 아닙니다</b> — <b>ETF로 만들기 어려운 지수를 담을 수</b> 있고, <b>추적오차가 작다는 장점</b>도 있습니다. <b>「무엇인지 알고 사면」 쓸 수 있고, 「ETF인 줄 알고 사면」 위험합니다.</b><br><br>' +
+      '<b>확인 방법</b> — 종목명에 <b>「ETN」</b>이 붙어 있고, <b>발행사</b>가 명시돼 있습니다. <b>괴리율은 매일 공시</b>됩니다.' },
+  { h:'단일 품목 집중', col:'#8E6B3A',
+    t:'상품 자체보다 「비중」의 문제입니다',
+    p:'앞의 셋과 달리 <b>상품 구조에 문제가 있는 것은 아닙니다.</b> <b>어떻게 쓰느냐의 문제</b>입니다.<br><br>' +
+      '<b>「천연가스가 오를 것 같다」고 자산의 상당 부분을 한 품목에</b> 넣는 경우입니다. 02편에서 본 대로 <b>천연가스의 연 변동성은 70% 수준</b>입니다. <b>주식의 서너 배</b>입니다.<br><br>' +
+      '<b>여기에 06편의 롤 손실 연 18%</b>가 겹칩니다. <b>변동성은 극단적이고 시간은 내 적</b>인 조합입니다.<br><br>' +
+      '<b>⚠️ 그리고 심리적인 문제가 하나 더</b> 있습니다. <b>비중이 크면 매일 그것만 보게</b> 됩니다. 그러면 <b>급락할 때 견디지 못하고 팔고, 급등할 때 더 사게</b> 됩니다. <b>가장 나쁜 순서</b>입니다.<br><br>' +
+      '<b>그래서 이 트랙의 마지막 편이 「비중」</b>입니다. <b>같은 상품이라도 자산의 2%면 공부이고 20%면 도박</b>입니다. <b>상품이 아니라 크기가 결과를 정합니다.</b><br><br>' +
+      '<b>10편에서 그 크기를 정하는 법</b>을 다룹니다.' }
+];
+bindBtnRow('#dgBtns', function(v){
+  var d = DG[+v];
+  document.getElementById('dgVerdict').querySelector('.vh').textContent = d.h;
+  verdict('dgVerdict', d.col, d.t, d.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 이 편의 결론입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+cpDraw(); olDraw();
+document.querySelector('#dgBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
