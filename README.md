@@ -136,7 +136,7 @@
 | 07 | [ETF · 생산기업 · 실물](commodity-products.html) | 같은 「금 투자」 네 가지 · 세금 · 레버리지 상품 경고 |
 | 08 | [금은 정말 특별한가](commodity-gold.html) | 소비되지 않는 자산 · 실질금리 · 중앙은행 · 금 vs 주식 |
 | 09 | [돈을 잃는 방법](commodity-mistakes.html) | 요인 분해 계산기 · 실패 경로 6종 |
-| 10 | 비중 | 준비 중 |
+| 10 | [내 포트폴리오에서 몇 %인가](commodity-strategy.html) | 3질문 진단 · 비중과 분산 효과 · 리밸런싱 · 체크리스트 |
 
 ---
 
