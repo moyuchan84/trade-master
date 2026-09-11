@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>매달 받는 프리미엄의 함정</title>
+<meta name="description" content="옵션 매도는 자주 이기고 가끔 크게 집니다. 승률의 착각, 레버리지가 꼬리를 키우는 구조, 커버드콜, 급락 때 증거금을 시뮬레이션으로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --sell:#8E4B3A;--idx:#4C6B7A;--win:#5F7A52;--cc:#8E6B3A;--margin:#6A5A8C;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .core{background:#2B2620;color:#F2EEE4;border-radius:3px;padding:22px 24px;margin:24px 0 0;font-size:14.5px;}
+  .core .ct{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#C4A78A;margin-bottom:10px;}
+  .core p{margin:0;font-size:14.6px;color:inherit;max-width:none;line-height:1.75;}
+  .core p + p{margin-top:10px;}
+  .core b{color:#F5D9B5;font-weight:600;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:22px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:18px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:560px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:9px 12px;text-align:left;vertical-align:top;line-height:1.5;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp td.n{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--sell));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--sell));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--sell));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">선물·옵션 07 · 옵션 매도 · 투자 공부 노트</div>
+    <h1>매달 받는<br>프리미엄의 함정</h1>
+    <p class="lede"><b>「옵션을 팔면 매달 월세처럼 프리미엄이 들어온다」</b>, <b>「승률이 90%가 넘는다」</b>. 옵션 매도를 소개하는 말은 대체로 사실입니다. <b>그런데 중요한 문장이 하나 빠져 있습니다.</b></p>
+    <div class="core">
+      <div class="ct">빠진 문장</div>
+      <p><b>승률은 레버리지와 무관하게 똑같고, 꼬리의 크기만 레버리지를 따라 커집니다.</b></p>
+      <p>같은 조건(행사가 5% 아래 풋을 매달 판매)을 <b>가상의 10년 경로 200개</b>에서 돌리면 —<br>
+         <b>레버리지 1배</b> · 승률 92% · 중앙값 <b>+40%</b> · 손실로 끝난 경로 <b>5%</b><br>
+         <b>레버리지 5배</b> · 승률 <b>똑같이 92%</b> · 중앙값 <b>+24%</b> · 하위 10%는 <b>−80%</b></p>
+      <p><b>이기는 횟수는 그대로인데, 한 번 질 때의 크기가 다섯 배</b>가 되었습니다.</p>
+    </div>
+    <div class="callout">
+      <p><b>균형을 위해 먼저 밝혀둘 것</b> — <b>옵션 매도 자체가 나쁜 전략인 것은 아닙니다.</b> 위 시뮬레이션에서 <b>레버리지 없이(담보를 전액 현금으로 두고)</b> 판 경우는, <b>지수를 그냥 들고 있는 것보다 덜 벌었지만 덜 흔들렸습니다.</b> 주가지수 옵션에서 <b>매도자가 평균적으로 조금씩 버는 경향</b>도 오래 관찰돼 왔습니다(05·06편).</p>
+      <p><b>이 편이 경고하는 함정은 네 가지</b>입니다.</p>
+      <p><b>① 승률이 안전하다는 착각</b> — 그래서 크기를 키웁니다.<br>
+         <b>② 레버리지</b> — 중앙값은 거의 안 늘고, 나쁜 쪽 꼬리만 커집니다.<br>
+         <b>③ 급락 때의 증거금</b> — 손실이 나는 순간 돈을 더 요구받습니다.<br>
+         <b>④ 커버드콜·ELS의 모양</b> — 상승은 잘리고 하락은 거의 그대로입니다.</p>
+      <p><b>⚠️ 모든 시뮬레이션은 가상의 월 수익률 분포(연 변동성 약 15%, 가끔 −10% 안팎의 급락)</b>와 <b>블랙-숄즈 가격</b>을 쓴 예시입니다. <b>실제 시장의 급락 빈도와 크기, 옵션에 매겨지는 변동성은 이와 다릅니다.</b></p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#odds">1. 승률의 산수</a>
+    <a href="#sim">2. 200개의 10년</a>
+    <a href="#cc">3. 커버드콜</a>
+    <a href="#margin">4. 급락 때 증거금</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="odds">
+    <div class="prod-head" style="--edge:var(--sell)">
+      <span class="prod-tag">01 · 산수</span>
+      <h2>승률 90%의 기대값은 얼마인가</h2>
+      <p class="one"><b>질 때 얼마나 크게 지느냐</b>가 승률보다 중요합니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>학교 앞에서 <b>「우산 보험」</b>을 판다고 해보자. 친구들한테 이렇게 말하는 거야.</p>
+      <p><b>「매일 100원을 내. 비가 오면 내가 새 우산을 사줄게.」</b></p>
+      <p>대부분의 날은 <b>맑아.</b> 매일 친구 열 명한테 100원씩 받으니까 <b>하루에 1,000원</b>이 들어와. <b>한 달 내내 이기는</b> 것 같지.</p>
+      <p>그런데 어느 날 <b>장마</b>가 와. <b>열 명 모두한테 동시에</b> 우산을 사줘야 해. 우산이 하나에 5,000원이면 <b>하루에 5만원</b>이 나가.</p>
+      <p>한 달 동안 번 돈이 <b>하루에 다 사라지고도 모자라.</b></p>
+      <p>옵션을 파는 게 이거랑 같아. <b>자주 조금 벌고, 가끔 한꺼번에 크게</b> 물어줘. 그리고 <b>비는 모두한테 동시에</b> 와. 그래서 <b>「매일 벌었으니까 안전하다」</b>는 생각이 제일 위험해.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">EXPECTED VALUE · 세 숫자를 넣어보세요</div>
+      <p class="labsub"><b>매달 프리미엄</b>을 받고, <b>가끔</b> 손실이 납니다. 그 둘을 합치면 한 달 기대값이 나옵니다.</p>
+
+      <div class="ctrl-row">
+        <label for="evPrem">매달 받는 프리미엄 (계좌 대비)</label>
+        <input type="range" id="evPrem" min="2" max="40" step="1" value="10">
+        <output id="evPremOut">1.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="evWin">승률</label>
+        <input type="range" id="evWin" min="70" max="99" step="1" value="90">
+        <output id="evWinOut">90%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="evLoss">질 때 평균 손실 (프리미엄 받기 전, 계좌 대비)</label>
+        <input type="range" id="evLoss" min="1" max="50" step="1" value="15">
+        <output id="evLossOut">−15%</output>
+      </div>
+
+      <div class="steps-out" id="evSteps"></div>
+
+      <svg viewBox="0 0 640 232" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="열두 달 누적 결과">
+        <g id="evScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">한 달 기대값</span><span class="rv" id="evEv">—</span></div>
+        <div><span class="rk">본전이 되는 최대 평균 손실</span><span class="rv" id="evBe">—</span></div>
+      </div>
+
+      <div class="verdict" id="evVerdict" style="--vc:var(--sell)">
+        <div class="vh">기대값</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>한 달 기대값 = 프리미엄 − (1 − 승률) × 질 때 평균 손실</b>, <b>본전이 되는 평균 손실 = 프리미엄 ÷ (1 − 승률)</b>입니다.<br><br>
+        <b>그림은 「열두 달 중 한 달만 지는」 한 가지 순서</b>를 보여줍니다. <b>지는 달이 언제 오느냐</b>에 따라 곡선 모양은 달라지지만, <b>합계는 같습니다.</b><br><br>
+        <b>⚠️ 가장 어려운 숫자는 「질 때 평균 손실」</b>입니다. <b>과거 몇 년에 큰 급락이 없었다면 이 숫자를 작게 추정</b>하게 되고, 그러면 <b>기대값이 실제보다 좋아 보입니다.</b>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="sim">
+    <div class="prod-head" style="--edge:var(--idx)">
+      <span class="prod-tag">02 · 시뮬레이션</span>
+      <h2>200개의 10년</h2>
+      <p class="one">경로 하나로는 운과 전략을 구분할 수 없습니다. <b>여러 번 돌려야 모양이 보입니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">PUT WRITING · 매달 풋옵션을 팔아 10년을 버틴다면</div>
+      <p class="labsub">매달 초 <b>지수 100 기준 행사가의 1개월 풋</b>을 팔고, 계좌 현금은 <b>연 3% 이자</b>를 받습니다. <b>「레버리지」는 판 풋의 명목금액 ÷ 계좌</b>입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="smOtm">행사가를 지수보다 얼마나 아래로</label>
+        <input type="range" id="smOtm" min="0" max="15" step="1" value="5">
+        <output id="smOtmOut">5% 아래 (95)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="smLev">레버리지 (명목 ÷ 계좌)</label>
+        <input type="range" id="smLev" min="1" max="6" step="1" value="1">
+        <output id="smLevOut">1배 (현금 담보)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="smIv">옵션에 매겨진 변동성</label>
+        <input type="range" id="smIv" min="10" max="30" step="1" value="16">
+        <output id="smIvOut">16%</output>
+      </div>
+
+      <div class="btnrow" id="smPath">
+        <button data-v="0" class="on">경로 1</button>
+        <button data-v="1">경로 2</button>
+        <button data-v="2">경로 3</button>
+        <button data-v="3">경로 4</button>
+        <button data-v="4">경로 5</button>
+      </div>
+
+      <svg viewBox="0 0 640 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="선택한 경로의 풋 매도 계좌와 지수">
+        <g id="smScene"></g>
+      </svg>
+
+      <div class="tablewrap">
+        <table class="cmp" id="smTable"></table>
+      </div>
+
+      <div class="readout two">
+        <div><span class="rk">평균 승률</span><span class="rv" id="smWin">—</span></div>
+        <div><span class="rk">10년 중앙값 / 하위 10%</span><span class="rv" id="smMed">—</span></div>
+      </div>
+
+      <div class="verdict" id="smVerdict" style="--vc:var(--idx)">
+        <div class="vh">200개의 10년</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>가상의 시장.</b> 매달 <b>97% 확률로 평균 +0.8% · 표준편차 3.8%</b>, <b>3% 확률로 평균 −10% · 표준편차 5%</b>의 급락이 나오도록 만들었습니다. 합치면 <b>연 변동성 약 15%</b>입니다. <b>같은 200개 경로</b>를 모든 설정에 똑같이 씁니다(시드 고정).<br><br>
+        <b>옵션 가격.</b> 블랙-숄즈(금리 3%)에 <b>「옵션에 매겨진 변동성」</b>을 넣어 계산합니다. <b>이 값이 가상 시장의 실제 변동성(약 15%)보다 높으면 매도자에게 유리</b>하고, 낮으면 불리합니다.<br><br>
+        <b>⚠️ 단순화</b> — 수수료·세금·체결 미끄러짐·만기 중간의 증거금 요구(4장)는 넣지 않았습니다. <b>실제로는 결과가 이보다 나쁩니다.</b> 계좌가 0 이하가 되면 <b>「파산」</b>으로 멈춥니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>레버리지를 올려도 중앙값은 오르지 않는다</h3>
+      <p>계산기에서 <b>레버리지를 1배 → 3배 → 5배</b>로 올려보면 이상한 일이 보입니다. <b>상위 10%는 크게 좋아지는데 중앙값은 거의 그대로이거나 오히려 줄어듭니다.</b> 그리고 <b>하위 10%는 급격히 나빠집니다.</b></p>
+      <p><b>이유는 곱셈</b>입니다. <b>+10%와 −10%를 번갈아 겪으면 0이 아니라 −1%</b>입니다. <b>레버리지를 5배로 하면 +50%와 −50%가 되어 −25%</b>입니다. <b>흔들림이 커질수록 같은 평균에서도 복리 결과가 깎입니다.</b> 채권 트랙 09편과 08편(레버리지 ETF)에서 같은 구조를 봅니다.</p>
+      <p><b>옵션 매도에서는 이 효과가 특히 잔인</b>합니다. <b>흔들림이 대칭이 아니라 「작은 이익 여러 번, 큰 손실 가끔」</b>이기 때문입니다. <b>큰 손실 한 번이 레버리지만큼 커지면, 그 뒤의 작은 이익들로는 메우기 어렵습니다.</b> <b>−50%를 메우려면 +100%</b>가 필요합니다.</p>
+      <p class="plain"><b>그래서 옵션 매도의 크기를 키우는 것은 「더 많이 버는 방법」이 아니라 「결과의 폭을 넓히는 방법」</b>입니다. <b>운이 좋은 경로에서는 크게 벌고, 나쁜 경로에서는 크게 잃고, 가운데는 거의 그대로</b>입니다.<br><br><b>⚠️ 그리고 사람은 운이 좋은 경로에서 크기를 키웁니다.</b> <b>몇 년 연속 잘 되면 「이 방법은 안전하다」는 확신이 생기고</b>, <b>그때 레버리지를 올립니다.</b> <b>그러면 급락은 가장 크게 노출된 시점에</b> 옵니다.<br><br><b>변동성 프리미엄에 대해서도 한 줄</b> — 「옵션에 매겨진 변동성」을 올리면 매도 결과가 크게 좋아집니다. 실제로 <b>이 프리미엄이 평균적으로 존재한다는 관찰</b>이 있습니다. 그런데 <b>프리미엄이 크게 붙는 시기는 대체로 시장이 불안한 시기</b>이고, <b>그때가 급락이 오기 쉬운 시기</b>이기도 합니다. <b>「프리미엄이 비싸니 팔자」가 가장 위험한 순간에 가장 크게 파는 결정</b>이 될 수 있습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="cc">
+    <div class="prod-head" style="--edge:var(--cc)">
+      <span class="prod-tag">03 · 커버드콜</span>
+      <h2>커버드콜 — 상승을 팔아 만든 현금흐름</h2>
+      <p class="one"><b>주식을 들고 콜을 판다</b> — 가장 흔한 옵션 매도이자, <b>분배금 ETF의 원리</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COVERED CALL · 12개월 경로를 골라보세요</div>
+      <p class="labsub">매달 초 <b>주가 기준 행사가의 1개월 콜</b>을 팔고, 만기에 정산한 뒤 다시 팝니다. <b>주식만 들고 있을 때</b>와 비교합니다.</p>
+
+      <div class="btnrow" id="ccPath">
+        <button data-v="0" class="on">횡보</button>
+        <button data-v="1">완만한 상승</button>
+        <button data-v="2">급등</button>
+        <button data-v="3">급락 후 급반등</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="ccOtm">행사가를 주가보다 얼마나 위로</label>
+        <input type="range" id="ccOtm" min="0" max="10" step="1" value="3">
+        <output id="ccOtmOut">3% 위</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ccIv">옵션에 매겨진 변동성</label>
+        <input type="range" id="ccIv" min="10" max="30" step="1" value="16">
+        <output id="ccIvOut">16%</output>
+      </div>
+
+      <div class="steps-out" id="ccSteps"></div>
+
+      <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주식과 커버드콜의 12개월 경로">
+        <g id="ccScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">주식 / 커버드콜</span><span class="rv" id="ccOut">—</span></div>
+        <div><span class="rk">이 경로의 실제 변동성</span><span class="rv" id="ccReal">—</span></div>
+      </div>
+
+      <div class="verdict" id="ccVerdict" style="--vc:var(--cc)">
+        <div class="vh">커버드콜</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 매달 커버드콜 수익 = <b>min(그달 주가 수익률, 행사가 거리) + 받은 프리미엄</b>입니다. 프리미엄은 블랙-숄즈(금리 3%)로 계산했고, <b>배당·세금·수수료는 넣지 않았습니다.</b><br><br>
+        <b>⚠️ 결과를 크게 좌우하는 가정 하나</b> — <b>옵션에 매겨진 변동성이 경로의 실제 변동성보다 높으면 커버드콜이 유리</b>하게, <b>낮으면 불리</b>하게 나옵니다. 그래서 오른쪽 위에 <b>이 경로의 실제 변동성</b>을 함께 보여줍니다. <b>경로는 가상의 예시</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「분배율 연 10%」 커버드콜 ETF와 ELS를 읽는 법</h3>
+      <p><b>커버드콜 ETF</b>는 위 계산을 상품으로 만든 것입니다. <b>매달 콜을 팔아 받은 프리미엄을 분배금으로</b> 나눠줍니다. 그래서 <b>분배율이 높게</b> 표시됩니다.</p>
+      <p><b>그런데 분배율과 총수익은 다른 숫자</b>입니다.</p>
+      <p><b>· 분배금의 원천은 「상승을 판 값」</b>입니다. <b>배당처럼 회사가 번 이익을 나누는 것이 아니라, 앞으로의 상승 일부를 미리 팔아 현금으로 바꾼</b> 것입니다.<br>
+         <b>· 하락은 거의 그대로, 반등은 잘립니다.</b> 계산기의 <b>「급락 후 급반등」</b>이 그 모양입니다. <b>이런 경로가 반복되면 분배금은 계속 나오는데 가격은 점점 낮아지는</b> 일이 생길 수 있습니다.<br>
+         <b>· 그래서 봐야 할 숫자는 「분배금 + 가격 변화」</b>입니다. <b>분배금만 보고 「연 10% 월세」로 이해하면 틀립니다.</b></p>
+      <p><b>ELS</b>는 반대쪽입니다. <b>「지수가 일정 수준 아래로 떨어지지 않으면 연 몇 %」</b>라는 구조는 <b>풋옵션을 판 것과 비슷한 위험</b>을 담고 있습니다(01편 5장). <b>평소에는 약속한 수익을 주고, 기준선 아래로 폭락하면 원금이 크게 깎입니다.</b> 2장의 <b>풋 매도 시뮬레이션과 같은 모양</b>입니다.</p>
+      <p class="plain"><b>둘 다 「나쁜 상품」은 아닙니다.</b> <b>상승을 포기하고 현금흐름을 원하는 사람</b>, <b>급락 위험을 알고 받아들이는 사람</b>에게는 목적에 맞을 수 있습니다.<br><br><b>⚠️ 문제는 「옵션 매도가 들어 있다는 것」을 모른 채 「안정적인 이자 상품」으로 사는 것</b>입니다. <b>설명서에서 「콜 매도」, 「녹인」, 「원금 손실 가능」이라는 단어를 찾으면</b> 그 안에 무엇이 들어 있는지 알 수 있습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="margin">
+    <div class="prod-head" style="--edge:var(--margin)">
+      <span class="prod-tag">04 · 증거금</span>
+      <h2>손실이 나는 순간, 돈을 더 내라고 합니다</h2>
+      <p class="one">옵션 매도의 위험은 <b>만기 손익</b>만이 아니라 <b>만기 전의 평가손실과 증거금</b>에 있습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MARGIN SPIKE · 한 주 사이에 급락이 왔습니다</div>
+      <p class="labsub">지수 100에서 <b>행사가 95 · 30일 만기 풋</b>을 팔았습니다(변동성 16%). <b>일주일 뒤</b> 지수와 변동성이 바뀌었습니다.</p>
+
+      <div class="ctrl-row">
+        <label for="mgAcct">내 계좌</label>
+        <input type="range" id="mgAcct" min="500" max="10000" step="100" value="2000">
+        <output id="mgAcctOut">2,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mgLev">판 풋의 명목금액 ÷ 계좌</label>
+        <input type="range" id="mgLev" min="1" max="8" step="1" value="5">
+        <output id="mgLevOut">5배 (1억원)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mgDrop">일주일 뒤 지수 하락</label>
+        <input type="range" id="mgDrop" min="0" max="25" step="1" value="10">
+        <output id="mgDropOut">−10%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mgIv">일주일 뒤 변동성</label>
+        <input type="range" id="mgIv" min="16" max="80" step="1" value="45">
+        <output id="mgIvOut">45%</output>
+      </div>
+
+      <div class="steps-out" id="mgSteps"></div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="계좌 잔액과 증거금 요구">
+        <g id="mgScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">계좌 평가액 / 증거금 요구</span><span class="rv" id="mgOut">—</span></div>
+        <div><span class="rk">상태</span><span class="rv" id="mgState">—</span></div>
+      </div>
+
+      <div class="verdict" id="mgVerdict" style="--vc:var(--margin)">
+        <div class="vh">증거금</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 풋 가격은 블랙-숄즈(금리 3%)이고, <b>일주일 뒤에는 만기가 23일</b> 남습니다. <b>계좌 평가액 = 계좌 + 받은 프리미엄 − 지금 풋 가격</b>입니다.<br><br>
+        <b>증거금 규칙은 구조를 보기 위한 예시</b>로, <b>「현재 풋 가격 + max(기초자산의 15% − 외가격 거리, 행사가의 10%)」</b>를 명목 단위로 곱했습니다. <b>실제 규칙은 거래소·증권사·상품마다 다릅니다.</b><br><br>
+        <b>⚠️ 핵심은 두 가지가 같은 방향으로 동시에 움직인다는 것</b>입니다 — <b>지수가 떨어지면 평가손실이 늘고, 동시에 증거금 요구도 늘어납니다.</b>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one"><b>「얼마나 자주 이기나」가 아니라 「질 때 버틸 수 있나」</b>입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>기대값 = 프리미엄 − (1 − 승률) × 질 때 손실</b>이라는 것.</li>
+      <li><b>승률 90%면 질 때 프리미엄의 10배까지만</b> 잃어야 본전이라는 것.</li>
+      <li><b>「질 때 손실」은 조용한 기간에 과소평가</b>된다는 것.</li>
+      <li><b>레버리지 없는 풋 매도는 지수보다 덜 벌고 덜 흔들렸다</b>는 것 (가상 시뮬레이션).</li>
+      <li><b>레버리지를 올려도 승률은 같고 꼬리만 커진다</b>는 것.</li>
+      <li><b>중앙값은 거의 안 오르고 하위 10%만 크게 나빠진다</b>는 것.</li>
+      <li><b>커버드콜은 상승이 잘리고 하락은 거의 그대로</b>라는 것.</li>
+      <li><b>분배율과 총수익은 다른 숫자</b>라는 것.</li>
+      <li><b>급락 때 평가손실과 증거금 요구가 동시에 커진다</b>는 것.</li>
+      <li><b>잘 되는 몇 년 뒤에 크기를 키우는 것</b>이 가장 흔한 실패라는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 옵션 매도는 <b>보험을 파는 일</b>입니다. <b>보험회사가 평균적으로 버는 것처럼 매도자도 평균적으로 조금 벌 수</b> 있습니다. <b>그런데 보험회사는 사고가 흩어져 오고, 자본이 크고, 재보험이 있습니다.</b> <b>주식시장의 급락은 모든 계약에 동시에</b> 옵니다.</p>
+      <p><b>그래서 옵션 매도의 성패는 「승률」이 아니라 「크기」</b>에서 갈립니다. <b>레버리지 없이 작게 팔면 지루하지만 버틸 수 있고</b>, <b>크게 팔면 오랫동안 잘 되다가 한 번에 무너질 수</b> 있습니다.</p>
+      <p><b>그리고 가장 위험한 순간은 「잘 되고 있을 때」</b>입니다. <b>승률이 높을수록 확신이 커지고, 확신이 커질수록 크기를 키우고, 크기를 키운 뒤에 급락이 옵니다.</b></p>
+      <p><b>다음 편은 08편 — 레버리지 · 인버스 ETF와 해외선물</b>입니다. <b>개인이 가장 흔하게 만나는 파생상품</b>이고, <b>「2배」가 왜 기간 전체로 2배가 아닌지</b>를 계산합니다. <b>이 편의 「레버리지를 올려도 중앙값이 오르지 않는다」와 같은 원리</b>입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 선물·옵션 07 · 옵션 매도<br>
+    <a href="index.html#futures">← 선물·옵션 목록으로</a> · <a href="futures-greeks.html">06 · 시간가치와 변동성</a> · 08 · 레버리지 · 인버스 ETF와 해외선물 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 옵션 매도를 권하지 않습니다.<br>
+    시뮬레이션은 <b>가상의 수익률 분포와 블랙-숄즈 가격</b>을 쓴 예시이며 실제 시장의 결과가 아닙니다. 증거금 규칙은 구조를 보기 위한 예시입니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function man(won){ return Math.round(won / 10000).toLocaleString('ko-KR') + '만원'; }
+function smanw(won){ var r = Math.round(won / 10000); if(r === 0) r = 0; return (r >= 0 ? '+' : '−') + Math.abs(r).toLocaleString('ko-KR') + '만원'; }
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+function ncdf(x){
+  var t = 1 / (1 + 0.2316419 * Math.abs(x));
+  var d = 0.3989422804014327 * Math.exp(-x * x / 2);
+  var p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  return x > 0 ? 1 - p : p;
+}
+function bs(S, K, T, r, v, type){
+  if(T <= 0 || v <= 0) return type === 'c' ? Math.max(S - K, 0) : Math.max(K - S, 0);
+  var d1 = (Math.log(S / K) + (r + v * v / 2) * T) / (v * Math.sqrt(T));
+  var d2 = d1 - v * Math.sqrt(T);
+  return type === 'c' ? S * ncdf(d1) - K * Math.exp(-r * T) * ncdf(d2)
+                      : K * Math.exp(-r * T) * ncdf(-d2) - S * ncdf(-d1);
+}
+var RATE = 0.03;
+
+/* ══════════ 1. 기대값 ══════════ */
+function evDraw(){
+  var prem = +document.getElementById('evPrem').value / 10;
+  var win = +document.getElementById('evWin').value / 100;
+  var loss = +document.getElementById('evLoss').value;
+  document.getElementById('evPremOut').textContent = num(prem, 1) + '%';
+  document.getElementById('evWinOut').textContent = Math.round(win * 100) + '%';
+  document.getElementById('evLossOut').textContent = '−' + loss + '%';
+
+  var ev = prem - (1 - win) * loss;
+  var be = prem / (1 - win);
+  var yearSimple = ev * 12;
+
+  steps('evSteps', [
+    { k:'이기는 달: 프리미엄', v:'+' + num(prem, 1) + '%' },
+    { k:'지는 달: 프리미엄 − 손실', v:sgn(prem - loss, 1) + '%' },
+    { k:'한 달 기대값 = ' + num(prem, 1) + ' − ' + num(1 - win, 2) + ' × ' + loss, v:sgn(ev, 2) + '%' },
+    { k:'본전이 되는 평균 손실 = 프리미엄 ÷ (1 − 승률)', v:'−' + num(be, 1) + '%' },
+    { k:'1년 기대값 (단순 합)', v:sgn(yearSimple, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('evEv').textContent = sgn(ev, 2) + '% / 월';
+  document.getElementById('evEv').style.color = ev >= 0 ? 'var(--pos)' : 'var(--neg)';
+  document.getElementById('evBe').textContent = '−' + num(be, 1) + '%';
+
+  var X0 = 60, Y0 = 170, W = 545, H = 130;
+  var seq = [];
+  var lossesPerYear = Math.max(1, Math.round((1 - win) * 12));
+  var lossMonths = {};
+  for(var i = 0; i < lossesPerYear; i++){ lossMonths[Math.round(11 - i * (12 / lossesPerYear))] = 1; }
+  var eq = 1, pts = [[0, 1]], mins = 1, maxs = 1;
+  for(var m = 0; m < 12; m++){
+    var r = lossMonths[m] ? (prem - loss) / 100 : prem / 100;
+    eq *= 1 + r; pts.push([m + 1, eq]); seq.push(r);
+    mins = Math.min(mins, eq); maxs = Math.max(maxs, eq);
+  }
+  var pad = Math.max(0.02, (maxs - mins) * 0.15);
+  var lo = mins - pad, hi = maxs + pad;
+  function xx(m){ return X0 + m / 12 * W; }
+  function yy(v){ return Y0 - (v - lo) / (hi - lo) * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">열두 달 중 ' + lossesPerYear + '달만 지는 순서 (1에서 시작)</text>';
+  g += '<line x1="' + X0 + '" y1="' + yy(1).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(1).toFixed(1) + '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(1) + 4).toFixed(1) + '" text-anchor="end">1.00</text>';
+  var bw = W / 12 * 0.5;
+  seq.forEach(function(r, i){
+    var cx = xx(i + 0.5);
+    var col = r < 0 ? '#8E4B3A' : '#5F7A52';
+    g += '<rect x="' + (cx - bw / 2).toFixed(1) + '" y="' + (Y0 + 6) + '" width="' + bw.toFixed(1) + '" height="10" fill="' + col + '" fill-opacity=".6"/>';
+  });
+  g += '<path d="M' + pts.map(function(p){ return xx(p[0]).toFixed(1) + ' ' + yy(p[1]).toFixed(1); }).join(' L') + '" fill="none" stroke="#8E4B3A" stroke-width="2.6"/>';
+  pts.forEach(function(p){ g += '<circle cx="' + xx(p[0]).toFixed(1) + '" cy="' + yy(p[1]).toFixed(1) + '" r="3" fill="#8E4B3A"/>'; });
+  g += '<text class="lblb" x="' + (X0 + W - 4) + '" y="' + Math.max(Y0 - H + 12, yy(eq) - 10).toFixed(1) + '" text-anchor="end" fill="#8E4B3A">' + sgn((eq - 1) * 100, 1) + '%</text>';
+  [0, 3, 6, 9, 12].forEach(function(m){ g += '<text class="axt" x="' + xx(m).toFixed(1) + '" y="' + (Y0 + 32) + '" text-anchor="middle">' + m + '개월</text>'; });
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 50) + '">아래 초록 칸은 이긴 달, 빨간 칸은 진 달입니다.</text>';
+  document.getElementById('evScene').innerHTML = g;
+
+  var title, body, col;
+  if(ev < 0){
+    col = '#8E4B3A';
+    title = '승률 ' + Math.round(win * 100) + '%인데 한 달 기대값 ' + sgn(ev, 2) + '%';
+    body = '<b>열 번 중 ' + Math.round(win * 10) + '번 이기는데 기대값이 마이너스</b>입니다.<br><br>' +
+      '<b>이기는 달에는 +' + num(prem, 1) + '%</b>, <b>지는 달에는 ' + sgn(prem - loss, 1) + '%</b>. <b>지는 달 한 번이 이기는 달 ' + num((loss - prem) / prem, 1) + '번 치를 가져갑니다.</b><br><br>' +
+      '<b>본전이 되려면 질 때 평균 손실이 ' + num(be, 1) + '% 이하</b>여야 합니다. 지금은 <b>' + loss + '%</b>입니다.<br><br>' +
+      '<b>⚠️ 이 상태를 겪는 사람은 대부분 몇 달 동안 「잘 되고 있다」고 느낍니다.</b> <b>그림의 곡선이 계속 오르다가 마지막에 꺾이는</b> 모양이 그 경험입니다.';
+  } else if(loss > be * 0.8){
+    col = '#8E6B3A';
+    title = '한 달 기대값 ' + sgn(ev, 2) + '% — 본전 선에 가깝습니다';
+    body = '<b>기대값은 플러스지만 여유가 작습니다.</b> 질 때 평균 손실 <b>' + loss + '%</b>가 본전 선 <b>' + num(be, 1) + '%</b>에 가깝습니다.<br><br>' +
+      '<b>「질 때 평균 손실」을 조금만 올려보세요.</b> 금방 마이너스로 뒤집힙니다.<br><br>' +
+      '<b>그리고 이 숫자를 정확히 아는 사람은 없습니다.</b> <b>큰 급락이 없던 기간의 기록으로 추정하면 작게 나오고</b>, <b>급락을 한 번 겪으면 크게 바뀝니다.</b> <b>여유가 작은 기대값은 추정 오차 하나로 사라집니다.</b>';
+  } else {
+    col = '#5F7A52';
+    title = '한 달 기대값 ' + sgn(ev, 2) + '% — 가정이 맞다면 플러스입니다';
+    body = '<b>질 때 평균 손실 ' + loss + '%</b>가 본전 선 <b>' + num(be, 1) + '%</b>보다 충분히 작아 <b>기대값이 ' + sgn(ev, 2) + '%</b>입니다.<br><br>' +
+      '<b>「가정이 맞다면」이 핵심</b>입니다. <b>승률 ' + Math.round(win * 100) + '%와 평균 손실 ' + loss + '%</b>는 <b>과거에서 가져온 추정</b>입니다.<br><br>' +
+      '<b>「질 때 평균 손실」을 두 배로</b> 올려보세요. <b>급락이 과거보다 한 번만 더 크게 와도</b> 결과가 어떻게 되는지 보입니다.<br><br>' +
+      '<b>2장에서 이 산수를 200개의 10년에 적용</b>합니다.';
+  }
+  verdict('evVerdict', col, title, body);
+}
+['evPrem', 'evWin', 'evLoss'].forEach(function(id){ document.getElementById(id).addEventListener('input', evDraw); });
+
+/* ══════════ 2. 200개의 10년 ══════════ */
+function mulberry(seed){
+  return function(){
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function monthlyPath(seed, n){
+  var R = mulberry(seed), out = [];
+  for(var i = 0; i < n; i++){
+    var u1 = R(), u2 = R();
+    var z = Math.sqrt(-2 * Math.log(u1 + 1e-12)) * Math.cos(2 * Math.PI * u2);
+    var crash = R() < 0.03;
+    out.push(crash ? -0.10 + 0.05 * z : 0.008 + 0.038 * z);
+  }
+  return out;
+}
+var PATHS = [];
+for(var ps = 1; ps <= 200; ps++){ PATHS.push(monthlyPath(ps * 7919, 120)); }
+function writeRun(rets, otm, lev, iv, keepPath){
+  var eq = 1, peak = 1, mdd = 0, wins = 0, ruin = -1, worst = 0, path = keepPath ? [1] : null;
+  var prem = bs(100, 100 * (1 - otm), 1 / 12, RATE, iv, 'p') / 100;
+  for(var i = 0; i < rets.length; i++){
+    var pay = Math.max((1 - otm) - (1 + rets[i]), 0);
+    var opt = (prem - pay) * lev;
+    if(opt >= 0) wins++;
+    var pnl = RATE / 12 + opt;
+    worst = Math.min(worst, pnl);
+    eq *= (1 + pnl);
+    if(eq <= 0){ eq = 0; ruin = i + 1; if(path) path.push(0); break; }
+    peak = Math.max(peak, eq); mdd = Math.min(mdd, eq / peak - 1);
+    if(path) path.push(eq);
+  }
+  return { final:(eq - 1) * 100, mdd:mdd * 100, ruin:ruin, win:wins / (ruin < 0 ? rets.length : ruin) * 100, worst:worst * 100, prem:prem * 100, path:path };
+}
+function idxRun(rets, keepPath){
+  var eq = 1, peak = 1, mdd = 0, path = keepPath ? [1] : null;
+  rets.forEach(function(q){ eq *= 1 + q; peak = Math.max(peak, eq); mdd = Math.min(mdd, eq / peak - 1); if(path) path.push(eq); });
+  return { final:(eq - 1) * 100, mdd:mdd * 100, path:path };
+}
+function pct(a, q){ var s = a.slice().sort(function(x, y){ return x - y; }); return s[Math.floor(q * (s.length - 1))]; }
+var IDX = (function(){
+  var f = [], m = [];
+  PATHS.forEach(function(p){ var r = idxRun(p, false); f.push(r.final); m.push(r.mdd); });
+  return { med:pct(f, 0.5), p10:pct(f, 0.1), p90:pct(f, 0.9), neg:f.filter(function(x){ return x < 0; }).length / 2, mdd:pct(m, 0.5) };
+})();
+var smPath = 0;
+function smDraw(){
+  var otm = +document.getElementById('smOtm').value / 100;
+  var lev = +document.getElementById('smLev').value;
+  var iv = +document.getElementById('smIv').value / 100;
+  document.getElementById('smOtmOut').textContent = Math.round(otm * 100) + '% 아래 (' + Math.round(100 * (1 - otm)) + ')';
+  document.getElementById('smLevOut').textContent = lev + '배' + (lev === 1 ? ' (현금 담보)' : '');
+  document.getElementById('smIvOut').textContent = Math.round(iv * 100) + '%' + (iv > 0.155 ? ' (실제보다 높음)' : iv < 0.145 ? ' (실제보다 낮음)' : ' (실제와 비슷)');
+
+  var finals = [], mdds = [], wins = [], worsts = [], ruins = 0, neg = 0, prem = 0;
+  PATHS.forEach(function(p){
+    var r = writeRun(p, otm, lev, iv, false);
+    finals.push(r.final); mdds.push(r.mdd); wins.push(r.win); worsts.push(r.worst); prem = r.prem;
+    if(r.ruin > 0) ruins++;
+    if(r.final < 0) neg++;
+  });
+  var S = { win:wins.reduce(function(a, b){ return a + b; }, 0) / 200, med:pct(finals, 0.5), p10:pct(finals, 0.1), p90:pct(finals, 0.9),
+            neg:neg / 2, ruin:ruins / 2, mdd:pct(mdds, 0.5), worst:pct(worsts, 0.5) };
+
+  document.getElementById('smTable').innerHTML =
+    '<thead><tr><th>200개 경로</th><th>풋 매도</th><th>지수 보유</th></tr></thead><tbody>' +
+    '<tr><th>한 달 프리미엄 (명목 대비)</th><td class="n">' + num(prem, 2) + '%</td><td class="n">—</td></tr>' +
+    '<tr><th>평균 승률 (옵션만)</th><td class="n">' + num(S.win, 0) + '%</td><td class="n">—</td></tr>' +
+    '<tr><th>10년 중앙값</th><td class="n">' + sgn(S.med, 0) + '%</td><td class="n">' + sgn(IDX.med, 0) + '%</td></tr>' +
+    '<tr><th>하위 10%</th><td class="n">' + sgn(S.p10, 0) + '%</td><td class="n">' + sgn(IDX.p10, 0) + '%</td></tr>' +
+    '<tr><th>상위 10%</th><td class="n">' + sgn(S.p90, 0) + '%</td><td class="n">' + sgn(IDX.p90, 0) + '%</td></tr>' +
+    '<tr><th>손실로 끝난 경로</th><td class="n">' + num(S.neg, 1) + '%</td><td class="n">' + num(IDX.neg, 1) + '%</td></tr>' +
+    '<tr><th>파산한 경로</th><td class="n">' + num(S.ruin, 1) + '%</td><td class="n">0%</td></tr>' +
+    '<tr><th>최대 낙폭 (중앙값)</th><td class="n">' + sgn(S.mdd, 0) + '%</td><td class="n">' + sgn(IDX.mdd, 0) + '%</td></tr>' +
+    '<tr><th>최악의 달 (중앙값)</th><td class="n">' + sgn(S.worst, 0) + '%</td><td class="n">—</td></tr></tbody>';
+
+  document.getElementById('smWin').textContent = num(S.win, 0) + '%';
+  document.getElementById('smMed').textContent = sgn(S.med, 0) + '% / ' + sgn(S.p10, 0) + '%';
+  document.getElementById('smMed').style.color = S.p10 < -30 ? 'var(--neg)' : '';
+
+  var one = writeRun(PATHS[smPath], otm, lev, iv, true);
+  var ix = idxRun(PATHS[smPath], true);
+  var X0 = 60, Y0 = 190, W = 545, H = 160;
+  var all = one.path.concat(ix.path);
+  var vmax = Math.max.apply(null, all.concat([1.2])), vmin = Math.min.apply(null, all.concat([0.8]));
+  var useLog = vmax / Math.max(vmin, 0.02) > 6;
+  function tr(v){ return useLog ? Math.log(Math.max(v, 0.02)) : v; }
+  var tlo = tr(Math.max(vmin, 0.02)) - 0.05, thi = tr(vmax) + 0.05;
+  function xx(m){ return X0 + m / 120 * W; }
+  function yy(v){ return Y0 - (tr(v) - tlo) / (thi - tlo) * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">경로 ' + (smPath + 1) + ' — 파랑: 지수 보유 · 빨강: 풋 매도 계좌 (1에서 시작' + (useLog ? ', 로그 눈금' : '') + ')</text>';
+  g += '<line x1="' + X0 + '" y1="' + yy(1).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(1).toFixed(1) + '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(1) + 4).toFixed(1) + '" text-anchor="end">1</text>';
+  [0, 24, 48, 72, 96, 120].forEach(function(m){ g += '<text class="axt" x="' + xx(m).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + (m / 12) + '년</text>'; });
+  g += '<path d="M' + ix.path.map(function(v, m){ return xx(m).toFixed(1) + ' ' + yy(v).toFixed(1); }).join(' L') + '" fill="none" stroke="#4C6B7A" stroke-width="1.8"/>';
+  g += '<path d="M' + one.path.map(function(v, m){ return xx(m).toFixed(1) + ' ' + yy(v).toFixed(1); }).join(' L') + '" fill="none" stroke="#8E4B3A" stroke-width="2.4"/>';
+  PATHS[smPath].forEach(function(q, m){
+    if(q <= -0.07 && m < one.path.length - 1){ g += '<line x1="' + xx(m + 1).toFixed(1) + '" y1="' + (Y0 - 4) + '" x2="' + xx(m + 1).toFixed(1) + '" y2="' + Y0 + '" stroke="#8E4B3A" stroke-width="2"/>'; }
+  });
+  var endE = one.path[one.path.length - 1], endI = ix.path[ix.path.length - 1];
+  var yE = yy(endE), yI = yy(endI);
+  g += '<text class="lblb" x="' + (X0 + W - 4) + '" y="' + Math.max(Y0 - H + 12, Math.min(Y0 - 4, yE + (yE < yI ? -8 : 16))).toFixed(1) + '" text-anchor="end" fill="#8E4B3A">풋 매도 ' + (one.ruin > 0 ? '파산 (' + one.ruin + '개월)' : sgn((endE - 1) * 100, 0) + '%') + '</text>';
+  g += '<text class="lblb" x="' + (X0 + W - 4) + '" y="' + Math.max(Y0 - H + 12, Math.min(Y0 - 4, yI + (yI <= yE ? -8 : 16))).toFixed(1) + '" text-anchor="end" fill="#4C6B7A">지수 ' + sgn((endI - 1) * 100, 0) + '%</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">아래 빨간 눈금은 지수가 한 달에 −7% 넘게 떨어진 달입니다.</text>';
+  document.getElementById('smScene').innerHTML = g;
+
+  var title, body, col;
+  if(lev === 1){
+    col = '#4C6B7A';
+    title = '레버리지 1배 — 승률 ' + num(S.win, 0) + '%, 중앙값 ' + sgn(S.med, 0) + '% (지수 ' + sgn(IDX.med, 0) + '%)';
+    body = '<b>판 풋의 명목금액만큼 현금을 담보로 두고</b> 매달 팔았습니다. <b>레버리지가 없는</b> 상태입니다.<br><br>' +
+      '<b>200개 경로의 중앙값은 ' + sgn(S.med, 0) + '%</b>로 <b>지수 보유(' + sgn(IDX.med, 0) + '%)</b>' + (S.med < IDX.med ? '보다 낮지만' : '와 비슷하거나 높고') + ', <b>최대 낙폭 중앙값은 ' + sgn(S.mdd, 0) + '%</b>로 <b>지수(' + sgn(IDX.mdd, 0) + '%)</b>보다 ' + (S.mdd > IDX.mdd ? '작습니다' : '큽니다') + '. <b>손실로 끝난 경로는 ' + num(S.neg, 1) + '%</b>입니다(지수 ' + num(IDX.neg, 1) + '%).<br><br>' +
+      '<b>이 결과가 「옵션 매도 자체가 나쁜 것은 아니다」의 근거</b>입니다. <b>크게 오르는 해의 이익을 포기하는 대신, 조용한 해에 조금씩 벌고 흔들림이 작습니다.</b><br><br>' +
+      '<b>그런데 두 가지를 확인하세요.</b><br>' +
+      '· <b>「옵션에 매겨진 변동성」을 13%로</b> 내려보세요. <b>프리미엄이 실제 위험보다 싸게 팔리면</b> 결과가 크게 나빠집니다.<br>' +
+      '· <b>「레버리지」를 3배, 5배로</b> 올려보세요. <b>승률은 그대로인데 표의 아래쪽이 무너집니다.</b>';
+  } else if(S.p10 < -40 || S.ruin > 0){
+    col = '#8E4B3A';
+    title = '레버리지 ' + lev + '배 — 승률은 ' + num(S.win, 0) + '% 그대로, 하위 10%는 ' + sgn(S.p10, 0) + '%';
+    body = '<b>승률은 레버리지 1배일 때와 똑같습니다.</b> <b>이기고 지는 달은 바뀌지 않았고, 크기만 ' + lev + '배</b>가 됐습니다.<br><br>' +
+      '<b>그런데 결과는 전혀 다릅니다.</b><br>' +
+      '· <b>상위 10%는 ' + sgn(S.p90, 0) + '%</b> — 운 좋은 경로는 크게 벌었습니다.<br>' +
+      '· <b>중앙값은 ' + sgn(S.med, 0) + '%</b> — 가운데는 거의 늘지 않았습니다.<br>' +
+      '· <b>하위 10%는 ' + sgn(S.p10, 0) + '%</b> — 나쁜 경로는 크게 무너졌습니다.<br>' +
+      '· <b>손실로 끝난 경로 ' + num(S.neg, 1) + '%</b>' + (S.ruin > 0 ? ', <b>파산 ' + num(S.ruin, 1) + '%</b>' : '') + '.<br><br>' +
+      '<b>최악의 달 중앙값이 ' + sgn(S.worst, 0) + '%</b>입니다. <b>한 달에 계좌의 그만큼</b>이 사라집니다.<br><br>' +
+      '<b>⚠️ 레버리지는 「더 버는 방법」이 아니라 「결과의 폭을 넓히는 방법」</b>입니다(아래 「자세히 보기」). <b>그리고 폭이 넓어진 쪽 끝에 서 있을지 반대쪽 끝에 서 있을지는 미리 알 수 없습니다.</b>';
+  } else {
+    col = '#8E6B3A';
+    title = '레버리지 ' + lev + '배 — 중앙값 ' + sgn(S.med, 0) + '%, 하위 10% ' + sgn(S.p10, 0) + '%';
+    body = '레버리지를 <b>' + lev + '배</b>로 올리자 <b>상위 10%는 ' + sgn(S.p90, 0) + '%</b>로 좋아졌지만, <b>하위 10%는 ' + sgn(S.p10, 0) + '%</b>, <b>손실로 끝난 경로는 ' + num(S.neg, 1) + '%</b>가 됐습니다.<br><br>' +
+      '<b>승률(' + num(S.win, 0) + '%)은 그대로</b>입니다. <b>레버리지는 승률을 바꾸지 않고 한 번의 크기만 바꿉니다.</b><br><br>' +
+      '<b>「경로」 버튼을 바꿔가며</b> 보세요. <b>같은 설정인데 어떤 경로는 크게 벌고 어떤 경로는 크게 잃습니다.</b> <b>경로 하나만 보고 전략을 판단하면 안 되는 이유</b>입니다.<br><br>' +
+      '<b>「레버리지」를 한 칸 더 올려보세요.</b> <b>표의 아래쪽이 어떻게 변하는지</b>가 이 편의 요지입니다.';
+  }
+  verdict('smVerdict', col, title, body);
+}
+bindBtnRow('#smPath', function(v){ smPath = +v; smDraw(); });
+['smOtm', 'smLev', 'smIv'].forEach(function(id){ document.getElementById(id).addEventListener('input', smDraw); });
+
+/* ══════════ 3. 커버드콜 ══════════ */
+var CC = [
+  { h:'횡보', m:[4,-5,3,-4,5,-3,4,-5,3,-4,3,-1] },
+  { h:'완만한 상승', m:[5,-3,6,-4,5,1,-3,6,-2,4,2,1] },
+  { h:'급등', m:[8,4,9,3,7,5,2,8,4,6,5,3] },
+  { h:'급락 후 급반등', m:[-8,-10,-6,9,8,7,3,2,2,1,1,1] }
+];
+var ccIdx = 0;
+function ccDraw(){
+  var p = CC[ccIdx];
+  var otm = +document.getElementById('ccOtm').value / 100;
+  var iv = +document.getElementById('ccIv').value / 100;
+  document.getElementById('ccOtmOut').textContent = Math.round(otm * 100) + '% 위' + (otm === 0 ? ' (등가격)' : '');
+  document.getElementById('ccIvOut').textContent = Math.round(iv * 100) + '%';
+
+  var prem = bs(100, 100 * (1 + otm), 1 / 12, RATE, iv, 'c') / 100;
+  var s = 1, c = 1, sp = [1], cp = [1], capped = 0, premSum = 0;
+  p.m.forEach(function(q){
+    var r = q / 100;
+    s *= 1 + r;
+    var cr = Math.min(r, otm) + prem;
+    if(r > otm) capped += r - otm;
+    premSum += prem;
+    c *= 1 + cr;
+    sp.push(s); cp.push(c);
+  });
+  var mean = p.m.reduce(function(a, b){ return a + b; }, 0) / 12;
+  var realVol = Math.sqrt(p.m.reduce(function(a, b){ return a + (b - mean) * (b - mean); }, 0) / 12) * Math.sqrt(12);
+  var sRet = (s - 1) * 100, cRet = (c - 1) * 100;
+  var minS = Math.min.apply(null, sp), minC = Math.min.apply(null, cp);
+
+  steps('ccSteps', [
+    { k:'매달 받는 콜 프리미엄', v:num(prem * 100, 2) + '%' },
+    { k:'12개월 동안 받은 프리미엄 (단순 합)', v:'+' + num(premSum * 100, 1) + '%' },
+    { k:'행사가 위로 잘려나간 상승 (단순 합)', v:'−' + num(capped * 100, 1) + '%' },
+    { k:'가장 낮았던 지점 — 주식 / 커버드콜', v:sgn((minS - 1) * 100, 1) + '% / ' + sgn((minC - 1) * 100, 1) + '%' },
+    { k:'12개월 뒤 — 주식', v:sgn(sRet, 1) + '%' },
+    { k:'12개월 뒤 — 커버드콜', v:sgn(cRet, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('ccOut').textContent = sgn(sRet, 1) + '% / ' + sgn(cRet, 1) + '%';
+  document.getElementById('ccOut').style.color = cRet >= sRet ? 'var(--pos)' : 'var(--neg)';
+  document.getElementById('ccReal').textContent = '연 ' + num(realVol, 0) + '% (옵션엔 ' + Math.round(iv * 100) + '%)';
+
+  var X0 = 60, Y0 = 195, W = 545, H = 165;
+  var all = sp.concat(cp);
+  var vmin = Math.min.apply(null, all), vmax = Math.max.apply(null, all);
+  var pad = Math.max(0.03, (vmax - vmin) * 0.12);
+  vmin -= pad; vmax += pad;
+  function xx(m){ return X0 + m / 12 * W; }
+  function yy(v){ return Y0 - (v - vmin) / (vmax - vmin) * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">「' + p.h + '」 12개월 — 파랑: 주식 · 갈색: 커버드콜</text>';
+  if(vmin < 1 && vmax > 1){
+    g += '<line x1="' + X0 + '" y1="' + yy(1).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(1).toFixed(1) + '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+    g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(1) + 4).toFixed(1) + '" text-anchor="end">1</text>';
+  }
+  [0, 3, 6, 9, 12].forEach(function(m){ g += '<text class="axt" x="' + xx(m).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + m + '개월</text>'; });
+  p.m.forEach(function(q, i){
+    if(q / 100 > otm){
+      g += '<rect x="' + xx(i + 0.15).toFixed(1) + '" y="' + (Y0 - H) + '" width="' + (W / 12 * 0.7).toFixed(1) + '" height="' + H + '" fill="#8E6B3A" fill-opacity=".07"/>';
+    }
+  });
+  g += '<path d="M' + sp.map(function(v, m){ return xx(m).toFixed(1) + ' ' + yy(v).toFixed(1); }).join(' L') + '" fill="none" stroke="#4C6B7A" stroke-width="2.2"/>';
+  g += '<path d="M' + cp.map(function(v, m){ return xx(m).toFixed(1) + ' ' + yy(v).toFixed(1); }).join(' L') + '" fill="none" stroke="#8E6B3A" stroke-width="2.6"/>';
+  var yS = yy(s), yC = yy(c);
+  g += '<text class="lblb" x="' + (X0 + W - 4) + '" y="' + Math.max(Y0 - H + 12, Math.min(Y0 - 4, yS + (yS < yC ? -8 : 16))).toFixed(1) + '" text-anchor="end" fill="#4C6B7A">주식 ' + sgn(sRet, 1) + '%</text>';
+  g += '<text class="lblb" x="' + (X0 + W - 4) + '" y="' + Math.max(Y0 - H + 12, Math.min(Y0 - 4, yC + (yC <= yS ? -8 : 16))).toFixed(1) + '" text-anchor="end" fill="#8E6B3A">커버드콜 ' + sgn(cRet, 1) + '%</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">연한 갈색 세로 띠는 상승이 행사가에서 잘린 달입니다.</text>';
+  document.getElementById('ccScene').innerHTML = g;
+
+  var title, body, col;
+  var diff = cRet - sRet;
+  if(ccIdx === 2){
+    col = '#8E4B3A';
+    title = '급등 — 커버드콜이 ' + num(-diff, 1) + '%p 뒤집니다';
+    body = '<b>주식은 ' + sgn(sRet, 1) + '%</b>인데 <b>커버드콜은 ' + sgn(cRet, 1) + '%</b>입니다.<br><br>' +
+      '<b>매달 ' + num(otm * 100, 0) + '% 위의 상승을 팔았기</b> 때문에, <b>크게 오른 달마다 그 위가 잘렸습니다.</b> <b>잘려나간 상승은 단순 합으로 ' + num(capped * 100, 1) + '%</b>이고, <b>받은 프리미엄 ' + num(premSum * 100, 1) + '%</b>로는 메우지 못했습니다.<br><br>' +
+      '<b>커버드콜을 가진 사람이 가장 후회하는 경로</b>입니다. <b>「강세장에서 뒤처진다」</b>는 것이 이 전략의 분명한 대가입니다.<br><br>' +
+      '<b>「행사가」를 10% 위로</b> 올려보세요. <b>덜 잘리는 대신 프리미엄이 줄어듭니다.</b> <b>상승을 얼마나 팔지의 선택</b>입니다.';
+  } else if(ccIdx === 3){
+    col = diff < 0 ? '#8E4B3A' : '#8E6B3A';
+    title = '급락 후 급반등 — 하락은 거의 그대로, 반등은 잘렸습니다';
+    body = '<b>가장 낮았던 지점</b>은 <b>주식 ' + sgn((minS - 1) * 100, 1) + '%</b>, <b>커버드콜 ' + sgn((minC - 1) * 100, 1) + '%</b>입니다. <b>프리미엄이 쿠션이 되긴 했지만 급락을 거의 그대로</b> 받았습니다.<br><br>' +
+      '<b>그리고 반등하는 달</b>에는 <b>' + num(otm * 100, 0) + '% 위가 잘렸습니다.</b> <b>그림의 연한 갈색 띠</b>가 그 달들입니다.<br><br>' +
+      '<b>12개월 뒤 주식 ' + sgn(sRet, 1) + '%, 커버드콜 ' + sgn(cRet, 1) + '%</b>입니다.<br><br>' +
+      '<b>「옵션에 매겨진 변동성」을 움직여보세요.</b> <b>이 경로의 실제 변동성은 연 ' + num(realVol, 0) + '%</b>입니다. <b>옵션이 그보다 싸게 매겨지면 커버드콜이 뒤지고</b>, <b>비슷하거나 비싸게 매겨지면 비슷해집니다.</b><br><br>' +
+      '<b>⚠️ 이런 경로가 반복되면 「분배금은 계속 나오는데 가격은 점점 낮아지는」 모양</b>이 생길 수 있습니다(아래 「자세히 보기」).';
+  } else if(diff > 0){
+    col = '#5F7A52';
+    title = p.h + ' — 커버드콜이 ' + num(diff, 1) + '%p 앞섭니다';
+    body = '<b>크게 오른 달이 적어서</b> 잘려나간 상승(<b>' + num(capped * 100, 1) + '%</b>)보다 <b>받은 프리미엄(' + num(premSum * 100, 1) + '%)</b>이 컸습니다.<br><br>' +
+      '<b>커버드콜이 가장 잘 맞는 경로</b>입니다. <b>주가가 오르내리기만 하거나 조금씩 오르면</b> 프리미엄이 쌓입니다.<br><br>' +
+      '<b>그런데 이 결과는 가정 하나에 크게 기대고 있습니다</b> — <b>옵션에 매겨진 변동성(' + Math.round(iv * 100) + '%)이 이 경로의 실제 변동성(연 ' + num(realVol, 0) + '%)</b>' + (iv * 100 > realVol ? '보다 높습니다.' : '과 비슷하거나 낮습니다.') + ' <b>「옵션에 매겨진 변동성」을 10%로</b> 내려보세요.<br><br>' +
+      '<b>「급등」 버튼도 눌러보세요.</b> <b>같은 전략이 어떤 경로에서 크게 뒤지는지</b> 보입니다. <b>어떤 경로가 올지는 미리 알 수 없습니다.</b>';
+  } else {
+    col = '#8E6B3A';
+    title = p.h + ' — 커버드콜이 ' + num(-diff, 1) + '%p 뒤집니다';
+    body = '<b>잘려나간 상승(' + num(capped * 100, 1) + '%)</b>이 <b>받은 프리미엄(' + num(premSum * 100, 1) + '%)</b>보다 컸습니다.<br><br>' +
+      '<b>「옵션에 매겨진 변동성」이 이 경로의 실제 변동성(연 ' + num(realVol, 0) + '%)과 어떤 관계인지</b> 보세요. <b>옵션이 싸게 팔렸다면 파는 쪽이 불리</b>합니다.<br><br>' +
+      '<b>「행사가」를 움직여보세요.</b> <b>가까울수록 프리미엄은 크지만 자주 잘리고, 멀수록 덜 잘리지만 프리미엄이 작습니다.</b>';
+  }
+  document.getElementById('ccVerdict').querySelector('.vh').textContent = p.h;
+  verdict('ccVerdict', col, title, body);
+}
+bindBtnRow('#ccPath', function(v){ ccIdx = +v; ccDraw(); });
+['ccOtm', 'ccIv'].forEach(function(id){ document.getElementById(id).addEventListener('input', ccDraw); });
+
+/* ══════════ 4. 급락 때 증거금 ══════════ */
+function mgDraw(){
+  var acct = +document.getElementById('mgAcct').value * 10000;
+  var lev = +document.getElementById('mgLev').value;
+  var drop = +document.getElementById('mgDrop').value;
+  var ivA = +document.getElementById('mgIv').value / 100;
+  var notional = acct * lev;
+  document.getElementById('mgAcctOut').textContent = man(acct);
+  document.getElementById('mgLevOut').textContent = lev + '배 (' + man(notional) + ')';
+  document.getElementById('mgDropOut').textContent = drop === 0 ? '변화 없음' : '−' + drop + '%';
+  document.getElementById('mgIvOut').textContent = Math.round(ivA * 100) + '%';
+
+  var units = notional / 100;
+  var K = 95, S1 = 100 * (1 - drop / 100);
+  var p0 = bs(100, K, 30 / 365, RATE, 0.16, 'p');
+  var p1 = bs(S1, K, 23 / 365, RATE, ivA, 'p');
+  var premIn = p0 * units;
+  var liab = p1 * units;
+  var equity = acct + premIn - liab;
+  var otmAmt = Math.max(S1 - K, 0);
+  var reqPer = p1 + Math.max(0.15 * S1 - otmAmt, 0.10 * K);
+  var req0 = (p0 + Math.max(0.15 * 100 - 5, 0.10 * K)) * units;
+  var req = reqPer * units;
+  var loss = liab - premIn;
+  var call = req - equity;
+
+  var state, col;
+  if(equity <= 0){ state = '계좌 전액 소진'; col = '#8E4B3A'; }
+  else if(call > 0){ state = '증거금 부족 ' + man(call); col = '#8E4B3A'; }
+  else { state = '유지 가능 (여유 ' + man(-call) + ')'; col = '#5F7A52'; }
+
+  steps('mgSteps', [
+    { k:'처음 받은 프리미엄 (풋 ' + num(p0, 2) + ' × 명목)', v:smanw(premIn) },
+    { k:'처음 증거금 요구 (예시 규칙)', v:man(req0) },
+    { k:'일주일 뒤 풋 가격 (지수 ' + num(S1, 0) + ', 변동성 ' + Math.round(ivA * 100) + '%)', v:num(p1, 2) },
+    { k:'평가손실 = 지금 풋 가치 − 받은 프리미엄', v:smanw(-loss) },
+    { k:'계좌 평가액 = 계좌 + 프리미엄 − 풋 가치', v:(equity < 0 ? '−' : '') + man(Math.abs(equity)) },
+    { k:'지금 증거금 요구 (예시 규칙)', v:man(req) },
+    { k:'상태', v:state, total:true }
+  ]);
+
+  document.getElementById('mgOut').textContent = (equity < 0 ? '−' : '') + man(Math.abs(equity)) + ' / ' + man(req);
+  document.getElementById('mgOut').style.color = call > 0 ? 'var(--neg)' : '';
+  document.getElementById('mgState').textContent = state;
+  document.getElementById('mgState').style.color = col;
+
+  var X0 = 140, W = 400, Y0 = 34;
+  var rows = [
+    { n:'처음 증거금 요구', v:req0, c:'#8A8474' },
+    { n:'지금 증거금 요구', v:req, c:'#6A5A8C' },
+    { n:'계좌 평가액', v:Math.max(0, equity), c:equity < req ? '#8E4B3A' : '#5F7A52' },
+    { n:'평가손실', v:Math.max(0, loss), c:'#8E4B3A' }
+  ];
+  var maxV = Math.max.apply(null, rows.map(function(r){ return r.v; }).concat([acct * 1.2]));
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="16">같은 일주일 동안 커진 것과 줄어든 것</text>';
+  rows.forEach(function(r, i){
+    var y = Y0 + i * 32;
+    var w = Math.max(1, r.v / maxV * W);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="21" rx="1.5" fill="' + r.c + '" fill-opacity=".5" stroke="' + r.c + '" stroke-width="1.2"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 15) + '" text-anchor="end">' + r.n + '</text>';
+    g += '<text class="lblb" x="' + Math.min(X0 + w + 8, X0 + W + 4).toFixed(1) + '" y="' + (y + 15) + '" fill="' + r.c + '">' + man(r.v) + '</text>';
+  });
+  var ax = X0 + Math.min(acct / maxV, 1) * W;
+  g += '<line x1="' + ax.toFixed(1) + '" y1="' + (Y0 - 6) + '" x2="' + ax.toFixed(1) + '" y2="' + (Y0 + rows.length * 32) + '" stroke="#5B5648" stroke-width="1.2" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + rows.length * 32 + 18) + '">점선은 처음 계좌 금액입니다. 보라 막대가 초록/빨강 막대보다 길면 돈을 더 넣어야 합니다.</text>';
+  document.getElementById('mgScene').innerHTML = g;
+
+  var title, body;
+  if(drop === 0 && ivA <= 0.17){
+    title = '아무 일도 없었습니다 — 시간가치가 조금 들어왔습니다';
+    body = '지수도 변동성도 그대로라 <b>풋 가격이 ' + num(p0, 2) + ' → ' + num(p1, 2) + '</b>로 조금 줄었습니다. <b>매도자에게 유리한 한 주</b>입니다.<br><br>' +
+      '<b>대부분의 주가 이렇게 지나갑니다.</b> 그래서 <b>「일주일 뒤 지수 하락」과 「변동성」</b>을 함께 올려보는 것이 이 계산기의 목적입니다.';
+  } else if(equity <= 0){
+    title = '일주일 만에 계좌가 사라졌습니다';
+    body = '<b>지수 −' + drop + '%와 변동성 ' + Math.round(ivA * 100) + '%</b>가 겹치자 <b>풋 가격이 ' + num(p0, 2) + ' → ' + num(p1, 2) + '</b>로 뛰었습니다. <b>평가손실 ' + man(loss) + '</b>이 <b>계좌 ' + man(acct) + '</b>를 넘었습니다.<br><br>' +
+      '<b>받은 프리미엄은 ' + man(premIn) + '</b>이었습니다. <b>그 몇십 배를 한 주에 잃었습니다.</b><br><br>' +
+      '<b>그리고 아직 만기 전</b>입니다. <b>지수가 더 떨어지면 손실은 계좌를 넘어 계속 커집니다.</b><br><br>' +
+      '<b>「명목금액 ÷ 계좌」를 1배로</b> 내려보세요. <b>같은 급락인데 계좌가 버팁니다.</b> <b>차이는 전부 크기</b>입니다.';
+  } else if(call > 0){
+    title = '평가손실 ' + man(loss) + ' + 증거금 요구 ' + man(req) + ' — 돈을 더 넣어야 합니다';
+    body = '<b>지수 −' + drop + '%</b>와 <b>변동성 ' + Math.round(ivA * 100) + '%</b>로 <b>풋 가격이 ' + num(p1 / p0, 1) + '배</b>가 됐습니다.<br><br>' +
+      '<b>두 가지가 동시에</b> 일어났습니다.<br>' +
+      '· <b>계좌 평가액이 ' + man(acct) + ' → ' + man(equity) + '</b>로 줄었습니다.<br>' +
+      '· <b>증거금 요구는 ' + man(req0) + ' → ' + man(req) + '</b>로 늘었습니다.<br><br>' +
+      '<b>그 결과 ' + man(call) + '을 채워 넣으라는</b> 요구를 받습니다. <b>못 넣으면 가장 비싼 가격에 풋을 되사서 정리</b>하게 됩니다 — <b>손실 확정</b>입니다.<br><br>' +
+      '<b>⚠️ 급락과 변동성 급등은 대체로 함께</b> 옵니다. <b>「지수만 떨어지고 변동성은 그대로」인 경우는 드뭅니다.</b> <b>「일주일 뒤 변동성」을 16%로 두고</b> 비교해보면, <b>변동성이 손실을 얼마나 키웠는지</b> 보입니다.';
+  } else {
+    title = '버틸 수 있습니다 — 여유 ' + man(-call);
+    body = '<b>평가손실 ' + man(Math.max(0, loss)) + '</b>이 생겼지만 <b>계좌 평가액 ' + man(equity) + '</b>가 <b>증거금 요구 ' + man(req) + '</b>보다 큽니다.<br><br>' +
+      (lev <= 1 ? '<b>명목금액이 계좌 이하</b>라서 <b>급락을 흡수할 여유</b>가 있었습니다. <b>레버리지 없는 옵션 매도의 모습</b>입니다.<br><br>' :
+                  '<b>이번 충격은 버텼습니다.</b> 그런데 <b>「일주일 뒤 지수 하락」을 조금만 더</b> 올려보세요. <b>여유가 얼마나 빨리 사라지는지</b> 보입니다.<br><br>') +
+      '<b>기억할 것</b> — <b>이것은 「일주일」의 결과</b>입니다. <b>만기까지 23일이 남았고, 급락은 하루에 끝나지 않는 경우가 많습니다.</b>';
+  }
+  verdict('mgVerdict', col, title, body);
+}
+['mgAcct', 'mgLev', 'mgDrop', 'mgIv'].forEach(function(id){ document.getElementById(id).addEventListener('input', mgDraw); });
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 가장 흔한 실패입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+evDraw(); smDraw(); ccDraw(); mgDraw();
+</script>
+</body>
+</html>
