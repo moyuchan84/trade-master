@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파생상품에서 돈을 잃는 방법</title>
+<meta name="description" content="같은 실력이라도 크기에 따라 파산 확률이 달라집니다. 베팅 크기와 파산, 물타기, 연속 손실과 회복의 산수, 실패 경로 여섯 가지를 시뮬레이션으로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --size:#8E4B3A;--mart:#6A5A8C;--rec:#8E6B3A;--path:#3F5F6F;--good:#5F7A52;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:18px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:520px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:9px 12px;text-align:left;vertical-align:top;line-height:1.5;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp td.n{font-family:'IBM Plex Mono',monospace;text-align:right;white-space:nowrap;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--size));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--size));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--size));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">선물·옵션 09 · 실패 · 투자 공부 노트</div>
+    <h1>파생상품에서<br>돈을 잃는 방법</h1>
+    <p class="lede">파생상품의 실패담을 모아보면 <b>「방향을 틀렸다」</b>는 이야기는 생각보다 적습니다. 더 흔한 것은 <b>「방향은 맞았는데 크기가 너무 컸다」</b>, <b>「잃은 걸 만회하려고 키웠다」</b>, <b>「버티려고 돈을 더 넣었다」</b>입니다. <b>실력의 문제가 아니라 크기와 행동의 문제</b>입니다.</p>
+    <div class="callout">
+      <p><b>이 편의 세 장면</b>입니다(모두 시드를 고정한 가상의 시뮬레이션).</p>
+      <p><b>① 같은 실력, 다른 크기.</b> 매 거래 <b>이길 확률 52%</b>로 <b>시장보다 조금 나은</b> 사람이 200번 거래합니다. <b>한 번에 계좌의 2%</b>를 걸면 500개 경로의 중앙값이 <b>+12%</b>, <b>20%</b>를 걸면 <b>−90%</b>이고 <b>열 명 중 일곱이 파산</b>합니다.</p>
+      <p><b>② 물타기.</b> <b>지면 다음 판을 두 배로</b> 걸어 한 번에 만회하는 방법입니다. 승률 50%로 200판을 하면 <b>54%가 이익으로 끝나는데, 41.6%는 파산</b>합니다.</p>
+      <p><b>③ 연속 손실은 드물지 않습니다.</b> 승률 50%로 200번 거래하면 <b>7연패가 한 번이라도 나올 확률이 절반을 넘습니다.</b></p>
+      <p><b>⚠️ 시뮬레이션은 「승률」과 「한 번에 거는 비율」만으로 단순화한 모형</b>입니다. 실제 거래는 손익 크기가 매번 다르고 비용·세금이 붙습니다. <b>숫자보다 모양을 보는 용도</b>입니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#size">1. 크기와 파산</a>
+    <a href="#mart">2. 물타기</a>
+    <a href="#streak">3. 연패와 회복</a>
+    <a href="#paths">4. 실패 경로 여섯</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="size">
+    <div class="prod-head" style="--edge:var(--size)">
+      <span class="prod-tag">01 · 크기</span>
+      <h2>같은 실력인데 결과가 정반대입니다</h2>
+      <p class="one">차이는 <b>한 번에 얼마를 거느냐</b> 하나뿐입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>동전 던지기 게임</b>을 한다고 해보자. 그런데 네가 조금 유리해. <b>100번 중 52번</b>은 이겨. 이기면 건 만큼 받고, 지면 건 만큼 잃어.</p>
+      <p><b>형</b>은 매번 <b>가진 돈의 2%</b>만 걸어. 조금씩 늘어나. 가끔 지지만 크게 안 흔들려.</p>
+      <p><b>동생</b>은 <b>「어차피 내가 유리하니까」</b> 매번 <b>가진 돈의 20%</b>를 걸어.</p>
+      <p>그러면 동생이 더 많이 벌까? <b>아니야.</b> 동생은 <b>몇 번 연속으로 지면</b> 돈이 <b>확 줄어들어.</b> 100원이 80원, 64원, 51원… <b>그리고 줄어든 돈에서 다시 벌어야</b> 해. <b>51원에서 20%를 이겨봐야 10원</b>밖에 안 늘어.</p>
+      <p><b>유리한 게임도 너무 크게 걸면 질 수 있어.</b> 게임이 나빠서가 아니라 <b>크기가 나빠서</b>야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">BET SIZE · 실력과 크기를 정해보세요</div>
+      <p class="labsub"><b>200번 거래</b>를 <b>500명</b>이 똑같이 합니다. 이기면 <b>건 만큼</b> 벌고, 지면 <b>건 만큼</b> 잃습니다. 거래마다 <b>건 금액의 0.2%</b>를 비용으로 냅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="szP">매 거래 이길 확률 (실력)</label>
+        <input type="range" id="szP" min="45" max="60" step="1" value="52">
+        <output id="szPOut">52%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="szF">한 번에 거는 비율 (계좌 대비)</label>
+        <input type="range" id="szF" min="1" max="40" step="1" value="20">
+        <output id="szFOut">20%</output>
+      </div>
+
+      <div class="btnrow" id="szMode">
+        <button data-v="0" class="on">크기를 고정한다</button>
+        <button data-v="1">낙폭 20%가 넘으면 크기를 두 배로 (만회 모드)</button>
+        <button data-v="2">낙폭 20%가 넘으면 세 배로</button>
+      </div>
+
+      <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="거는 비율에 따른 중앙값과 파산 비율">
+        <g id="szScene"></g>
+      </svg>
+
+      <div class="tablewrap">
+        <table class="cmp" id="szTable"></table>
+      </div>
+
+      <div class="readout two">
+        <div><span class="rk">500명 중앙값</span><span class="rv" id="szMed">—</span></div>
+        <div><span class="rk">파산 (계좌 90% 이상 소실)</span><span class="rv" id="szRuin">—</span></div>
+      </div>
+
+      <div class="verdict" id="szVerdict" style="--vc:var(--size)">
+        <div class="vh">크기</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 매 거래 <b>이기면 계좌 × (1 + 비율 − 비용)</b>, <b>지면 계좌 × (1 − 비율 − 비용)</b>입니다(비용 = 비율 × 0.2%). 계좌가 <b>처음의 10% 아래</b>로 떨어지면 <b>파산</b>으로 멈춥니다. <b>경로 500개는 시드 고정</b>이라 설정만 바꿔 같은 운을 비교합니다.<br><br>
+        <b>「기대 성장률」</b>은 <b>한 번 거래할 때 계좌가 복리로 평균 몇 % 불어나는가</b>입니다(로그 기준). <b>이 값이 마이너스면, 이길 확률이 50%를 넘어도 오래 할수록 줄어듭니다.</b><br><br>
+        <b>그래프의 곡선</b>은 <b>현재 실력에서 거는 비율만 1%~40%로 바꿨을 때</b>의 중앙값(갈색)과 파산 비율(빨강)입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「최적의 크기」가 있고, 그보다 크면 줄어듭니다 — 켈리 기준</h3>
+      <p>이 계산기의 곡선을 보면 <b>중앙값이 어느 비율에서 가장 높았다가 그 뒤로 떨어집니다.</b> 이 꼭짓점을 계산하는 공식이 있습니다. <b>켈리 기준</b>입니다.</p>
+      <p><b>이기면 건 만큼, 지면 건 만큼</b>인 게임에서 <b>최적 비율 = 2 × 승률 − 1</b>입니다. <b>승률 52%면 4%</b>, <b>55%면 10%</b>, <b>60%면 20%</b>입니다.</p>
+      <p>그리고 이 공식에서 중요한 성질이 나옵니다.</p>
+      <p><b>· 최적 비율의 두 배를 걸면, 기대 성장률이 거의 0</b>이 됩니다. <b>유리한 게임을 하면서 아무것도 못 버는</b> 크기입니다.<br>
+         <b>· 세 배를 걸면 마이너스</b>입니다. <b>유리한 게임에서 확실하게 줄어듭니다.</b><br>
+         <b>· 승률이 50% 이하라면 최적 비율은 0</b>입니다. <b>거는 것 자체가 손해</b>입니다.</p>
+      <p class="plain"><b>현실에 적용할 때의 문제는 「내 승률을 모른다」는 것</b>입니다. <b>과거 기록은 운이 섞여 있고</b>, <b>시장이 바뀌면 실력도 바뀝니다.</b> 그래서 <b>승률을 조금만 높게 착각해도 최적의 두 배, 세 배를 걸게</b> 됩니다.<br><br><b>그래서 실무에서는 계산된 켈리 비율의 절반 이하</b>를 쓰는 것이 흔한 원칙입니다. <b>조금 덜 벌더라도 착각했을 때 무너지지 않기</b> 위해서입니다.<br><br><b>⚠️ 그리고 01편의 결론을 떠올리면</b> — <b>파생상품 시장에서 비용을 빼고도 승률이 50%를 넘는 개인은 드뭅니다.</b> <b>그렇다면 켈리 기준이 말하는 최적 비율은 0</b>이고, <b>이 계산기의 어떤 크기도 「파는 것보다 나은」 선택이 되지 못합니다.</b> <b>실력이 50%라면 「크기를 줄여라」가 아니라 「하지 마라」가 산수의 답</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="mart">
+    <div class="prod-head" style="--edge:var(--mart)">
+      <span class="prod-tag">02 · 물타기</span>
+      <h2>지면 두 배로 — 대부분 이기고, 일부는 전부 잃습니다</h2>
+      <p class="one"><b>「한 번만 이기면 만회된다」</b>는 계산은 맞습니다. <b>그 한 번이 오기 전에 돈이 떨어지는 것</b>이 문제입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MARTINGALE · 지면 다음 판을 두 배로 겁니다</div>
+      <p class="labsub"><b>이기면 기본 금액으로 돌아가고</b>, <b>지면 두 배</b>로 겁니다. <b>한 번 이기면 그동안 잃은 것을 모두 되찾고 기본 금액만큼 법니다.</b> <b>200판 · 500명.</b></p>
+
+      <div class="ctrl-row">
+        <label for="mtP">이길 확률</label>
+        <input type="range" id="mtP" min="45" max="55" step="1" value="50">
+        <output id="mtPOut">50%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mtBase">기본 금액 (계좌 대비)</label>
+        <input type="range" id="mtBase" min="1" max="10" step="1" value="1">
+        <output id="mtBaseOut">1%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mtCap">두 배로 키우는 한도</label>
+        <input type="range" id="mtCap" min="1" max="9" step="1" value="9">
+        <output id="mtCapOut">한도 없음</output>
+      </div>
+
+      <svg viewBox="0 0 640 200" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="물타기 결과 분포">
+        <g id="mtScene"></g>
+      </svg>
+
+      <div class="steps-out" id="mtSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">이익으로 끝난 사람</span><span class="rv" id="mtWin">—</span></div>
+        <div><span class="rk">파산한 사람</span><span class="rv" id="mtRuin">—</span></div>
+      </div>
+
+      <div class="verdict" id="mtVerdict" style="--vc:var(--mart)">
+        <div class="vh">물타기</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 기본 금액에서 시작해 <b>지면 걸 금액을 두 배</b>로(한도까지), <b>이기면 기본 금액으로</b> 되돌립니다. <b>걸 금액이 계좌보다 크면 가진 만큼만</b> 겁니다. 계좌가 거의 0이 되면 <b>파산</b>입니다. <b>이기면 건 만큼, 지면 건 만큼</b>이고 비용은 넣지 않았습니다.<br><br>
+        <b>「두 배로 키우는 한도」</b>는 <b>몇 번까지 연속으로 두 배로 키울지</b>입니다. 한도 3이면 <b>기본의 8배(2³)</b>에서 멈춥니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>물타기, 추가 입금, 평균 단가 — 같은 결정의 다른 이름</h3>
+      <p>카지노의 <b>「지면 두 배」</b>는 극단적인 예처럼 보이지만, 파생상품에서는 <b>더 자연스러운 모습</b>으로 나타납니다.</p>
+      <p><b>· 떨어진 선물을 더 사서 평균 단가를 낮춘다</b> — <b>레버리지가 붙은 물타기</b>입니다. <b>평균 단가가 내려가는 대신 크기가 커지고</b>, <b>조금만 더 떨어져도 손실이 두 배로</b> 커집니다.<br>
+         <b>· 마진콜이 오면 돈을 넣어 버틴다</b> — 03편에서 봤듯이 <b>손실 난 포지션에 돈을 더 거는</b> 결정입니다.<br>
+         <b>· 옵션 매도에서 손실이 나면 행사가를 옮겨 더 많이 판다</b> — <b>잃은 프리미엄을 만회하려고 크기를 키우는</b> 것입니다(07편).<br>
+         <b>· 외가격 옵션이 녹았으니 더 싸게 더 산다</b> — <b>시간가치가 녹는 자산에 물타기</b>입니다(06편).</p>
+      <p class="plain"><b>넷의 공통점은 「한 번만 돌아오면 된다」</b>입니다. <b>그리고 넷 다 대부분의 경우 실제로 돌아옵니다.</b> 그래서 <b>경험이 쌓일수록 확신이 커집니다.</b><br><br><b>⚠️ 계산기가 보여준 대로, 문제는 「돌아오지 않는 한 번」이 전부를 가져간다</b>는 것입니다. <b>이익은 매번 기본 금액만큼 작고, 손실은 한 번에 계좌 전체</b>입니다. 07편의 <b>「승률은 같고 꼬리만 커진다」</b>와 같은 구조입니다.<br><br><b>이것을 막는 규칙은 하나</b>입니다 — <b>손실 난 포지션에 추가로 넣을 수 있는 한도를 「처음 들어갈 때」 정해두는 것.</b> 그리고 <b>한도에 닿으면 정리한다.</b> <b>한도 없는 물타기는 손실에 상한을 두지 않겠다는 결정</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="streak">
+    <div class="prod-head" style="--edge:var(--rec)">
+      <span class="prod-tag">03 · 연패와 회복</span>
+      <h2>연패는 생각보다 자주 오고, 회복은 생각보다 어렵습니다</h2>
+      <p class="one">두 산수가 겹치면 <b>「만회하려고 키우는」</b> 충동이 생깁니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">STREAK · 몇 연패가 한 번이라도 나올까</div>
+      <p class="labsub"><b>「이번엔 설마 또 지겠어」</b>라는 느낌과 실제 확률을 비교합니다.</p>
+
+      <div class="ctrl-row">
+        <label for="stP">매 거래 이길 확률</label>
+        <input type="range" id="stP" min="40" max="70" step="1" value="50">
+        <output id="stPOut">50%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="stN">거래 횟수</label>
+        <input type="range" id="stN" min="20" max="500" step="10" value="200">
+        <output id="stNOut">200번</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="stK">연속으로 지는 횟수</label>
+        <input type="range" id="stK" min="3" max="15" step="1" value="7">
+        <output id="stKOut">7연패</output>
+      </div>
+
+      <div class="steps-out" id="stSteps"></div>
+
+      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="연패 길이별 한 번이라도 나올 확률">
+        <g id="stScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">딱 한 번에 이 연패가 날 확률</span><span class="rv" id="stOne">—</span></div>
+        <div><span class="rk">이 기간 중 한 번이라도 날 확률</span><span class="rv" id="stAny">—</span></div>
+      </div>
+
+      <div class="verdict" id="stVerdict" style="--vc:var(--rec)">
+        <div class="vh">연패</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>「지금 몇 연패 중인가」</b>를 상태로 두고 거래마다 확률을 옮기는 방식으로 <b>정확히</b> 계산했습니다(시뮬레이션이 아닌 확률 계산).<br><br>
+        <b>「딱 한 번에」</b>는 <b>지금부터 곧바로 k번 연속으로 질 확률</b>(= 지는 확률<sup>k</sup>), <b>「한 번이라도」</b>는 <b>전체 기간 중 어딘가에서 k연패가 나올 확률</b>입니다. <b>둘의 차이가 「설마」의 착각</b>입니다.
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">RECOVERY · 잃은 만큼 되찾으려면</div>
+      <p class="labsub"><b>잃은 비율보다 되찾아야 할 비율이 항상 큽니다.</b> 그리고 <b>레버리지가 있으면 그 차이가 더 빨리 벌어집니다.</b></p>
+
+      <div class="ctrl-row">
+        <label for="rcL">계좌 손실</label>
+        <input type="range" id="rcL" min="5" max="95" step="5" value="50">
+        <output id="rcLOut">−50%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rcLev">그 손실을 만든 레버리지</label>
+        <input type="range" id="rcLev" min="1" max="10" step="1" value="5">
+        <output id="rcLevOut">5배</output>
+      </div>
+
+      <div class="steps-out" id="rcSteps"></div>
+
+      <svg viewBox="0 0 640 185" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="손실률과 회복에 필요한 수익률">
+        <g id="rcScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">회복에 필요한 수익</span><span class="rv" id="rcNeed">—</span></div>
+        <div><span class="rk">같은 레버리지로 필요한 시장 상승</span><span class="rv" id="rcMkt">—</span></div>
+      </div>
+
+      <div class="verdict" id="rcVerdict" style="--vc:var(--rec)">
+        <div class="vh">회복</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>회복에 필요한 수익 = 손실 ÷ (1 − 손실)</b>입니다. <b>「같은 레버리지로 필요한 시장 상승」</b>은 <b>필요한 수익 ÷ 레버리지</b>로 단순화했습니다(변동성 손실·비용 제외). <b>레버리지가 이익도 키워주니 쉬워 보이지만</b>, <b>그 레버리지가 손실을 만든 원인</b>이기도 합니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="paths">
+    <div class="prod-head" style="--edge:var(--path)">
+      <span class="prod-tag">04 · 경로</span>
+      <h2>파생상품 실패 경로 여섯 가지</h2>
+      <p class="one">각각 <b>어느 편에서 계산했는지</b>를 함께 적었습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">PATHS · 눌러서 확인해보세요</div>
+      <p class="labsub">순서는 <b>흔한 정도</b>입니다.</p>
+
+      <div class="btnrow" id="pthBtns">
+        <button data-v="0" class="on">① 작은 계좌, 큰 계약</button>
+        <button data-v="1">② 버티려고 더 넣기</button>
+        <button data-v="2">③ 레버리지 옵션 매도</button>
+        <button data-v="3">④ 만기 직전 복권</button>
+        <button data-v="4">⑤ 레버리지 ETF 장기 보유</button>
+        <button data-v="5">⑥ 만회 모드</button>
+      </div>
+
+      <div class="verdict" id="pthVerdict" style="--vc:var(--path)">
+        <div class="vh">경로</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="keyline" style="--edge2:var(--path)">
+      <div class="kt">여섯 경로의 공통점</div>
+      <div class="kb">어느 것도 <b>「방향을 틀려서」</b>가 아닙니다.<br>전부 <b>크기 · 기간 · 한도</b>의 문제입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one"><b>살아남는 크기</b>가 실력보다 먼저입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>같은 실력이라도 크기에 따라 결과가 정반대</b>라는 것.</li>
+      <li><b>유리한 게임도 너무 크게 걸면 줄어든다</b>는 것.</li>
+      <li><b>최적 비율의 두 배를 걸면 기대 성장이 0</b>이라는 것 (켈리).</li>
+      <li><b>실력이 50% 이하면 최적 비율은 0</b>이라는 것.</li>
+      <li><b>물타기는 대부분 이기고 일부는 전부 잃는다</b>는 것.</li>
+      <li><b>추가 입금·평균 단가 낮추기도 같은 결정</b>이라는 것.</li>
+      <li><b>연패는 「한 번에」보다 「언젠가」가 훨씬 흔하다</b>는 것.</li>
+      <li><b>−50%를 되찾으려면 +100%</b>가 필요하다는 것.</li>
+      <li><b>만회하려고 크기를 키우면 꼬리가 커진다</b>는 것.</li>
+      <li><b>추가로 넣을 한도를 들어가기 전에 정한다</b>는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 파생상품에서 돈을 잃는 가장 흔한 방법은 <b>틀리는 것이 아니라 크게 거는 것</b>입니다. <b>레버리지가 쉽게 붙는 상품</b>이라 <b>크기의 실수가 곧바로 파산의 확률</b>이 됩니다.</p>
+      <p><b>그리고 크기의 실수는 대체로 두 순간에 일어납니다.</b> <b>잘 되고 있을 때</b>(확신이 커져서)와 <b>잃고 있을 때</b>(만회하고 싶어서). <b>두 순간 모두 판단이 가장 흔들리는 때</b>입니다.</p>
+      <p><b>그래서 규칙은 「들어가기 전에」 정해야 합니다.</b> <b>한 번에 얼마까지, 추가로 얼마까지, 얼마를 잃으면 멈추는지.</b> <b>들어간 뒤에 정하는 규칙은 규칙이 아니라 그 순간의 기분</b>입니다.</p>
+      <p><b>다음 편은 마지막 10편 — 개인에게 파생상품이 필요한가</b>입니다. <b>대부분에게 답은 「필요 없다」</b>이고, <b>필요한 드문 경우와 그때 지킬 규칙</b>을 정리합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 선물·옵션 09 · 실패<br>
+    <a href="index.html#futures">← 선물·옵션 목록으로</a> · <a href="futures-products.html">08 · 레버리지 · 인버스 ETF와 해외선물</a> · 10 · 개인에게 파생상품이 필요한가 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 파생상품 거래를 권하지 않습니다.<br>
+    시뮬레이션은 <b>승률과 거는 비율로 단순화한 가상의 모형</b>이며 실제 거래의 결과가 아닙니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+function mulberry(seed){
+  return function(){
+    seed |= 0; seed = seed + 0x6D2B79F5 | 0;
+    var t = Math.imul(seed ^ seed >>> 15, 1 | seed);
+    t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+    return ((t ^ t >>> 14) >>> 0) / 4294967296;
+  };
+}
+function pct(a, q){ var s = a.slice().sort(function(x, y){ return x - y; }); return s[Math.floor(q * (s.length - 1))]; }
+
+/* 공통 난수: 경로 500개 × 200회 — 한 번만 만들어 둔다 */
+var U_SIZE = [], U_MART = [];
+(function(){
+  for(var k = 1; k <= 500; k++){
+    var r1 = mulberry(k * 65537), r2 = mulberry(k * 92821), a = new Float64Array(200), b = new Float64Array(200);
+    for(var i = 0; i < 200; i++){ a[i] = r1(); b[i] = r2(); }
+    U_SIZE.push(a); U_MART.push(b);
+  }
+})();
+
+/* ══════════ 1. 크기와 파산 ══════════ */
+var szMode = 0;
+function sizeSim(p, f, mode){
+  var finals = [], ruin = 0, half = 0, trig = 0;
+  var mult = mode === 1 ? 2 : mode === 2 ? 3 : 1;
+  for(var k = 0; k < 500; k++){
+    var u = U_SIZE[k], eq = 1, peak = 1, dead = false, t = false;
+    for(var i = 0; i < 200; i++){
+      var ff = f;
+      if(mult > 1 && eq / peak - 1 <= -0.2){ ff = Math.min(0.95, f * mult); t = true; }
+      eq *= u[i] < p ? (1 + ff - ff * 0.002) : (1 - ff - ff * 0.002);
+      if(eq > peak) peak = eq;
+      if(eq < 0.1){ dead = true; break; }
+    }
+    finals.push((Math.max(eq, 0) - 1) * 100);
+    if(dead) ruin++;
+    if(eq < 0.5) half++;
+    if(t) trig++;
+  }
+  return { med:pct(finals, 0.5), p10:pct(finals, 0.1), p90:pct(finals, 0.9), ruin:ruin / 5, half:half / 5, trig:trig / 5 };
+}
+function growth(p, f){ return (p * Math.log(1 + f - f * 0.002) + (1 - p) * Math.log(Math.max(1e-9, 1 - f - f * 0.002))) * 100; }
+function szDraw(){
+  var p = +document.getElementById('szP').value / 100;
+  var f = +document.getElementById('szF').value / 100;
+  document.getElementById('szPOut').textContent = Math.round(p * 100) + '%' + (p > 0.505 ? ' (시장보다 조금 나음)' : p < 0.495 ? ' (시장보다 못함)' : ' (평균)');
+  document.getElementById('szFOut').textContent = Math.round(f * 100) + '%';
+
+  var S = sizeSim(p, f, szMode);
+  var g = growth(p, f);
+  var kelly = Math.max(0, 2 * p - 1);
+
+  document.getElementById('szTable').innerHTML =
+    '<thead><tr><th>500명 · 200번</th><th>결과</th></tr></thead><tbody>' +
+    '<tr><th>거래당 기대 성장률 (고정 크기 기준)</th><td class="n">' + sgn(g, 3) + '%</td></tr>' +
+    '<tr><th>켈리 최적 비율 (2 × 승률 − 1)</th><td class="n">' + num(kelly * 100, 0) + '%</td></tr>' +
+    '<tr><th>중앙값</th><td class="n">' + sgn(S.med, 0) + '%</td></tr>' +
+    '<tr><th>하위 10% / 상위 10%</th><td class="n">' + sgn(S.p10, 0) + '% / ' + sgn(S.p90, 0) + '%</td></tr>' +
+    '<tr><th>반토막 이하로 끝남</th><td class="n">' + num(S.half, 1) + '%</td></tr>' +
+    '<tr><th>파산 (90% 이상 소실)</th><td class="n">' + num(S.ruin, 1) + '%</td></tr>' +
+    (szMode > 0 ? '<tr><th>만회 모드에 들어간 사람</th><td class="n">' + num(S.trig, 0) + '%</td></tr>' : '') +
+    '</tbody>';
+
+  document.getElementById('szMed').textContent = sgn(S.med, 0) + '%';
+  document.getElementById('szMed').style.color = S.med >= 0 ? 'var(--pos)' : 'var(--neg)';
+  document.getElementById('szRuin').textContent = num(S.ruin, 1) + '%';
+  document.getElementById('szRuin').style.color = S.ruin > 5 ? 'var(--neg)' : '';
+
+  var X0 = 60, Y0 = 190, W = 520, H = 150;
+  var meds = [], ruins = [];
+  for(var fi = 1; fi <= 40; fi += (fi < 3 ? 1 : 3)){
+    var s2 = sizeSim(p, fi / 100, szMode);
+    meds.push([fi, s2.med]); ruins.push([fi, s2.ruin]);
+  }
+  var mvals = meds.map(function(m){ return m[1]; });
+  var mmin = Math.max(-100, Math.min.apply(null, mvals.concat([-20]))), mmax = Math.min(400, Math.max.apply(null, mvals.concat([20])));
+  function xx(fi){ return X0 + (fi - 1) / 39 * W; }
+  function ym(v){ return Y0 - (Math.max(mmin, Math.min(mmax, v)) - mmin) / (mmax - mmin) * H; }
+  function yr(v){ return Y0 - v / 100 * H; }
+  var gg = '';
+  gg += '<text class="axt" x="' + X0 + '" y="16">거는 비율(가로)에 따른 중앙값(갈색, 왼쪽 눈금)과 파산 비율(빨강, 오른쪽 눈금)</text>';
+  gg += '<line x1="' + X0 + '" y1="' + ym(0).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + ym(0).toFixed(1) + '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  gg += '<text class="axt" x="' + (X0 - 6) + '" y="' + (ym(0) + 4).toFixed(1) + '" text-anchor="end">0%</text>';
+  gg += '<text class="axt" x="' + (X0 - 6) + '" y="' + (ym(mmax) + 4).toFixed(1) + '" text-anchor="end">' + sgn(mmax, 0) + '</text>';
+  gg += '<text class="axt" x="' + (X0 - 6) + '" y="' + (ym(mmin) + 4).toFixed(1) + '" text-anchor="end">' + sgn(mmin, 0) + '</text>';
+  gg += '<text class="axt" x="' + (X0 + W + 6) + '" y="' + (yr(100) + 4).toFixed(1) + '">100%</text>';
+  gg += '<text class="axt" x="' + (X0 + W + 6) + '" y="' + (yr(0) + 4).toFixed(1) + '">0%</text>';
+  [1, 10, 20, 30, 40].forEach(function(t){ gg += '<text class="axt" x="' + xx(t).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + t + '%</text>'; });
+  if(kelly > 0 && kelly * 100 <= 40){
+    gg += '<line x1="' + xx(kelly * 100).toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + xx(kelly * 100).toFixed(1) + '" y2="' + Y0 + '" stroke="#5F7A52" stroke-width="1.3" stroke-dasharray="4 3"/>';
+    gg += '<text class="axt" x="' + Math.min(xx(kelly * 100) + 4, X0 + W - 60).toFixed(1) + '" y="' + (Y0 - H + 12) + '">켈리 ' + num(kelly * 100, 0) + '%</text>';
+  }
+  gg += '<path d="M' + ruins.map(function(r){ return xx(r[0]).toFixed(1) + ' ' + yr(r[1]).toFixed(1); }).join(' L') + '" fill="none" stroke="#8E4B3A" stroke-width="2" stroke-opacity=".8"/>';
+  gg += '<path d="M' + meds.map(function(m){ return xx(m[0]).toFixed(1) + ' ' + ym(m[1]).toFixed(1); }).join(' L') + '" fill="none" stroke="#8E6B3A" stroke-width="2.6"/>';
+  gg += '<circle cx="' + xx(f * 100).toFixed(1) + '" cy="' + ym(S.med).toFixed(1) + '" r="5.5" fill="#8E6B3A"/>';
+  gg += '<circle cx="' + xx(f * 100).toFixed(1) + '" cy="' + yr(S.ruin).toFixed(1) + '" r="4.5" fill="#8E4B3A"/>';
+  gg += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">점이 지금 설정입니다. 초록 점선은 이 실력에서의 최적 비율(켈리)입니다.</text>';
+  document.getElementById('szScene').innerHTML = gg;
+
+  var title, body, col;
+  if(p <= 0.5){
+    col = '#8E4B3A';
+    title = '실력 ' + Math.round(p * 100) + '% — 어떤 크기도 이기지 못합니다';
+    body = '<b>이길 확률이 50% 이하</b>이고 거래마다 비용이 붙으니 <b>기대 성장률이 ' + sgn(g, 3) + '%</b>입니다. <b>켈리 기준의 최적 비율은 0</b>입니다.<br><br>' +
+      '<b>한 번에 ' + Math.round(f * 100) + '%를 걸면 중앙값 ' + sgn(S.med, 0) + '%, 파산 ' + num(S.ruin, 1) + '%</b>입니다.<br><br>' +
+      '<b>그래프를 보세요.</b> <b>크기를 줄이면 덜 잃을 뿐, 이기는 크기는 없습니다.</b><br><br>' +
+      '<b>⚠️ 01편에서 봤듯이 비용을 빼면 파생상품 시장의 평균 참여자는 이 칸</b>에 있습니다. <b>「크기를 잘 조절하면 된다」가 아니라 「하지 않는 것」이 산수의 답</b>인 경우입니다.';
+  } else if(S.med < 0 || S.ruin >= 10){
+    col = '#8E4B3A';
+    title = '실력 ' + Math.round(p * 100) + '%로 유리한데, 한 번에 ' + Math.round(f * 100) + '%를 걸어 중앙값 ' + sgn(S.med, 0) + '%';
+    body = '<b>이길 확률이 ' + Math.round(p * 100) + '%로 시장보다 나은데도</b>, <b>500명 중 절반이 ' + sgn(S.med, 0) + '% 이하</b>로 끝났고 <b>' + num(S.ruin, 1) + '%가 파산</b>했습니다.<br><br>' +
+      '<b>이 실력에서 최적 비율(켈리)은 ' + num(kelly * 100, 0) + '%</b>인데, <b>' + Math.round(f * 100) + '%는 그 ' + num(f / Math.max(kelly, 0.001), 1) + '배</b>입니다. <b>최적의 두 배를 넘으면 유리한 게임에서도 줄어듭니다</b>(아래 「자세히 보기」).<br><br>' +
+      '<b>그런데 상위 10%는 ' + sgn(S.p90, 0) + '%</b>입니다. <b>크게 번 소수가 이야기를 남기고</b>, <b>무너진 다수는 조용히</b> 떠납니다(01편 「자세히 보기」).<br><br>' +
+      (szMode > 0 ? '<b>만회 모드가 켜져 있습니다.</b> <b>「크기를 고정한다」</b>를 눌러 비교해보세요. <b>꼬리가 얼마나 커졌는지</b> 보입니다.' :
+                    '<b>「한 번에 거는 비율」을 켈리 근처(' + num(kelly * 100, 0) + '%)나 그 절반으로</b> 내려보세요. <b>같은 실력으로 결과가 뒤집힙니다.</b>');
+  } else {
+    col = '#5F7A52';
+    title = '실력 ' + Math.round(p * 100) + '% · 한 번에 ' + Math.round(f * 100) + '% — 중앙값 ' + sgn(S.med, 0) + '%, 파산 ' + num(S.ruin, 1) + '%';
+    body = '<b>실력이 시장보다 낫고, 크기가 최적(' + num(kelly * 100, 0) + '%) 근처 이하</b>라서 <b>대부분이 늘어난 채 끝났습니다.</b><br><br>' +
+      '<b>그런데 하위 10%는 ' + sgn(S.p10, 0) + '%</b>입니다. <b>유리한 게임을 적당한 크기로 해도 운이 나쁘면 줄어듭니다.</b> 200번은 생각보다 짧습니다.<br><br>' +
+      (szMode > 0 ? '<b>만회 모드가 켜져 있습니다.</b> <b>' + num(S.trig, 0) + '%가 낙폭 20%를 겪어 크기를 키웠습니다.</b> <b>「크기를 고정한다」와 하위 10%·파산 비율을 비교</b>해보세요. <b>중앙값이 조금 달라져도 꼬리는 분명히 커집니다.</b><br><br>' : '') +
+      '<b>⚠️ 이 결과의 전제는 「내 승률이 정말 ' + Math.round(p * 100) + '%」</b>입니다. <b>「이길 확률」을 1~2%p만 내려보세요.</b> <b>승률을 조금만 높게 착각해도 같은 크기가 위험해집니다.</b>';
+  }
+  verdict('szVerdict', col, title, body);
+}
+bindBtnRow('#szMode', function(v){ szMode = +v; szDraw(); });
+['szP', 'szF'].forEach(function(id){ document.getElementById(id).addEventListener('input', szDraw); });
+
+/* ══════════ 2. 물타기 ══════════ */
+function martSim(p, base, capSteps){
+  var maxMul = capSteps >= 9 ? 1e12 : Math.pow(2, capSteps);
+  var finals = [], ruin = 0, pos = 0, maxBetSeen = [];
+  for(var k = 0; k < 500; k++){
+    var u = U_MART[k], eq = 1, bet = base, dead = false, maxb = base;
+    for(var i = 0; i < 200; i++){
+      var stake = Math.min(bet, eq);
+      if(u[i] < p){ eq += stake; bet = base; }
+      else { eq -= stake; bet = Math.min(bet * 2, base * maxMul); }
+      if(stake > maxb) maxb = stake;
+      if(eq <= 0.001){ dead = true; eq = 0; break; }
+    }
+    finals.push((eq - 1) * 100);
+    if(dead) ruin++;
+    if(eq > 1) pos++;
+    maxBetSeen.push(maxb);
+  }
+  return { finals:finals, med:pct(finals, 0.5), p10:pct(finals, 0.1), p90:pct(finals, 0.9), ruin:ruin / 5, pos:pos / 5, maxBetMed:pct(maxBetSeen, 0.5) };
+}
+function mtDraw(){
+  var p = +document.getElementById('mtP').value / 100;
+  var base = +document.getElementById('mtBase').value / 100;
+  var cap = +document.getElementById('mtCap').value;
+  document.getElementById('mtPOut').textContent = Math.round(p * 100) + '%';
+  document.getElementById('mtBaseOut').textContent = Math.round(base * 100) + '%';
+  document.getElementById('mtCapOut').textContent = cap >= 9 ? '한도 없음' : cap + '번 (기본의 ' + Math.pow(2, cap) + '배까지)';
+
+  var M = martSim(p, base, cap);
+  steps('mtSteps', [
+    { k:'이익으로 끝난 사람', v:num(M.pos, 0) + '%' },
+    { k:'중앙값', v:sgn(M.med, 1) + '%' },
+    { k:'상위 10% / 하위 10%', v:sgn(M.p90, 0) + '% / ' + sgn(M.p10, 0) + '%' },
+    { k:'가장 크게 걸었던 금액 (중앙값, 계좌 대비)', v:num(M.maxBetMed * 100, 0) + '%' },
+    { k:'파산', v:num(M.ruin, 1) + '%', total:true }
+  ]);
+  document.getElementById('mtWin').textContent = num(M.pos, 0) + '%';
+  document.getElementById('mtWin').style.color = 'var(--pos)';
+  document.getElementById('mtRuin').textContent = num(M.ruin, 1) + '%';
+  document.getElementById('mtRuin').style.color = M.ruin > 5 ? 'var(--neg)' : '';
+
+  var bins = [
+    { n:'파산 (−100%)', lo:-101, hi:-99.5, col:'#8E4B3A' },
+    { n:'−99 ~ −50%', lo:-99.5, hi:-50, col:'#AE6B5A' },
+    { n:'−50 ~ 0%', lo:-50, hi:0, col:'#8E6B3A' },
+    { n:'0 ~ +50%', lo:0, hi:50, col:'#7A9A6A' },
+    { n:'+50% 이상', lo:50, hi:1e9, col:'#5F7A52' }
+  ];
+  var counts = bins.map(function(b){ return M.finals.filter(function(v){ return v > b.lo && v <= b.hi; }).length; });
+  counts[0] = M.finals.filter(function(v){ return v <= -99.5; }).length;
+  var X0 = 130, W = 400, Y0 = 30;
+  var maxC = Math.max.apply(null, counts.concat([1]));
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="16">500명의 200판 뒤 결과 분포</text>';
+  bins.forEach(function(b, i){
+    var y = Y0 + i * 28;
+    var w = Math.max(1, counts[i] / maxC * W);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="19" rx="1.5" fill="' + b.col + '" fill-opacity=".55" stroke="' + b.col + '" stroke-width="1.1"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end">' + b.n + '</text>';
+    g += '<text class="lblb" x="' + Math.min(X0 + w + 8, X0 + W + 4).toFixed(1) + '" y="' + (y + 14) + '" fill="' + b.col + '">' + counts[i] + '명 (' + num(counts[i] / 5, 0) + '%)</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + bins.length * 28 + 14) + '">초록(이익)이 두껍고 빨강(파산)도 두껍습니다. 가운데가 비어 있는 모양입니다.</text>';
+  document.getElementById('mtScene').innerHTML = g;
+
+  var title, body, col;
+  if(M.ruin >= 20){
+    col = '#8E4B3A';
+    title = num(M.pos, 0) + '%는 이익, ' + num(M.ruin, 1) + '%는 파산 — 가운데가 없습니다';
+    body = '<b>물타기의 결과는 「조금 벌었다」와 「전부 잃었다」로 갈라집니다.</b> 그림의 분포가 <b>양쪽 끝에 몰리고 가운데가 비어</b> 있습니다.<br><br>' +
+      '<b>이익으로 끝난 사람은 매번 기본 금액(' + Math.round(base * 100) + '%)만큼만</b> 벌었습니다. <b>그래서 중앙값이 ' + sgn(M.med, 1) + '%</b>에 불과합니다.<br><br>' +
+      '<b>파산한 사람은 한 번의 긴 연패</b>를 만났습니다. <b>기본 1%에서 7연패만 해도 다음 판은 128%</b> — <b>계좌 전체</b>를 걸어야 합니다. <b>3장</b>에서 보듯 <b>200판 중 7연패는 절반 넘는 확률로</b> 옵니다.<br><br>' +
+      '<b>「두 배로 키우는 한도」를 3으로</b> 내려보세요. <b>파산이 크게 줄어드는 대신, 한도에 닿은 손실은 만회하지 못하고 그대로 남습니다.</b> <b>한도가 있다는 것은 「여기서 멈춘다」는 규칙</b>입니다.';
+  } else if(cap < 9){
+    col = '#8E6B3A';
+    title = '한도 ' + cap + '번 — 파산 ' + num(M.ruin, 1) + '%, 이익으로 끝남 ' + num(M.pos, 0) + '%';
+    body = '<b>두 배로 키우는 것을 ' + cap + '번(기본의 ' + Math.pow(2, cap) + '배)에서 멈추자</b> 파산이 <b>' + num(M.ruin, 1) + '%</b>로 줄었습니다.<br><br>' +
+      '<b>대신 한도에 닿은 연패의 손실은 만회하지 않고 그대로 받아들입니다.</b> <b>중앙값 ' + sgn(M.med, 1) + '%, 하위 10% ' + sgn(M.p10, 0) + '%</b>입니다.<br><br>' +
+      '<b>이것이 「추가 투입 한도」의 실제 효과</b>입니다 — <b>이기는 경로의 이익은 조금 줄고, 지는 경로의 전멸은 크게 줄어듭니다.</b><br><br>' +
+      '<b>⚠️ 승률 50%라면 한도가 있어도 기대값은 여전히 0 근처</b>입니다. <b>물타기는 이길 확률을 바꾸지 않고, 결과의 모양만 바꿉니다.</b>';
+  } else {
+    col = '#6A5A8C';
+    title = '파산 ' + num(M.ruin, 1) + '%, 이익으로 끝남 ' + num(M.pos, 0) + '%';
+    body = '<b>이 설정에서는 파산이 비교적 적습니다.</b> <b>기본 금액이 작거나 이길 확률이 높기</b> 때문입니다.<br><br>' +
+      '<b>그런데 「거래 횟수」가 늘면</b> 긴 연패를 만날 확률도 커집니다(3장). <b>「이길 확률」을 1%p 내리거나 「기본 금액」을 2%로</b> 올려보세요.<br><br>' +
+      '<b>물타기는 이길 확률을 바꾸지 않습니다.</b> <b>「대부분 이긴다」는 경험을 만들어줄 뿐</b>입니다.';
+  }
+  verdict('mtVerdict', col, title, body);
+}
+['mtP', 'mtBase', 'mtCap'].forEach(function(id){ document.getElementById(id).addEventListener('input', mtDraw); });
+
+/* ══════════ 3-1. 연패 ══════════ */
+function streakProb(q, n, k){
+  var st = new Float64Array(k); st[0] = 1; var hit = 0;
+  for(var i = 0; i < n; i++){
+    var nx = new Float64Array(k);
+    for(var j = 0; j < k; j++){
+      var m = st[j]; if(m === 0) continue;
+      nx[0] += m * (1 - q);
+      if(j + 1 >= k) hit += m * q; else nx[j + 1] += m * q;
+    }
+    st = nx;
+  }
+  return hit;
+}
+function stDraw(){
+  var p = +document.getElementById('stP').value / 100;
+  var n = +document.getElementById('stN').value;
+  var k = +document.getElementById('stK').value;
+  document.getElementById('stPOut').textContent = Math.round(p * 100) + '%';
+  document.getElementById('stNOut').textContent = n + '번';
+  document.getElementById('stKOut').textContent = k + '연패';
+
+  var q = 1 - p;
+  var one = Math.pow(q, k) * 100;
+  var any = streakProb(q, n, k) * 100;
+
+  steps('stSteps', [
+    { k:'한 번 질 확률', v:num(q * 100, 0) + '%' },
+    { k:'지금부터 곧바로 ' + k + '연패 = ' + num(q, 2) + '^' + k, v:num(one, 3) + '%' },
+    { k:n + '번 중 어딘가에서 ' + k + '연패가 한 번이라도', v:num(any, 1) + '%' },
+    { k:'두 확률의 차이', v:num(any / Math.max(one, 1e-9), 0) + '배', total:true }
+  ]);
+  document.getElementById('stOne').textContent = num(one, 3) + '%';
+  document.getElementById('stAny').textContent = num(any, 1) + '%';
+  document.getElementById('stAny').style.color = any > 30 ? 'var(--neg)' : '';
+
+  var X0 = 60, Y0 = 150, W = 545, H = 120;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="16">연패 길이별 — ' + n + '번 중 한 번이라도 나올 확률 (승률 ' + Math.round(p * 100) + '%)</text>';
+  var ks = []; for(var kk = 3; kk <= 15; kk++){ ks.push(kk); }
+  var bw = W / ks.length * 0.7;
+  ks.forEach(function(kk, i){
+    var pr = streakProb(q, n, kk) * 100;
+    var x = X0 + i * (W / ks.length) + (W / ks.length - bw) / 2;
+    var h = pr / 100 * H;
+    var on = kk === k;
+    g += '<rect x="' + x.toFixed(1) + '" y="' + (Y0 - h).toFixed(1) + '" width="' + bw.toFixed(1) + '" height="' + Math.max(1, h).toFixed(1) + '" fill="#8E6B3A" fill-opacity="' + (on ? '.75' : '.3') + '" stroke="#8E6B3A" stroke-width="' + (on ? '1.8' : '.8') + '"/>';
+    g += '<text class="axt" x="' + (x + bw / 2).toFixed(1) + '" y="' + (Y0 + 14) + '" text-anchor="middle">' + kk + '</text>';
+    if(on || i % 3 === 0) g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (x + bw / 2).toFixed(1) + '" y="' + Math.max(28, Y0 - h - 5).toFixed(1) + '" text-anchor="middle"' + (on ? ' fill="#8E6B3A"' : '') + '>' + num(pr, 0) + '%</text>';
+  });
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 32) + '">가로는 연패 길이입니다. 막대가 높을수록 그 연패가 「언젠가」 올 가능성이 큽니다.</text>';
+  document.getElementById('stScene').innerHTML = g;
+
+  var title, body, col;
+  if(any >= 50){
+    col = '#8E4B3A';
+    title = k + '연패 — 한 번에는 ' + num(one, 2) + '%, ' + n + '번 중에는 ' + num(any, 0) + '%';
+    body = '<b>「지금부터 ' + k + '번 연속으로 질 확률」은 ' + num(one, 2) + '%로 작습니다.</b> <b>「설마」</b>라고 느끼는 숫자입니다.<br><br>' +
+      '<b>그런데 ' + n + '번 거래하는 동안 어딘가에서 한 번이라도 ' + k + '연패가 나올 확률은 ' + num(any, 0) + '%</b>입니다. <b>절반이 넘습니다.</b><br><br>' +
+      '<b>우리가 느끼는 확률은 앞의 것이고, 실제로 겪는 확률은 뒤의 것</b>입니다. <b>오래 거래할수록 「드문 연패」는 「예정된 연패」</b>가 됩니다.<br><br>' +
+      '<b>2장의 물타기에서 7연패는 기본 금액의 128배</b>입니다. <b>그 판이 온다는 것이 거의 확실하다면, 물타기의 결말도 거의 정해져</b> 있습니다.';
+  } else if(any >= 10){
+    col = '#8E6B3A';
+    title = k + '연패 — ' + n + '번 중 한 번이라도 날 확률 ' + num(any, 1) + '%';
+    body = '<b>한 번에 날 확률 ' + num(one, 3) + '%</b>와 <b>기간 중 한 번이라도 날 확률 ' + num(any, 1) + '%</b>는 <b>' + num(any / Math.max(one, 1e-9), 0) + '배</b> 차이입니다.<br><br>' +
+      '<b>열 명 중 ' + num(any / 10, 0) + '명</b>은 이 연패를 겪습니다. <b>「내 계획이 이 연패를 견디는가」</b>를 물어야 합니다.<br><br>' +
+      '<b>「거래 횟수」를 늘려보세요.</b> <b>같은 연패가 점점 「피할 수 없는 일」</b>이 됩니다.';
+  } else {
+    col = '#5F7A52';
+    title = k + '연패 — ' + n + '번 중 한 번이라도 날 확률 ' + num(any, 1) + '%';
+    body = '<b>이 연패는 이 기간에는 비교적 드뭅니다.</b><br><br>' +
+      '<b>그런데 「드물다」가 「없다」는 아닙니다.</b> <b>' + num(any, 1) + '%</b>는 <b>100명 중 ' + num(any, 0) + '명</b>입니다. <b>그 사람이 나일 수</b> 있습니다.<br><br>' +
+      '<b>「연속으로 지는 횟수」를 줄이거나 「거래 횟수」를 늘려</b> 확률이 어떻게 커지는지 보세요.';
+  }
+  verdict('stVerdict', col, title, body);
+}
+['stP', 'stN', 'stK'].forEach(function(id){ document.getElementById(id).addEventListener('input', stDraw); });
+
+/* ══════════ 3-2. 회복 ══════════ */
+function rcDraw(){
+  var L = +document.getElementById('rcL').value / 100;
+  var lev = +document.getElementById('rcLev').value;
+  document.getElementById('rcLOut').textContent = '−' + Math.round(L * 100) + '%';
+  document.getElementById('rcLevOut').textContent = lev + '배';
+
+  var need = L / (1 - L) * 100;
+  var mktDown = L / lev * 100;
+  var mktUp = need / lev;
+
+  steps('rcSteps', [
+    { k:'계좌 손실', v:'−' + num(L * 100, 0) + '%' },
+    { k:'레버리지 ' + lev + '배라면 시장이 움직인 크기', v:'약 −' + num(mktDown, 1) + '%' },
+    { k:'회복에 필요한 수익 = 손실 ÷ (1 − 손실)', v:'+' + num(need, 0) + '%' },
+    { k:'같은 레버리지로 필요한 시장 상승', v:'약 +' + num(mktUp, 1) + '%', total:true }
+  ]);
+  document.getElementById('rcNeed').textContent = '+' + num(need, 0) + '%';
+  document.getElementById('rcNeed').style.color = need > 100 ? 'var(--neg)' : '';
+  document.getElementById('rcMkt').textContent = '약 +' + num(mktUp, 1) + '% (내려간 건 −' + num(mktDown, 1) + '%)';
+
+  var X0 = 60, Y0 = 140, W = 545, H = 110;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="16">계좌 손실(가로)과 회복에 필요한 수익(세로, 최대 +400%에서 자름)</text>';
+  function xx(l){ return X0 + (l - 5) / 90 * W; }
+  function yy(v){ return Y0 - Math.min(400, v) / 400 * H; }
+  var pts = [];
+  for(var l = 5; l <= 95; l += 1){ pts.push(xx(l).toFixed(1) + ' ' + yy(l / (100 - l) * 100).toFixed(1)); }
+  var diag = [];
+  for(var l2 = 5; l2 <= 95; l2 += 5){ diag.push(xx(l2).toFixed(1) + ' ' + yy(l2).toFixed(1)); }
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  [100, 200, 300, 400].forEach(function(t){
+    g += '<line x1="' + X0 + '" y1="' + yy(t).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(t).toFixed(1) + '" class="gridl"/>';
+    g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(t) + 4).toFixed(1) + '" text-anchor="end">+' + t + '</text>';
+  });
+  [10, 30, 50, 70, 90].forEach(function(t){ g += '<text class="axt" x="' + xx(t).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">−' + t + '%</text>'; });
+  g += '<path d="M' + diag.join(' L') + '" fill="none" stroke="#8A8474" stroke-width="1.2" stroke-dasharray="4 3"/>';
+  g += '<path d="M' + pts.join(' L') + '" fill="none" stroke="#8E6B3A" stroke-width="2.8"/>';
+  g += '<circle cx="' + xx(L * 100).toFixed(1) + '" cy="' + yy(need).toFixed(1) + '" r="5.5" fill="#8E6B3A"/>';
+  var tx = Math.min(Math.max(xx(L * 100) + 10, X0 + 6), X0 + W - 60);
+  g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + Math.max(Y0 - H + 12, yy(need) - 10).toFixed(1) + '" fill="#8E6B3A">+' + num(need, 0) + '%' + (need > 400 ? ' ↑' : '') + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">점선은 「잃은 만큼만 벌면 된다」는 착각입니다. 실제 곡선은 오른쪽으로 갈수록 가파르게 솟습니다.</text>';
+  document.getElementById('rcScene').innerHTML = g;
+
+  var title, body, col;
+  if(need >= 100){
+    col = '#8E4B3A';
+    title = '−' + Math.round(L * 100) + '%를 되찾으려면 +' + num(need, 0) + '%';
+    body = '<b>잃은 비율은 ' + Math.round(L * 100) + '%인데 되찾아야 할 비율은 ' + num(need, 0) + '%</b>입니다. <b>남은 돈이 적어져서, 같은 금액을 벌려면 더 큰 비율</b>이 필요합니다.<br><br>' +
+      '<b>레버리지 ' + lev + '배였다면</b> 시장이 <b>약 −' + num(mktDown, 1) + '%</b> 움직였을 뿐입니다. <b>되찾으려면 같은 레버리지로 시장이 약 +' + num(mktUp, 1) + '%</b> 가야 합니다(변동성 손실 제외).<br><br>' +
+      '<b>⚠️ 여기서 「만회 모드」가 시작됩니다.</b> <b>+' + num(need, 0) + '%는 평소 방식으로는 너무 멀어 보여서</b>, <b>레버리지를 더 올리고 싶어집니다.</b> 1장의 <b>「낙폭 20%에서 크기를 키운다」</b>가 바로 그 행동이고, <b>꼬리를 키웁니다.</b><br><br>' +
+      '<b>이 곡선이 말하는 가장 실용적인 결론</b> — <b>큰 손실을 「만회」하는 것보다 큰 손실을 「피하는」 것이 훨씬 쉽습니다.</b> <b>그래서 크기의 규칙은 이기기 위해서가 아니라 이 곡선의 오른쪽에 가지 않기 위해서</b> 있습니다.';
+  } else {
+    col = '#8E6B3A';
+    title = '−' + Math.round(L * 100) + '%를 되찾으려면 +' + num(need, 1) + '%';
+    body = '<b>작은 손실에서는 차이가 크지 않습니다.</b> <b>−' + Math.round(L * 100) + '% → +' + num(need, 1) + '%</b>입니다.<br><br>' +
+      '<b>「계좌 손실」을 오른쪽으로</b> 옮겨보세요. <b>−50%에서 +100%</b>, <b>−80%에서 +400%</b>, <b>−90%에서 +900%</b>로 <b>갑자기 솟습니다.</b><br><br>' +
+      '<b>레버리지 ' + lev + '배</b>라면 <b>시장이 −' + num(L / lev * 100, 1) + '%</b>만 움직여도 이 손실이 납니다. <b>레버리지는 곡선의 오른쪽으로 가는 속도</b>입니다.';
+  }
+  verdict('rcVerdict', col, title, body);
+}
+['rcL', 'rcLev'].forEach(function(id){ document.getElementById(id).addEventListener('input', rcDraw); });
+
+/* ══════════ 4. 실패 경로 ══════════ */
+var PTH = [
+  { h:'작은 계좌, 큰 계약', ref:'03편', col:'#8E4B3A',
+    t:'「딱 한 계약만」이 이미 계좌의 몇 배입니다',
+    p:'<b>계좌 3,000만원으로 코스피200 선물 1계약</b>(지수 400 기준 1억원)을 잡으면 <b>이미 레버리지 3.3배</b>입니다(03편 2장).<br><br>' +
+      '<b>그런데 「한 계약」이라는 단위가 크기를 작게 느끼게</b> 합니다. <b>「최소 단위로 조심스럽게」라고 생각했는데 실제로는 빌린 돈으로 투자한 것과 같은 상태</b>입니다.<br><br>' +
+      '<b>이 편 1장과 연결하면</b> — <b>지수가 하루 1% 움직일 때 계좌는 3.3% 움직입니다.</b> <b>「한 번에 계좌의 3% 이상을 거는」 크기</b>가 매일 걸려 있는 셈입니다.<br><br>' +
+      '<b>막는 법</b> — <b>계약 수 × 명목금액 ÷ 계좌를 먼저 계산</b>하고, <b>1을 넘으면 미니 계약을 쓰거나 하지 않는다.</b>' },
+  { h:'버티려고 더 넣기', ref:'03·09편', col:'#6A5A8C',
+    t:'마진콜마다 입금 — 한도 없는 물타기입니다',
+    p:'<b>선물이 반대로 가서 마진콜이 옵니다.</b> <b>「곧 돌아올 것」이라 입금합니다.</b> <b>또 옵니다. 또 넣습니다.</b><br><br>' +
+      '<b>03편의 일일정산 계산기</b>에서 봤듯이 <b>대부분의 경로는 결국 돌아옵니다.</b> 그래서 <b>이 행동이 여러 번 성공</b>합니다.<br><br>' +
+      '<b>그런데 이 편 2장의 물타기 분포처럼</b>, <b>돌아오지 않는 한 번이 그동안의 모든 성공보다 큽니다.</b> <b>그리고 입금한 돈은 계좌 밖에서 온 돈</b> — 생활비, 비상금, 다른 투자금 — 인 경우가 많습니다.<br><br>' +
+      '<b>막는 법</b> — <b>들어가기 전에 「추가로 넣을 수 있는 최대 금액」을 정하고</b>, <b>그 금액을 다 쓰면 정리한다.</b> <b>정하지 못하겠다면 크기가 너무 큰 것</b>입니다.' },
+  { h:'레버리지 옵션 매도', ref:'07편', col:'#8E4B3A',
+    t:'몇 년 잘 되다가 크기를 키운 뒤에 급락이 옵니다',
+    p:'<b>외가격 풋을 매달 팔아 꾸준히 법니다.</b> <b>승률 90%가 넘습니다.</b> <b>1~2년 뒤 「안전한 방법」이라는 확신이 생기고 크기를 키웁니다.</b><br><br>' +
+      '<b>07편 시뮬레이션에서 확인했듯이</b> — <b>레버리지를 1배에서 5배로 올려도 승률은 그대로 92%</b>인데, <b>중앙값은 오히려 줄고 하위 10%는 −80%</b>가 됩니다.<br><br>' +
+      '<b>그리고 급락이 오면 평가손실과 증거금 요구가 동시에</b> 커져(07편 4장), <b>가장 비싼 가격에 되사서 정리</b>하게 됩니다.<br><br>' +
+      '<b>막는 법</b> — <b>명목금액을 계좌 이하로 유지</b>하고, <b>「잘 되고 있을 때 크기를 키우지 않는다」</b>를 규칙으로 적어둔다.' },
+  { h:'만기 직전 복권', ref:'05·06편', col:'#8E6B3A',
+    t:'싸 보이는 외가격 옵션은 녹을 시간조차 없어서 쌉니다',
+    p:'<b>만기 이틀 전, 외가격 콜이 거의 공짜처럼 쌉니다.</b> <b>「조금만 움직이면 수십 배」</b>입니다.<br><br>' +
+      '<b>06편에서 봤듯이 외가격 옵션은 만기 며칠 전에 이미 0에 붙습니다.</b> <b>그리고 05편의 「같은 100만원」 계산기에서 행사가를 멀리 둘수록 모형상 이익 확률은 한 자릿수 %</b>로 떨어집니다.<br><br>' +
+      '<b>한 번 크게 맞으면 그 경험이 반복을 부릅니다.</b> <b>그런데 기대값은 대체로 마이너스</b>이고(05편 「자세히 보기」의 복권 구조), <b>작은 금액이라도 매주 반복하면 꾸준히 줄어듭니다.</b><br><br>' +
+      '<b>막는 법</b> — <b>「이 옵션이 이익으로 끝날 확률」을 한 번이라도 계산해본다.</b> <b>그 숫자가 보이면 대부분 사지 않게 됩니다.</b>' },
+  { h:'레버리지 ETF 장기 보유', ref:'08편', col:'#8E6B3A',
+    t:'지수는 돌아왔는데 내 상품은 돌아오지 않았습니다',
+    p:'<b>「지수는 장기적으로 오른다, 그러니 3배를 오래 들면 세 배 번다」</b>는 계산입니다.<br><br>' +
+      '<b>08편에서 봤듯이 「3배」는 하루 단위</b>입니다. <b>흔들리며 떨어졌다 돌아오는 경로에서는 지수가 제자리로 와도 3배 상품은 크게 아래</b>에 있습니다. <b>일 변동성 2%로 1년이면 지수 −5%에 3배는 −36%</b>입니다.<br><br>' +
+      '<b>그리고 −80%에서 돌아오려면 +400%</b>(이 편 3장)가 필요합니다.<br><br>' +
+      '<b>막는 법</b> — <b>레버리지 상품은 「기간을 정해두고」 쓴다.</b> <b>설명서의 「일별 수익률의 N배」 문구를 확인</b>하고, <b>오래 들 계획이라면 레버리지 없는 상품을 고른다.</b>' },
+  { h:'만회 모드', ref:'09편', col:'#8E4B3A',
+    t:'잃은 뒤에 크기를 키우는 순간, 꼬리가 커집니다',
+    p:'<b>계좌가 −20%가 됐습니다.</b> <b>+25%를 벌어야 돌아옵니다.</b> <b>평소 방식으로는 멀어 보여서 레버리지를 올립니다.</b><br><br>' +
+      '<b>이 편 1장의 「만회 모드」 버튼</b>이 그 행동입니다. <b>중앙값이 조금 달라질 수는 있지만, 하위 10%와 파산 비율은 분명히 커집니다.</b> 평소 5%를 걸던 사람이 낙폭 20%에서 세 배로 키우면 <b>파산 비율이 0%에서 20%대</b>로 뛰었습니다.<br><br>' +
+      '<b>만회 모드의 판단은 「시장이 나에게 유리해졌다」가 아니라 「내가 되찾고 싶다」</b>에서 나옵니다. <b>시장은 내 손실을 모릅니다.</b><br><br>' +
+      '<b>막는 법</b> — <b>「손실이 X%를 넘으면 크기를 줄인다(키우지 않는다)」</b>를 규칙으로 정한다. 그리고 <b>「손실이 Y%를 넘으면 한동안 쉰다」</b>. <b>쉬는 것도 규칙</b>입니다.' }
+];
+bindBtnRow('#pthBtns', function(v){
+  var o = PTH[+v];
+  document.getElementById('pthVerdict').querySelector('.vh').textContent = o.h + ' · ' + o.ref;
+  verdict('pthVerdict', o.col, o.t, o.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 이 편의 실천입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+szDraw(); mtDraw(); stDraw(); rcDraw();
+document.querySelector('#pthBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
