@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>선물 가격은 어떻게 정해지나</title>
+<meta name="description" content="선물 가격은 미래에 대한 예상이 아니라 지금 가격에 기다리는 비용을 더한 값입니다. 보유비용·베이시스·수렴·차익거래를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --spot:#4C6B7A;--fut:#3F5F6F;--carry:#8E6B3A;--arb:#6A5A8C;--warn:#8E4B3A;--good:#5F7A52;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .core{background:#2B2620;color:#F2EEE4;border-radius:3px;padding:22px 24px;margin:24px 0 0;font-size:14.5px;}
+  .core .ct{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:#C4A78A;margin-bottom:10px;}
+  .core p{margin:0;font-size:14.6px;color:inherit;max-width:none;line-height:1.75;}
+  .core p + p{margin-top:10px;}
+  .core b{color:#F5D9B5;font-weight:600;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:22px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:700px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--carry));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--carry));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--carry));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .twin{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0 0;}
+  .twin > div{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--fc);border-radius:3px;padding:12px 14px;}
+  .twin h4{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--fc);margin:0 0 6px;}
+  .twin .tr{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;border-bottom:1px dotted var(--rule);color:var(--ink-soft);}
+  .twin .tr:last-child{border-bottom:0;color:var(--ink);font-weight:600;}
+  .twin .tr span:last-child{font-family:'IBM Plex Mono',monospace;color:var(--ink);}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .twin{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">선물·옵션 02 · 가격 · 투자 공부 노트</div>
+    <h1>선물 가격은<br>어떻게 정해지나</h1>
+    <p class="lede">뉴스에서 <b>「선물이 현물보다 비싸게 거래된다」</b>는 말을 들으면 <b>「시장이 오를 거라고 보는구나」</b>라고 생각하기 쉽습니다. <b>대체로 아닙니다.</b> 금융 선물의 가격은 <b>예상이 아니라 계산</b>으로 정해집니다.</p>
+    <div class="core">
+      <div class="ct">이 편의 한 줄</div>
+      <p><b>선물 가격 = 지금 가격 + 기다리는 동안의 이자 − 기다리는 동안 받을 배당</b></p>
+      <p>현물 <b>400</b>, 금리 <b>3.5%</b>, 만기 <b>90일</b>, 배당 없음 → 선물 이론가 <b>= 400 × (1 + 0.035 × 90/365) = 403.45</b></p>
+      <p>그리고 <b>「현물을 산 사람」과 「선물을 사고 남은 돈을 예금에 둔 사람」의 결과는 정확히 같습니다.</b> 1장에서 확인합니다.</p>
+    </div>
+    <div class="callout">
+      <p><b>왜 이게 중요한가</b> — 선물을 쓰든 안 쓰든, <b>이 한 줄을 알면 흔한 오해 네 가지</b>가 한꺼번에 풀립니다.</p>
+      <p><b>① 「선물이 비싸면 비싸게 사는 것」</b> — 아닙니다. <b>이자를 미리 반영</b>한 것입니다.<br>
+         <b>② 「선물이 현물보다 싸면 하락 신호」</b> — 대체로 <b>배당</b> 때문입니다.<br>
+         <b>③ 「선물은 만기에 아무 값이나 될 수 있다」</b> — 만기에는 <b>반드시 현물과 같아집니다.</b><br>
+         <b>④ 「선물 가격이 이론가와 다르면 누군가 손해」</b> — <b>차이가 생기면 곧바로 메우는 사람들</b>이 있습니다.</p>
+      <p><b>⚠️ 다만 원자재 선물은 다릅니다.</b> 보관이 어렵고 재고가 들쑥날쑥해 <b>이론가에서 크게 벗어나기도</b> 합니다. <a href="commodity-roll.html">원자재 트랙 06편</a>의 콘탱고가 그 이야기이고, 이 편의 「자세히 보기」에서 차이를 정리합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#same">1. 비싸게 사는 게 아니다</a>
+    <a href="#theory">2. 이론 가격</a>
+    <a href="#conv">3. 만기에 만난다</a>
+    <a href="#arb">4. 차익거래의 띠</a>
+    <a href="#myth">5. 오해 네 가지</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="same">
+    <div class="prod-head" style="--edge:var(--carry)">
+      <span class="prod-tag">01 · 동등성</span>
+      <h2>선물이 더 비싼데, 손해가 아닙니다</h2>
+      <p class="one">두 사람의 결과를 나란히 놓으면 <b>정확히 같습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>자전거가 <b>지금 40만원</b>이야. 두 가지 방법이 있어.</p>
+      <p><b>방법 A</b> — <b>지금 40만원을 내고</b> 자전거를 사서 창고에 넣어둬.</p>
+      <p><b>방법 B</b> — <b>「석 달 뒤에 자전거를 받겠다」</b>고 예약만 해. 돈은 <b>석 달 뒤에</b> 내. 그 대신 <b>40만원은 석 달 동안 통장에</b> 넣어둬서 <b>이자</b>를 받지.</p>
+      <p>그럼 가게 주인은 방법 B에서 <b>얼마를 받아야 공평할까?</b> 주인은 석 달 동안 <b>돈을 못 받고 기다리니까</b>, 그만큼 <b>이자를 더 받아야</b> 공평해. 그래서 <b>40만원 + 석 달 이자</b>를 받는 거야.</p>
+      <p>그러면 <b>방법 B가 비싸게 사는 걸까?</b> 아니야. 너도 <b>석 달 동안 통장에서 이자를 받았거든.</b> <b>더 낸 돈 = 받은 이자</b>라서 결과는 똑같아.</p>
+      <p><b>선물이 현물보다 비싼 이유가 딱 이거야.</b> 비싸게 사는 게 아니라 <b>이자를 미리 계산에 넣은</b> 거야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SAME RESULT · 두 사람을 나란히 굴려보세요</div>
+      <p class="labsub"><b>A는 현물을 사고</b>, <b>B는 같은 돈을 예금에 넣고 선물을 삽니다.</b> 만기 가격을 아무렇게나 움직여도 결과는 같습니다.</p>
+
+      <div class="ctrl-row">
+        <label for="smEnd">만기 때 지수</label>
+        <input type="range" id="smEnd" min="300" max="500" step="1" value="420">
+        <output id="smEndOut">420</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="smRate">금리 (연)</label>
+        <input type="range" id="smRate" min="0" max="80" step="1" value="35">
+        <output id="smRateOut">3.5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="smDiv">만기 전에 받을 배당 (지수 대비)</label>
+        <input type="range" id="smDiv" min="0" max="30" step="1" value="0">
+        <output id="smDivOut">0%</output>
+      </div>
+
+      <div class="twin" id="smTwin"></div>
+
+      <div class="steps-out" id="smSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">A (현물) / B (선물 + 예금)</span><span class="rv" id="smOut">—</span></div>
+        <div><span class="rk">둘의 차이</span><span class="rv" id="smGap">—</span></div>
+      </div>
+
+      <div class="verdict" id="smVerdict" style="--vc:var(--carry)">
+        <div class="vh">동등성</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 시작 지수 <b>400</b>, 만기 <b>90일</b>로 고정했습니다. 이론 선물가 <b>F = 400 × (1 + 금리 × 90/365) − 배당</b>입니다.<br><br>
+        <b>A의 결과</b> = 만기 지수 + 받은 배당. <b>B의 결과</b> = 예금 원리금 + (만기 지수 − F).<br><br>
+        <b>식으로 풀면</b> B = 400(1+rT) + S<sub>T</sub> − 400(1+rT) + D = <b>S<sub>T</sub> + D</b> = A 입니다. <b>만기 가격이 얼마든 항상 같습니다.</b><br><br>
+        <b>⚠️ 전제</b> — 선물이 <b>이론가에 거래</b>되고, <b>세금·수수료·증거금 이자</b>는 넣지 않았습니다. 실제로는 <b>작은 차이</b>가 생깁니다(4장).
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="theory">
+    <div class="prod-head" style="--edge:var(--fut)">
+      <span class="prod-tag">02 · 이론 가격</span>
+      <h2>금리와 배당의 줄다리기</h2>
+      <p class="one"><b>금리는 선물을 비싸게</b>, <b>배당은 선물을 싸게</b> 만듭니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">FAIR VALUE · 네 가지를 움직여보세요</div>
+      <p class="labsub"><b>베이시스(선물 − 현물)</b>가 플러스가 되는지 마이너스가 되는지를 봅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="fvS">현물 지수</label>
+        <input type="range" id="fvS" min="200" max="600" step="5" value="400">
+        <output id="fvSOut">400</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fvR">금리 (연)</label>
+        <input type="range" id="fvR" min="0" max="80" step="1" value="35">
+        <output id="fvROut">3.5%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fvDays">만기까지 남은 일수</label>
+        <input type="range" id="fvDays" min="0" max="365" step="1" value="90">
+        <output id="fvDaysOut">90일</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fvDiv">만기 전에 받을 배당 (지수 대비)</label>
+        <input type="range" id="fvDiv" min="0" max="30" step="1" value="0">
+        <output id="fvDivOut">0%</output>
+      </div>
+
+      <div class="steps-out" id="fvSteps"></div>
+
+      <svg viewBox="0 0 640 205" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="이자분과 배당분의 줄다리기">
+        <g id="fvScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">이론 선물 가격</span><span class="rv" id="fvF">—</span></div>
+        <div><span class="rk">베이시스 (선물 − 현물)</span><span class="rv" id="fvB">—</span></div>
+      </div>
+
+      <div class="verdict" id="fvVerdict" style="--vc:var(--fut)">
+        <div class="vh">베이시스</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>F = S × (1 + 금리 × 일수/365) − 배당</b>입니다. 배당은 <b>만기 전에 지급될 배당을 지수 포인트로 환산</b>한 값입니다.<br><br>
+        <b>실제 시장은 이보다 조금 더 정교하게</b> 계산합니다 — <b>배당이 언제 지급되는지</b>, <b>연속복리</b>인지 등. 그래도 <b>차이는 작고, 구조는 이것</b>입니다.<br><br>
+        <b>⚠️ 한국 주식시장은 연말에 배당이 몰리는 편</b>이라, <b>그 시기를 지나는 선물은 배당분이 커져 베이시스가 마이너스</b>로 형성되기도 합니다. <b>「선물이 싸다 = 하락 신호」로 읽으면 안 되는 대표적인 경우</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>원자재 선물은 왜 이 공식에서 크게 벗어나나</h3>
+      <p>원자재에도 같은 뼈대가 있습니다. <b>F = S × (1 + 금리 + 보관비 − 편의수익) × 기간</b>. <b>배당 대신 보관비와 편의수익</b>이 들어갈 뿐입니다.</p>
+      <p><b>그런데 결정적인 차이가 하나 있습니다 — 차익거래가 쉬운가.</b></p>
+      <p><b>· 주가지수 선물</b> — 선물이 이론가보다 비싸면, <b>선물을 팔고 주식 바구니를 사서 들고 있다가</b> 만기에 정리하면 됩니다. <b>주식은 보관비가 없고, 사고팔기 쉽습니다.</b> 그래서 <b>가격이 이론가에서 조금만 벗어나도 곧바로 메워집니다.</b><br>
+         <b>· 원자재 선물</b> — 원유가 이론가보다 비싸다고 해서 <b>당장 원유 1,000배럴을 사서 저장할 수 있는 사람은 드뭅니다.</b> 탱크가 필요하고, 저장 공간이 꽉 차면 <b>아예 불가능</b>합니다. 그래서 <b>차이가 크게 벌어진 채로 오래</b> 갑니다.</p>
+      <p class="plain"><b>그래서 두 시장의 「선물 곡선」이 전혀 다르게 생깁니다.</b><br><br><b>· 주가지수</b> — 이론가에 <b>딱 붙어</b> 있습니다. <b>베이시스를 보면 금리와 배당을 알 수 있을 만큼</b> 기계적입니다.<br><b>· 원자재</b> — <b>재고·계절·저장 공간</b>에 따라 크게 출렁입니다. <b>콘탱고가 연 20%까지 가기도 하고, 백워데이션으로 뒤집히기도</b> 합니다.<br><br><b>이 차이가 <a href="commodity-roll.html">원자재 06편</a>의 롤 손실이 주가지수 상품보다 훨씬 큰 이유</b>입니다. <b>주가지수 선물을 롤하는 비용은 대체로 「금리 − 배당」 수준</b>이라, <b>예금 이자를 따로 받는다면 사실상 상쇄</b>됩니다. <b>원자재는 그렇지 않습니다.</b></p>
+
+      <h3>그럼 선물 가격에는 「예상」이 전혀 없나</h3>
+      <p><b>금융 선물에서는 거의 없다</b>고 보는 것이 맞습니다. <b>1장에서 본 동등성</b> 때문입니다 — 이론가에서 벗어나면 <b>위험 없이 이익을 내는 방법이 생기고</b>, 누군가 곧바로 그걸 합니다.</p>
+      <p>그래서 <b>「모두가 지수가 오를 것이라고 믿는다」</b>고 해서 <b>선물이 이론가보다 비싸지지는 않습니다.</b> <b>그 믿음은 현물 가격에 먼저 반영</b>되고, 선물은 <b>그 현물에 이자와 배당을 붙여 따라갈</b> 뿐입니다.</p>
+      <p class="plain"><b>원자재 선물에서는 이야기가 조금 복잡</b>합니다. <b>차익거래가 막혀 있으니</b> 먼 만기 가격에 <b>「앞으로 공급이 어떨 것 같다」는 기대가 섞일 여지</b>가 생깁니다. 그리고 <b>헤지하려는 생산자가 많으면</b> 선물이 기대보다 <b>조금 싸게</b> 형성된다는 오래된 이론도 있습니다.<br><br><b>⚠️ 그래도 「원자재 선물 가격 = 시장이 예상하는 미래 가격」으로 읽으면 곤란</b>합니다. <b>보관비·편의수익·위험 프리미엄이 섞여 있어서</b>, <b>「먼 만기가 비싸다 = 오를 것이다」가 성립하지 않습니다.</b> 콘탱고는 대체로 <b>「지금 남아돈다」</b>는 뜻입니다(원자재 03·06편).</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="conv">
+    <div class="prod-head" style="--edge:var(--spot)">
+      <span class="prod-tag">03 · 수렴</span>
+      <h2>만기에는 반드시 만납니다</h2>
+      <p class="one">베이시스는 <b>시간이 지날수록 0으로</b> 줄어듭니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CONVERGENCE · 날짜를 앞으로 돌려보세요</div>
+      <p class="labsub">현물은 오르내리지만, <b>선물과 현물 사이의 틈은 꾸준히 좁아집니다.</b></p>
+
+      <div class="ctrl-row">
+        <label for="cvDay">지금 날짜 (만기까지 90일 중)</label>
+        <input type="range" id="cvDay" min="0" max="90" step="1" value="0">
+        <output id="cvDayOut">0일째 (90일 남음)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="cvRate">금리 (연)</label>
+        <input type="range" id="cvRate" min="0" max="120" step="5" value="50">
+        <output id="cvRateOut">5.0%</output>
+      </div>
+
+      <div class="steps-out" id="cvSteps"></div>
+
+      <svg viewBox="0 0 640 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="현물과 선물의 수렴">
+        <g id="cvScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">현물 / 선물</span><span class="rv" id="cvPx">—</span></div>
+        <div><span class="rk">베이시스</span><span class="rv" id="cvBasis">—</span></div>
+      </div>
+
+      <div class="verdict" id="cvVerdict" style="--vc:var(--spot)">
+        <div class="vh">수렴</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 현물 경로는 가상의 예시</b>입니다. <b>선물은 매일 「그날 현물 × (1 + 금리 × 남은 일수/365)」</b>로 그렸고 배당은 넣지 않았습니다.<br><br>
+        <b>왜 반드시 만나나</b> — 만기일에 선물은 <b>「오늘 이 값에 사고판다」</b>는 약속이 됩니다. 그건 <b>현물을 사고파는 것과 같은 일</b>이라, <b>둘의 가격이 달라질 이유가 없습니다.</b> 다르면 <b>그 차이를 곧바로 가져가는</b> 사람이 나옵니다.<br><br>
+        <b>국내 주가지수 선물은 현금으로 정산</b>되므로, 만기일에는 <b>최종 결제가격(현물 지수 기준)</b>과의 차액만 주고받고 끝납니다.
+      </div>
+    </div>
+
+    <div class="keyline" style="--edge2:var(--spot)">
+      <div class="kt">선물 매수자의 손익을 한 줄로</div>
+      <div class="kb">선물 매수 손익 = <b>만기 현물</b> − <b>샀을 때의 선물 가격</b><br>= 현물 변화 − <b>샀을 때의 베이시스</b></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="arb">
+    <div class="prod-head" style="--edge:var(--arb)">
+      <span class="prod-tag">04 · 차익거래</span>
+      <h2>이론가를 붙잡아두는 사람들</h2>
+      <p class="one">다만 <b>비용만큼의 띠</b> 안에서는 아무도 움직이지 않습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">ARBITRAGE BAND · 시장 선물 가격을 움직여보세요</div>
+      <p class="labsub">이론가 <b>403.45</b>(현물 400 · 금리 3.5% · 90일 · 배당 0)를 기준으로, <b>시장 가격이 얼마나 벗어나면 누가 무엇을 하는지</b>를 봅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="abF">시장에서 거래되는 선물 가격</label>
+        <input type="range" id="abF" min="3940" max="4130" step="5" value="4070">
+        <output id="abFOut">407.00</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="abFwd">정방향 비용 (현물 매수 + 선물 매도)</label>
+        <input type="range" id="abFwd" min="0" max="100" step="5" value="25">
+        <output id="abFwdOut">0.25%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="abRev">역방향 추가 부담 (주식을 빌려 파는 비용·제약)</label>
+        <input type="range" id="abRev" min="0" max="150" step="5" value="40">
+        <output id="abRevOut">0.40%</output>
+      </div>
+
+      <div class="steps-out" id="abSteps"></div>
+
+      <svg viewBox="0 0 640 175" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="무차익 띠와 시장 가격">
+        <g id="abScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">누가 움직이나</span><span class="rv" id="abAct">—</span></div>
+        <div><span class="rk">1계약당 확정 이익 (승수 25만원)</span><span class="rv" id="abProfit">—</span></div>
+      </div>
+
+      <div class="verdict" id="abVerdict" style="--vc:var(--arb)">
+        <div class="vh">차익거래</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 비용 수치는 구조를 보기 위한 예시</b>입니다. 실제 비용은 <b>수수료·세금·호가 차이·자금 조달 금리·주식 대여 수수료</b>로 이루어지고, <b>참여자마다 다릅니다.</b><br><br>
+        <b>「확정 이익」이라고 부르는 이유</b> — 선물과 현물을 <b>반대로 동시에</b> 잡으면 <b>지수가 어디로 가든 손익이 상쇄</b>되고, <b>처음 벌어진 차이만 남기</b> 때문입니다. 1장의 동등성을 거꾸로 이용하는 것입니다.<br><br>
+        <b>개인에게 현실적인 전략은 아닙니다.</b> <b>주식 바구니 전체를 한꺼번에 사고팔 규모와 시스템</b>이 필요합니다. <b>이 계산기의 목적은 「선물 가격이 왜 이론가 근처에 머무는지」를 이해하는 것</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>띠가 위아래로 비대칭인 이유 — 그리고 만기일에 벌어지는 일</h3>
+      <p>계산기에서 <b>띠가 아래쪽으로 더 넓은</b> 것을 보셨을 겁니다. <b>이론가보다 비쌀 때보다 쌀 때 차이가 더 오래</b> 남습니다.</p>
+      <p><b>이유는 방향에 따라 필요한 행동이 다르기</b> 때문입니다.</p>
+      <p><b>· 선물이 비쌀 때</b> → <b>주식을 사고 선물을 팝니다.</b> 주식을 <b>사는 것</b>은 누구나 할 수 있습니다.<br>
+         <b>· 선물이 쌀 때</b> → <b>주식을 팔고 선물을 삽니다.</b> 그런데 <b>주식이 없으면 빌려서 팔아야</b> 합니다(공매도). <b>빌리는 비용이 들고, 제도적 제약이 걸리기도</b> 합니다.</p>
+      <p><b>그래서 공매도가 어려운 시기에는 선물이 이론가보다 싼 상태가 잘 해소되지 않는</b> 경향이 있습니다. <b>주식을 이미 많이 들고 있는 기관</b>만이 그 차이를 메울 수 있기 때문입니다.</p>
+      <p class="plain"><b>만기일에 대해서도 같은 논리로 설명</b>됩니다.<br><br>차익거래를 위해 <b>주식 바구니와 선물을 반대로 잡아둔 물량</b>은 <b>만기일에 한꺼번에 정리</b>됩니다. 그러면 <b>주식 바구니 전체를 사거나 파는 주문이 장 마감 무렵에 몰립니다.</b> 그래서 <b>만기일 오후에 지수가 평소와 다르게 크게 움직이는</b> 일이 생깁니다. 국내 주가지수 선물은 <b>3·6·9·12월 둘째 목요일</b>이 만기이고, 이날을 흔히 <b>동시만기일</b>이라 부릅니다.<br><br><b>⚠️ 그런데 이 움직임은 「시장의 방향」과는 대체로 무관</b>합니다. <b>쌓여 있던 물량이 정리되는 기계적인 흐름</b>입니다. <b>만기일의 급등락을 보고 추세를 판단하면 틀리기 쉽습니다.</b><br><br><b>그리고 개인이 이날 짧게 사고파는 것은 특히 불리</b>합니다. <b>호가가 급격히 바뀌고 체결 미끄러짐이 커지기</b> 때문입니다(01편 2장).</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="myth">
+    <div class="prod-head" style="--edge:var(--warn)">
+      <span class="prod-tag">05 · 오해</span>
+      <h2>선물 가격에 대한 오해 네 가지</h2>
+      <p class="one">뉴스를 읽을 때 <b>가장 자주 틀리는</b> 해석들입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MYTHS · 눌러서 확인해보세요</div>
+      <p class="labsub">각각 <b>무엇이 틀렸고, 실제로는 무엇을 뜻하는지</b>입니다.</p>
+
+      <div class="btnrow" id="myBtns">
+        <button data-v="0" class="on">「선물이 비싸다 = 오를 거라 본다」</button>
+        <button data-v="1">「선물이 싸다 = 하락 신호」</button>
+        <button data-v="2">「외국인 선물 매도 = 하락 베팅」</button>
+        <button data-v="3">「선물을 사면 비싸게 산다」</button>
+      </div>
+
+      <div class="verdict" id="myVerdict" style="--vc:var(--warn)">
+        <div class="vh">오해</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>선물 가격 = 현물 + 이자 − 배당</b>이라는 것.</li>
+      <li><b>현물 매수 = 선물 매수 + 예금</b>으로 결과가 같다는 것.</li>
+      <li><b>금리는 선물을 비싸게, 배당은 싸게</b> 만든다는 것.</li>
+      <li><b>배당이 몰리는 시기엔 베이시스가 마이너스</b>일 수 있다는 것.</li>
+      <li><b>베이시스는 만기에 0으로 수렴</b>한다는 것.</li>
+      <li><b>선물 매수 손익 = 현물 변화 − 샀을 때 베이시스</b>라는 것.</li>
+      <li><b>차익거래가 선물을 이론가 근처에 붙잡아둔다</b>는 것.</li>
+      <li><b>비용만큼의 띠 안에서는 차이가 남는다</b>는 것.</li>
+      <li><b>원자재 선물은 차익거래가 어려워 크게 벗어난다</b>는 것.</li>
+      <li><b>선물 가격을 「시장의 예상」으로 읽지 않는다</b>는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 금융 선물의 가격은 <b>「사람들이 어떻게 볼까」가 아니라 「지금 가격에 기다리는 비용을 더하면 얼마인가」</b>로 정해집니다. <b>이론가에서 벗어나면 위험 없이 차이를 가져가는 사람들이 나오기</b> 때문입니다.</p>
+      <p><b>그래서 선물 가격 자체에는 새로운 정보가 거의 없습니다.</b> <b>현물 가격 + 금리 + 배당</b>이 이미 말해주는 내용입니다. <b>선물이 비싸다고 오를 것도, 싸다고 떨어질 것도 아닙니다.</b></p>
+      <p><b>그리고 선물을 사는 것은 「비싸게 사는 것」이 아닙니다.</b> <b>남은 돈을 예금에 두면 현물을 산 것과 같습니다.</b> <b>문제는 가격이 아니라, 남은 돈을 예금에 두지 않고 더 큰 계약을 잡는 데 쓰는 것</b> — 즉 <b>레버리지</b>입니다.</p>
+      <p><b>다음 편은 03편 — 코스피200 · S&P500 선물</b>입니다. <b>1포인트가 25만원</b>이라는 것이 <b>실제 계좌에서 어떻게 느껴지는지</b>, 일일정산 시뮬레이터로 확인합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 선물·옵션 02 · 가격<br>
+    <a href="index.html#futures">← 선물·옵션 목록으로</a> · <a href="futures-basics.html">01 · 파생상품이란 무엇인가</a> · 03 · 코스피200 · S&P500 선물 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    금리·배당·거래 비용·현물 경로는 <b>구조를 보기 위한 예시</b>이며 실제 시장 값이 아닙니다. 만기일·결제 방식 등 거래소 규정은 변경될 수 있으니 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+function fair(S, rPct, days, divPct){ return S * (1 + rPct / 100 * days / 365) - S * divPct / 100; }
+
+/* ══════════ 1. 동등성 ══════════ */
+function smDraw(){
+  var ST = +document.getElementById('smEnd').value;
+  var r = +document.getElementById('smRate').value / 10;
+  var dv = +document.getElementById('smDiv').value / 10;
+  document.getElementById('smEndOut').textContent = ST + ' (시작 400 대비 ' + sgn((ST / 400 - 1) * 100, 1) + '%)';
+  document.getElementById('smRateOut').textContent = num(r, 1) + '%';
+  document.getElementById('smDivOut').textContent = num(dv, 1) + '%';
+
+  var S0 = 400, days = 90, T = days / 365;
+  var D = S0 * dv / 100;
+  var F = fair(S0, r, days, dv);
+  var dep = S0 * (1 + r / 100 * T);
+  var A = ST + D;
+  var futPnl = ST - F;
+  var B = dep + futPnl;
+
+  document.getElementById('smTwin').innerHTML =
+    '<div style="--fc:var(--spot)"><h4>A · 현물을 산 사람</h4>' +
+      '<div class="tr"><span>시작에 낸 돈</span><span>400.00</span></div>' +
+      '<div class="tr"><span>만기 때 지수</span><span>' + num(ST, 2) + '</span></div>' +
+      '<div class="tr"><span>받은 배당</span><span>+' + num(D, 2) + '</span></div>' +
+      '<div class="tr"><span>최종 가치</span><span>' + num(A, 2) + '</span></div></div>' +
+    '<div style="--fc:var(--carry)"><h4>B · 예금 + 선물을 산 사람</h4>' +
+      '<div class="tr"><span>400을 예금 → 원리금</span><span>' + num(dep, 2) + '</span></div>' +
+      '<div class="tr"><span>선물을 산 가격</span><span>' + num(F, 2) + '</span></div>' +
+      '<div class="tr"><span>선물 손익 (만기 − 산 가격)</span><span>' + sgn(futPnl, 2) + '</span></div>' +
+      '<div class="tr"><span>최종 가치</span><span>' + num(B, 2) + '</span></div></div>';
+
+  steps('smSteps', [
+    { k:'이자분 = 400 × ' + num(r, 1) + '% × 90/365', v:'+' + num(S0 * r / 100 * T, 2) },
+    { k:'배당분', v:'−' + num(D, 2) },
+    { k:'이론 선물가 F = 400 + 이자분 − 배당분', v:num(F, 2) },
+    { k:'선물이 현물보다 비싼 정도 (베이시스)', v:sgn(F - S0, 2) },
+    { k:'A와 B의 차이', v:num(Math.abs(A - B), 6), total:true }
+  ]);
+
+  document.getElementById('smOut').textContent = num(A, 2) + ' / ' + num(B, 2);
+  document.getElementById('smGap').textContent = Math.abs(A - B) < 1e-9 ? '0 (같음)' : num(A - B, 6);
+  document.getElementById('smGap').style.color = 'var(--pos)';
+
+  var title, body;
+  if(F - S0 > 0.05){
+    title = '선물을 ' + sgn(F - S0, 2) + '만큼 비싸게 샀는데 결과가 같습니다';
+    body = 'B는 선물을 <b>' + num(F, 2) + '</b>에 샀습니다. 현물(400)보다 <b>' + num(F - S0, 2) + '</b> 비쌉니다.<br><br>' +
+      '<b>그런데 B는 그동안 400을 예금에 두어 이자 ' + num(dep - S0, 2) + '</b>를 받았습니다. <b>더 낸 만큼 이자로 돌려받은</b> 셈이라, <b>최종 가치는 A와 정확히 ' + num(A, 2) + '로 같습니다.</b><br><br>' +
+      '<b>「만기 때 지수」 슬라이더를 아무 데나</b> 옮겨보세요. <b>폭락해도, 폭등해도 A와 B는 항상 같습니다.</b><br><br>' +
+      '<b>이것이 선물 가격이 「예상」이 아니라 「계산」인 이유</b>입니다. 만약 선물이 이보다 비싸게 거래되면, <b>A 방식으로 사고 B 방식으로 팔아서 위험 없이 차이를 가져가는</b> 사람이 나옵니다(4장).';
+  } else if(F - S0 < -0.05){
+    title = '선물이 현물보다 ' + num(S0 - F, 2) + ' 싼데도 결과가 같습니다';
+    body = '배당 <b>' + num(dv, 1) + '%</b>가 이자분보다 커서 선물이 <b>' + num(F, 2) + '</b>로 <b>현물보다 쌉니다.</b><br><br>' +
+      '<b>그럼 B가 싸게 산 걸까요? 아닙니다.</b> A는 그동안 <b>배당 ' + num(D, 2) + '</b>를 받았는데 <b>B는 받지 못했습니다.</b> 선물을 가진 사람에게는 <b>배당이 나오지 않기</b> 때문입니다. <b>그만큼 싸게 산 것</b>이라 결과는 <b>똑같이 ' + num(A, 2) + '</b>입니다.<br><br>' +
+      '<b>그래서 배당이 몰리는 시기에 선물이 현물보다 싸게 거래되는 것은 「하락 신호」가 아닙니다.</b> <b>받지 못할 배당을 가격에서 빼놓은 것</b>뿐입니다.<br><br>' +
+      '<b>「배당」을 0으로</b> 되돌려보세요. <b>이번엔 선물이 비싸지는데, 결과는 여전히 같습니다.</b>';
+  } else {
+    title = '이자분과 배당분이 거의 같아 선물 ≈ 현물입니다';
+    body = '이자분(<b>+' + num(S0 * r / 100 * T, 2) + '</b>)과 배당분(<b>−' + num(D, 2) + '</b>)이 거의 상쇄되어 <b>선물 ' + num(F, 2) + ' ≈ 현물 400</b>입니다.<br><br>' +
+      '<b>그리고 결과는 여전히 A = B = ' + num(A, 2) + '</b>입니다.<br><br>' +
+      '<b>「금리」와 「배당」을 번갈아 움직여보세요.</b> <b>선물이 비싸지든 싸지든 A와 B의 차이는 항상 0</b>입니다. <b>선물 가격이 달라지는 것은 「누가 이자를 받고 누가 배당을 받느냐」를 맞춰주기 위해서</b>일 뿐입니다.';
+  }
+  verdict('smVerdict', '#8E6B3A', title, body);
+}
+['smEnd', 'smRate', 'smDiv'].forEach(function(id){ document.getElementById(id).addEventListener('input', smDraw); });
+
+/* ══════════ 2. 이론 가격 ══════════ */
+function fvDraw(){
+  var S = +document.getElementById('fvS').value;
+  var r = +document.getElementById('fvR').value / 10;
+  var days = +document.getElementById('fvDays').value;
+  var dv = +document.getElementById('fvDiv').value / 10;
+  document.getElementById('fvSOut').textContent = S;
+  document.getElementById('fvROut').textContent = num(r, 1) + '%';
+  document.getElementById('fvDaysOut').textContent = days + '일' + (days === 0 ? ' (만기일)' : '');
+  document.getElementById('fvDivOut').textContent = num(dv, 1) + '%';
+
+  var carry = S * r / 100 * days / 365;
+  var D = days === 0 ? 0 : S * dv / 100;
+  var F = S + carry - D;
+  var basis = F - S;
+  var breakDiv = r * days / 365;
+
+  steps('fvSteps', [
+    { k:'현물', v:num(S, 2) },
+    { k:'이자분 = 현물 × ' + num(r, 1) + '% × ' + days + '/365', v:'+' + num(carry, 2) },
+    { k:'배당분 = 현물 × ' + num(dv, 1) + '%' + (days === 0 ? ' (만기일엔 0)' : ''), v:'−' + num(D, 2) },
+    { k:'이론 선물가', v:num(F, 2) },
+    { k:'이자분 = 배당분이 되는 배당률', v:num(breakDiv, 3) + '%' },
+    { k:'베이시스 (선물 − 현물)', v:sgn(basis, 2) + 'pt', total:true }
+  ]);
+
+  document.getElementById('fvF').textContent = num(F, 2);
+  document.getElementById('fvB').textContent = sgn(basis, 2) + 'pt (' + sgn(basis / S * 100, 2) + '%)';
+  document.getElementById('fvB').style.color = basis > 0.05 ? '' : basis < -0.05 ? 'var(--neg)' : '';
+
+  var X0 = 100, W = 440, YC = 78;
+  var maxV = Math.max(carry, D, S * 0.01);
+  var zx = X0 + W / 2;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">현물에 더해지는 것과 빠지는 것 (지수 포인트)</text>';
+  var wc = carry / maxV * (W / 2), wd = D / maxV * (W / 2);
+  g += '<rect x="' + zx + '" y="' + (YC - 34) + '" width="' + Math.max(1, wc).toFixed(1) + '" height="24" rx="1.5" fill="#8E6B3A" fill-opacity=".5" stroke="#8E6B3A" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (YC - 17) + '" text-anchor="end">이자분</text>';
+  g += '<text class="lblb" x="' + Math.min(zx + wc + 8, X0 + W - 2).toFixed(1) + '" y="' + (YC - 17) + '" fill="#8E6B3A">+' + num(carry, 2) + '</text>';
+  g += '<rect x="' + (zx - wd).toFixed(1) + '" y="' + (YC + 4) + '" width="' + Math.max(1, wd).toFixed(1) + '" height="24" rx="1.5" fill="#4C6B7A" fill-opacity=".5" stroke="#4C6B7A" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (YC + 21) + '" text-anchor="end">배당분</text>';
+  g += '<text class="lblb" x="' + Math.max(zx - wd - 8, X0 + 2).toFixed(1) + '" y="' + (YC + 21) + '" text-anchor="end" fill="#4C6B7A">−' + num(D, 2) + '</text>';
+  var wb = Math.abs(basis) / maxV * (W / 2);
+  var bcol = basis >= 0 ? '#3F5F6F' : '#8E4B3A';
+  var bx = basis >= 0 ? zx : zx - wb;
+  g += '<rect x="' + bx.toFixed(1) + '" y="' + (YC + 50) + '" width="' + Math.max(1, wb).toFixed(1) + '" height="26" rx="1.5" fill="' + bcol + '" fill-opacity=".62" stroke="' + bcol + '" stroke-width="1.8"/>';
+  g += '<text class="lblb" x="' + (X0 - 10) + '" y="' + (YC + 68) + '" text-anchor="end" fill="' + bcol + '">베이시스</text>';
+  g += '<text class="lblb" x="' + (basis >= 0 ? Math.min(bx + wb + 8, X0 + W - 2) : Math.max(bx - 8, X0 + 2)).toFixed(1) + '" y="' + (YC + 68) + '"' +
+       (basis >= 0 ? '' : ' text-anchor="end"') + ' fill="' + bcol + '">' + sgn(basis, 2) + '</text>';
+  g += '<line x1="' + zx + '" y1="' + (YC - 40) + '" x2="' + zx + '" y2="' + (YC + 82) + '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (YC + 104) + '">오른쪽으로 뻗으면 선물이 비싸지고, 왼쪽으로 뻗으면 싸집니다.</text>';
+  document.getElementById('fvScene').innerHTML = g;
+
+  var title, body, col;
+  if(days === 0){
+    col = '#4C6B7A';
+    title = '만기일 — 선물 = 현물';
+    body = '<b>남은 날이 0</b>이면 기다리는 비용도, 받지 못할 배당도 없습니다. <b>선물은 현물과 같아집니다.</b><br><br>' +
+      '<b>「남은 일수」를 늘려보세요.</b> <b>이자분이 날짜에 비례해 커지는</b> 것이 보입니다. 3장에서 <b>이 틈이 줄어드는 과정</b>을 따라갑니다.';
+  } else if(basis > 0.05){
+    col = '#3F5F6F';
+    title = '베이시스 ' + sgn(basis, 2) + ' — 이자가 배당보다 커서 선물이 비쌉니다';
+    body = '<b>' + days + '일 동안의 이자분 +' + num(carry, 2) + '</b>가 <b>배당분 −' + num(D, 2) + '</b>보다 커서, 선물이 <b>' + num(basis, 2) + '포인트</b> 비쌉니다.<br><br>' +
+      '<b>이것이 평상시의 기본 모습</b>입니다. <b>금리가 배당률보다 높은</b> 시기에는 대체로 선물이 현물보다 비쌉니다.<br><br>' +
+      '<b>「금리」를 0으로</b> 내려보세요. <b>이자분이 사라지면서 베이시스가 줄어듭니다.</b> 그리고 <b>「배당」을 ' + num(breakDiv, 2) + '% 넘게</b> 올리면 <b>베이시스가 마이너스</b>로 뒤집힙니다.<br><br>' +
+      '<b>⚠️ 여기서 기억할 것</b> — 이 <b>+' + num(basis, 2) + '</b>는 <b>「시장이 오를 거라고 본다」와 무관</b>합니다. <b>금리와 날짜만으로</b> 나온 숫자입니다.';
+  } else if(basis < -0.05){
+    col = '#8E4B3A';
+    title = '베이시스 ' + sgn(basis, 2) + ' — 배당이 이자보다 커서 선물이 쌉니다';
+    body = '<b>배당분 −' + num(D, 2) + '</b>가 <b>이자분 +' + num(carry, 2) + '</b>보다 커서, 선물이 <b>' + num(-basis, 2) + '포인트</b> 쌉니다.<br><br>' +
+      '<b>이것을 흔히 「역베이시스」나 「백워데이션」</b>이라 부르고, 뉴스에서 <b>부정적인 신호처럼</b> 쓰일 때가 있습니다. <b>그런데 이 경우엔 배당 때문</b>입니다.<br><br>' +
+      '<b>선물을 가진 사람은 배당을 받지 못하므로</b>, <b>그만큼 싸게 사야 공평</b>합니다. 1장에서 확인했듯 <b>결과는 현물을 산 것과 같습니다.</b><br><br>' +
+      '<b>⚠️ 그렇다고 마이너스 베이시스가 항상 배당 때문인 것은 아닙니다.</b> <b>수급이 한쪽으로 쏠리거나 공매도가 어려우면</b> 이론가보다 더 싸게 거래되기도 합니다(4장 「자세히 보기」). <b>이론가와 시장가를 비교해야</b> 어느 쪽인지 알 수 있습니다.';
+  } else {
+    col = '#5B5648';
+    title = '베이시스 ≈ 0 — 이자와 배당이 상쇄됩니다';
+    body = '이자분 <b>+' + num(carry, 2) + '</b>와 배당분 <b>−' + num(D, 2) + '</b>가 거의 같아서 <b>선물 ≈ 현물</b>입니다.<br><br>' +
+      '<b>이 조건에서 이자와 배당이 같아지는 배당률은 ' + num(breakDiv, 3) + '%</b>입니다. <b>그보다 배당이 크면 선물이 싸지고, 작으면 비싸집니다.</b><br><br>' +
+      '<b>이 줄다리기가 선물 가격의 거의 전부</b>입니다. <b>여기에 「예상」이 들어갈 자리는 거의 없습니다.</b>';
+  }
+  verdict('fvVerdict', col, title, body);
+}
+['fvS', 'fvR', 'fvDays', 'fvDiv'].forEach(function(id){ document.getElementById(id).addEventListener('input', fvDraw); });
+
+/* ══════════ 3. 수렴 ══════════ */
+var SPOT = [];
+(function(){
+  for(var d = 0; d <= 90; d++){
+    var v = 400 + 14 * Math.sin(d / 9) + 9 * Math.sin(d / 3.7 + 1) + d * 0.12;
+    SPOT.push(v);
+  }
+})();
+function cvDraw(){
+  var day = +document.getElementById('cvDay').value;
+  var r = +document.getElementById('cvRate').value / 10;
+  var left = 90 - day;
+  document.getElementById('cvDayOut').textContent = day + '일째 (' + left + '일 남음)' + (left === 0 ? ' · 만기' : '');
+  document.getElementById('cvRateOut').textContent = num(r, 1) + '%';
+
+  function futAt(d){ return SPOT[d] * (1 + r / 100 * (90 - d) / 365); }
+  var S = SPOT[day], F = futAt(day), basis = F - S;
+  var F0 = futAt(0), S0 = SPOT[0];
+  var buyPnl = S - F0;
+  var spotPnl = S - S0;
+
+  steps('cvSteps', [
+    { k:'오늘 현물', v:num(S, 2) },
+    { k:'오늘 선물 = 현물 × (1 + ' + num(r, 1) + '% × ' + left + '/365)', v:num(F, 2) },
+    { k:'베이시스', v:sgn(basis, 2) },
+    { k:'첫날 선물을 산 사람의 평가 (오늘 현물 − 첫날 선물)', v:left === 0 ? sgn(buyPnl, 2) : '만기 전: ' + sgn(F - F0, 2) },
+    { k:'첫날 현물을 산 사람', v:sgn(spotPnl, 2), total:true }
+  ]);
+
+  document.getElementById('cvPx').textContent = num(S, 2) + ' / ' + num(F, 2);
+  document.getElementById('cvBasis').textContent = sgn(basis, 2) + (left === 0 ? ' (만기)' : '');
+
+  var X0 = 60, Y0 = 185, W = 545, H = 140;
+  var all = SPOT.slice(), futs = [];
+  for(var d = 0; d <= 90; d++){ futs.push(futAt(d)); all.push(futs[d]); }
+  var vmin = Math.min.apply(null, all) - 3, vmax = Math.max.apply(null, all) + 3;
+  function xx(d){ return X0 + d / 90 * W; }
+  function yy(v){ return Y0 - (v - vmin) / (vmax - vmin) * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">현물(파랑)과 선물(갈색) — 90일 동안</text>';
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  [0, 30, 60, 90].forEach(function(d){
+    g += '<line x1="' + xx(d).toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + xx(d).toFixed(1) + '" y2="' + Y0 + '" class="gridl"/>';
+    g += '<text class="axt" x="' + xx(d).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + d + '일</text>';
+  });
+  var area = [];
+  for(var a = 0; a <= day; a++){ area.push(xx(a).toFixed(1) + ' ' + yy(futs[a]).toFixed(1)); }
+  for(var b = day; b >= 0; b--){ area.push(xx(b).toFixed(1) + ' ' + yy(SPOT[b]).toFixed(1)); }
+  if(day > 0) g += '<path d="M' + area.join(' L') + ' Z" fill="#8E6B3A" fill-opacity=".14" stroke="none"/>';
+  var sp = [], fp = [];
+  for(var c = 0; c <= 90; c++){
+    sp.push(xx(c).toFixed(1) + ' ' + yy(SPOT[c]).toFixed(1));
+    fp.push(xx(c).toFixed(1) + ' ' + yy(futs[c]).toFixed(1));
+  }
+  g += '<path d="M' + sp.join(' L') + '" fill="none" stroke="#4C6B7A" stroke-width="1.2" stroke-opacity=".35"/>';
+  g += '<path d="M' + fp.join(' L') + '" fill="none" stroke="#8E6B3A" stroke-width="1.2" stroke-opacity=".35"/>';
+  g += '<path d="M' + sp.slice(0, day + 1).join(' L') + '" fill="none" stroke="#4C6B7A" stroke-width="2.4"/>';
+  g += '<path d="M' + fp.slice(0, day + 1).join(' L') + '" fill="none" stroke="#8E6B3A" stroke-width="2.4"/>';
+  g += '<line x1="' + xx(day).toFixed(1) + '" y1="' + yy(F).toFixed(1) + '" x2="' + xx(day).toFixed(1) + '" y2="' + yy(S).toFixed(1) + '" stroke="#5B5648" stroke-width="1.8"/>';
+  g += '<circle cx="' + xx(day).toFixed(1) + '" cy="' + yy(S).toFixed(1) + '" r="4.5" fill="#4C6B7A"/>';
+  g += '<circle cx="' + xx(day).toFixed(1) + '" cy="' + yy(F).toFixed(1) + '" r="4.5" fill="#8E6B3A"/>';
+  var tx = Math.min(xx(day) + 10, X0 + W - 92);
+  g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + Math.max(Y0 - H + 12, Math.min(yy(F), yy(S)) - 10).toFixed(1) + '" fill="#5B5648">틈 ' + sgn(basis, 2) + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">색칠된 틈이 베이시스입니다. 현물이 오르내려도 틈은 날짜와 함께 좁아집니다.</text>';
+  document.getElementById('cvScene').innerHTML = g;
+
+  var title, body, col;
+  if(left === 0){
+    col = '#5F7A52';
+    title = '만기 — 틈이 0이 되었습니다';
+    body = '만기일에 선물 <b>' + num(F, 2) + '</b> = 현물 <b>' + num(S, 2) + '</b>입니다.<br><br>' +
+      '<b>첫날 선물을 ' + num(F0, 2) + '에 산 사람의 손익은 ' + sgn(buyPnl, 2) + '</b>이고, <b>첫날 현물을 ' + num(S0, 2) + '에 산 사람은 ' + sgn(spotPnl, 2) + '</b>입니다.<br><br>' +
+      '<b>차이 ' + num(spotPnl - buyPnl, 2) + '는 정확히 첫날의 베이시스</b>입니다. <b>선물 매수자는 이 틈만큼 덜 벌었습니다.</b><br><br>' +
+      '<b>그런데 1장에서 봤듯이</b>, 선물 매수자는 <b>그동안 남은 돈을 예금에 두어 그만큼 이자를 받았습니다.</b> <b>그래서 전체로 보면 같습니다.</b><br><br>' +
+      '<b>⚠️ 문제는 남은 돈을 예금에 두지 않을 때</b>입니다. <b>그 돈으로 선물을 더 사면</b> 레버리지가 되고, <b>이 틈이 매 계약마다 곱해집니다.</b>';
+  } else if(day === 0){
+    col = '#4C6B7A';
+    title = '첫날 — 틈은 ' + num(basis, 2) + '입니다';
+    body = '현물 <b>' + num(S, 2) + '</b>, 선물 <b>' + num(F, 2) + '</b>입니다. <b>90일치 이자분</b>만큼 선물이 비쌉니다.<br><br>' +
+      '<b>「지금 날짜」 슬라이더를 오른쪽으로</b> 천천히 옮겨보세요.<br>' +
+      '· <b>파란 선(현물)은 오르내립니다.</b><br>' +
+      '· <b>갈색 선(선물)은 현물을 따라 오르내리지만</b>,<br>' +
+      '· <b>둘 사이의 틈(색칠된 부분)은 꾸준히 좁아집니다.</b><br><br>' +
+      '<b>틈이 줄어드는 속도는 현물이 아니라 날짜와 금리</b>가 정합니다.';
+  } else {
+    col = '#8E6B3A';
+    title = day + '일째 — 틈이 ' + num(basis, 2) + '로 줄었습니다 (' + left + '일 남음)';
+    body = '현물 <b>' + num(S, 2) + '</b>, 선물 <b>' + num(F, 2) + '</b>입니다. 첫날 틈 <b>' + num(futAt(0) - SPOT[0], 2) + '</b>에서 <b>' + num(basis, 2) + '</b>로 줄었습니다.<br><br>' +
+      '<b>남은 날에 비례해서</b> 줄어듭니다. <b>' + left + '일 남았으니 이자분도 ' + left + '일치</b>만 남은 것입니다.<br><br>' +
+      '<b>「금리」를 올려보세요.</b> <b>첫날 틈이 커지고, 줄어드는 속도도 빨라집니다.</b> 금리가 0이면 <b>처음부터 틈이 없습니다.</b><br><br>' +
+      '<b>여기서 선물 매수자의 손익 구조가 나옵니다</b> — <b>만기까지 들고 가면 손익 = 현물 변화 − 첫날 틈</b>입니다. <b>틈은 처음에 이미 정해져 있고</b>, <b>나머지는 현물이 결정</b>합니다.';
+  }
+  verdict('cvVerdict', col, title, body);
+}
+['cvDay', 'cvRate'].forEach(function(id){ document.getElementById(id).addEventListener('input', cvDraw); });
+
+/* ══════════ 4. 차익거래 띠 ══════════ */
+var AB_S = 400, AB_TH = fair(400, 3.5, 90, 0), AB_MULT = 250000;
+function abDraw(){
+  var Fm = +document.getElementById('abF').value / 10;
+  var fwd = +document.getElementById('abFwd').value / 100;
+  var rev = +document.getElementById('abRev').value / 100;
+  document.getElementById('abFOut').textContent = num(Fm, 2) + ' (이론가 대비 ' + sgn(Fm - AB_TH, 2) + ')';
+  document.getElementById('abFwdOut').textContent = num(fwd, 2) + '%';
+  document.getElementById('abRevOut').textContent = num(rev, 2) + '%';
+
+  var costUp = AB_S * fwd / 100;
+  var costDn = AB_S * (fwd + rev) / 100;
+  var lo = AB_TH - costDn, hi = AB_TH + costUp;
+  var gap = Fm - AB_TH;
+  var act, profit = 0, col;
+  if(gap > costUp){ act = '정방향 — 선물 매도 + 현물 매수'; profit = gap - costUp; col = '#6A5A8C'; }
+  else if(-gap > costDn){ act = '역방향 — 선물 매수 + 현물 매도'; profit = -gap - costDn; col = '#6A5A8C'; }
+  else { act = '아무도 움직이지 않음'; col = '#5B5648'; }
+
+  steps('abSteps', [
+    { k:'이론 선물가 (현물 400 · 3.5% · 90일)', v:num(AB_TH, 2) },
+    { k:'시장 선물가', v:num(Fm, 2) },
+    { k:'이론가와의 차이', v:sgn(gap, 2) + 'pt' },
+    { k:'띠의 위쪽 = 이론가 + 정방향 비용', v:num(hi, 2) },
+    { k:'띠의 아래쪽 = 이론가 − (정방향 + 역방향 부담)', v:num(lo, 2) },
+    { k:'비용을 뺀 확정 이익', v:profit > 0 ? num(profit, 2) + 'pt' : '없음', total:true }
+  ]);
+
+  document.getElementById('abAct').textContent = act;
+  document.getElementById('abAct').style.color = profit > 0 ? col : '';
+  document.getElementById('abProfit').textContent = profit > 0 ? Math.round(profit * AB_MULT).toLocaleString('ko-KR') + '원' : '0원';
+
+  var X0 = 60, W = 545, Y = 62, Hh = 38;
+  var pmin = 394, pmax = 413;
+  function xp(v){ return X0 + (Math.max(pmin, Math.min(pmax, v)) - pmin) / (pmax - pmin) * W; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="20">선물 가격 축 — 가운데 색칠된 구간이 「무차익 띠」입니다</text>';
+  g += '<rect x="' + X0 + '" y="' + Y + '" width="' + (xp(lo) - X0).toFixed(1) + '" height="' + Hh + '" fill="#6A5A8C" fill-opacity=".10" stroke="#6A5A8C" stroke-width="1" stroke-dasharray="3 2"/>';
+  g += '<rect x="' + xp(hi).toFixed(1) + '" y="' + Y + '" width="' + (X0 + W - xp(hi)).toFixed(1) + '" height="' + Hh + '" fill="#6A5A8C" fill-opacity=".10" stroke="#6A5A8C" stroke-width="1" stroke-dasharray="3 2"/>';
+  g += '<rect x="' + xp(lo).toFixed(1) + '" y="' + Y + '" width="' + Math.max(1, xp(hi) - xp(lo)).toFixed(1) + '" height="' + Hh + '" fill="#8A8474" fill-opacity=".2" stroke="#8A8474" stroke-width="1.2"/>';
+  if(xp(lo) - X0 > 70) g += '<text class="axt" x="' + ((X0 + xp(lo)) / 2).toFixed(1) + '" y="' + (Y + 24) + '" text-anchor="middle">역방향 차익</text>';
+  if(X0 + W - xp(hi) > 70) g += '<text class="axt" x="' + ((xp(hi) + X0 + W) / 2).toFixed(1) + '" y="' + (Y + 24) + '" text-anchor="middle">정방향 차익</text>';
+  g += '<line x1="' + xp(AB_TH).toFixed(1) + '" y1="' + (Y - 6) + '" x2="' + xp(AB_TH).toFixed(1) + '" y2="' + (Y + Hh + 6) + '" stroke="#3F5F6F" stroke-width="1.6"/>';
+  g += '<text class="axt" x="' + xp(AB_TH).toFixed(1) + '" y="' + (Y + Hh + 20) + '" text-anchor="middle">이론가 ' + num(AB_TH, 2) + '</text>';
+  [396, 400, 404, 408, 412].forEach(function(v){
+    g += '<text class="axt" x="' + xp(v).toFixed(1) + '" y="' + (Y + Hh + 38) + '" text-anchor="middle">' + v + '</text>';
+  });
+  var px = xp(Fm);
+  var mcol = profit > 0 ? '#6A5A8C' : '#5B5648';
+  g += '<line x1="' + px.toFixed(1) + '" y1="' + (Y - 22) + '" x2="' + px.toFixed(1) + '" y2="' + (Y + Hh) + '" stroke="' + mcol + '" stroke-width="2.4"/>';
+  g += '<circle cx="' + px.toFixed(1) + '" cy="' + (Y - 22) + '" r="5" fill="' + mcol + '"/>';
+  var lx = Math.min(Math.max(px, X0 + 40), X0 + W - 40);
+  g += '<text class="lblb" x="' + lx.toFixed(1) + '" y="' + (Y - 32) + '" text-anchor="middle" fill="' + mcol + '">시장 ' + num(Fm, 2) + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y + Hh + 58) + '">띠 안에서는 차이가 남아 있어도 비용을 빼면 이익이 없어 아무도 메우지 않습니다.</text>';
+  document.getElementById('abScene').innerHTML = g;
+
+  var title, body;
+  if(profit > 0 && gap > 0){
+    title = '선물이 ' + num(gap, 2) + ' 비쌉니다 — 비용을 빼도 ' + num(profit, 2) + '가 남습니다';
+    body = '시장 선물이 <b>' + num(Fm, 2) + '</b>로 이론가보다 <b>' + num(gap, 2) + '</b> 비쌉니다. 정방향 비용 <b>' + num(costUp, 2) + '</b>를 빼도 <b>' + num(profit, 2) + '포인트</b>가 남습니다.<br><br>' +
+      '<b>그래서 누군가 이렇게 합니다</b> — <b>비싼 선물을 팔고, 같은 금액의 주식 바구니를 사서 만기까지 들고 갑니다.</b> 지수가 어디로 가든 <b>선물 손실과 주식 이익이 상쇄</b>되고, <b>처음 벌어진 차이만 남습니다.</b><br><br>' +
+      '<b>1계약(승수 25만원)당 약 ' + Math.round(profit * AB_MULT).toLocaleString('ko-KR') + '원</b>입니다.<br><br>' +
+      '<b>이 거래가 몰리면 어떻게 되나</b> — <b>선물을 파는 주문</b>이 몰려 선물이 내려오고, <b>주식을 사는 주문</b>이 몰려 현물이 올라갑니다. <b>틈이 띠 안으로 돌아올 때까지</b> 계속됩니다.<br><br>' +
+      '<b>이것이 선물이 이론가에서 오래 벗어나지 못하는 이유</b>입니다.';
+  } else if(profit > 0){
+    title = '선물이 ' + num(-gap, 2) + ' 쌉니다 — 비용을 빼도 ' + num(profit, 2) + '가 남습니다';
+    body = '시장 선물이 <b>' + num(Fm, 2) + '</b>로 이론가보다 <b>' + num(-gap, 2) + '</b> 쌉니다. <b>역방향 비용 ' + num(costDn, 2) + '</b>를 빼도 <b>' + num(profit, 2) + '포인트</b>가 남습니다.<br><br>' +
+      '<b>이번엔 반대로</b> — <b>싼 선물을 사고, 주식 바구니를 팝니다.</b> 그런데 <b>주식이 없으면 빌려서 팔아야</b> 합니다.<br><br>' +
+      '<b>그래서 비용이 더 큽니다</b> — <b>주식을 빌리는 비용</b>이 들고, <b>공매도에 제약이 있는 시기에는 아예 못 하는</b> 경우도 있습니다. <b>「역방향 추가 부담」 슬라이더를 올려보세요.</b> <b>띠의 아래쪽이 멀어지면서 이 거래가 사라집니다.</b><br><br>' +
+      '<b>그 결과</b> — <b>선물이 이론가보다 싼 상태는 비싼 상태보다 오래 남는</b> 경향이 있습니다. <b>주식을 이미 많이 가진 기관</b>만 이 차이를 메울 수 있기 때문입니다.';
+  } else {
+    title = '띠 안입니다 — 차이가 ' + sgn(gap, 2) + '인데 아무도 메우지 않습니다';
+    body = '시장 선물 <b>' + num(Fm, 2) + '</b>는 이론가와 <b>' + sgn(gap, 2) + '</b> 다르지만, <b>무차익 띠(' + num(lo, 2) + ' ~ ' + num(hi, 2) + ') 안</b>입니다.<br><br>' +
+      '<b>차이가 있어도 비용을 빼면 남는 게 없으니</b> 차익거래가 일어나지 않습니다.<br><br>' +
+      '<b>그래서 실제 선물 가격은 이론가에 「딱」 붙어 있지 않고, 이 띠 안에서 흔들립니다.</b> <b>띠의 폭은 비용이 정합니다.</b><br><br>' +
+      '<b>「정방향 비용」을 0으로</b> 내려보세요. <b>띠가 좁아져서 작은 차이도 곧바로 메워집니다.</b> 반대로 <b>비용이 크면 띠가 넓어져 가격이 이론가에서 더 멀리</b> 떨어질 수 있습니다.';
+  }
+  verdict('abVerdict', profit > 0 ? '#6A5A8C' : '#5B5648', title, body);
+}
+['abF', 'abFwd', 'abRev'].forEach(function(id){ document.getElementById(id).addEventListener('input', abDraw); });
+
+/* ══════════ 5. 오해 ══════════ */
+var MY = [
+  { h:'「선물이 비싸다 = 오를 거라 본다」', col:'#8E4B3A',
+    t:'대부분은 금리 때문입니다',
+    p:'<b>2장 계산기에서 확인</b>했듯이, 선물이 현물보다 비싼 가장 큰 이유는 <b>이자분</b>입니다. <b>금리 3.5%, 90일이면 지수 400에서 약 3.45포인트</b>입니다.<br><br>' +
+      '<b>이 차이는 시장 참여자의 기대와 무관</b>합니다. 모두가 하락을 확신해도 <b>금리와 날짜가 같으면 베이시스는 같습니다.</b> <b>그 확신은 현물 가격에 먼저 반영</b>되고, 선물은 그 현물에 이자를 붙여 따라갈 뿐입니다.<br><br>' +
+      '<b>그럼 무엇을 봐야 하나</b> — <b>「베이시스」가 아니라 「시장 베이시스 − 이론 베이시스」</b>입니다. <b>이론가보다 더 비싸게 거래되고 있다면</b> 그때 <b>매수 쏠림</b>을 이야기할 수 있습니다. 그마저도 <b>4장의 띠 안이라면 의미가 크지 않습니다.</b>' },
+  { h:'「선물이 싸다 = 하락 신호」', col:'#8E4B3A',
+    t:'배당이 몰리는 시기에는 당연히 쌉니다',
+    p:'선물을 가진 사람은 <b>배당을 받지 못합니다.</b> 그래서 <b>만기 전에 배당이 많이 지급될수록 선물이 싸져야</b> 공평합니다(1장).<br><br>' +
+      '<b>한국 주식시장은 배당이 연말에 몰리는 편</b>이라, <b>그 시기를 지나는 선물은 이론적으로도 현물보다 싸게</b> 형성될 수 있습니다.<br><br>' +
+      '<b>이것을 「역베이시스가 나타났다 = 시장이 약하다」로 읽으면 틀린 해석</b>입니다.<br><br>' +
+      '<b>⚠️ 다만 이론가보다 더 싸게 거래되는 경우</b>는 다릅니다. 그때는 <b>매도 쏠림이나 공매도 제약</b> 같은 요인이 섞였을 수 있습니다(4장 「자세히 보기」). <b>핵심은 똑같습니다 — 이론가와 비교해야 합니다.</b>' },
+  { h:'「외국인 선물 매도 = 하락 베팅」', col:'#6A5A8C',
+    t:'헤지일 수도, 차익거래일 수도 있습니다',
+    p:'뉴스에서 <b>「외국인이 선물을 대량 순매도」</b>라는 기사가 나오면 <b>「외국인이 하락에 베팅한다」</b>로 읽히기 쉽습니다.<br><br>' +
+      '<b>그런데 선물 매도에는 목적이 적어도 세 가지</b> 있습니다.<br>' +
+      '· <b>하락 베팅</b> — 기사가 가정하는 경우입니다.<br>' +
+      '· <b>헤지</b> — <b>한국 주식을 많이 들고 있는 투자자</b>가 <b>주식은 그대로 두고 위험만 줄이려고</b> 선물을 파는 경우입니다(04편).<br>' +
+      '· <b>차익거래</b> — <b>선물이 비쌀 때 선물을 팔고 주식을 사는</b> 경우입니다. <b>이때는 오히려 주식을 사고 있습니다</b>(4장).<br><br>' +
+      '<b>셋 중 무엇인지는 선물 거래만 봐서는 알 수 없습니다.</b> <b>같은 시기 현물 거래, 베이시스 수준, 만기 일정</b>을 함께 봐야 합니다.<br><br>' +
+      '<b>⚠️ 그래서 「외국인 선물 매매 방향」을 그대로 따라 하는 것은 근거가 약합니다.</b> <b>상대의 목적을 모르는 채 행동만 따라 하는 것</b>이기 때문입니다.' },
+  { h:'「선물을 사면 비싸게 산다」', col:'#5F7A52',
+    t:'남은 돈을 예금에 두면 현물과 같습니다',
+    p:'<b>1장의 동등성</b>이 답입니다. 선물을 <b>403.45</b>에 사서 <b>400을 예금</b>에 두면, 만기 결과는 <b>현물을 400에 산 것과 정확히 같습니다.</b><br><br>' +
+      '<b>「3.45만큼 비싸게 샀다」는 계산은 「3.45만큼 이자를 받았다」를 빼먹은</b> 것입니다.<br><br>' +
+      '<b>그럼 선물의 진짜 위험은 어디에 있나</b> — <b>남은 돈을 예금에 두지 않을 때</b>입니다.<br>' +
+      '· 선물은 <b>증거금만 내면</b> 되므로 <b>나머지 돈으로 계약을 더 잡을 수</b> 있습니다.<br>' +
+      '· 그러면 <b>레버리지</b>가 되고, <b>현물을 산 사람과 결과가 달라집니다.</b><br>' +
+      '· 그리고 <b>일일정산</b> 때문에 <b>중간에 버티지 못할 수</b> 있습니다.<br><br>' +
+      '<b>즉 선물의 위험은 「가격」이 아니라 「크기」에 있습니다.</b> <b>현물과 같은 금액만큼만 잡으면 현물과 같고, 더 잡으면 다릅니다.</b> 03편에서 <b>1포인트 25만원</b>이 계좌에서 어떻게 느껴지는지 봅니다.' }
+];
+bindBtnRow('#myBtns', function(v){
+  var m = MY[+v];
+  document.getElementById('myVerdict').querySelector('.vh').textContent = '오해 ' + (+v + 1);
+  verdict('myVerdict', m.col, m.t, m.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 이 편의 결론입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+smDraw(); fvDraw(); cvDraw(); abDraw();
+document.querySelector('#myBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
