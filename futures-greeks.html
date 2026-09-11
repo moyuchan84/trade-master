@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시간가치와 변동성</title>
+<meta name="description" content="옵션은 시간이 지나면 녹는 자산입니다. 옵션 가격을 정하는 다섯 요소, 시간가치 감소, 변동성과 내재변동성, 그릭스를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --time:#8E6B3A;--vol:#6A5A8C;--delta:#3F5F6F;--crush:#8E4B3A;--good:#5F7A52;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--time));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--time));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--time));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">선물·옵션 06 · 옵션 가격 · 투자 공부 노트</div>
+    <h1>시간가치와<br>변동성</h1>
+    <p class="lede">05편에서 옵션 가격이 <b>내재가치 + 시간가치</b>라는 것을 봤습니다. 이 편은 그 <b>시간가치가 무엇으로 정해지고, 얼마나 빨리 사라지는지</b>를 봅니다. 옵션을 사는 사람에게는 <b>매일 녹는 얼음</b>이고, 파는 사람에게는 <b>매일 받는 월세</b>입니다.</p>
+    <div class="callout">
+      <p><b>이 편의 세 장면</b>입니다(모두 블랙-숄즈 모형 기준의 예시).</p>
+      <p><b>① 시간은 균일하게 녹지 않습니다.</b> 한 달 남은 등가격 콜은 <b>앞의 23일 동안 하루 0.07씩</b> 녹다가, <b>마지막 7일에는 하루 0.20씩</b> — <b>세 배 빠르게</b> 녹습니다.</p>
+      <p><b>② 방향을 맞혀도 잃을 수 있습니다.</b> 큰 발표를 앞두고 변동성이 60%로 부풀었던 콜을 샀는데, 발표 뒤 <b>주가가 +3% 올랐지만 변동성이 30%로 꺼지면 콜은 −12%</b>입니다.</p>
+      <p><b>③ 변동성은 관측할 수 없고, 시장 가격에서 거꾸로 읽어냅니다.</b> 이것을 <b>내재변동성</b>이라 부르고, 옵션 시장의 언어는 사실상 이 숫자입니다.</p>
+      <p><b>⚠️ 블랙-숄즈는 「주가가 정규분포에 가깝게, 일정한 변동성으로 움직인다」는 가정 위의 모형</b>입니다. 실제 시장은 <b>급락이 모형보다 자주</b> 옵니다. 「자세히 보기」에서 한계를 정리합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#five">1. 가격을 정하는 다섯</a>
+    <a href="#decay">2. 시간이 녹는다</a>
+    <a href="#vol">3. 변동성</a>
+    <a href="#greeks">4. 그릭스</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="five">
+    <div class="prod-head" style="--edge:var(--delta)">
+      <span class="prod-tag">01 · 입력</span>
+      <h2>옵션 가격을 정하는 다섯 가지</h2>
+      <p class="one">그중 <b>넷은 보이고, 하나는 보이지 않습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>05편의 <b>장난감 예약 쪽지</b> 기억나? 「다음 달에 5만원에 살 수 있는 권리」였어. 그럼 이 쪽지는 <b>얼마가 적당할까?</b></p>
+      <p><b>① 장난감이 지금 얼마야?</b> 벌써 7만원이면 쪽지가 비싸져.</p>
+      <p><b>② 쪽지에 적힌 값이 얼마야?</b> 3만원에 살 수 있는 쪽지는 5만원짜리보다 비싸.</p>
+      <p><b>③ 언제까지 쓸 수 있어?</b> 1년짜리 쪽지는 일주일짜리보다 비싸. <b>기다리는 동안 무슨 일이 생길지 모르니까.</b></p>
+      <p><b>④ 장난감 값이 얼마나 오르락내리락해?</b> 값이 매일 크게 출렁이는 장난감이면, <b>갑자기 확 오를 수도 있으니까</b> 쪽지가 비싸져. 이게 <b>변동성</b>이야.</p>
+      <p><b>⑤ 은행 이자가 얼마야?</b> 이건 조금만 영향을 줘.</p>
+      <p>그런데 <b>④는 아무도 정확히 몰라.</b> 앞으로 얼마나 출렁일지는 <b>미래</b>니까. 그래서 사람들은 <b>쪽지 가격을 보고 「다들 이만큼 출렁일 거라고 생각하는구나」</b>를 거꾸로 알아내. 그게 <b>내재변동성</b>이야.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">FIVE INPUTS · 다섯 개를 모두 움직여보세요</div>
+      <p class="labsub">아래 막대는 <b>각 입력이 조금씩 움직일 때 옵션 가격이 얼마나 바뀌는지</b>입니다.</p>
+
+      <div class="btnrow" id="fvType">
+        <button data-v="c" class="on">콜옵션</button>
+        <button data-v="p">풋옵션</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="fvS">① 기초자산 가격</label>
+        <input type="range" id="fvS" min="70" max="130" step="1" value="100">
+        <output id="fvSOut">100</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fvK">② 행사가격</label>
+        <input type="range" id="fvK" min="80" max="120" step="1" value="100">
+        <output id="fvKOut">100</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fvD">③ 만기까지 남은 날</label>
+        <input type="range" id="fvD" min="1" max="365" step="1" value="30">
+        <output id="fvDOut">30일</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fvV">④ 변동성 (연)</label>
+        <input type="range" id="fvV" min="5" max="80" step="1" value="25">
+        <output id="fvVOut">25%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fvR">⑤ 금리 (연)</label>
+        <input type="range" id="fvR" min="0" max="80" step="1" value="30">
+        <output id="fvROut">3.0%</output>
+      </div>
+
+      <div class="steps-out" id="fvSteps"></div>
+
+      <svg viewBox="0 0 640 210" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="입력별 가격 민감도">
+        <g id="fvScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">옵션 이론 가격</span><span class="rv" id="fvPrice">—</span></div>
+        <div><span class="rk">가장 크게 움직이는 입력</span><span class="rv" id="fvTop">—</span></div>
+      </div>
+
+      <div class="verdict" id="fvVerdict" style="--vc:var(--delta)">
+        <div class="vh">다섯 입력</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>막대의 기준.</b> <b>주가 +1%</b>, <b>하루 경과</b>, <b>변동성 +1%p</b>, <b>금리 +1%p</b>를 각각 따로 줬을 때 <b>옵션 가격이 얼마나 바뀌는지</b>입니다. 행사가격은 계약에서 고정이라 막대에서 뺐습니다.<br><br>
+        <b>「+1%」와 「하루」는 크기가 같은 단위가 아닙니다.</b> 그래서 막대는 <b>「평범한 하루에 흔히 생기는 변화」</b>를 비교하는 감각용입니다. <b>배당은 넣지 않았습니다.</b>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="decay">
+    <div class="prod-head" style="--edge:var(--time)">
+      <span class="prod-tag">02 · 세타</span>
+      <h2>시간은 끝으로 갈수록 빨리 녹습니다</h2>
+      <p class="one">옵션을 산 사람에게는 <b>매일 나가는 비용</b>, 판 사람에게는 <b>매일 들어오는 수입</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">TIME DECAY · 날짜를 만기 쪽으로 옮겨보세요</div>
+      <p class="labsub"><b>주가 100에 그대로 머문다</b>고 가정하고, <b>시간만 흐를 때</b> 세 가지 콜의 가격이 어떻게 줄어드는지 봅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="tdDay">만기까지 남은 날</label>
+        <input type="range" id="tdDay" min="0" max="60" step="1" value="30">
+        <output id="tdDayOut">30일</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="tdVol">변동성 (연)</label>
+        <input type="range" id="tdVol" min="10" max="60" step="1" value="25">
+        <output id="tdVolOut">25%</output>
+      </div>
+
+      <div class="steps-out" id="tdSteps"></div>
+
+      <svg viewBox="0 0 640 250" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="남은 날에 따른 옵션 가격">
+        <g id="tdScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">등가격 콜 · 오늘 하루에 녹는 양</span><span class="rv" id="tdTheta">—</span></div>
+        <div><span class="rk">외가격 콜 · 남은 가치</span><span class="rv" id="tdOtm">—</span></div>
+      </div>
+
+      <div class="verdict" id="tdVerdict" style="--vc:var(--time)">
+        <div class="vh">시간</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>세 콜의 행사가격.</b> <b>내가격 95</b>, <b>등가격 100</b>, <b>외가격 105</b>입니다. 주가 <b>100 고정</b>, 금리 <b>3%</b>.<br><br>
+        <b>「오늘 하루에 녹는 양」</b> = 오늘 가격 − 하루 뒤 가격(주가·변동성 그대로)입니다. 이것을 <b>세타</b>라고 부릅니다.<br><br>
+        <b>왜 끝으로 갈수록 빨라지나</b> — 시간가치는 대략 <b>남은 시간의 제곱근</b>에 비례합니다. 60일 → 30일은 <b>√60 → √30</b>(29% 감소)이지만, 4일 → 1일은 <b>√4 → √1</b>(50% 감소)입니다. <b>같은 날짜 수라도 끝에서 훨씬 크게</b> 줄어듭니다.
+      </div>
+    </div>
+
+    <div class="keyline">
+      <div class="kt">시간가치의 성질</div>
+      <div class="kb">외가격 옵션은 <b>만기에 0</b>이 되고,<br>그 속도는 <b>마지막 며칠에 가장 빠릅니다.</b></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="vol">
+    <div class="prod-head" style="--edge:var(--vol)">
+      <span class="prod-tag">03 · 베가</span>
+      <h2>변동성 — 방향을 맞혀도 잃는 이유</h2>
+      <p class="one">옵션은 <b>「얼마나 움직일 것인가」</b>에 대한 가격이기도 합니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">VOLATILITY CRUSH · 큰 발표 전날 콜을 샀습니다</div>
+      <p class="labsub"><b>주가 100 · 행사가 100 · 만기 14일</b>. 발표 전에는 <b>「크게 움직일 것」</b>이라는 기대로 변동성이 부풀어 있습니다. <b>발표 다음 날</b>의 결과를 봅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="vcBefore">발표 전 변동성 (옵션 가격에 반영된)</label>
+        <input type="range" id="vcBefore" min="15" max="100" step="1" value="60">
+        <output id="vcBeforeOut">60%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="vcAfter">발표 뒤 변동성</label>
+        <input type="range" id="vcAfter" min="10" max="100" step="1" value="30">
+        <output id="vcAfterOut">30%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="vcMove">발표 다음 날 주가 변화</label>
+        <input type="range" id="vcMove" min="-15" max="15" step="1" value="3">
+        <output id="vcMoveOut">+3%</output>
+      </div>
+
+      <div class="steps-out" id="vcSteps"></div>
+
+      <svg viewBox="0 0 640 248" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주가 변화별 콜 수익률, 변동성 유지와 급락 비교">
+        <g id="vcScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">내 콜 수익률</span><span class="rv" id="vcRet">—</span></div>
+        <div><span class="rk">본전이 되려면 주가가</span><span class="rv" id="vcBe">—</span></div>
+      </div>
+
+      <div class="verdict" id="vcVerdict" style="--vc:var(--vol)">
+        <div class="vh">변동성</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 발표 전 콜 가격 = 모형(주가 100, 14일, 발표 전 변동성). 발표 다음 날 가격 = 모형(바뀐 주가, 13일, 발표 뒤 변동성). 금리 <b>3%</b>.<br><br>
+        <b>그래프의 두 선</b> — <b>점선은 변동성이 그대로일 때</b>, <b>굵은 선은 변동성이 꺼졌을 때</b>의 수익률입니다. <b>두 선 사이가 변동성 하락이 가져간 몫</b>입니다.<br><br>
+        <b>⚠️ 발표 전후 변동성 수치는 예시</b>입니다. 실제로 얼마나 부풀고 얼마나 꺼지는지는 <b>종목·사건·시기마다 크게 다릅니다.</b>
+      </div>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">IMPLIED VOLATILITY · 시장 가격에서 변동성을 거꾸로 읽어냅니다</div>
+      <p class="labsub"><b>주가 100 · 행사가 100 · 만기 30일 · 금리 3%</b>인 콜이 시장에서 <b>얼마에 거래되는지</b>를 넣어보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="ivPrice">시장에서 거래되는 콜 가격</label>
+        <input type="range" id="ivPrice" min="100" max="900" step="1" value="298">
+        <output id="ivPriceOut">2.98</output>
+      </div>
+
+      <div class="steps-out" id="ivSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">내재변동성</span><span class="rv" id="ivVal">—</span></div>
+        <div><span class="rk">하루 평균 움직임으로 환산</span><span class="rv" id="ivDay">—</span></div>
+      </div>
+
+      <div class="verdict" id="ivVerdict" style="--vc:var(--vol)">
+        <div class="vh">내재변동성</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 모형에 변동성을 넣었을 때 <b>시장 가격과 같아지는 변동성</b>을 이분법으로 찾습니다. <b>「하루 평균 움직임」</b>은 연 변동성 ÷ √252(거래일)로 환산한 <b>대략적인 크기</b>입니다.<br><br>
+        <b>그래서 옵션 거래자들은 「이 옵션이 3원이다」보다 「내재변동성 25%다」라고 말합니다.</b> <b>행사가·만기가 달라도 같은 기준으로 비교</b>할 수 있기 때문입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>내재변동성과 실제 변동성, 그리고 「공포지수」</h3>
+      <p><b>내재변동성</b>은 <b>「시장이 앞으로 이만큼 움직일 것이라고 값을 매긴 크기」</b>이고, <b>실현변동성</b>은 <b>「실제로 움직인 크기」</b>입니다. 둘은 다릅니다.</p>
+      <p><b>주가지수 옵션에서는 내재변동성이 실현변동성보다 평균적으로 높은 경향</b>이 오랫동안 관찰돼 왔습니다(05편 「자세히 보기」). <b>옵션이 평균적으로 조금 비싸게 팔린다</b>는 뜻이고, <b>그 차이는 「가끔 오는 폭락」에 대한 보험료</b>로 해석됩니다.</p>
+      <p><b>그리고 행사가마다 내재변동성이 다릅니다.</b> 주가지수 옵션에서는 <b>외가격 풋(하락 보험)의 내재변동성이 더 높게</b> 형성되는 경향이 있습니다. 이것을 <b>스큐</b>라고 부릅니다. <b>사람들이 하락을 더 두려워해 보험을 더 비싸게 사는</b> 것입니다.</p>
+      <p class="plain"><b>「공포지수」라고 불리는 변동성 지수</b>가 있습니다. 미국 S&amp;P500 옵션으로 계산하는 <b>VIX</b>, 코스피200 옵션으로 계산하는 <b>VKOSPI</b>가 대표적입니다. <b>옵션 가격에 담긴 내재변동성을 하나의 숫자로 요약</b>한 것입니다.<br><br><b>⚠️ 그런데 이 지수를 「사고팔 신호」로 쓰는 것은 조심해야 합니다.</b><br>· <b>변동성 지수가 높다 = 옵션이 비싸다</b>는 뜻이지, <b>「곧 반등한다」는 보장</b>이 아닙니다.<br>· <b>높은 변동성은 한동안 계속되는 경향</b>이 있습니다. <b>「너무 높으니 곧 내려간다」에 거는 상품</b>은 <b>그 「곧」이 오기 전에 크게 잃을 수</b> 있습니다.<br>· <b>변동성 지수를 따라가는 ETF·ETN</b>은 <b>선물을 굴리는 구조</b>라, <a href="commodity-roll.html">원자재 06편</a>의 <b>롤 손실과 비슷한 문제</b>로 <b>장기 보유 시 크게 녹는</b> 경우가 많습니다.<br><br><b>그래서 변동성 지수는 「지금 보험료가 비싼가 싼가」를 아는 온도계로 쓰는 것</b>이 안전합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="greeks">
+    <div class="prod-head" style="--edge:var(--good)">
+      <span class="prod-tag">04 · 그릭스</span>
+      <h2>옵션의 네 가지 민감도</h2>
+      <p class="one">어려운 이름이지만 <b>질문은 단순</b>합니다 — <b>「이게 움직이면 내 옵션은 얼마나 움직이나」</b>.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">GREEKS · 주가를 움직이며 네 숫자를 보세요</div>
+      <p class="labsub"><b>행사가 100 · 만기 30일 · 변동성 25% · 금리 3%</b> 콜옵션입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="gkS">기초자산 가격</label>
+        <input type="range" id="gkS" min="75" max="125" step="1" value="100">
+        <output id="gkSOut">100</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="gkD">만기까지 남은 날</label>
+        <input type="range" id="gkD" min="1" max="120" step="1" value="30">
+        <output id="gkDOut">30일</output>
+      </div>
+
+      <div class="btnrow" id="gkBtns">
+        <button data-v="0" class="on">델타</button>
+        <button data-v="1">감마</button>
+        <button data-v="2">세타</button>
+        <button data-v="3">베가</button>
+      </div>
+
+      <div class="steps-out" id="gkSteps"></div>
+
+      <svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주가에 따른 그릭스 곡선">
+        <g id="gkScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">콜 가격</span><span class="rv" id="gkPrice">—</span></div>
+        <div><span class="rk">선택한 그릭스</span><span class="rv" id="gkVal">—</span></div>
+      </div>
+
+      <div class="verdict" id="gkVerdict" style="--vc:var(--good)">
+        <div class="vh">그릭스</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 블랙-숄즈 해석식을 썼습니다. <b>델타 = N(d₁)</b>, <b>감마 = n(d₁) ÷ (S·σ·√T)</b>, <b>베가 = S·n(d₁)·√T ÷ 100</b>(변동성 1%p당), <b>세타는 하루당</b>으로 환산했습니다.<br><br>
+        <b>그릭스는 「지금 이 순간」의 민감도</b>입니다. <b>주가나 날짜가 바뀌면 그릭스 자체도 바뀝니다.</b> 그래서 <b>옵션 포지션의 위험은 가만히 있어도 계속 모양이 변합니다.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>블랙-숄즈를 얼마나 믿어야 하나</h3>
+      <p>이 편의 모든 계산은 <b>블랙-숄즈 모형</b> 위에 있습니다. <b>옵션 시장의 공용어</b>이고 <b>구조를 이해하는 데 매우 유용</b>합니다. 그런데 <b>현실과 다른 가정</b>이 몇 개 있습니다.</p>
+      <p><b>① 변동성이 일정하다</b> — 실제로는 <b>매일 바뀝니다.</b> 그래서 3장처럼 <b>변동성 변화만으로 옵션 가격이 크게</b> 움직입니다.<br>
+         <b>② 주가가 매끄럽게 움직인다</b> — 실제로는 <b>갭</b>이 있습니다. <b>밤사이 뉴스로 10% 벌어진 채 시작</b>하는 일이 생깁니다.<br>
+         <b>③ 큰 움직임은 드물다</b> — 모형은 주가 변화가 <b>정규분포에 가깝다</b>고 봅니다. 실제 시장에서는 <b>큰 폭락이 모형이 예상하는 것보다 훨씬 자주</b> 옵니다. <b>「꼬리가 두껍다」</b>고 표현합니다.<br>
+         <b>④ 언제든 원하는 만큼 거래할 수 있다</b> — 실제로는 <b>급락장에서 호가가 사라지기도</b> 합니다.</p>
+      <p class="plain"><b>그래서 시장은 모형을 「그대로」 쓰지 않고 「보정해서」 씁니다.</b> 3장 「자세히 보기」의 <b>스큐</b> — <b>외가격 풋에 더 높은 변동성을 매기는 것</b> — 이 바로 그 보정입니다. <b>모형이 폭락 확률을 과소평가한다는 것을 시장이 알고 있다</b>는 뜻입니다.<br><br><b>⚠️ 이 한계가 가장 위험하게 작동하는 곳이 「옵션 매도」</b>입니다. <b>모형상 확률로 「이 행사가까지 갈 확률은 2%밖에 안 된다」</b>고 계산해서 팔면, <b>실제로는 그보다 자주</b> 그 일이 일어납니다. <b>그리고 한 번 일어나면 그동안 받은 프리미엄을 전부 돌려주고도 남습니다.</b><br><br><b>다음 편(07편)이 정확히 그 이야기</b>입니다. <b>모형은 가격을 이해하는 언어로 쓰고, 확률을 믿는 근거로는 쓰지 않는 것</b>이 안전합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one">옵션은 <b>방향 · 시간 · 변동성</b> 세 가지에 동시에 거는 것입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>옵션 가격은 주가·행사가·시간·변동성·금리로 정해진다</b>는 것.</li>
+      <li><b>변동성만 관측할 수 없다</b>는 것.</li>
+      <li><b>시간가치는 만기가 가까울수록 빨리 녹는다</b>는 것.</li>
+      <li><b>외가격 옵션은 만기에 0이 된다</b>는 것.</li>
+      <li><b>변동성이 꺼지면 방향을 맞혀도 잃을 수 있다</b>는 것.</li>
+      <li><b>큰 발표 전에는 변동성이 부풀어 옵션이 비싸다</b>는 것.</li>
+      <li><b>내재변동성은 시장 가격에서 거꾸로 읽어낸다</b>는 것.</li>
+      <li><b>델타 · 감마 · 세타 · 베가</b>가 각각 무엇을 묻는지 안다는 것.</li>
+      <li><b>모형은 큰 폭락을 과소평가한다</b>는 것.</li>
+      <li><b>모형상 확률을 믿고 옵션을 팔면 위험하다</b>는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 주식을 사면 <b>방향 하나</b>에 겁니다. 옵션을 사면 <b>방향 · 크기 · 시기</b>에 동시에 겁니다. <b>「오른다」만 맞히면 되는 게 아니라 「충분히, 제때, 그리고 변동성이 꺼지기 전에」</b> 올라야 합니다.</p>
+      <p><b>그래서 옵션 매수는 조건이 까다로운 베팅</b>이고, <b>옵션 매도는 그 까다로움을 거꾸로 파는 것</b>입니다. <b>매도자는 매일 시간가치를 받습니다</b> — 그런데 <b>그 대가로 큰 움직임의 위험을 전부 떠안습니다.</b></p>
+      <p><b>다음 편은 07편 — 매달 받는 프리미엄의 함정</b>입니다. <b>「매달 월세 받듯 옵션을 판다」</b>는 전략이 <b>왜 오랫동안 잘 되다가 한 번에 무너지는지</b>를 시뮬레이션으로 봅니다. <b>이 트랙에서 가장 실용적인 경고</b> 중 하나입니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 선물·옵션 06 · 옵션 가격<br>
+    <a href="index.html#futures">← 선물·옵션 목록으로</a> · <a href="futures-options.html">05 · 콜과 풋, 권리와 의무</a> · 07 · 매달 받는 프리미엄의 함정 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 옵션 거래를 권하지 않습니다.<br>
+    모든 가격은 <b>블랙-숄즈 모형의 이론값</b>이며, 변동성·금리·발표 전후 변동성은 예시입니다. 실제 시장 가격과 위험은 모형과 다를 수 있습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+function ncdf(x){
+  var t = 1 / (1 + 0.2316419 * Math.abs(x));
+  var d = 0.3989422804014327 * Math.exp(-x * x / 2);
+  var p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  return x > 0 ? 1 - p : p;
+}
+function npdf(x){ return 0.3989422804014327 * Math.exp(-x * x / 2); }
+function bs(S, K, T, r, v, type){
+  if(T <= 0 || v <= 0) return type === 'c' ? Math.max(S - K, 0) : Math.max(K - S, 0);
+  var d1 = (Math.log(S / K) + (r + v * v / 2) * T) / (v * Math.sqrt(T));
+  var d2 = d1 - v * Math.sqrt(T);
+  return type === 'c' ? S * ncdf(d1) - K * Math.exp(-r * T) * ncdf(d2)
+                      : K * Math.exp(-r * T) * ncdf(-d2) - S * ncdf(-d1);
+}
+function greeks(S, K, T, r, v){
+  var sq = Math.sqrt(T);
+  var d1 = (Math.log(S / K) + (r + v * v / 2) * T) / (v * sq), d2 = d1 - v * sq;
+  return {
+    delta: ncdf(d1),
+    gamma: npdf(d1) / (S * v * sq),
+    vega: S * npdf(d1) * sq / 100,
+    theta: (-S * npdf(d1) * v / (2 * sq) - r * K * Math.exp(-r * T) * ncdf(d2)) / 365
+  };
+}
+
+/* ══════════ 1. 다섯 입력 ══════════ */
+var fvType = 'c';
+function fvDraw(){
+  var S = +document.getElementById('fvS').value;
+  var K = +document.getElementById('fvK').value;
+  var days = +document.getElementById('fvD').value;
+  var v = +document.getElementById('fvV').value / 100;
+  var r = +document.getElementById('fvR').value / 1000;
+  var T = days / 365;
+  document.getElementById('fvSOut').textContent = S;
+  document.getElementById('fvKOut').textContent = K;
+  document.getElementById('fvDOut').textContent = days + '일';
+  document.getElementById('fvVOut').textContent = Math.round(v * 100) + '%';
+  document.getElementById('fvROut').textContent = num(r * 100, 1) + '%';
+
+  var p = bs(S, K, T, r, v, fvType);
+  var sens = [
+    { n:'주가 +1%',      d:bs(S * 1.01, K, T, r, v, fvType) - p, col:'#3F5F6F' },
+    { n:'하루 경과',     d:bs(S, K, Math.max(0, T - 1 / 365), r, v, fvType) - p, col:'#8E6B3A' },
+    { n:'변동성 +1%p',   d:bs(S, K, T, r, v + 0.01, fvType) - p, col:'#6A5A8C' },
+    { n:'금리 +1%p',     d:bs(S, K, T, r + 0.01, v, fvType) - p, col:'#5F7A52' }
+  ];
+  var top = sens.slice().sort(function(a, b){ return Math.abs(b.d) - Math.abs(a.d); })[0];
+  var nm = fvType === 'c' ? '콜' : '풋';
+
+  steps('fvSteps', [
+    { k:nm + ' 이론 가격', v:num(p, 3) },
+    { k:'주가가 1% 오르면', v:sgn(sens[0].d, 3) },
+    { k:'하루가 지나면 (나머지 그대로)', v:sgn(sens[1].d, 3) },
+    { k:'변동성이 1%p 오르면', v:sgn(sens[2].d, 3) },
+    { k:'금리가 1%p 오르면', v:sgn(sens[3].d, 3) },
+    { k:'가장 크게 움직이는 입력', v:top.n, total:true }
+  ]);
+
+  document.getElementById('fvPrice').textContent = num(p, 3);
+  document.getElementById('fvTop').textContent = top.n + ' (' + sgn(top.d, 3) + ')';
+
+  var X0 = 130, W = 400, Y0 = 36;
+  var maxA = Math.max.apply(null, sens.map(function(s){ return Math.abs(s.d); }).concat([0.01]));
+  var zx = X0 + W / 2;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">각 입력이 조금 움직일 때 ' + nm + ' 가격 변화</text>';
+  sens.forEach(function(s, i){
+    var y = Y0 + i * 34;
+    var w = Math.abs(s.d) / maxA * (W / 2);
+    var bx = s.d >= 0 ? zx : zx - w;
+    g += '<rect x="' + bx.toFixed(1) + '" y="' + y + '" width="' + Math.max(1, w).toFixed(1) + '" height="22" rx="1.5" fill="' + s.col + '" fill-opacity=".55" stroke="' + s.col + '" stroke-width="1.2"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 16) + '" text-anchor="end">' + s.n + '</text>';
+    var tx = s.d >= 0 ? Math.min(bx + w + 8, X0 + W - 2) : Math.max(bx - 8, X0 + 2);
+    g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + (y + 16) + '"' + (s.d >= 0 ? '' : ' text-anchor="end"') + ' fill="' + s.col + '">' + sgn(s.d, 3) + '</text>';
+  });
+  g += '<line x1="' + zx + '" y1="' + (Y0 - 6) + '" x2="' + zx + '" y2="' + (Y0 + sens.length * 34) + '" stroke="#8A8474" stroke-width="1.3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + sens.length * 34 + 20) + '">오른쪽이면 옵션 가격이 오르고, 왼쪽이면 내립니다.</text>';
+  document.getElementById('fvScene').innerHTML = g;
+
+  var title, body;
+  if(top.n === '하루 경과'){
+    title = '지금 이 ' + nm + '에서는 「하루가 지나는 것」이 가장 큰 변화입니다';
+    body = '<b>하루에 ' + sgn(sens[1].d, 3) + '</b>씩 녹습니다. <b>주가가 1% 오르는 효과(' + sgn(sens[0].d, 3) + ')보다 큽니다.</b><br><br>' +
+      '<b>만기가 가깝거나, 외가격이거나, 변동성이 높을 때</b> 이런 상태가 됩니다. <b>옵션을 산 사람은 매일 확실하게 잃고, 방향은 불확실하게</b> 기다리는 셈입니다.<br><br>' +
+      '<b>「만기까지 남은 날」을 늘려보세요.</b> <b>하루의 무게가 가벼워집니다.</b> 2장에서 이 녹는 속도를 그래프로 봅니다.';
+  } else if(top.n === '변동성 +1%p'){
+    title = '지금 이 ' + nm + '에서는 「변동성」이 가장 크게 가격을 움직입니다';
+    body = '<b>변동성이 1%p만 바뀌어도 ' + sgn(sens[2].d, 3) + '</b>입니다. <b>주가 1%의 효과(' + sgn(sens[0].d, 3) + ')와 비슷하거나 더 큽니다.</b><br><br>' +
+      '<b>만기가 길고 등가격 근처일 때</b> 변동성의 영향이 큽니다. <b>방향은 그대로인데 「시장의 불안감」만 바뀌어도</b> 옵션 가격이 크게 움직입니다.<br><br>' +
+      '<b>그리고 변동성은 볼 수 없는 입력</b>입니다. 3장에서 <b>변동성이 꺼질 때 무슨 일이 생기는지</b> 봅니다.';
+  } else {
+    title = '지금 이 ' + nm + '에서는 「주가」가 가장 크게 움직입니다';
+    body = '<b>주가 1%에 ' + sgn(sens[0].d, 3) + '</b>입니다. <b>하루 경과(' + sgn(sens[1].d, 3) + ')</b>, <b>변동성 1%p(' + sgn(sens[2].d, 3) + ')</b>보다 큽니다.<br><br>' +
+      '<b>내가격이거나 만기가 충분히 남았을 때</b> 이렇습니다. <b>옵션이 기초자산을 따라가는 성격</b>이 강한 상태입니다.<br><br>' +
+      '<b>「행사가격」을 멀리 떨어뜨리거나 「남은 날」을 줄여보세요.</b> <b>순위가 바뀝니다.</b> <b>같은 옵션이라도 조건에 따라 무엇에 민감한지가 달라집니다.</b><br><br>' +
+      '<b>금리의 영향(' + sgn(sens[3].d, 3) + ')</b>은 대체로 가장 작습니다. <b>만기가 아주 긴 옵션</b>에서만 의미가 커집니다.';
+  }
+  verdict('fvVerdict', top.col, title, body);
+}
+bindBtnRow('#fvType', function(v){ fvType = v; fvDraw(); });
+['fvS', 'fvK', 'fvD', 'fvV', 'fvR'].forEach(function(id){ document.getElementById(id).addEventListener('input', fvDraw); });
+
+/* ══════════ 2. 시간가치 감소 ══════════ */
+var TD = [
+  { k:95,  n:'내가격 95', col:'#5F7A52' },
+  { k:100, n:'등가격 100', col:'#8E6B3A' },
+  { k:105, n:'외가격 105', col:'#8E4B3A' }
+];
+function tdDraw(){
+  var day = +document.getElementById('tdDay').value;
+  var v = +document.getElementById('tdVol').value / 100;
+  document.getElementById('tdDayOut').textContent = day + '일' + (day === 0 ? ' (만기)' : '');
+  document.getElementById('tdVolOut').textContent = Math.round(v * 100) + '%';
+
+  var r = 0.03;
+  function price(k, d){ return bs(100, k, d / 365, r, v, 'c'); }
+  var atmNow = price(100, day), atmNext = day > 0 ? price(100, day - 1) : 0;
+  var theta = atmNow - atmNext;
+  var atm30 = price(100, 30), atm7 = price(100, 7);
+  var otmNow = price(105, day), itmNow = price(95, day);
+  var itmTv = itmNow - 5;
+
+  steps('tdSteps', [
+    { k:'내가격 95 콜 (내재 5 + 시간 ' + num(Math.max(0, itmTv), 2) + ')', v:num(itmNow, 3) },
+    { k:'등가격 100 콜 (전부 시간가치)', v:num(atmNow, 3) },
+    { k:'외가격 105 콜 (전부 시간가치)', v:num(otmNow, 3) },
+    { k:'등가격 · 30일→7일, 하루 평균 녹는 양', v:num((atm30 - atm7) / 23, 3) },
+    { k:'등가격 · 7일→만기, 하루 평균 녹는 양', v:num(atm7 / 7, 3) },
+    { k:'등가격 · 오늘 하루에 녹는 양', v:day > 0 ? num(theta, 3) : '만기', total:true }
+  ]);
+
+  document.getElementById('tdTheta').textContent = day > 0 ? '−' + num(theta, 3) + ' (가격의 ' + num(theta / atmNow * 100, 1) + '%)' : '만기 — 0';
+  document.getElementById('tdOtm').textContent = num(otmNow, 3);
+  document.getElementById('tdOtm').style.color = otmNow < 0.1 ? 'var(--neg)' : '';
+
+  var X0 = 60, Y0 = 200, W = 545, H = 160;
+  var maxP = price(95, 60) * 1.05;
+  function xx(d){ return X0 + (60 - d) / 60 * W; }
+  function yy(p){ return Y0 - p / maxP * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">주가 100 고정 — 시간이 흐르면 (왼쪽 60일 → 오른쪽 만기)</text>';
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  [60, 45, 30, 15, 7, 0].forEach(function(d){
+    g += '<line x1="' + xx(d).toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + xx(d).toFixed(1) + '" y2="' + Y0 + '" class="gridl"/>';
+    g += '<text class="axt" x="' + xx(d).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + d + '일</text>';
+  });
+  [0, 2, 4, 6].forEach(function(p){
+    if(p > maxP) return;
+    g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (yy(p) + 4).toFixed(1) + '" text-anchor="end">' + p + '</text>';
+  });
+  g += '<line x1="' + X0 + '" y1="' + yy(5).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(5).toFixed(1) + '" stroke="#5F7A52" stroke-width="1" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + (X0 + W - 4) + '" y="' + (yy(5) - 5).toFixed(1) + '" text-anchor="end">내가격 콜의 내재가치 5</text>';
+  TD.forEach(function(t){
+    var pts = [];
+    for(var d = 60; d >= 0; d--){ pts.push(xx(d).toFixed(1) + ' ' + yy(price(t.k, d)).toFixed(1)); }
+    g += '<path d="M' + pts.join(' L') + '" fill="none" stroke="' + t.col + '" stroke-width="2.4"/>';
+    var cy = yy(price(t.k, day));
+    g += '<circle cx="' + xx(day).toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="' + t.col + '"/>';
+    g += '<text class="lblb" x="' + (X0 + 6) + '" y="' + (yy(price(t.k, 60)) - 7).toFixed(1) + '" fill="' + t.col + '">' + t.n + '</text>';
+  });
+  g += '<line x1="' + xx(day).toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + xx(day).toFixed(1) + '" y2="' + Y0 + '" stroke="#5B5648" stroke-width="1.3" stroke-dasharray="4 3"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">등가격(갈색) 곡선은 오른쪽 끝으로 갈수록 가파르게 꺾입니다. 외가격(빨강)은 만기 전에 이미 0에 붙습니다.</text>';
+  document.getElementById('tdScene').innerHTML = g;
+
+  var title, body, col;
+  if(day === 0){
+    col = '#5B5648';
+    title = '만기 — 시간가치는 모두 사라졌습니다';
+    body = '<b>내가격 95 콜은 내재가치 5</b>만 남았고, <b>등가격·외가격 콜은 0</b>입니다.<br><br>' +
+      '<b>주가가 한 번도 움직이지 않았는데</b>, 60일 전에 <b>' + num(price(100, 60), 2) + '</b>이던 등가격 콜과 <b>' + num(price(105, 60), 2) + '</b>이던 외가격 콜이 <b>전부 사라졌습니다.</b><br><br>' +
+      '<b>이 사라진 돈은 옵션을 판 사람의 몫</b>입니다. <b>옵션 매도가 「매일 월세를 받는다」고 불리는 이유</b>입니다(07편).';
+  } else if(day <= 7){
+    col = '#8E4B3A';
+    title = day + '일 남음 — 가장 빨리 녹는 구간입니다';
+    body = '<b>등가격 콜이 오늘 하루에 ' + num(theta, 3) + '</b>, <b>가격의 ' + num(theta / atmNow * 100, 1) + '%</b>씩 녹습니다.<br><br>' +
+      '<b>30일→7일 구간의 하루 평균은 ' + num((atm30 - atm7) / 23, 3) + '</b>였는데, <b>마지막 7일의 하루 평균은 ' + num(atm7 / 7, 3) + '</b>입니다. <b>약 ' + num((atm7 / 7) / ((atm30 - atm7) / 23), 1) + '배</b> 빠릅니다.<br><br>' +
+      '<b>외가격 105 콜은 ' + num(otmNow, 3) + '</b>만 남았습니다. <b>며칠 안에 주가가 5% 넘게 뛰지 않으면 0</b>입니다.<br><br>' +
+      '<b>⚠️ 「만기 직전 외가격 옵션이 싸다」는 이유로 사는 것</b>이 가장 흔한 실수 중 하나입니다. <b>싼 이유는 녹을 시간조차 거의 안 남았기 때문</b>입니다.';
+  } else {
+    col = '#8E6B3A';
+    title = day + '일 남음 — 등가격 콜은 하루 ' + num(theta, 3) + '씩 녹습니다';
+    body = '<b>주가가 그대로라면</b> 등가격 콜은 <b>오늘 ' + num(atmNow, 3) + ' → 내일 ' + num(atmNext, 3) + '</b>입니다.<br><br>' +
+      '<b>아직은 비교적 천천히</b> 녹는 구간입니다. 그런데 <b>「남은 날」을 7일 아래로</b> 옮겨보세요. <b>곡선이 갑자기 가파르게 꺾입니다.</b><br><br>' +
+      '<b>세 곡선의 차이도 보세요.</b><br>' +
+      '· <b>내가격</b>은 녹아도 <b>내재가치 5 아래로는 안 내려갑니다.</b><br>' +
+      '· <b>등가격</b>은 <b>전부 시간가치</b>라 <b>가장 많이</b> 녹습니다.<br>' +
+      '· <b>외가격</b>은 <b>원래 작은 값이 만기 전에 이미 0에 붙습니다.</b><br><br>' +
+      '<b>「변동성」을 올려보세요.</b> <b>모든 옵션이 비싸지고, 녹을 양도 커집니다.</b>';
+  }
+  verdict('tdVerdict', col, title, body);
+}
+['tdDay', 'tdVol'].forEach(function(id){ document.getElementById(id).addEventListener('input', tdDraw); });
+
+/* ══════════ 3-1. 변동성 급락 ══════════ */
+function vcDraw(){
+  var vb = +document.getElementById('vcBefore').value / 100;
+  var va = +document.getElementById('vcAfter').value / 100;
+  var mv = +document.getElementById('vcMove').value;
+  document.getElementById('vcBeforeOut').textContent = Math.round(vb * 100) + '%';
+  document.getElementById('vcAfterOut').textContent = Math.round(va * 100) + '%' + (va < vb ? ' (' + Math.round((va - vb) * 100) + '%p)' : va > vb ? ' (+' + Math.round((va - vb) * 100) + '%p)' : '');
+  document.getElementById('vcMoveOut').textContent = sgn(mv, 0) + '%';
+
+  var r = 0.03;
+  var before = bs(100, 100, 14 / 365, r, vb, 'c');
+  function after(m, vol){ return bs(100 * (1 + m / 100), 100, 13 / 365, r, vol, 'c'); }
+  var aft = after(mv, va), aftSame = after(mv, vb);
+  var ret = (aft / before - 1) * 100, retSame = (aftSame / before - 1) * 100;
+  var be = null;
+  for(var m = -15; m <= 30; m += 0.05){ if(after(m, va) >= before){ be = m; break; } }
+
+  steps('vcSteps', [
+    { k:'발표 전 콜 가격 (변동성 ' + Math.round(vb * 100) + '%)', v:num(before, 3) },
+    { k:'다음 날 주가', v:num(100 * (1 + mv / 100), 1) },
+    { k:'변동성이 그대로라면 콜', v:num(aftSame, 3) + ' (' + sgn(retSame, 1) + '%)' },
+    { k:'변동성이 ' + Math.round(va * 100) + '%가 되면 콜', v:num(aft, 3) },
+    { k:'변동성 변화가 가져간 몫', v:sgn(aft - aftSame, 3) },
+    { k:'내 콜 수익률', v:sgn(ret, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('vcRet').textContent = sgn(ret, 1) + '%';
+  document.getElementById('vcRet').style.color = ret >= 0 ? 'var(--pos)' : 'var(--neg)';
+  document.getElementById('vcBe').textContent = be === null ? '+30% 넘게' : sgn(be, 1) + '% 이상';
+
+  var X0 = 60, W = 545, YZ = 115, HH = 85, lo = -15, hi = 15, LIM = 150;
+  function xx(m){ return X0 + (m - lo) / (hi - lo) * W; }
+  function yy(v){ return YZ - Math.max(-100, Math.min(LIM, v)) / LIM * HH; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="16">다음 날 주가 변화별 콜 수익률 (%) — 점선: 변동성 유지 · 굵은 선: 변동성 ' + Math.round(va * 100) + '%</text>';
+  g += '<line x1="' + X0 + '" y1="' + YZ + '" x2="' + (X0 + W) + '" y2="' + YZ + '" stroke="#8A8474" stroke-width="1.2"/>';
+  g += '<line x1="' + xx(0).toFixed(1) + '" y1="' + (YZ - HH) + '" x2="' + xx(0).toFixed(1) + '" y2="' + (YZ + HH) + '" class="gridl"/>';
+  [-100, -50, 50, 100, 150].forEach(function(t){
+    g += '<line x1="' + X0 + '" y1="' + yy(t).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(t).toFixed(1) + '" class="gridl"/>';
+    g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(t) + 4).toFixed(1) + '" text-anchor="end">' + (t > 0 ? '+' : '') + t + '</text>';
+  });
+  [-15, -10, -5, 0, 5, 10, 15].forEach(function(t){
+    g += '<text class="axt" x="' + xx(t).toFixed(1) + '" y="' + (YZ + HH + 16) + '" text-anchor="middle">' + (t > 0 ? '+' : '') + t + '%</text>';
+  });
+  var p1 = [], p2 = [], shade = [];
+  for(var m2 = lo; m2 <= hi; m2 += 0.5){
+    var a = (after(m2, vb) / before - 1) * 100, b = (after(m2, va) / before - 1) * 100;
+    p1.push(xx(m2).toFixed(1) + ' ' + yy(a).toFixed(1));
+    p2.push(xx(m2).toFixed(1) + ' ' + yy(b).toFixed(1));
+  }
+  if(be !== null && be > 0 && be <= hi){
+    g += '<rect x="' + xx(0).toFixed(1) + '" y="' + (YZ - HH) + '" width="' + (xx(be) - xx(0)).toFixed(1) + '" height="' + (2 * HH) + '" fill="#8E4B3A" fill-opacity=".08"/>';
+    g += '<text class="axt" x="' + ((xx(0) + xx(be)) / 2).toFixed(1) + '" y="' + (YZ - HH + 12) + '" text-anchor="middle">올라도 손실</text>';
+  }
+  g += '<path d="M' + p1.join(' L') + '" fill="none" stroke="#8A8474" stroke-width="1.6" stroke-dasharray="5 3"/>';
+  g += '<path d="M' + p2.join(' L') + '" fill="none" stroke="#6A5A8C" stroke-width="2.8"/>';
+  g += '<circle cx="' + xx(mv).toFixed(1) + '" cy="' + yy(ret).toFixed(1) + '" r="5.5" fill="#6A5A8C"/>';
+  var tx = Math.min(Math.max(xx(mv) + 10, X0 + 6), X0 + W - 60);
+  g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + Math.max(YZ - HH + 26, Math.min(YZ + HH - 4, yy(ret) + (ret >= 0 ? -10 : 18))).toFixed(1) + '" fill="#6A5A8C">' + sgn(ret, 1) + '%</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (YZ + HH + 34) + '">연한 빨간 구간은 주가가 올랐는데도 콜이 손실인 범위입니다.</text>';
+  document.getElementById('vcScene').innerHTML = g;
+
+  var title, body, col;
+  if(mv > 0 && ret < 0){
+    col = '#8E4B3A';
+    title = '주가 ' + sgn(mv, 0) + '% — 방향을 맞혔는데 콜은 ' + sgn(ret, 1) + '%';
+    body = '<b>「오를 것」이라고 콜을 샀고, 실제로 ' + sgn(mv, 0) + '% 올랐습니다.</b> 그런데 <b>콜은 ' + num(before, 2) + ' → ' + num(aft, 2) + '</b>로 <b>' + sgn(ret, 1) + '%</b>입니다.<br><br>' +
+      '<b>이유는 변동성</b>입니다. 발표 전에는 <b>「크게 움직일 것」이라는 기대로 ' + Math.round(vb * 100) + '%</b>까지 부풀어 있었고, <b>발표가 끝나자 불확실성이 사라져 ' + Math.round(va * 100) + '%</b>로 꺼졌습니다.<br><br>' +
+      '<b>변동성이 그대로였다면 ' + sgn(retSame, 1) + '%</b>였을 것입니다. <b>그 차이가 전부 변동성 하락이 가져간 몫</b>입니다.<br><br>' +
+      '<b>본전이 되려면 주가가 ' + (be === null ? '+30% 넘게' : sgn(be, 1) + '% 이상') + '</b> 올랐어야 했습니다. <b>「오른다」가 아니라 「시장이 예상한 것보다 크게 오른다」</b>를 맞혀야 했던 것입니다.<br><br>' +
+      '<b>⚠️ 큰 발표를 앞두고 옵션을 사는 것</b>은 <b>이미 비싸진 보험을 사는 것</b>과 같습니다. <b>사건이 지나면 보험료가 확 떨어집니다.</b>';
+  } else if(ret >= 0 && va < vb){
+    col = '#5F7A52';
+    title = '주가 ' + sgn(mv, 0) + '% — 변동성이 꺼졌지만 움직임이 충분히 컸습니다';
+    body = '변동성이 <b>' + Math.round(vb * 100) + '% → ' + Math.round(va * 100) + '%</b>로 꺼졌는데도 <b>콜은 ' + sgn(ret, 1) + '%</b>입니다. <b>주가가 ' + sgn(mv, 0) + '% 움직여 변동성 하락을 이겨냈습니다.</b><br><br>' +
+      '<b>그런데 변동성이 그대로였다면 ' + sgn(retSame, 1) + '%</b>였습니다. <b>' + num(retSame - ret, 1) + '%p</b>를 변동성 하락에 내준 것입니다.<br><br>' +
+      '<b>본전 선은 ' + (be === null ? '+30% 넘게' : sgn(be, 1) + '%') + '</b>였습니다. <b>「주가 변화」를 그보다 작게</b> 옮겨보세요. <b>같은 방향인데 손실로 바뀝니다.</b>';
+  } else if(mv <= 0){
+    col = '#8E4B3A';
+    title = '주가 ' + sgn(mv, 0) + '% — 방향도 틀리고 변동성도 ' + (va < vb ? '꺼졌습니다' : '그대로입니다');
+    body = '<b>콜은 ' + sgn(ret, 1) + '%</b>입니다. <b>방향이 틀렸고</b>' + (va < vb ? ', <b>변동성까지 ' + Math.round(vb * 100) + '% → ' + Math.round(va * 100) + '%로 꺼져</b> 손실이 더 커졌습니다' : '') + '.<br><br>' +
+      '<b>「주가 변화」를 오른쪽으로 옮겨보세요.</b> <b>+1%, +2%, +3%에서도 손실이 계속될 수</b> 있습니다. <b>연한 빨간 구간</b>이 그 범위입니다.';
+  } else {
+    col = '#6A5A8C';
+    title = '주가 ' + sgn(mv, 0) + '% · 변동성 ' + Math.round(vb * 100) + '% → ' + Math.round(va * 100) + '% — 콜 ' + sgn(ret, 1) + '%';
+    body = '<b>변동성이 꺼지지 않았거나 오히려 올라서</b>, 옵션 매수자에게 불리하지 않은 조건입니다.<br><br>' +
+      '<b>「발표 뒤 변동성」을 30% 아래로</b> 내려보세요. <b>같은 주가 변화인데 결과가 크게 나빠집니다.</b><br><br>' +
+      '<b>현실에서는 발표 뒤 변동성이 꺼지는 경우가 흔합니다.</b> <b>불확실성이 해소되기</b> 때문입니다.';
+  }
+  verdict('vcVerdict', col, title, body);
+}
+['vcBefore', 'vcAfter', 'vcMove'].forEach(function(id){ document.getElementById(id).addEventListener('input', vcDraw); });
+
+/* ══════════ 3-2. 내재변동성 역산 ══════════ */
+function impliedVol(price, S, K, T, r){
+  var lo = 0.001, hi = 3;
+  for(var i = 0; i < 100; i++){ var m = (lo + hi) / 2; if(bs(S, K, T, r, m, 'c') > price) hi = m; else lo = m; }
+  return (lo + hi) / 2;
+}
+function ivDraw(){
+  var price = +document.getElementById('ivPrice').value / 100;
+  document.getElementById('ivPriceOut').textContent = num(price, 2);
+  var T = 30 / 365, r = 0.03;
+  var minP = bs(100, 100, T, r, 0.001, 'c');
+  var iv = impliedVol(price, 100, 100, T, r);
+  var check = bs(100, 100, T, r, iv, 'c');
+  var daily = iv / Math.sqrt(252) * 100;
+
+  steps('ivSteps', [
+    { k:'시장 콜 가격', v:num(price, 3) },
+    { k:'변동성 0에 가까울 때의 최소 가격', v:num(minP, 3) },
+    { k:'모형 가격이 시장 가격과 같아지는 변동성', v:num(iv * 100, 2) + '%' },
+    { k:'그 변동성으로 다시 계산한 가격 (검산)', v:num(check, 4) },
+    { k:'하루 평균 움직임 ≈ 연 변동성 ÷ √252', v:'±' + num(daily, 2) + '%', total:true }
+  ]);
+
+  document.getElementById('ivVal').textContent = num(iv * 100, 1) + '%';
+  document.getElementById('ivDay').textContent = '하루 ±' + num(daily, 2) + '% 안팎';
+
+  var title, body, col;
+  if(iv < 0.15){
+    col = '#5F7A52';
+    title = '내재변동성 ' + num(iv * 100, 1) + '% — 시장이 조용할 것이라고 보고 있습니다';
+    body = '이 가격은 <b>「앞으로 연 ' + num(iv * 100, 1) + '%, 하루 ±' + num(daily, 2) + '% 안팎으로 움직일 것」</b>이라는 기대와 맞아떨어집니다.<br><br>' +
+      '<b>옵션이 싸다</b>는 뜻입니다. <b>보험을 사려는 사람에게는 좋은 시기</b>로 보일 수 있습니다.<br><br>' +
+      '<b>⚠️ 그런데 「싸다」가 「곧 비싸진다」를 뜻하지는 않습니다.</b> <b>조용한 시장은 한동안 조용할 수</b> 있고, 그동안 <b>산 옵션은 시간가치만큼 녹습니다.</b>';
+  } else if(iv > 0.40){
+    col = '#8E4B3A';
+    title = '내재변동성 ' + num(iv * 100, 1) + '% — 시장이 크게 흔들릴 것이라고 보고 있습니다';
+    body = '이 가격은 <b>「앞으로 연 ' + num(iv * 100, 1) + '%, 하루 ±' + num(daily, 2) + '% 안팎」</b>이라는 기대와 맞습니다. <b>상당히 불안한 시장</b>입니다.<br><br>' +
+      '<b>옵션이 비쌉니다.</b> <b>큰 사건을 앞두고 있거나 이미 급락 중</b>인 경우에 흔합니다.<br><br>' +
+      '<b>이때 옵션을 사면</b> — <b>위의 「변동성 급락」 계산기의 상황</b>이 됩니다. <b>사건이 지나 변동성이 꺼지면 방향을 맞혀도 잃을 수</b> 있습니다.<br><br>' +
+      '<b>이때 옵션을 팔면</b> — <b>비싼 보험료를 받지만</b>, <b>시장이 이미 크게 흔들리는 중</b>이라 <b>더 큰 움직임이 올 위험</b>도 큽니다(07편).';
+  } else {
+    col = '#6A5A8C';
+    title = '내재변동성 ' + num(iv * 100, 1) + '% — 평범한 범위입니다';
+    body = '이 가격은 <b>「연 ' + num(iv * 100, 1) + '%, 하루 ±' + num(daily, 2) + '% 안팎」</b>의 움직임을 전제로 합니다.<br><br>' +
+      '<b>「시장 가격」 슬라이더를 움직여보세요.</b> <b>가격이 조금만 달라져도 내재변동성이 크게</b> 바뀝니다. <b>옵션 가격 = 변동성에 대한 의견</b>이라는 뜻입니다.<br><br>' +
+      '<b>그래서 옵션 거래자들은 「비싸다/싸다」를 가격이 아니라 내재변동성으로</b> 판단합니다. <b>행사가·만기가 달라도 같은 잣대</b>로 비교할 수 있기 때문입니다.';
+  }
+  verdict('ivVerdict', col, title, body);
+}
+document.getElementById('ivPrice').addEventListener('input', ivDraw);
+
+/* ══════════ 4. 그릭스 ══════════ */
+var gkIdx = 0;
+var GK = [
+  { n:'델타', key:'delta', col:'#3F5F6F', fmt:function(v){ return num(v, 3); } },
+  { n:'감마', key:'gamma', col:'#6A5A8C', fmt:function(v){ return num(v, 4); } },
+  { n:'세타', key:'theta', col:'#8E6B3A', fmt:function(v){ return sgn(v, 4) + ' / 일'; } },
+  { n:'베가', key:'vega',  col:'#5F7A52', fmt:function(v){ return num(v, 4) + ' / 1%p'; } }
+];
+function gkDraw(){
+  var S = +document.getElementById('gkS').value;
+  var days = +document.getElementById('gkD').value;
+  document.getElementById('gkSOut').textContent = S + (S > 100 ? ' (내가격)' : S < 100 ? ' (외가격)' : ' (등가격)');
+  document.getElementById('gkDOut').textContent = days + '일';
+  var T = days / 365, r = 0.03, v = 0.25;
+  var price = bs(S, 100, T, r, v, 'c');
+  var gr = greeks(S, 100, T, r, v);
+  var sel = GK[gkIdx];
+
+  steps('gkSteps', [
+    { k:'콜 가격', v:num(price, 3) },
+    { k:'델타 — 주가 1 오르면 콜이 얼마나', v:num(gr.delta, 3) },
+    { k:'감마 — 주가 1 오르면 델타가 얼마나', v:num(gr.gamma, 4) },
+    { k:'세타 — 하루 지나면 콜이 얼마나', v:sgn(gr.theta, 4) },
+    { k:'베가 — 변동성 1%p 오르면 콜이 얼마나', v:num(gr.vega, 4) },
+    { k:'선택: ' + sel.n, v:sel.fmt(gr[sel.key]), total:true }
+  ]);
+
+  document.getElementById('gkPrice').textContent = num(price, 3);
+  document.getElementById('gkVal').textContent = sel.n + ' ' + sel.fmt(gr[sel.key]);
+
+  var X0 = 60, Y0 = 190, W = 545, H = 150, lo = 75, hi = 125;
+  var vals = [];
+  for(var s = lo; s <= hi; s += 0.5){ vals.push(greeks(s, 100, T, r, v)[sel.key]); }
+  var vmin = Math.min.apply(null, vals.concat([0])), vmax = Math.max.apply(null, vals.concat([0]));
+  if(vmax - vmin < 1e-9){ vmax = vmin + 1; }
+  function xx(s){ return X0 + (s - lo) / (hi - lo) * W; }
+  function yy(val){ return Y0 - (val - vmin) / (vmax - vmin) * H; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">주가에 따른 「' + sel.n + '」 (만기 ' + days + '일)</text>';
+  g += '<line x1="' + X0 + '" y1="' + yy(0).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(0).toFixed(1) + '" stroke="#8A8474" stroke-width="1.1"/>';
+  g += '<line x1="' + xx(100).toFixed(1) + '" y1="' + (Y0 - H) + '" x2="' + xx(100).toFixed(1) + '" y2="' + Y0 + '" class="gridl"/>';
+  [75, 90, 100, 110, 125].forEach(function(t){
+    g += '<text class="axt" x="' + xx(t).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + t + '</text>';
+  });
+  var pts = [];
+  for(var i = 0; i < vals.length; i++){ pts.push(xx(lo + i * 0.5).toFixed(1) + ' ' + yy(vals[i]).toFixed(1)); }
+  g += '<path d="M' + pts.join(' L') + '" fill="none" stroke="' + sel.col + '" stroke-width="2.8"/>';
+  var cv = gr[sel.key];
+  g += '<circle cx="' + xx(S).toFixed(1) + '" cy="' + yy(cv).toFixed(1) + '" r="5.5" fill="' + sel.col + '"/>';
+  var tx = Math.min(Math.max(xx(S) + 10, X0 + 6), X0 + W - 110);
+  g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + Math.max(Y0 - H + 12, yy(cv) - 10).toFixed(1) + '" fill="' + sel.col + '">' + sel.fmt(cv) + '</text>';
+  g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(vmax) + 4).toFixed(1) + '" text-anchor="end">' + (sel.key === 'theta' ? num(vmax, 3) : num(vmax, 3)) + '</text>';
+  g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(vmin) + 4).toFixed(1) + '" text-anchor="end">' + num(vmin, 3) + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">세로 점선이 행사가격 100입니다. 「남은 날」을 줄이면 곡선 모양이 바뀝니다.</text>';
+  document.getElementById('gkScene').innerHTML = g;
+
+  var T2 = [
+    { t:'델타 ' + num(gr.delta, 3) + ' — 주가가 1 오르면 콜은 약 ' + num(gr.delta, 2) + ' 오릅니다',
+      b:'<b>델타는 「기초자산이 1 움직일 때 옵션이 얼마나 움직이나」</b>입니다. 콜은 <b>0에서 1 사이</b>입니다.<br><br>' +
+        '· <b>깊은 외가격</b> — 델타가 <b>0에 가깝습니다.</b> 주가가 올라도 옵션은 거의 안 움직입니다.<br>' +
+        '· <b>등가격</b> — 델타가 <b>0.5 근처</b>입니다.<br>' +
+        '· <b>깊은 내가격</b> — 델타가 <b>1에 가깝습니다.</b> 주식과 거의 똑같이 움직입니다.<br><br>' +
+        '<b>그래프가 S자</b>인 이유입니다. <b>「남은 날」을 1일로</b> 줄여보세요. <b>S자가 계단처럼 가팔라집니다</b> — 만기가 가까우면 <b>「행사가를 넘느냐 못 넘느냐」</b>만 남기 때문입니다.<br><br>' +
+        '<b>델타는 대략 「만기에 내가격일 확률」의 감각</b>으로도 쓰입니다. 다만 <b>정확한 확률은 아니고</b>, 모형의 가정에 의존합니다.' },
+    { t:'감마 ' + num(gr.gamma, 4) + ' — 델타가 얼마나 빨리 변하나',
+      b:'<b>감마는 「주가가 1 움직일 때 델타가 얼마나 바뀌나」</b>입니다. <b>델타의 변화 속도</b>입니다.<br><br>' +
+        '<b>감마는 등가격에서 가장 크고</b>, <b>만기가 가까울수록 등가격 근처에서 뾰족하게 커집니다.</b> <b>「남은 날」을 줄여보세요.</b><br><br>' +
+        '<b>감마가 크다는 것의 의미</b><br>' +
+        '· <b>옵션을 산 사람</b>에게는 <b>좋습니다</b> — 유리한 방향으로 움직일수록 <b>델타가 커져 이익이 가속</b>됩니다.<br>' +
+        '· <b>옵션을 판 사람</b>에게는 <b>위험합니다</b> — 불리한 방향으로 움직일수록 <b>손실이 가속</b>됩니다.<br><br>' +
+        '<b>⚠️ 만기 직전 등가격 옵션을 판 사람</b>은 <b>작은 가격 변화에도 손실이 급격히 커질 수</b> 있습니다. <b>「만기 직전이라 시간가치가 거의 없으니 안전하다」</b>는 생각이 틀리는 지점입니다.' },
+    { t:'세타 ' + sgn(gr.theta, 4) + ' — 하루가 지날 때마다 나가는 비용',
+      b:'<b>세타는 「다른 것이 그대로일 때 하루가 지나면 옵션이 얼마나 줄어드나」</b>입니다. <b>옵션 매수자에게는 거의 항상 마이너스</b>입니다.<br><br>' +
+        '<b>세타의 크기는 등가격에서 가장 크고</b>, <b>만기가 가까울수록 커집니다</b>(2장).<br><br>' +
+        '<b>세타와 감마는 한 쌍</b>입니다.<br>' +
+        '· <b>옵션을 사면</b> — <b>감마(움직임에서 오는 기회)를 얻는 대신 세타(매일 녹는 비용)</b>를 냅니다.<br>' +
+        '· <b>옵션을 팔면</b> — <b>세타(매일 들어오는 수입)를 받는 대신 감마(큰 움직임의 위험)</b>를 떠안습니다.<br><br>' +
+        '<b>공짜는 없습니다.</b> <b>「매일 세타를 받는다」는 매도 전략은 「큰 움직임이 오면 감마로 한 번에 잃는다」와 같은 문장</b>입니다. 07편의 주제입니다.' },
+    { t:'베가 ' + num(gr.vega, 4) + ' — 변동성 1%p에 옵션이 얼마나',
+      b:'<b>베가는 「변동성이 1%p 오르면 옵션이 얼마나 오르나」</b>입니다. <b>콜과 풋 모두 플러스</b>입니다 — <b>불확실성이 커지면 권리의 값어치가 커지기</b> 때문입니다.<br><br>' +
+        '<b>베가는 등가격에서 가장 크고, 만기가 길수록 큽니다.</b> <b>「남은 날」을 120일로</b> 늘려보세요.<br><br>' +
+        '<b>3장의 「변동성 급락」이 바로 베가의 효과</b>입니다. <b>변동성이 30%p 꺼지면 대략 베가 × 30</b>만큼 옵션 가격이 줄어듭니다.<br><br>' +
+        '<b>⚠️ 옵션을 판 사람은 베가가 마이너스</b>입니다. <b>시장이 불안해져 변동성이 뛰면</b>, <b>주가가 움직이지 않아도 평가손실</b>이 생기고 <b>증거금 요구가 커집니다.</b> <b>그리고 변동성은 대체로 주가가 급락할 때 함께 뜁니다.</b>' }
+  ];
+  document.getElementById('gkVerdict').querySelector('.vh').textContent = sel.n;
+  verdict('gkVerdict', sel.col, T2[gkIdx].t, T2[gkIdx].b);
+}
+bindBtnRow('#gkBtns', function(v){ gkIdx = +v; gkDraw(); });
+['gkS', 'gkD'].forEach(function(id){ document.getElementById(id).addEventListener('input', gkDraw); });
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 다음 편으로 이어집니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+fvDraw(); tdDraw(); vcDraw(); ivDraw(); gkDraw();
+</script>
+</body>
+</html>
