@@ -22,6 +22,10 @@
     --s4:#7A5C9E;
     --s5:#4C7A6D;
     /* 세금 트랙 */
+    --f1:#3F5F6F;
+    --f2:#6A5A8C;
+    --f3:#8A5A3A;
+    --f4:#8E4B3A;
     --m1:#7A5C3A;
     --m2:#8E6B3A;
     --m3:#5F7A52;
@@ -270,7 +274,7 @@
       <button data-t="bond">📜 채권 <span class="cnt">10편</span></button>
       <button data-t="tax">🧾 세금 <span class="cnt">7편</span></button>
       <button data-t="commodity">🛢 원자재 <span class="cnt">10편</span></button>
-      <button data-t="futures" disabled>📉 선물 <span class="cnt">예정</span></button>
+      <button data-t="futures">📉 선물·옵션 <span class="cnt">10편</span></button>
     </div>
   </header>
 
@@ -1093,7 +1097,139 @@
 
   </div>
   <div class="track" id="t-futures">
-    <div class="comingsoon"><h2>선물 트랙</h2><p>준비 중입니다.</p></div>
+
+    <p class="tintro">선물과 옵션은 <b>주식·채권과 달리 「자산」이 아니라 「계약」</b>입니다. 가격이 다른 자산에서 <b>파생</b>되고, <b>누군가 벌면 반드시 누군가 잃습니다.</b> 원자재 트랙 05편에서 선물의 기초(증거금·마진콜·만기)를 봤다면, 여기서는 <b>지수선물 · 헤지 · 옵션 · 레버리지 상품</b>까지 넓힙니다. <b>열 편</b>이고, <b>07편(옵션 매도)과 08편(레버리지 ETF)</b>이 가장 실용적인 경고입니다.</p>
+
+    <div class="start" style="--edge:var(--f1)">
+      <div class="sh">처음이라면 — 이 세 편만 먼저</div>
+      <p>파생상품은 <b>직접 거래하지 않아도 이미 만나고 있을 수</b> 있습니다. 레버리지·인버스 ETF가 대표적입니다.</p>
+      <ol>
+        <li><a href="futures-basics.html">파생상품이 무엇인지</a> — 제로섬이라는 것의 의미</li>
+        <li><b>「2배 ETF」가 왜 기간 전체로 2배가 아닌지</b> <span class="soon">08편 준비 중</span></li>
+        <li><b>나에게 필요한지</b> — 대부분에게는 필요 없습니다 <span class="soon">10편 준비 중</span></li>
+      </ol>
+    </div>
+
+    <section class="part" style="--edge:var(--f1)">
+      <div class="part-head">
+        <span class="part-num">PART A · 기초</span>
+        <h2>「파생」이라는 말부터</h2>
+        <p>선물과 옵션은 <b>자산이 아니라 계약</b>입니다. 가격이 다른 자산에서 <b>파생</b>되고, <b>누군가 벌면 누군가 잃습니다.</b></p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="futures-basics.html">
+            <span class="num">01 · 기초</span>
+            <h3>파생상품이란 무엇인가</h3>
+            <p>주식은 회사가 돈을 벌면 모두가 함께 벌 수 있지만, 파생상품은 <b>합계가 0</b>입니다. 그 하나가 모든 것을 바꿉니다.</p>
+            <div class="meta"><span>제로섬</span><span>선물·옵션·스왑</span><span>손익 구조</span><span>용어 사전</span></div>
+          </a>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">02 · 가격 <span class="soon">준비 중</span></span>
+            <h3>선물 가격은 어떻게 정해지나</h3>
+            <p>선물 가격은 <b>「지금 가격 + 기다리는 비용」</b>입니다. 그래서 만기가 되면 <b>반드시 현물과 만납니다.</b></p>
+            <div class="meta"><span>보유비용</span><span>베이시스</span><span>수렴</span><span>차익거래</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--f2)">
+      <div class="part-head">
+        <span class="part-num">PART B · 선물</span>
+        <h2>의무를 사고판다</h2>
+        <p>선물은 <b>「그날 그 값에 반드시 사고판다」</b>는 약속입니다. 주가지수 선물과, 선물의 원래 용도인 <b>헤지</b>를 봅니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">03 · 지수선물 <span class="soon">준비 중</span></span>
+            <h3>코스피200 · S&P500 선물</h3>
+            <p>주식시장 전체를 <b>한 계약</b>으로 사고팝니다. <b>1포인트가 25만원</b>이라는 것이 실제로 무엇을 뜻하는지.</p>
+            <div class="meta"><span>승수</span><span>증거금</span><span>일일정산</span><span>롤오버</span><span>야간거래</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">04 · 헤지 <span class="soon">준비 중</span></span>
+            <h3>선물로 위험을 줄이는 법</h3>
+            <p>선물이 만들어진 이유입니다. 대신 <b>떨어질 때의 손실과 함께 오를 때의 이익도</b> 내려놓습니다.</p>
+            <div class="meta"><span>헤지 비율</span><span>베타</span><span>부분 헤지</span><span>헤지의 대가</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--f3)">
+      <div class="part-head">
+        <span class="part-num">PART C · 옵션</span>
+        <h2>권리를 사고판다</h2>
+        <p>옵션은 <b>「원하면 사고팔 수 있는 권리」</b>입니다. 사는 쪽과 파는 쪽의 위험이 <b>전혀 다른 모양</b>입니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">05 · 옵션 <span class="soon">준비 중</span></span>
+            <h3>콜과 풋, 권리와 의무</h3>
+            <p>옵션을 <b>사면 손실이 프리미엄으로 제한</b>되고, <b>팔면 이익이 프리미엄으로 제한</b>됩니다. 그 비대칭의 구조.</p>
+            <div class="meta"><span>콜</span><span>풋</span><span>프리미엄</span><span>행사가</span><span>손익분기</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">06 · 옵션 가격 <span class="soon">준비 중</span></span>
+            <h3>시간가치와 변동성</h3>
+            <p>옵션은 <b>시간이 지나면 녹는</b> 자산입니다. 무엇이 옵션 가격을 정하는지 계산기로 봅니다.</p>
+            <div class="meta"><span>내재가치</span><span>시간가치</span><span>세타</span><span>변동성</span><span>그릭스</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">07 · 옵션 매도 <span class="soon">준비 중</span></span>
+            <h3>매달 받는 프리미엄의 함정</h3>
+            <p><b>열한 번 벌고 한 번에 다 잃는</b> 구조입니다. 가장 매력적으로 보이고 가장 위험한 전략입니다.</p>
+            <div class="meta"><span>꼬리위험</span><span>커버드콜</span><span>증거금 급증</span><span>승률의 착각</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--f4)">
+      <div class="part-head">
+        <span class="part-num">PART D · 실전</span>
+        <h2>조심할 것과 쓰는 법</h2>
+        <p>개인이 실제로 만나는 파생상품과, <b>쓴다면 지켜야 할 규칙</b>입니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <div class="doc">
+            <span class="num">08 · 상품 <span class="soon">준비 중</span></span>
+            <h3>레버리지 · 인버스 ETF와 해외선물</h3>
+            <p><b>「2배」가 기간 전체로 2배가 아닙니다.</b> 개인이 가장 흔하게 만나는 파생상품들을 봅니다.</p>
+            <div class="meta"><span>일일 리셋</span><span>변동성 손실</span><span>해외선물</span><span>환율</span><span>세금</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">09 · 실패 <span class="soon">준비 중</span></span>
+            <h3>파생상품에서 돈을 잃는 방법</h3>
+            <p><b>비용이 붙은 제로섬</b>에서 평균은 마이너스입니다. 손실이 커지는 경로를 하나씩 짚습니다.</p>
+            <div class="meta"><span>과도한 레버리지</span><span>물타기</span><span>만기 도박</span><span>손실 만회 심리</span></div>
+          </div>
+        </li>
+        <li>
+          <div class="doc">
+            <span class="num">10 · 원칙 <span class="soon">준비 중</span></span>
+            <h3>개인에게 파생상품이 필요한가</h3>
+            <p>대부분에게 답은 <b>「필요 없다」</b>입니다. 필요한 경우와, 그때 지킬 규칙을 정리합니다.</p>
+            <div class="meta"><span>제도·교육</span><span>세금</span><span>보험으로서의 풋</span><span>체크리스트</span></div>
+          </div>
+        </li>
+      </ol>
+    </section>
+
   </div>
 
   <div class="note">

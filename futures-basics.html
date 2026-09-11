@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>파생상품이란 무엇인가</title>
+<meta name="description" content="선물과 옵션은 자산이 아니라 계약입니다. 제로섬과 비용, 일곱 가지 손익 구조, 기본 용어를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --fut:#3F5F6F;--opt:#6A5A8C;--zero:#8E4B3A;--good:#5F7A52;--gold:#8E6B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:720px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .tab{display:block;padding-left:16px;color:var(--ink-soft);font-size:14.2px;margin-top:3px;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--fut));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--fut));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--fut));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  .gloss{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:6px 20px;margin:22px 0 0;}
+  .gloss .row{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px dotted var(--rule);}
+  .gloss .row:last-child{border-bottom:0;}
+  .gloss .term{flex:0 0 112px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--fut);font-weight:500;}
+  .gloss .def{flex:1 1 auto;font-size:14px;color:var(--ink-soft);line-height:1.6;}
+  .gloss .def b{color:var(--ink);font-weight:600;}
+  .pairs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:20px 0 0;}
+  .pairs > div{background:var(--card);border:1px solid var(--rule);border-top:3px solid var(--fc);border-radius:3px;padding:14px 15px;}
+  .pairs h4{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:500;color:var(--fc);margin:0 0 6px;}
+  .pairs .it{font-size:13.4px;color:var(--ink);margin-bottom:5px;font-weight:600;}
+  .pairs .dr{font-size:12.4px;color:var(--ink-soft);line-height:1.58;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .pairs{grid-template-columns:1fr;}
+    .gloss .row{flex-direction:column;gap:3px;}
+    .gloss .term{flex:none;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">선물·옵션 01 · 기초 · 투자 공부 노트</div>
+    <h1>파생상품이란<br>무엇인가</h1>
+    <p class="lede">주식을 사면 <b>회사의 일부</b>를 갖습니다. 채권을 사면 <b>빌려준 돈을 돌려받을 권리</b>를 갖습니다. 선물이나 옵션을 사면 <b>물건은 아무것도 갖지 않습니다.</b> <b>「약속」</b>을 갖습니다. 그리고 그 약속의 가격은 <b>다른 무언가의 가격에서 파생</b>됩니다.</p>
+    <div class="callout">
+      <p><b>이 트랙에서 가장 먼저 알아야 할 한 가지 — 제로섬</b>입니다.</p>
+      <p>주식은 <b>회사가 이익을 내면 모든 주주가 함께 벌 수</b> 있습니다. 파이 자체가 커지기 때문입니다. <b>파생상품은 파이가 커지지 않습니다.</b> 약속의 한쪽이 번 돈은 <b>정확히 다른 쪽이 잃은 돈</b>입니다.</p>
+      <p><b>그리고 거래할 때마다 비용이 붙으면, 합계는 0이 아니라 마이너스</b>가 됩니다. 예를 들어 <b>레버리지 10배로 1년에 200번 사고팔면</b>, <b>방향을 딱 반반 맞혀도 비용만으로 −45%</b>입니다(예시 가정, 2장에서 계산).</p>
+      <p><b>⚠️ 그렇다고 파생상품이 도박판이라는 뜻은 아닙니다.</b> <b>위험을 원하지 않는 사람에게서 위험을 감수하려는 사람에게로</b> 옮겨주는 장치이고, <b>농부·항공사·수출기업·연기금</b>이 매일 씁니다. <b>도구의 문제가 아니라 누가 무슨 목적으로 쓰느냐</b>의 문제입니다.</p>
+      <p><b>이 트랙의 입장을 미리 밝히면</b> — <b>대부분의 개인에게 파생상품은 필요하지 않습니다.</b> 그런데 <b>레버리지·인버스 ETF나 ELS처럼 이미 만나고 있을 수</b> 있기 때문에, <b>안 쓰더라도 알아야</b> 합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#what">1. 약속을 사고판다</a>
+    <a href="#zero">2. 제로섬과 비용</a>
+    <a href="#payoff">3. 일곱 가지 손익 모양</a>
+    <a href="#words">4. 용어 사전</a>
+    <a href="#where">5. 어디서 만나나</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="what">
+    <div class="prod-head" style="--edge:var(--fut)">
+      <span class="prod-tag">01 · 정의</span>
+      <h2>물건이 아니라 약속입니다</h2>
+      <p class="one">그래서 <b>다른 자산과 규칙이 전혀 다릅니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>형이랑 동생이 이런 약속을 했어. <b>「내일 비가 오면 내가 너한테 아이스크림 사줄게. 안 오면 네가 나한테 사줘.」</b></p>
+      <p>이 약속에는 재미있는 점이 세 개 있어.</p>
+      <p><b>첫째, 아무도 「비」를 갖고 있지 않아.</b> 둘이 가진 건 <b>약속</b>뿐이야. 그런데 그 약속의 결과는 <b>날씨에 따라</b> 정해져. 이렇게 <b>다른 것에 따라 값이 정해지는 약속</b>을 <b>「파생상품」</b>이라고 해.</p>
+      <p><b>둘째, 한 명이 이기면 다른 한 명은 반드시 져.</b> 아이스크림이 <b>새로 생기지 않거든.</b> 형이 먹는 아이스크림은 <b>동생 용돈으로 산 거야.</b> 이걸 <b>「제로섬」</b>이라고 해.</p>
+      <p><b>셋째, 내일이 지나면 약속이 끝나.</b> 끝나는 날이 정해져 있어. 이걸 <b>「만기」</b>라고 해.</p>
+      <p>주식은 달라. 회사가 돈을 잘 벌면 <b>주식 가진 사람 모두</b>가 함께 좋아질 수 있어. <b>파이가 커지니까.</b> 파생상품은 <b>파이가 커지지 않아.</b> 그게 가장 큰 차이야.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>구분</th><th>무엇을 갖나</th><th>참여자 합계</th><th>끝나는 날</th><th>최대 손실</th><th>시간이 흐르면</th></tr></thead>
+        <tbody>
+          <tr><th>주식</th><td>회사의 일부</td><td><b>플러스 가능</b> — 이익이 쌓임</td><td>없음</td><td>산 돈 전부</td><td>대체로 내 편</td></tr>
+          <tr><th>채권</th><td>돈을 돌려받을 권리</td><td><b>플러스</b> — 이자</td><td>있음</td><td>산 돈 전부</td><td>이자가 쌓임</td></tr>
+          <tr><th>선물</th><td><b>「그날 그 값에 사고팔 의무」</b></td><td><b>0</b> (비용 빼면 마이너스)</td><td><b>있음</b></td><td><b>넣은 돈을 넘을 수 있음</b></td><td>중립</td></tr>
+          <tr><th>옵션 매수</th><td><b>「원하면 사고팔 권리」</b></td><td><b>0</b> (비용 빼면 마이너스)</td><td><b>있음</b></td><td>낸 프리미엄</td><td><b>녹음</b></td></tr>
+          <tr><th>옵션 매도</th><td><b>「상대가 원하면 응할 의무」</b></td><td><b>0</b> (비용 빼면 마이너스)</td><td><b>있음</b></td><td><b>매우 크거나 제한 없음</b></td><td>시간이 내 편</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 선물의 기초(증거금·마진콜·만기)는 <a href="commodity-futures.html">원자재 트랙 05편</a>에서 다뤘습니다</p>
+
+    <div class="keyline">
+      <div class="kt">이 트랙의 첫 문장</div>
+      <div class="kb">파생상품은 <b>물건</b>이 아니라 <b>약속</b>이고,<br>약속의 합계는 <b>0</b>입니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="zero">
+    <div class="prod-head" style="--edge:var(--zero)">
+      <span class="prod-tag">02 · 제로섬</span>
+      <h2>합계가 0인 게임에 비용이 붙으면</h2>
+      <p class="one"><b>평균적인 참여자는 비용만큼 잃습니다.</b> 실력이 아니라 산수입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">ZERO-SUM · 방향은 딱 반반만 맞힌다고 가정합니다</div>
+      <p class="labsub">실력이 <b>평균</b>인 사람이 1년 동안 겪는 결과입니다. <b>비용과 레버리지와 횟수</b>만 바꿔보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="zsLev">레버리지</label>
+        <input type="range" id="zsLev" min="1" max="20" step="1" value="10">
+        <output id="zsLevOut">10배</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="zsTrips">1년 동안 사고판 횟수 (왕복)</label>
+        <input type="range" id="zsTrips" min="0" max="500" step="10" value="200">
+        <output id="zsTripsOut">200회</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="zsCost">한쪽 거래 비용 (수수료 + 체결 미끄러짐)</label>
+        <input type="range" id="zsCost" min="5" max="200" step="5" value="15">
+        <output id="zsCostOut">0.015%</output>
+      </div>
+
+      <div class="steps-out" id="zsSteps"></div>
+
+      <svg viewBox="0 0 640 235" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="거래 횟수에 따른 비용 누적">
+        <g id="zsScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">1년 뒤 (실력 평균)</span><span class="rv" id="zsYear">—</span></div>
+        <div><span class="rk">본전이 되려면 매 거래마다</span><span class="rv" id="zsEdge">—</span></div>
+      </div>
+
+      <div class="verdict" id="zsVerdict" style="--vc:var(--zero)">
+        <div class="vh">제로섬</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>한 번 왕복 비용(내 돈 대비) = 2 × 한쪽 비용 × 레버리지</b>, <b>1년 결과 = (1 − 왕복 비용)<sup>횟수</sup> − 1</b>입니다. <b>방향은 이긴 만큼 지는 것으로</b> 두어 0으로 처리했습니다.<br><br>
+        <b>⚠️ 비용 수치는 예시</b>입니다. <b>국내 지수선물은 수수료가 매우 낮은 편</b>이지만 <b>호가 한 칸의 간격과 체결 미끄러짐</b>이 있습니다. <b>해외선물·옵션·CFD</b>나 <b>거래가 적은 상품</b>은 이보다 훨씬 클 수 있습니다.<br><br>
+        <b>「체결 미끄러짐」</b>은 <b>내가 원한 가격보다 조금 불리하게 체결되는 것</b>입니다. 사려는 사람은 <b>파는 호가</b>에, 팔려는 사람은 <b>사는 호가</b>에 맞춰야 하므로 <b>매번 조금씩</b> 생깁니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>그럼 누가 이기나 — 시장에 누가 있는지 보면 보입니다</h3>
+      <p>합계가 0이면 <b>누군가는 꾸준히 벌고 누군가는 꾸준히 잃습니다.</b> 참여자를 목적별로 나누면 구조가 드러납니다.</p>
+      <p><b>① 헤지하는 참여자</b> — 주식을 많이 가진 기관, 수출기업, 농산물 생산자. <b>이들은 「잃어도 목적을 달성」</b>합니다. 선물에서 잃은 만큼 <b>본업이나 보유 자산에서 벌기</b> 때문입니다. <b>보험료를 낸 것</b>과 같습니다.<br>
+         <b>② 호가를 만들어주는 참여자</b> — 사고파는 호가를 동시에 내고 <b>그 차이</b>로 법니다. <b>위 계산기의 「체결 미끄러짐」이 이들의 수입</b>입니다.<br>
+         <b>③ 가격 차이를 노리는 참여자</b> — 선물과 현물이 <b>이론 가격에서 벗어나면</b> 즉시 반대로 거래해 차이를 가져갑니다(02편).<br>
+         <b>④ 정보·속도·자본이 큰 참여자</b> — 분석 인력과 빠른 시스템을 갖춘 기관입니다.<br>
+         <b>⑤ 개인 투자자</b>.</p>
+      <p class="plain"><b>여기서 공정하게 짚을 것이 두 가지</b>입니다.<br><br><b>하나, ①이 있기 때문에 투기 참여자 전체가 받는 몫이 이론적으로 존재할 수</b> 있습니다. <b>보험료를 내는 쪽이 있으면 받는 쪽</b>이 있기 때문입니다. 그래서 <b>「파생상품 시장에서 개인은 반드시 잃는다」는 말은 정확하지 않습니다.</b><br><br><b>둘, 그런데 그 몫을 누가 가져가느냐는 별개</b>입니다. <b>②는 비용을 가져가고, ③은 가격 오차를 가져가고, ④는 정보 차이를 가져갑니다.</b> 그리고 <b>그 모두보다 느리고 비용이 비싼 쪽이 ⑤</b>입니다.<br><br><b>그래서 이 트랙이 개인에게 던지는 질문은 「이길 수 있나」가 아니라 「내가 ①~④ 중 누구보다 나은 점이 무엇인가」</b>입니다. <b>답이 떠오르지 않는다면, 평균 결과는 위 계산기의 숫자</b>입니다.</p>
+
+      <h3>「가끔 크게 버는 사람」 이야기에 속지 않는 법</h3>
+      <p>파생상품에는 <b>짧은 기간에 크게 번 사례</b>가 자주 등장합니다. <b>레버리지가 크기 때문에 실제로 그런 일이 생깁니다.</b> 그런데 <b>그 이야기가 곧 그 방법이 좋다는 뜻은 아닙니다.</b></p>
+      <p><b>제로섬 + 큰 레버리지</b>의 조합은 <b>결과의 폭을 넓힙니다.</b> 평균은 비용만큼 마이너스인데, <b>양 끝이 매우 멀어집니다.</b> 그래서 <b>크게 번 소수와 크게 잃은 다수</b>가 동시에 생깁니다.</p>
+      <p><b>그리고 이야기로 남는 쪽은 한쪽뿐</b>입니다. <b>크게 번 사람은 이야기를 하고, 크게 잃은 사람은 조용히 떠납니다.</b> 그래서 <b>들리는 이야기만 모으면 실제 분포보다 훨씬 좋아 보입니다.</b></p>
+      <p class="plain"><b>이것을 확인하는 가장 정직한 방법</b>은 <b>「같은 방법을 쓴 사람 전체」</b>를 보는 것입니다. 그런데 <b>그 자료는 거의 공개되지 않습니다.</b> 그래서 <b>평균이 어떻게 생겼는지를 산수로 먼저 알아두는 것</b>이 중요합니다 — <b>위 계산기가 그 산수</b>입니다.<br><br><b>⚠️ 그리고 한 사람의 큰 성공도 그 사람이 다음에도 같은 결과를 낸다는 뜻이 아닙니다.</b> 레버리지가 큰 게임에서는 <b>한 번의 큰 성공과 한 번의 전멸이 같은 방법에서</b> 나옵니다. <b>09편</b>에서 그 구조를 계산합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="payoff">
+    <div class="prod-head" style="--edge:var(--opt)">
+      <span class="prod-tag">03 · 손익 모양</span>
+      <h2>일곱 가지 손익 모양</h2>
+      <p class="one">파생상품은 <b>「어디서 벌고 어디서 잃는가」의 모양</b>이 전부입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">PAYOFF · 만기에 기초자산이 얼마가 되면 나는 얼마인가</div>
+      <p class="labsub">기준 가격 <b>100</b>, 옵션의 행사가격 <b>100</b>으로 두었습니다. 버튼으로 <b>포지션을 고르고</b>, 슬라이더로 <b>만기 가격</b>을 움직여보세요.</p>
+
+      <div class="btnrow" id="poBtns">
+        <button data-v="0" class="on">현물 보유</button>
+        <button data-v="1">선물 매수</button>
+        <button data-v="2">선물 매도</button>
+        <button data-v="3">콜 매수</button>
+        <button data-v="4">풋 매수</button>
+        <button data-v="5">콜 매도</button>
+        <button data-v="6">풋 매도</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="poS">만기 때 기초자산 가격</label>
+        <input type="range" id="poS" min="60" max="140" step="1" value="115">
+        <output id="poSOut">115</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="poPrem">옵션 프리미엄 (옵션일 때만)</label>
+        <input type="range" id="poPrem" min="1" max="15" step="1" value="5">
+        <output id="poPremOut">5</output>
+      </div>
+
+      <div class="steps-out" id="poSteps"></div>
+
+      <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="만기 손익 구조">
+        <g id="poScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">이 가격에서 손익</span><span class="rv" id="poPnl">—</span></div>
+        <div><span class="rk">최대 이익 / 최대 손실</span><span class="rv" id="poRange">—</span></div>
+      </div>
+
+      <div class="verdict" id="poVerdict" style="--vc:var(--opt)">
+        <div class="vh">포지션</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>읽는 법.</b> 가로축이 <b>만기 때 기초자산 가격</b>, 세로축이 <b>내 손익</b>입니다. <b>선이 0보다 위면 이익, 아래면 손실</b>입니다. 흐린 선은 <b>나머지 여섯 포지션</b>입니다.<br><br>
+        <b>계산 기준.</b> 콜 매수 = <b>max(가격 − 100, 0) − 프리미엄</b>, 풋 매수 = <b>max(100 − 가격, 0) − 프리미엄</b>이고, <b>매도는 부호만 반대</b>입니다.<br><br>
+        <b>⚠️ 만기 때의 모양만 그렸습니다.</b> 만기 전에는 <b>시간가치</b> 때문에 선이 곡선이 됩니다(06편). 그리고 <b>수수료와 증거금</b>은 넣지 않았습니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>승률과 기댓값은 다른 이야기입니다</h3>
+      <p>위 그림에서 <b>콜 매수</b>를 보면, 가격이 <b>105 아래</b>에서는 모두 손실입니다. <b>이기는 구간이 좁습니다.</b> 반대로 <b>콜 매도</b>는 <b>105 아래 전부가 이익</b>입니다. <b>이기는 구간이 넓습니다.</b></p>
+      <p>그래서 <b>옵션 매도는 「자주 이기는」 전략</b>으로 보입니다. 실제로 <b>승률이 높습니다.</b> 그리고 <b>그것이 가장 흔한 착각</b>의 출발점입니다.</p>
+      <p><b>이유는 제로섬</b>입니다. <b>콜 매수와 콜 매도는 정확히 반대편</b>이므로, <b>비용을 빼면 기댓값의 합이 0</b>입니다. <b>한쪽의 승률이 높다면, 그쪽이 질 때의 손실이 그만큼 크다</b>는 뜻입니다.</p>
+      <p class="plain"><b>숫자로 보면 이렇습니다.</b> 콜 매도가 <b>열 번 중 아홉 번 프리미엄 5를 벌고</b>, <b>한 번 45를 잃는다</b>면 기댓값은 <b>9×5 − 45 = 0</b>입니다. <b>승률 90%인데 기댓값은 0</b>입니다.<br><br><b>그리고 사람은 「아홉 번의 작은 이익」을 기억하고 「한 번의 큰 손실」을 과소평가</b>합니다. 아홉 번 연속으로 벌고 나면 <b>「이 방법은 안전하다」는 확신</b>이 생기고, <b>그때 비중을 키웁니다.</b> <b>그리고 열 번째가 옵니다.</b><br><br><b>⚠️ 이것이 07편의 주제</b>입니다 — <b>「매달 월세 받듯 프리미엄을 받는다」는 설명이 왜 위험한가.</b> 여기서는 한 줄만 기억하면 됩니다. <b>승률이 높은 쪽은 질 때 크게 지는 쪽이고, 승률이 낮은 쪽은 이길 때 크게 이기는 쪽입니다. 비용을 빼면 둘의 기댓값은 같습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="words">
+    <div class="prod-head" style="--edge:var(--fut)">
+      <span class="prod-tag">04 · 용어</span>
+      <h2>이 트랙에서 계속 나오는 말</h2>
+      <p class="one">모르고 넘어가면 <b>뒤 편이 전부 막힙니다.</b></p>
+    </div>
+
+    <div class="gloss">
+      <div class="row"><span class="term">기초자산</span><span class="def">파생상품의 가격이 <b>따라가는 원래 대상</b>입니다. 코스피200 선물의 기초자산은 <b>코스피200 지수</b>, 금 선물은 <b>금</b>입니다.</span></div>
+      <div class="row"><span class="term">선물</span><span class="def"><b>「정해진 날에 정해진 값으로 반드시 사고판다」</b>는 약속입니다. <b>양쪽 모두 의무</b>입니다. 03·04편의 주제입니다.</span></div>
+      <div class="row"><span class="term">옵션</span><span class="def"><b>「정해진 값으로 사고팔 수 있는 권리」</b>입니다. <b>사는 쪽은 권리</b>, <b>파는 쪽은 의무</b>입니다. 05~07편의 주제입니다.</span></div>
+      <div class="row"><span class="term">콜옵션</span><span class="def"><b>「살 수 있는 권리」</b>입니다. 기초자산이 <b>오르면</b> 값어치가 커집니다.</span></div>
+      <div class="row"><span class="term">풋옵션</span><span class="def"><b>「팔 수 있는 권리」</b>입니다. 기초자산이 <b>내리면</b> 값어치가 커집니다. <b>보험</b>과 모양이 같습니다.</span></div>
+      <div class="row"><span class="term">행사가격</span><span class="def">옵션에서 <b>「이 값으로 사고팔 수 있다」고 정해둔 가격</b>입니다.</span></div>
+      <div class="row"><span class="term">프리미엄</span><span class="def"><b>옵션의 가격</b>입니다. 사는 쪽이 <b>권리의 대가로 내고</b>, 파는 쪽이 <b>의무의 대가로 받습니다.</b></span></div>
+      <div class="row"><span class="term">만기</span><span class="def">약속이 <b>끝나는 날</b>입니다. 파생상품은 <b>모두 만기가 있습니다.</b> 계속 들고 가려면 <b>갈아타야</b> 합니다.</span></div>
+      <div class="row"><span class="term">승수</span><span class="def"><b>지수 1포인트가 몇 원인지</b>입니다. 코스피200 선물은 <b>1포인트가 25만원</b>입니다. 03편에서 다룹니다.</span></div>
+      <div class="row"><span class="term">증거금</span><span class="def">계약을 잡기 위해 <b>먼저 맡기는 돈</b>입니다. 전체 금액의 <b>일부만</b> 내므로 <b>레버리지</b>가 자동으로 붙습니다.</span></div>
+      <div class="row"><span class="term">일일정산</span><span class="def"><b>매일 장이 끝나면 그날의 손익을 실제로 주고받는</b> 제도입니다. 주식처럼 <b>「팔기 전까지는 장부상 손실」이 아닙니다.</b></span></div>
+      <div class="row"><span class="term">롱 / 숏</span><span class="def"><b>롱</b>은 오르면 버는 쪽(매수), <b>숏</b>은 내리면 버는 쪽(매도)입니다. <b>선물은 숏이 롱만큼 쉽습니다.</b></span></div>
+      <div class="row"><span class="term">헤지</span><span class="def"><b>이미 가진 위험을 줄이려고</b> 반대 방향 계약을 잡는 것입니다. <b>수익이 목적이 아닙니다.</b> 04편의 주제입니다.</span></div>
+      <div class="row"><span class="term">베이시스</span><span class="def"><b>선물 가격과 현물 가격의 차이</b>입니다. 만기가 다가올수록 <b>0으로 수렴</b>합니다. 02편의 주제입니다.</span></div>
+      <div class="row"><span class="term">미결제약정</span><span class="def"><b>아직 끝나지 않은 계약의 수</b>입니다. 거래량과 달리 <b>「지금 시장에 걸려 있는 약속이 얼마나 되나」</b>를 보여줍니다.</span></div>
+      <div class="row"><span class="term">스왑</span><span class="def"><b>「앞으로 발생할 돈의 흐름을 서로 바꾸자」</b>는 약속입니다. 고정금리와 변동금리를 바꾸는 식입니다. 주로 <b>기관끼리</b> 씁니다.</span></div>
+    </div>
+
+    <h3>헷갈리는 짝 네 개</h3>
+    <div class="pairs">
+      <div style="--fc:var(--fut)">
+        <h4>선물 vs 옵션</h4>
+        <div class="it">의무 vs 권리</div>
+        <div class="dr"><b>선물</b>은 양쪽 모두 <b>반드시</b> 이행합니다. 그래서 <b>손익이 직선</b>입니다.<br><b>옵션</b>은 사는 쪽이 <b>불리하면 포기</b>할 수 있습니다. 그래서 <b>손익이 꺾인 선</b>이 됩니다. <b>그 「포기할 권리」의 가격이 프리미엄</b>입니다.</div>
+      </div>
+      <div style="--fc:var(--opt)">
+        <h4>옵션 매수 vs 옵션 매도</h4>
+        <div class="it">작은 확정 손실 vs 작은 확정 이익</div>
+        <div class="dr"><b>매수</b>는 <b>최대 손실이 프리미엄</b>으로 정해져 있고 이익은 크게 열려 있습니다.<br><b>매도</b>는 <b>최대 이익이 프리미엄</b>으로 정해져 있고 손실은 크게 열려 있습니다. <b>같은 계약의 앞면과 뒷면</b>입니다.</div>
+      </div>
+      <div style="--fc:var(--zero)">
+        <h4>선물 매도 vs 공매도</h4>
+        <div class="it">둘 다 내리면 벌지만 구조가 다름</div>
+        <div class="dr"><b>공매도</b>는 <b>주식을 빌려서 파는</b> 것이라 <b>빌리는 비용과 절차</b>가 있습니다.<br><b>선물 매도</b>는 <b>빌릴 필요 없이 약속만</b> 하면 됩니다. 그래서 <b>하락에 거는 것이 훨씬 쉽고</b>, 그만큼 <b>헤지 도구로 널리</b> 쓰입니다.</div>
+      </div>
+      <div style="--fc:var(--good)">
+        <h4>헤지 vs 투기</h4>
+        <div class="it">같은 계약, 다른 목적</div>
+        <div class="dr">주식을 가진 사람이 <b>선물을 매도</b>하면 <b>헤지</b>입니다 — 전체 위험이 <b>줄어듭니다.</b><br>주식이 없는 사람이 <b>같은 선물을 매도</b>하면 <b>투기</b>입니다 — 위험이 <b>새로 생깁니다.</b><br><b>계약은 똑같고, 내가 가진 것과 합쳤을 때의 결과가 다릅니다.</b></div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="where">
+    <div class="prod-head" style="--edge:var(--gold)">
+      <span class="prod-tag">05 · 경로</span>
+      <h2>개인이 파생상품을 만나는 다섯 곳</h2>
+      <p class="one"><b>직접 선물을 사지 않아도</b> 이미 만나고 있을 수 있습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">WHERE · 눌러서 확인해보세요</div>
+      <p class="labsub">각각 <b>무엇이 들어 있고, 가장 큰 위험이 무엇인지</b>입니다.</p>
+
+      <div class="btnrow" id="whBtns">
+        <button data-v="0" class="on">국내 선물·옵션</button>
+        <button data-v="1">해외선물</button>
+        <button data-v="2">레버리지·인버스 ETF</button>
+        <button data-v="3">ELS 같은 구조화 상품</button>
+        <button data-v="4">CFD</button>
+      </div>
+
+      <div class="verdict" id="whVerdict" style="--vc:var(--gold)">
+        <div class="vh">경로</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>파생상품은 물건이 아니라 약속</b>이라는 것.</li>
+      <li><b>참여자 합계가 0이고, 비용을 빼면 마이너스</b>라는 것.</li>
+      <li><b>레버리지가 비용도 함께 키운다</b>는 것.</li>
+      <li><b>거래 횟수가 많을수록 비용이 복리로 쌓인다</b>는 것.</li>
+      <li><b>선물은 의무, 옵션은 권리</b>라는 것.</li>
+      <li><b>옵션 매수는 손실이, 매도는 이익이 제한</b>된다는 것.</li>
+      <li><b>승률이 높다고 기댓값이 높은 게 아니다</b>라는 것.</li>
+      <li><b>같은 계약이 헤지도 되고 투기도 된다</b>는 것.</li>
+      <li><b>레버리지 ETF·ELS 안에도 파생상품이 들어 있다</b>는 것.</li>
+      <li><b>내가 누구보다 나은 점이 있는지</b> 스스로 물어봤나?</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 파생상품은 <b>다른 자산의 가격에 걸린 약속</b>이고, <b>약속의 합계는 0</b>입니다. 그래서 <b>평균적인 참여자는 비용만큼 잃습니다.</b> 이것은 <b>의견이 아니라 산수</b>입니다.</p>
+      <p><b>그런데 그 산수가 「파생상품은 나쁘다」를 뜻하지는 않습니다.</b> <b>위험을 줄이려는 사람</b>에게는 <b>잃어도 목적을 달성하는 도구</b>입니다. <b>문제는 도구가 아니라 목적</b>입니다 — <b>줄이려고 쓰는가, 키우려고 쓰는가.</b></p>
+      <p><b>다음 편은 02편 — 선물 가격은 어떻게 정해지나</b>입니다. 선물 가격이 <b>「아무렇게나 정해지는 예상치」가 아니라 「지금 가격에 기다리는 비용을 더한 값」</b>이라는 것, 그리고 <b>만기에 반드시 현물과 만나는 이유</b>를 계산합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 선물·옵션 01 · 기초<br>
+    <a href="index.html#futures">← 선물·옵션 목록으로</a> · 02 · 선물 가격은 어떻게 정해지나 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 파생상품 거래를 권하지 않습니다.<br>
+    거래 비용·레버리지·프리미엄은 <b>구조를 보기 위한 예시</b>입니다. 진입 요건·세금·거래 규정은 자주 바뀌므로 <b>거래소와 증권사에서 최신 내용을 확인</b>하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+/* ══════════ 2. 제로섬과 비용 ══════════ */
+function zsDraw(){
+  var lev = +document.getElementById('zsLev').value;
+  var trips = +document.getElementById('zsTrips').value;
+  var costBp = +document.getElementById('zsCost').value / 10;       /* 0.5 ~ 20 bp */
+  document.getElementById('zsLevOut').textContent = lev + '배' + (lev === 1 ? ' (없음)' : '');
+  document.getElementById('zsTripsOut').textContent = trips + '회' + (trips > 0 ? ' (주 ' + num(trips / 52, 1) + '회)' : '');
+  document.getElementById('zsCostOut').textContent = num(costBp / 100, 3) + '%';
+
+  var perTrip = 2 * costBp / 10000 * lev;           /* 내 돈 대비 */
+  var year = (Math.pow(1 - perTrip, trips) - 1) * 100;
+  var year1x = (Math.pow(1 - 2 * costBp / 10000, trips) - 1) * 100;
+  var edgePct = perTrip * 100;                       /* 매 왕복마다 벌어야 하는 몫(내 돈 대비) */
+
+  steps('zsSteps', [
+    { k:'한쪽 비용 (명목 대비)', v:num(costBp / 100, 3) + '%' },
+    { k:'왕복 비용 = 2 × 한쪽', v:num(2 * costBp / 100, 3) + '%' },
+    { k:'레버리지 ' + lev + '배 → 내 돈 대비 왕복 비용', v:num(perTrip * 100, 3) + '%' },
+    { k:'방향 손익 (반반 맞힘)', v:'0%' },
+    { k:trips + '번 반복하면', v:sgn(year, 1) + '%', total:true }
+  ]);
+
+  document.getElementById('zsYear').textContent = sgn(year, 1) + '%';
+  document.getElementById('zsYear').style.color = year < -0.05 ? 'var(--neg)' : '';
+  document.getElementById('zsEdge').textContent = trips === 0 ? '거래 없음' : '+' + num(edgePct, 3) + '% 이상';
+
+  var X0 = 60, Y0 = 190, W = 545, H = 150;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">거래 횟수에 따른 누적 결과 (실력 평균 가정)</text>';
+  g += '<line x1="' + X0 + '" y1="' + (Y0 - H) + '" x2="' + (X0 + W) + '" y2="' + (Y0 - H) + '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (Y0 - H + 4) + '" text-anchor="end">0%</text>';
+  g += '<line x1="' + X0 + '" y1="' + Y0 + '" x2="' + (X0 + W) + '" y2="' + Y0 + '" class="axis"/>';
+  g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (Y0 + 4) + '" text-anchor="end">−100%</text>';
+  [-25, -50, -75].forEach(function(v){
+    var y = Y0 - H + (-v / 100) * H;
+    g += '<line x1="' + X0 + '" y1="' + y.toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + y.toFixed(1) + '" class="gridl"/>';
+    g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (y + 4).toFixed(1) + '" text-anchor="end">' + v + '%</text>';
+  });
+  function xx(n){ return X0 + n / 500 * W; }
+  function yy(pct){ return Y0 - H + Math.min(100, Math.max(0, -pct)) / 100 * H; }
+  [100, 200, 300, 400, 500].forEach(function(n){
+    g += '<text class="axt" x="' + xx(n).toFixed(1) + '" y="' + (Y0 + 15) + '" text-anchor="middle">' + n + '회</text>';
+  });
+  var p1 = [], pL = [];
+  for(var n = 0; n <= 500; n += 10){
+    p1.push(xx(n).toFixed(1) + ' ' + yy((Math.pow(1 - 2 * costBp / 10000, n) - 1) * 100).toFixed(1));
+    pL.push(xx(n).toFixed(1) + ' ' + yy((Math.pow(1 - perTrip, n) - 1) * 100).toFixed(1));
+  }
+  g += '<path d="M' + p1.join(' L') + '" fill="none" stroke="#8A8474" stroke-width="1.6" stroke-dasharray="5 3"/>';
+  g += '<path d="M' + pL.join(' L') + '" fill="none" stroke="#8E4B3A" stroke-width="2.6"/>';
+  g += '<circle cx="' + xx(trips).toFixed(1) + '" cy="' + yy(year).toFixed(1) + '" r="5.5" fill="#8E4B3A"/>';
+  var tx = Math.min(xx(trips) + 10, X0 + W - 70);
+  g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + Math.min(Y0 - 6, Math.max(Y0 - H + 14, yy(year) - 10)).toFixed(1) + '" fill="#8E4B3A">' + sgn(year, 1) + '%</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + 34) + '">붉은 선이 레버리지 ' + lev + '배, 점선이 레버리지 없음(1배)입니다. 같은 비용이 레버리지만큼 커집니다.</text>';
+  document.getElementById('zsScene').innerHTML = g;
+
+  var title, body, col;
+  if(trips === 0){
+    col = '#5B5648';
+    title = '거래하지 않으면 비용도 없습니다';
+    body = '<b>「사고판 횟수」 슬라이더를 올려보세요.</b><br><br>' +
+      '이 계산기는 <b>실력이 딱 평균인 사람</b> — <b>이긴 만큼 지는 사람</b> — 을 가정합니다. <b>방향 손익은 0</b>입니다. 그래서 <b>남는 것은 비용뿐</b>이고, <b>그 비용이 얼마나 쌓이는지</b>를 봅니다.<br><br>' +
+      '<b>왜 「평균」을 가정하나</b> — 제로섬 게임에서 <b>참여자 전체의 평균이 정확히 이 모습</b>이기 때문입니다. <b>누군가 평균보다 잘하면 누군가는 평균보다 못합니다.</b>';
+  } else if(year > -10){
+    col = '#8E6B3A';
+    title = '1년 ' + sgn(year, 1) + '% — 비용이 조용히 나갑니다';
+    body = '레버리지 <b>' + lev + '배</b>로 <b>' + trips + '번</b> 왕복하면, <b>방향을 반반 맞혀도 ' + sgn(year, 1) + '%</b>입니다.<br><br>' +
+      '<b>크지 않아 보이지만</b> 두 가지를 보세요.<br>' +
+      '· <b>본전이 되려면 매 왕복마다 내 돈의 +' + num(edgePct, 3) + '%를 벌어야</b> 합니다. <b>평균보다 그만큼 나아야</b> 한다는 뜻입니다.<br>' +
+      '· <b>「레버리지」를 20배로</b> 올려보세요. <b>같은 거래, 같은 비용인데 결과가 두 배</b> 가까이 나빠집니다.<br><br>' +
+      '<b>레버리지는 수익만 키우는 게 아니라 비용도 똑같이 키웁니다.</b> 이것이 파생상품의 비용이 <b>주식보다 훨씬 무겁게 느껴지는</b> 이유입니다.';
+  } else if(year > -40){
+    col = '#8E4B3A';
+    title = '1년 ' + sgn(year, 1) + '% — 실력이 평균이면 이만큼 잃습니다';
+    body = '<b>한 번 왕복 비용은 내 돈의 ' + num(perTrip * 100, 3) + '%</b>로 작습니다. 그런데 <b>' + trips + '번 곱해지면 ' + sgn(year, 1) + '%</b>입니다.<br><br>' +
+      '<b>같은 조건을 레버리지 없이</b> 하면 <b>' + sgn(year1x, 1) + '%</b>입니다(점선). <b>차이는 전부 레버리지</b>에서 나왔습니다.<br><br>' +
+      '<b>여기서 가장 중요한 질문</b> — <b>「나는 평균보다 매 거래마다 ' + num(edgePct, 3) + '% 이상 나은가」</b>입니다. 그 상대는 <b>헤지 기관, 호가를 만드는 회사, 차익거래 시스템</b>입니다(아래 「자세히 보기」).<br><br>' +
+      '<b>그리고 거래 횟수는 내가 정할 수 있는 유일한 변수</b>입니다. <b>「사고판 횟수」를 50회로</b> 줄여보세요.';
+  } else {
+    col = '#8E4B3A';
+    title = '1년 ' + sgn(year, 1) + '% — 맞혀도 비용에 삼켜집니다';
+    body = '<b>레버리지 ' + lev + '배 × 연 ' + trips + '회 × 한쪽 ' + num(costBp / 100, 3) + '%</b>의 조합이면, <b>방향을 반반 맞혀도 1년에 ' + sgn(year, 1) + '%</b>입니다.<br><br>' +
+      '<b>이것은 「운이 나빴다」가 아니라 산수</b>입니다. <b>제로섬에 비용이 붙으면 평균은 반드시 마이너스</b>이고, <b>레버리지와 횟수가 그 마이너스를 곱합니다.</b><br><br>' +
+      '<b>본전이 되려면</b> — <b>매 왕복마다 내 돈의 +' + num(edgePct, 3) + '%</b>를 평균보다 더 벌어야 합니다. <b>' + trips + '번 연속으로</b>입니다.<br><br>' +
+      '<b>⚠️ 짧은 기간 사고파는 파생상품 거래가 대체로 이 영역</b>에 있습니다. <b>「매일 조금씩 벌면 된다」</b>는 생각은 <b>「매일 조금씩 비용을 낸다」</b>는 사실을 빼먹은 계산입니다.<br><br>' +
+      '<b>바꿀 수 있는 것은 셋</b>입니다 — <b>레버리지를 낮추거나, 횟수를 줄이거나, 비용이 낮은 상품을 고르는 것.</b> 그리고 <b>넷째는 하지 않는 것</b>입니다.';
+  }
+  verdict('zsVerdict', col, title, body);
+}
+['zsLev', 'zsTrips', 'zsCost'].forEach(function(id){ document.getElementById(id).addEventListener('input', zsDraw); });
+
+/* ══════════ 3. 손익 구조 ══════════ */
+var PO = [
+  { h:'현물 보유',  col:'#5B5648', kind:'lin',  dir:1 },
+  { h:'선물 매수',  col:'#3F5F6F', kind:'lin',  dir:1 },
+  { h:'선물 매도',  col:'#3F5F6F', kind:'lin',  dir:-1 },
+  { h:'콜 매수',    col:'#5F7A52', kind:'call', dir:1 },
+  { h:'풋 매수',    col:'#5F7A52', kind:'put',  dir:1 },
+  { h:'콜 매도',    col:'#8E4B3A', kind:'call', dir:-1 },
+  { h:'풋 매도',    col:'#8E4B3A', kind:'put',  dir:-1 }
+];
+var poIdx = 0;
+var K = 100;
+function payoff(p, s, prem){
+  if(p.kind === 'lin') return p.dir * (s - K);
+  var intrinsic = p.kind === 'call' ? Math.max(s - K, 0) : Math.max(K - s, 0);
+  return p.dir * (intrinsic - prem);
+}
+function poDraw(){
+  var p = PO[poIdx];
+  var s = +document.getElementById('poS').value;
+  var prem = +document.getElementById('poPrem').value;
+  document.getElementById('poSOut').textContent = s + (s > K ? ' (기준보다 +' + (s - K) + ')' : s < K ? ' (기준보다 −' + (K - s) + ')' : ' (기준과 같음)');
+  document.getElementById('poPremOut').textContent = prem + (p.kind === 'lin' ? ' (이 포지션엔 해당 없음)' : '');
+
+  var v = payoff(p, s, prem);
+  var maxP, maxL, be;
+  if(p.kind === 'lin'){
+    maxP = '제한 없음'; maxL = p.dir > 0 ? '−100 (0이 되면)' : '제한 없음'; be = '100';
+  } else if(p.kind === 'call'){
+    be = String(K + prem);
+    if(p.dir > 0){ maxP = '제한 없음'; maxL = '−' + prem; } else { maxP = '+' + prem; maxL = '제한 없음'; }
+  } else {
+    be = String(K - prem);
+    if(p.dir > 0){ maxP = '+' + (K - prem) + ' (0이 되면)'; maxL = '−' + prem; } else { maxP = '+' + prem; maxL = '−' + (K - prem) + ' (0이 되면)'; }
+  }
+
+  var rows = [
+    { k:'포지션', v:p.h },
+    { k:'만기 때 기초자산 가격', v:String(s) }
+  ];
+  if(p.kind !== 'lin'){
+    var intr = p.kind === 'call' ? Math.max(s - K, 0) : Math.max(K - s, 0);
+    rows.push({ k:(p.kind === 'call' ? '콜' : '풋') + ' 내재가치 = max(' + (p.kind === 'call' ? '가격 − 100' : '100 − 가격') + ', 0)', v:String(intr) });
+    rows.push({ k:p.dir > 0 ? '낸 프리미엄' : '받은 프리미엄', v:(p.dir > 0 ? '−' : '+') + prem });
+  } else {
+    rows.push({ k:p.dir > 0 ? '가격 − 기준 100' : '기준 100 − 가격', v:sgn(p.dir * (s - K), 0) });
+  }
+  rows.push({ k:'손익분기 가격', v:be });
+  rows.push({ k:'만기 손익', v:sgn(v, 0), total:true });
+  steps('poSteps', rows);
+
+  document.getElementById('poPnl').textContent = sgn(v, 0);
+  document.getElementById('poPnl').style.color = v > 0 ? 'var(--pos)' : v < 0 ? 'var(--neg)' : '';
+  document.getElementById('poRange').textContent = maxP + ' / ' + maxL;
+
+  var X0 = 60, W = 545, YM = 125, HH = 95;
+  var lo = 60, hi = 140, vlim = 40;
+  function xx(x){ return X0 + (x - lo) / (hi - lo) * W; }
+  function yy(y){ return YM - Math.max(-vlim, Math.min(vlim, y)) / vlim * HH; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">만기 손익 (세로) — 기초자산 가격 (가로)</text>';
+  g += '<line x1="' + X0 + '" y1="' + yy(0).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(0).toFixed(1) + '" stroke="#8A8474" stroke-width="1.2"/>';
+  g += '<line x1="' + xx(K).toFixed(1) + '" y1="' + (YM - HH) + '" x2="' + xx(K).toFixed(1) + '" y2="' + (YM + HH) + '" class="gridl"/>';
+  [-40, -20, 20, 40].forEach(function(t){
+    g += '<line x1="' + X0 + '" y1="' + yy(t).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(t).toFixed(1) + '" class="gridl"/>';
+    g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (yy(t) + 4).toFixed(1) + '" text-anchor="end">' + (t > 0 ? '+' : '') + t + '</text>';
+  });
+  g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (yy(0) + 4).toFixed(1) + '" text-anchor="end">0</text>';
+  [60, 80, 100, 120, 140].forEach(function(t){
+    g += '<text class="axt" x="' + xx(t).toFixed(1) + '" y="' + (YM + HH + 16) + '" text-anchor="middle">' + t + '</text>';
+  });
+  PO.forEach(function(q, i){
+    if(i === poIdx) return;
+    var pts = [];
+    for(var x = lo; x <= hi; x += 2){ pts.push(xx(x).toFixed(1) + ' ' + yy(payoff(q, x, prem)).toFixed(1)); }
+    g += '<path d="M' + pts.join(' L') + '" fill="none" stroke="#B8B0A0" stroke-width="1" stroke-opacity=".7"/>';
+  });
+  var main = [];
+  for(var x2 = lo; x2 <= hi; x2 += 1){ main.push(xx(x2).toFixed(1) + ' ' + yy(payoff(p, x2, prem)).toFixed(1)); }
+  g += '<path d="M' + main.join(' L') + '" fill="none" stroke="' + p.col + '" stroke-width="3"/>';
+  var cy = yy(v);
+  g += '<line x1="' + xx(s).toFixed(1) + '" y1="' + yy(0).toFixed(1) + '" x2="' + xx(s).toFixed(1) + '" y2="' + cy.toFixed(1) + '" stroke="' + p.col + '" stroke-width="1.3" stroke-dasharray="3 2"/>';
+  g += '<circle cx="' + xx(s).toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="6" fill="' + p.col + '"/>';
+  var tx = Math.min(Math.max(xx(s) + 10, X0 + 6), X0 + W - 46);
+  var ty = Math.max(YM - HH + 12, Math.min(YM + HH - 4, cy + (v >= 0 ? -10 : 18)));
+  g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + ty.toFixed(1) + '" fill="' + p.col + '">' + sgn(v, 0) + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (YM + HH + 34) + '">굵은 선이 「' + p.h + '」, 흐린 선이 나머지 여섯입니다. 세로 눈금 ±40 밖은 잘라서 그렸습니다.</text>';
+  document.getElementById('poScene').innerHTML = g;
+
+  var T = [
+    { t:'현물 보유 — 오른 만큼 벌고 내린 만큼 잃습니다',
+      b:'<b>가장 익숙한 모양</b>입니다. 주식이나 금을 <b>그냥 사서 들고 있는</b> 경우입니다. 기준 100에서 <b>' + s + '</b>이 되면 <b>' + sgn(v, 0) + '</b>입니다.<br><br>' +
+        '<b>이 직선이 나머지 여섯 개를 이해하는 기준선</b>입니다. <b>선물 매수는 이 선과 똑같이</b> 생겼고, <b>옵션은 이 선을 어딘가에서 꺾은</b> 모양입니다.<br><br>' +
+        '<b>다만 현물은 두 가지가 다릅니다</b> — <b>만기가 없고</b>, <b>전액을 내고 사므로 잃어도 산 돈까지만</b> 잃습니다.' },
+    { t:'선물 매수 — 모양은 현물과 같고, 조건이 다릅니다',
+      b:'<b>굵은 선이 현물 보유와 정확히 겹칩니다.</b> 가격이 <b>' + s + '</b>이면 <b>' + sgn(v, 0) + '</b>입니다.<br><br>' +
+        '<b>그럼 뭐가 다른가</b> — 세 가지입니다.<br>' +
+        '· <b>돈을 전부 내지 않습니다.</b> 증거금만 내므로 <b>같은 손익이 내 돈 대비로는 몇 배</b>가 됩니다.<br>' +
+        '· <b>매일 정산됩니다.</b> 떨어지면 <b>그날 돈이 빠져나가고</b>, 모자라면 <b>채워 넣어야</b> 합니다.<br>' +
+        '· <b>만기가 있습니다.</b> 계속 들고 가려면 <b>갈아타야</b> 합니다.<br><br>' +
+        '<b>그래서 「현물과 같은 모양」이지만 「현물처럼 버틸 수는 없는」</b> 포지션입니다. <a href="commodity-futures.html">원자재 05편</a>에서 마진콜 계산기로 확인할 수 있습니다.' },
+    { t:'선물 매도 — 현물을 뒤집은 모양입니다',
+      b:'<b>내리면 벌고 오르면 잃습니다.</b> 가격이 <b>' + s + '</b>이면 <b>' + sgn(v, 0) + '</b>입니다.<br><br>' +
+        '<b>두 가지 쓰임이 완전히 다릅니다.</b><br>' +
+        '· <b>주식을 가진 사람이 쓰면 헤지</b>입니다. 주식에서 잃는 만큼 여기서 벌어 <b>전체가 평평해집니다.</b> 04편의 주제입니다.<br>' +
+        '· <b>아무것도 없는 사람이 쓰면 하락 베팅</b>입니다. 그리고 <b>오르는 쪽에는 한계가 없으므로</b>, 이론상 <b>손실에 한계가 없습니다.</b><br><br>' +
+        '<b>⚠️ 슬라이더를 오른쪽 끝으로</b> 옮겨보세요. <b>그래프는 ±40에서 잘랐지만 실제 선은 계속 내려갑니다.</b>' },
+    { t:'콜 매수 — 오를 때만 벌고, 잃어도 프리미엄까지',
+      b:'<b>「100에 살 수 있는 권리」</b>를 <b>' + prem + '</b>에 샀습니다. 가격이 <b>' + s + '</b>이면 <b>' + sgn(v, 0) + '</b>입니다.<br><br>' +
+        '<b>모양을 보세요</b> — <b>100 아래에서는 평평하게 −' + prem + '</b>이고, <b>100을 넘으면서부터 올라갑니다.</b> <b>불리하면 권리를 버리면 되기</b> 때문에 <b>손실이 프리미엄에서 멈춥니다.</b><br><br>' +
+        '<b>그런데 손익분기는 100이 아니라 ' + (K + prem) + '</b>입니다. <b>오르기만 하면 되는 게 아니라 프리미엄만큼 더 올라야</b> 합니다.<br><br>' +
+        '<b>그리고 가장 흔한 결과는 「그냥 −' + prem + '」</b>입니다. <b>이기는 구간이 좁습니다.</b> 아래 「자세히 보기」에서 <b>승률과 기댓값</b>의 관계를 다룹니다.' },
+    { t:'풋 매수 — 내릴 때만 벌고, 잃어도 프리미엄까지',
+      b:'<b>「100에 팔 수 있는 권리」</b>를 <b>' + prem + '</b>에 샀습니다. 가격이 <b>' + s + '</b>이면 <b>' + sgn(v, 0) + '</b>입니다.<br><br>' +
+        '<b>이 모양은 보험과 똑같습니다.</b> <b>아무 일도 없으면 보험료(' + prem + ')만 나가고</b>, <b>크게 떨어지면 그만큼 보상</b>받습니다.<br><br>' +
+        '<b>그래서 주식을 가진 사람이 풋을 사면</b> — <b>「100 아래로 떨어져도 100에 팔 수 있는」</b> 상태가 됩니다. <b>하락이 바닥에서 멈춥니다.</b> 대신 <b>매번 보험료</b>를 냅니다. 10편에서 <b>이 보험이 얼마짜리인지</b>를 계산합니다.<br><br>' +
+        '<b>손익분기는 ' + (K - prem) + '</b>입니다. <b>보험금을 받으려면 프리미엄만큼 더 떨어져야</b> 합니다.' },
+    { t:'콜 매도 — 자주 벌지만, 오르면 끝이 없습니다',
+      b:'<b>「상대가 원하면 100에 팔아줄 의무」</b>를 지고 <b>' + prem + '</b>을 받았습니다. 가격이 <b>' + s + '</b>이면 <b>' + sgn(v, 0) + '</b>입니다.<br><br>' +
+        '<b>콜 매수를 정확히 뒤집은 모양</b>입니다. <b>100 아래에서는 평평하게 +' + prem + '</b>이고, <b>100을 넘으면서부터 끝없이 내려갑니다.</b><br><br>' +
+        '<b>⚠️ 최대 이익은 ' + prem + '으로 정해져 있고, 최대 손실은 정해져 있지 않습니다.</b> <b>기초자산이 두 배가 되면 손실은 ' + (100 - prem) + '</b>입니다.<br><br>' +
+        '<b>그런데 대부분의 날에는 +' + prem + '을 법니다.</b> 그래서 <b>「안전한 수입」처럼 느껴집니다.</b> 그 느낌이 <b>07편의 주제</b>입니다.<br><br>' +
+        '<b>예외 하나</b> — <b>기초자산을 이미 갖고 있으면서</b> 콜을 팔면 <b>「커버드콜」</b>이 되어 손실이 제한됩니다. <b>대신 오를 때의 이익을 포기</b>합니다. 07편에서 다룹니다.' },
+    { t:'풋 매도 — 자주 벌지만, 폭락하면 크게 잃습니다',
+      b:'<b>「상대가 원하면 100에 사줄 의무」</b>를 지고 <b>' + prem + '</b>을 받았습니다. 가격이 <b>' + s + '</b>이면 <b>' + sgn(v, 0) + '</b>입니다.<br><br>' +
+        '<b>보험을 파는 쪽</b>입니다. <b>평소에는 보험료 +' + prem + '을 받고</b>, <b>폭락이 오면 보험금을 물어줍니다.</b><br><br>' +
+        '<b>⚠️ 문제는 폭락이 「모두에게 동시에」 온다는 것</b>입니다. 보험회사는 <b>사고가 여기저기 흩어져 일어나기</b> 때문에 버팁니다. <b>주식시장 폭락은 모든 계약에서 동시에</b> 일어납니다.<br><br>' +
+        '<b>그리고 폭락할 때 증거금 요구도 함께 커집니다.</b> <b>손실이 나는 바로 그 순간 돈을 더 넣으라는</b> 요구를 받습니다.<br><br>' +
+        '<b>슬라이더를 왼쪽 끝(60)으로</b> 옮겨보세요. <b>+' + prem + '을 여러 번 벌어도 한 번에 ' + (K - 60 - prem) + '을 잃습니다.</b>' }
+  ];
+  document.getElementById('poVerdict').querySelector('.vh').textContent = p.h;
+  verdict('poVerdict', p.col, T[poIdx].t, T[poIdx].b);
+}
+bindBtnRow('#poBtns', function(v){ poIdx = +v; poDraw(); });
+['poS', 'poPrem'].forEach(function(id){ document.getElementById(id).addEventListener('input', poDraw); });
+
+/* ══════════ 5. 만나는 경로 ══════════ */
+var WH = [
+  { h:'국내 선물·옵션', col:'#3F5F6F',
+    t:'가장 직접적인 방법이고, 진입 요건이 있습니다',
+    p:'<b>코스피200 선물·옵션</b>, <b>미니 코스피200</b>, <b>개별 주식 선물</b>, <b>국채 선물</b>, <b>달러 선물</b> 등이 한국거래소에서 거래됩니다.<br><br>' +
+      '<b>개인이 거래하려면 요건이 있습니다</b> — <b>사전교육 이수</b>, <b>모의거래 이수</b>, <b>기본예탁금 예치</b>입니다. <b>개인 투자자 보호를 위해 만든 장치</b>입니다.<br><br>' +
+      '<b>⚠️ 구체적인 교육 시간과 예탁금 금액은 제도가 여러 번 바뀌어 왔습니다.</b> 거래하기 전에 <b>증권사와 금융투자협회 안내에서 현재 요건</b>을 확인해야 합니다.<br><br>' +
+      '<b>가장 큰 위험</b> — <b>레버리지와 일일정산</b>입니다. <b>1포인트가 25만원</b>이라 <b>지수가 조금만 움직여도 계좌가 크게</b> 흔들립니다. <b>03편</b>에서 계산합니다.<br><br>' +
+      '<b>세금</b> — 국내 장내 파생상품의 개인 매매차익은 <b>현행 기준으로 과세 대상이 아닌 것</b>으로 알려져 있습니다. 다만 <b>세법은 바뀔 수 있으므로</b> 10편에서 다시 정리합니다.' },
+  { h:'해외선물', col:'#6A5A8C',
+    t:'시간이 길고, 환율이 끼고, 규칙이 다릅니다',
+    p:'<b>미국·유럽·아시아 거래소의 선물</b>을 국내 증권사를 통해 거래합니다. <b>S&P500 미니·마이크로</b>, <b>나스닥</b>, <b>원유</b>, <b>금</b> 등이 대표적입니다.<br><br>' +
+      '<b>국내 선물과 다른 점</b><br>' +
+      '· <b>거래 시간이 매우 깁니다.</b> 거의 <b>하루 종일</b> 열려 있어 <b>자는 동안에도 계좌가 움직입니다.</b><br>' +
+      '· <b>달러로 증거금과 손익</b>이 오갑니다. <b>환율이 결과에 섞입니다.</b><br>' +
+      '· <b>계약 단위가 크거나 작게 다양</b>합니다. <b>마이크로 계약</b>은 작아서 <b>시작하기 쉬운데, 그래서 더 위험</b>할 수 있습니다.<br><br>' +
+      '<b>⚠️ 「진입이 쉽다」는 것 자체가 위험 요소</b>입니다. <b>작은 돈으로 시작할 수 있다는 광고</b>가 많지만, <b>작은 계약도 레버리지는 똑같습니다.</b><br><br>' +
+      '<b>세금</b> — 해외 파생상품 매매차익은 <b>양도소득세 대상</b>으로, <b>연간 기본공제 뒤 22%</b>(지방세 포함)가 일반적인 원칙입니다. <b>최신 세법을 확인</b>해야 합니다. <b>08·10편</b>에서 다룹니다.' },
+  { h:'레버리지·인버스 ETF', col:'#8E4B3A',
+    t:'개인이 가장 흔하게 만나는 파생상품입니다',
+    p:'<b>「지수의 2배」, 「지수의 −1배」, 「−2배」</b> 같은 상품입니다. <b>주식처럼 사고팔지만 안에는 선물·스왑이 들어</b> 있습니다.<br><br>' +
+      '<b>가장 큰 오해</b> — <b>「2배」는 하루 단위</b>입니다. <b>기간 전체로 2배가 아닙니다.</b> 지수가 <b>오르내리기를 반복하면 방향이 제자리여도 녹습니다.</b><br><br>' +
+      '<b>간단한 예</b> — 지수가 <b>+10% → −10%</b>면 <b>−1%</b>입니다. 2배 상품은 <b>+20% → −20%</b>라 <b>−4%</b>입니다. <b>2배가 아니라 4배를 잃었습니다.</b><br><br>' +
+      '<b>진입 요건</b> — <b>국내 상장 레버리지 상품에는 사전교육·기본예탁금 같은 요건</b>이 붙어 있습니다. <b>해외 상장 상품의 요건은 제도 변경이 잦으니</b> 증권사에서 확인해야 합니다.<br><br>' +
+      '<b>08편 전체가 이 상품</b>입니다. 이 트랙에서 <b>가장 실용적인 편</b>입니다.' },
+  { h:'ELS 같은 구조화 상품', col:'#8E6B3A',
+    t:'「은행에서 파는 안전한 상품」처럼 보이지만 옵션 매도가 들어 있습니다',
+    p:'<b>ELS(주가연계증권)</b>는 <b>「지수가 일정 수준 아래로 떨어지지만 않으면 연 몇 %를 준다」</b>는 구조입니다.<br><br>' +
+      '<b>이 구조를 파생상품으로 풀면</b> — <b>풋옵션을 판 것과 비슷한 위험</b>이 들어 있습니다. <b>평소에는 약속한 이자(프리미엄)를 받고</b>, <b>기준선 아래로 폭락하면 원금이 크게 깎입니다.</b> 3장의 <b>「풋 매도」 모양</b>과 닮았습니다.<br><br>' +
+      '<b>⚠️ 실제로 크게 문제가 된 사례가 있습니다.</b> <b>2024년 홍콩H지수 연계 ELS</b>에서 <b>대규모 원금 손실</b>이 발생해 사회적 문제가 되었습니다.<br><br>' +
+      '<b>왜 위험이 잘 안 보이나</b> — <b>「조기상환」, 「녹인」, 「수익 구조」</b> 같은 설명 뒤에 <b>옵션 매도라는 본질</b>이 가려져 있기 때문입니다. <b>그리고 대부분의 기간에는 실제로 약속한 수익을 줍니다.</b> <b>01편 3장 「자세히 보기」의 「승률 높은 쪽」</b>입니다.<br><br>' +
+      '<b>이 트랙에서 ELS를 따로 다루지는 않지만</b>, <b>07편(옵션 매도)</b>을 읽으면 <b>ELS의 위험 구조가 그대로</b> 보입니다.' },
+  { h:'CFD', col:'#8E4B3A',
+    t:'차액만 주고받는 계약 — 레버리지가 크고 요건이 까다롭습니다',
+    p:'<b>CFD(차액결제거래)</b>는 <b>주식을 실제로 사지 않고 가격 차이만 주고받는</b> 계약입니다. <b>증거금만 내고 큰 금액을 움직일 수</b> 있습니다.<br><br>' +
+      '<b>국내에서는 전문투자자 요건</b>을 갖춘 경우에 거래할 수 있도록 되어 있습니다.<br><br>' +
+      '<b>⚠️ 2023년 일부 종목의 연쇄 급락 사태</b>에서 <b>CFD 계좌의 반대매매가 하락을 키웠다</b>는 지적이 나오면서 크게 주목받았습니다. <b>레버리지가 큰 계좌들이 동시에 강제 정리되면 가격이 연쇄적으로 무너질 수</b> 있다는 것을 보여준 사례입니다.<br><br>' +
+      '<b>핵심 구조는 선물과 같습니다</b> — <b>증거금, 레버리지, 강제 청산.</b> <b>이 트랙의 선물 편들이 그대로</b> 적용됩니다.<br><br>' +
+      '<b>한 가지 더</b> — CFD는 <b>거래소가 아니라 증권사와 맺는 계약</b>인 경우가 많아 <b>상대방 위험</b>과 <b>비용 구조</b>를 따로 확인해야 합니다.' }
+];
+bindBtnRow('#whBtns', function(v){
+  var w = WH[+v];
+  document.getElementById('whVerdict').querySelector('.vh').textContent = w.h;
+  verdict('whVerdict', w.col, w.t, w.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 질문이 이 트랙 전체의 질문입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+zsDraw(); poDraw();
+document.querySelector('#whBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
