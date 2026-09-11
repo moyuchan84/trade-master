@@ -339,7 +339,7 @@
 
       <div class="steps-out" id="csSteps"></div>
 
-      <svg viewBox="0 0 640 190" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주식 평가이익과 선물 현금 손실">
+      <svg viewBox="0 0 640 206" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주식 평가이익과 선물 현금 손실">
         <g id="csScene"></g>
       </svg>
 
@@ -762,7 +762,7 @@ function csDraw(){
   document.getElementById('csNeed').textContent = need > 0 ? man(need) + (shortfall > 0 ? ' (부족 ' + man(shortfall) + ')' : ' (준비금으로 해결)') : '없음';
   document.getElementById('csNeed').style.color = shortfall > 0 ? 'var(--neg)' : '';
 
-  var X0 = 140, W = 400, Y0 = 36;
+  var X0 = 140, W = 330, Y0 = 36;
   var maxV = Math.max(gain, loss, need, spare, 1e6);
   var rows = [
     { n:'주식 평가이익', v:gain, col:'#4C6B7A', note:'현금 아님' },
@@ -779,7 +779,8 @@ function csDraw(){
     g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end">' + r.n + '</text>';
     g += '<text class="lblb" x="' + Math.min(X0 + w + 8, X0 + W + 4).toFixed(1) + '" y="' + (y + 14) + '" fill="' + r.col + '">' + man(r.v) + ' · ' + r.note + '</text>';
   });
-  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + rows.length * 30 + 16) + '">점선 막대(주식 이익)는 현금으로 쓸 수 없습니다. 선물 손실은 그날 현금으로 메워야 합니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + rows.length * 30 + 16) + '">점선 막대(주식 이익)는 현금으로 쓸 수 없습니다.</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + rows.length * 30 + 32) + '">선물 손실은 그날 현금으로 메워야 합니다.</text>';
   document.getElementById('csScene').innerHTML = g;
 
   var title, body, col;
