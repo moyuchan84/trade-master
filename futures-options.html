@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>콜과 풋, 권리와 의무</title>
+<meta name="description" content="옵션은 원하면 사고팔 수 있는 권리입니다. 내가격·외가격, 같은 돈으로 주식과 콜을 샀을 때의 차이, 기본 조합을 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --call:#5F7A52;--put:#4C6B7A;--sell:#8E4B3A;--prem:#8E6B3A;--opt:#6A5A8C;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:720px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .tab{display:block;padding-left:16px;color:var(--ink-soft);font-size:14.2px;margin-top:3px;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--opt));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--opt));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--opt));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">선물·옵션 05 · 옵션 · 투자 공부 노트</div>
+    <h1>콜과 풋,<br>권리와 의무</h1>
+    <p class="lede">선물은 <b>「반드시 사고판다」</b>는 약속이었습니다. 옵션은 <b>「원하면 사고팔 수 있다」</b>는 <b>권리</b>입니다. 이 한 단어 차이가 <b>손익의 모양을 완전히 비대칭</b>으로 만듭니다.</p>
+    <div class="callout">
+      <p><b>이 편에서 확인할 세 가지</b>입니다(모두 단순 모형 기준의 예시).</p>
+      <p><b>① 옵션 가격 = 내재가치 + 시간가치.</b> 지금 당장 행사하면 얼마인지(내재가치)와, <b>만기까지 남은 시간 동안 더 좋아질 가능성</b>(시간가치)의 합입니다.</p>
+      <p><b>② 같은 100만원이라도 콜옵션은 전혀 다른 물건</b>입니다. 주가 100에서 <b>행사가 110 콜</b>(한 달 만기)을 사면, 주가가 <b>+20% 오를 때 +2,798%</b>가 됩니다. 그런데 <b>+5%, +10% 올라도 −100%</b>이고, <b>모형상 이익이 날 확률은 8.5%</b>입니다.</p>
+      <p><b>③ 옵션을 조합하면 원하는 모양을 만들 수 있지만, 공짜 모양은 없습니다.</b> 하락을 막으면 보험료를 내거나 상승을 포기해야 합니다.</p>
+      <p><b>⚠️ 이 편의 옵션 가격은 블랙-숄즈 모형으로 계산한 이론값</b>입니다. 실제 시장 가격은 <b>수요·공급과 변동성 기대</b>에 따라 이와 다를 수 있습니다. 모형 자체는 06편에서 다룹니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#right">1. 권리를 산다</a>
+    <a href="#money">2. 내가격·외가격</a>
+    <a href="#lotto">3. 같은 100만원</a>
+    <a href="#combo">4. 조합</a>
+    <a href="#rules">5. 규칙과 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="right">
+    <div class="prod-head" style="--edge:var(--opt)">
+      <span class="prod-tag">01 · 권리</span>
+      <h2>「살 수 있는 권리」에 값을 매깁니다</h2>
+      <p class="one">권리를 <b>사는 쪽</b>과 <b>파는 쪽</b>이 짊어지는 위험이 전혀 다릅니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>다음 달에 <b>인기 장난감</b>이 새로 나와. 가게에서 이런 걸 팔아.</p>
+      <p><b>「5천원을 내면, 다음 달에 이 장난감을 5만원에 살 수 있는 권리를 줄게.」</b></p>
+      <p>이 <b>권리 쪽지</b>가 <b>콜옵션</b>이야. 5천원이 <b>프리미엄</b>이고, 5만원이 <b>행사가격</b>이야.</p>
+      <p><b>장난감이 대박 나서 10만원이 되면?</b> 쪽지를 내밀고 <b>5만원에 사.</b> 바로 10만원에 팔 수 있으니 <b>5만원 이득</b>이야. 쪽지값 5천원을 빼도 <b>4만5천원</b> 벌었지.</p>
+      <p><b>장난감이 인기가 없어서 3만원이 되면?</b> 5만원에 살 이유가 없잖아. <b>쪽지를 그냥 버려.</b> 잃는 건 <b>쪽지값 5천원뿐</b>이야.</p>
+      <p>그럼 <b>가게 주인</b>은 어때? 5천원을 먼저 받았어. 장난감이 3만원이 되면 <b>5천원 번 거야.</b> 그런데 <b>10만원이 되면</b>, 10만원짜리를 <b>5만원에 팔아야 해.</b> 약속했으니까. <b>5만원 손해</b>야.</p>
+      <p><b>쪽지를 산 사람은 「잃어도 5천원」</b>이고, <b>쪽지를 판 사람은 「벌어도 5천원」</b>이야. <b>그게 옵션의 전부</b>야.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>포지션</th><th>권리 / 의무</th><th>언제 버나</th><th>최대 이익</th><th>최대 손실</th><th>증거금</th></tr></thead>
+        <tbody>
+          <tr><th>콜 매수</th><td><b>살 권리</b></td><td>크게 오를 때</td><td><b>제한 없음</b></td><td><b>낸 프리미엄</b></td><td>필요 없음 (프리미엄 전액 지급)</td></tr>
+          <tr><th>풋 매수</th><td><b>팔 권리</b></td><td>크게 내릴 때</td><td>행사가 − 프리미엄 (0이 되면)</td><td><b>낸 프리미엄</b></td><td>필요 없음</td></tr>
+          <tr><th>콜 매도</th><td><b>팔아줄 의무</b></td><td>안 오를 때</td><td><b>받은 프리미엄</b></td><td><b>제한 없음</b></td><td><b>필요</b> — 크게 변동</td></tr>
+          <tr><th>풋 매도</th><td><b>사줄 의무</b></td><td>안 내릴 때</td><td><b>받은 프리미엄</b></td><td>행사가 − 프리미엄 (0이 되면)</td><td><b>필요</b> — 크게 변동</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · 만기 손익 그림은 <a href="futures-basics.html">01편 3장</a>에서 일곱 가지를 한눈에 볼 수 있습니다</p>
+
+    <div class="keyline">
+      <div class="kt">옵션의 비대칭을 한 줄로</div>
+      <div class="kb"><b>사는 쪽</b>은 손실이 정해져 있고,<br><b>파는 쪽</b>은 이익이 정해져 있습니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="money">
+    <div class="prod-head" style="--edge:var(--prem)">
+      <span class="prod-tag">02 · 가격 구성</span>
+      <h2>내재가치와 시간가치</h2>
+      <p class="one">옵션 가격은 <b>「지금 행사하면 얼마」</b>와 <b>「기다리면 더 좋아질 가능성」</b>의 합입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MONEYNESS · 현재가와 행사가를 움직여보세요</div>
+      <p class="labsub"><b>내가격(ITM)</b> · <b>등가격(ATM)</b> · <b>외가격(OTM)</b>이 무엇이고, 프리미엄이 어떻게 나뉘는지 봅니다.</p>
+
+      <div class="btnrow" id="mnType">
+        <button data-v="c" class="on">콜옵션</button>
+        <button data-v="p">풋옵션</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="mnS">현재 주가</label>
+        <input type="range" id="mnS" min="70" max="130" step="1" value="100">
+        <output id="mnSOut">100</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mnK">행사가격</label>
+        <input type="range" id="mnK" min="80" max="120" step="1" value="105">
+        <output id="mnKOut">105</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mnDays">만기까지 남은 날</label>
+        <input type="range" id="mnDays" min="1" max="365" step="1" value="30">
+        <output id="mnDaysOut">30일</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="mnVol">변동성 (연)</label>
+        <input type="range" id="mnVol" min="5" max="80" step="1" value="25">
+        <output id="mnVolOut">25%</output>
+      </div>
+
+      <div class="steps-out" id="mnSteps"></div>
+
+      <svg viewBox="0 0 640 215" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="프리미엄의 내재가치와 시간가치">
+        <g id="mnScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">프리미엄 (이론값)</span><span class="rv" id="mnPrem">—</span></div>
+        <div><span class="rk">상태</span><span class="rv" id="mnState">—</span></div>
+      </div>
+
+      <div class="verdict" id="mnVerdict" style="--vc:var(--prem)">
+        <div class="vh">가격 구성</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>용어.</b> <b>내가격(ITM)</b> — 지금 행사하면 이득인 상태(콜: 주가 &gt; 행사가). <b>등가격(ATM)</b> — 주가 ≈ 행사가. <b>외가격(OTM)</b> — 지금 행사하면 손해라 행사하지 않을 상태(콜: 주가 &lt; 행사가).<br><br>
+        <b>계산 기준.</b> 프리미엄은 <b>블랙-숄즈 모형</b>(금리 연 3%, 배당 없음)의 이론값입니다. <b>내재가치</b> = 콜 max(주가 − 행사가, 0), 풋 max(행사가 − 주가, 0). <b>시간가치 = 프리미엄 − 내재가치</b>입니다.<br><br>
+        <b>⚠️ 실제 시장 가격은 모형과 다를 수</b> 있습니다. 특히 <b>변동성</b>은 관측할 수 없는 값이라 <b>시장이 매기는 변동성</b>이 모형 입력과 다르면 가격도 달라집니다(06편).
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="lotto">
+    <div class="prod-head" style="--edge:var(--call)">
+      <span class="prod-tag">03 · 같은 돈</span>
+      <h2>같은 100만원, 주식 대신 콜을 사면</h2>
+      <p class="one">크게 오르면 <b>몇십 배</b>, 조금 오르면 <b>전부 잃습니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">STOCK vs CALL · 행사가를 골라보세요</div>
+      <p class="labsub"><b>주가 100 · 만기 30일 · 변동성 25% · 금리 3%</b>(예시). <b>100만원 전부</b>를 주식 또는 콜옵션에 넣습니다.</p>
+
+      <div class="ctrl-row">
+        <label for="ltK">콜옵션 행사가격</label>
+        <input type="range" id="ltK" min="90" max="125" step="1" value="110">
+        <output id="ltKOut">110</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="ltEnd">만기 때 주가</label>
+        <input type="range" id="ltEnd" min="80" max="130" step="1" value="112">
+        <output id="ltEndOut">112</output>
+      </div>
+
+      <div class="steps-out" id="ltSteps"></div>
+
+      <svg viewBox="0 0 640 296" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="주가 시나리오별 주식과 콜옵션 수익률">
+        <g id="ltScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">주식 / 콜옵션</span><span class="rv" id="ltOut">—</span></div>
+        <div><span class="rk">모형상 콜이 이익 날 확률</span><span class="rv" id="ltProb">—</span></div>
+      </div>
+
+      <div class="verdict" id="ltVerdict" style="--vc:var(--call)">
+        <div class="vh">같은 돈</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 콜 프리미엄은 블랙-숄즈 이론값이고, <b>100만원 ÷ 프리미엄</b>만큼 콜을 샀다고 봅니다(계약 단위·수수료 무시). 만기 가치 = <b>수량 × max(만기 주가 − 행사가, 0)</b>.<br><br>
+        <b>「모형상 확률」</b>은 <b>주가가 손익분기(행사가 + 프리미엄)를 넘을 확률</b>을 같은 모형으로 계산한 참고값입니다. <b>실제 확률이 아니며</b>, 모형의 가정(주가 분포, 변동성 일정)에 크게 의존합니다.<br><br>
+        <b>그래프의 막대는 ±500%에서 잘랐습니다.</b> 잘린 막대에는 실제 값을 적어두었습니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>싼 옵션이 복권처럼 느껴지는 이유 — 그리고 누가 파는가</h3>
+      <p>행사가를 <b>120</b>까지 올려보면 콜 가격이 <b>0.015</b> 수준까지 떨어집니다. <b>100만원으로 6천 개 넘게</b> 살 수 있습니다. <b>주가가 +30%만 가면 수백 배</b>입니다.</p>
+      <p><b>이 구조가 복권과 같습니다</b> — <b>아주 적은 돈으로, 아주 낮은 확률에, 아주 큰 배수</b>. 그리고 사람들은 <b>복권 같은 모양에 기대값 이상의 값을 치르는 경향</b>이 오래전부터 관찰돼 왔습니다. <b>「희박하지만 크게 이기는」 쪽이 실제 확률보다 과대평가</b>되는 것입니다.</p>
+      <p><b>그럼 그 복권을 파는 쪽은 누구일까요.</b> <b>01편에서 봤듯이 옵션은 제로섬</b>이라 <b>매수자가 치른 초과분은 매도자가 가져갑니다.</b></p>
+      <p><b>그래서 옵션 시장에는 오래된 관찰이 하나 있습니다.</b> 주가지수 옵션에서는 <b>시장이 매기는 변동성(내재변동성)이 실제로 나타난 변동성보다 평균적으로 높게</b> 형성되는 경향이 있다는 것입니다. <b>옵션이 평균적으로 조금 비싸게 팔린다</b>는 뜻이고, <b>그 차이가 매도자의 평균 수익</b>이 됩니다.</p>
+      <p class="plain"><b>⚠️ 그런데 여기서 「그럼 파는 쪽이 유리하겠네」로 넘어가면 07편의 함정</b>에 빠집니다.<br><br><b>매도자가 평균적으로 버는 이유는 「가끔 오는 큰 손실」을 떠안기 때문</b>입니다. <b>그 손실은 드물지만 한 번에 크고</b>, <b>모두에게 동시에</b> 옵니다. <b>보험회사가 평균적으로 버는 것과 같은 구조</b>이고, <b>보험회사는 그걸 버틸 자본과 분산이 있습니다.</b><br><br><b>그래서 이 편의 결론은 「사는 쪽도 파는 쪽도 공짜가 아니다」</b>입니다. <b>사는 쪽은 복권값을 조금 더 내고</b>, <b>파는 쪽은 드문 재난을 떠안습니다.</b> <b>비용을 빼면 어느 쪽도 쉽게 이기지 못합니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="combo">
+    <div class="prod-head" style="--edge:var(--put)">
+      <span class="prod-tag">04 · 조합</span>
+      <h2>옵션을 섞으면 원하는 모양을 만듭니다</h2>
+      <p class="one">다만 <b>막는 만큼 내거나, 막는 만큼 포기</b>합니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">COMBINATION · 네 가지 기본 조합</div>
+      <p class="labsub"><b>주가 100에서 시작 · 30일 만기 · 변동성 25%</b>(예시). 프리미엄은 모형 이론값입니다.</p>
+
+      <div class="btnrow" id="cbBtns">
+        <button data-v="0" class="on">보호적 풋 (주식 + 풋 매수)</button>
+        <button data-v="1">커버드콜 (주식 + 콜 매도)</button>
+        <button data-v="2">콜 스프레드 (콜 매수 + 더 높은 콜 매도)</button>
+        <button data-v="3">칼라 (주식 + 풋 매수 + 콜 매도)</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="cbEnd">만기 때 주가</label>
+        <input type="range" id="cbEnd" min="60" max="140" step="1" value="85">
+        <output id="cbEndOut">85</output>
+      </div>
+
+      <div class="steps-out" id="cbSteps"></div>
+
+      <svg viewBox="0 0 640 265" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="조합 포지션의 만기 손익">
+        <g id="cbScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">조합 손익 / 주식만</span><span class="rv" id="cbOut">—</span></div>
+        <div><span class="rk">최대 손실 / 최대 이익</span><span class="rv" id="cbRange">—</span></div>
+      </div>
+
+      <div class="verdict" id="cbVerdict" style="--vc:var(--put)">
+        <div class="vh">조합</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>사용한 행사가격.</b> 풋 매수 <b>95</b>, 콜 매수 <b>100</b>, 콜 매도 <b>110</b>입니다. 손익은 <b>주가 100 한 단위 기준</b>이며, <b>수수료·세금·증거금</b>은 넣지 않았습니다.<br><br>
+        <b>회색 점선이 「주식만 들고 있을 때」</b>이고, 굵은 선이 <b>조합의 결과</b>입니다. <b>두 선이 벌어진 곳이 이 조합이 바꿔놓은 부분</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>보험의 가격 — 보호적 풋은 얼마짜리인가</h3>
+      <p><b>보호적 풋</b>은 가장 직관적인 옵션 활용입니다. <b>주식을 들고, 떨어지면 행사가에 팔 수 있는 권리를 산다</b> — <b>보험</b>입니다.</p>
+      <p><b>계산기의 풋(행사가 95, 30일)은 약 0.9</b>입니다. <b>주가 100 대비 0.9% 정도의 한 달 보험료</b>입니다. <b>작아 보입니다.</b></p>
+      <p><b>그런데 이 보험은 한 달이면 끝납니다.</b> 계속 보호받으려면 <b>매달 새로 사야</b> 합니다. <b>같은 조건으로 12번 사면 1년에 약 11%</b>입니다(변동성 25% 가정). <b>주식의 장기 기대수익을 거의 다 보험료로</b> 내는 셈입니다.</p>
+      <p><b>변동성이 낮으면 훨씬 싸집니다.</b> 변동성 15%라면 같은 5% 외가격 풋의 한 달 값이 약 0.2%, 1년이면 약 2.5%입니다. <b>그런데 보험이 가장 필요한 시기, 즉 시장이 불안할 때는 변동성이 높아 보험료도 비쌉니다.</b></p>
+      <p class="plain"><b>⚠️ 단순 비교는 조심해야 합니다.</b> 한 달짜리를 12번 사는 것은 <b>매달 새로 −5% 선을 긋는</b> 것이라, <b>1년짜리 하나를 사는 것보다 훨씬 촘촘하게 보호</b>합니다. 그만큼 비쌉니다. <b>1년짜리 5% 외가격 풋 한 개</b>는 같은 모형에서 약 <b>6%</b>입니다(변동성 25%).<br><br><b>여기서 남길 것은 하나</b> — <b>「옵션으로 하락을 막는다」는 말에는 반드시 「매년 몇 %를 내고」가 붙어야</b> 합니다. <b>그 숫자를 계산해보면 대부분의 경우 「비중을 줄이는 것」이 더 싼 보험</b>이라는 결론이 나옵니다. <b>10편에서 이 보험을 끝까지 계산합니다.</b></p>
+
+      <h3>칼라는 「공짜 보험」인가</h3>
+      <p><b>칼라</b>는 <b>풋을 사는 돈을 콜을 팔아서 마련</b>합니다. 계산기에서 보면 <b>순비용이 거의 0</b>에 가깝게 만들 수 있습니다. <b>「공짜로 하락을 막는다」</b>처럼 보입니다.</p>
+      <p><b>공짜가 아닙니다.</b> <b>보험료를 현금 대신 「상승 이익」으로</b> 낸 것입니다. 그림에서 보면 <b>110 위로는 선이 평평</b>합니다. <b>주가가 30% 올라도 10%만</b> 가져갑니다.</p>
+      <p class="plain"><b>그래서 칼라의 실제 의미는 「−5%와 +10% 사이에 나를 가두는 것」</b>입니다. <b>그 범위가 마음에 든다면 합리적</b>이고, <b>큰 상승을 기대하고 주식을 들고 있었다면 목적과 어긋납니다.</b><br><br><b>04편의 선물 헤지와 비교하면</b> — 선물 헤지는 <b>모든 상승을 포기</b>하고, 칼라는 <b>일정 수준 위의 상승만 포기</b>합니다. <b>보호적 풋은 상승을 전부 지키는 대신 현금 보험료</b>를 냅니다. <b>셋 다 「어떤 방식으로 낼 것인가」의 차이</b>이지, <b>안 내는 방법은 없습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="rules">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 규칙</span>
+      <h2>옵션 거래 전에 알아야 할 규칙</h2>
+      <p class="one">상품마다 <b>행사 방식·결제 방식·증거금</b>이 다릅니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">RULES · 눌러서 확인해보세요</div>
+      <p class="labsub">거래소와 상품에 따라 다르므로 <b>실제 거래 전에는 반드시 상품 명세를 확인</b>해야 합니다.</p>
+
+      <div class="btnrow" id="ruBtns">
+        <button data-v="0" class="on">유럽형과 미국형</button>
+        <button data-v="1">결제 방식</button>
+        <button data-v="2">증거금은 파는 쪽만</button>
+        <button data-v="3">만기 전에 파는 것</button>
+      </div>
+
+      <div class="verdict" id="ruVerdict" style="--vc:var(--neutral)">
+        <div class="vh">규칙</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>옵션은 권리, 선물은 의무</b>라는 것.</li>
+      <li><b>사는 쪽은 손실이, 파는 쪽은 이익이 제한</b>된다는 것.</li>
+      <li><b>프리미엄 = 내재가치 + 시간가치</b>라는 것.</li>
+      <li><b>외가격 옵션은 내재가치가 0이고 전부 시간가치</b>라는 것.</li>
+      <li><b>손익분기는 행사가가 아니라 행사가 ± 프리미엄</b>이라는 것.</li>
+      <li><b>외가격 콜은 조금 올라도 전부 잃는다</b>는 것.</li>
+      <li><b>싼 옵션은 복권과 같은 모양</b>이라는 것.</li>
+      <li><b>보호적 풋은 매번 보험료를 낸다</b>는 것.</li>
+      <li><b>칼라는 보험료를 상승 이익으로 낸다</b>는 것.</li>
+      <li><b>어떤 조합도 공짜로 하락을 막지 못한다</b>는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 옵션은 <b>「권리」</b>라서 <b>손익이 한쪽에서 꺾입니다.</b> <b>사는 쪽은 최악이 정해져 있고</b>, <b>파는 쪽은 최선이 정해져 있습니다.</b></p>
+      <p><b>그 비대칭 때문에 옵션은 두 가지 전혀 다른 용도</b>로 쓰입니다. <b>하나는 보험</b>(풋 매수) — <b>작은 비용으로 큰 손실을 막습니다.</b> <b>다른 하나는 복권</b>(외가격 콜 매수) — <b>작은 비용으로 큰 이익을 노립니다.</b> <b>모양은 같고, 목적만 다릅니다.</b></p>
+      <p><b>그리고 어느 쪽이든 「시간이 지나면 녹는다」</b>는 성질이 있습니다. <b>시간가치는 만기에 0이 되기</b> 때문입니다. <b>이 녹는 속도가 옵션의 가장 중요한 성질</b>입니다.</p>
+      <p><b>다음 편은 06편 — 시간가치와 변동성</b>입니다. <b>옵션 가격이 무엇으로 정해지는지</b>, <b>시간이 지나면 얼마나 빨리 녹는지</b>, <b>변동성이 가격을 어떻게 바꾸는지</b>를 계산기로 봅니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 선물·옵션 05 · 옵션<br>
+    <a href="index.html#futures">← 선물·옵션 목록으로</a> · <a href="futures-hedge.html">04 · 선물로 위험을 줄이는 법</a> · 06 · 시간가치와 변동성 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 옵션 거래를 권하지 않습니다.<br>
+    옵션 가격은 <b>블랙-숄즈 모형의 이론값</b>이며 실제 시장 가격과 다를 수 있습니다. 「모형상 확률」은 참고값입니다. 상품 명세·결제 방식·증거금은 거래소와 증권사 기준을 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+/* 표준정규 누적분포 (Abramowitz-Stegun 26.2.17) */
+function ncdf(x){
+  var t = 1 / (1 + 0.2316419 * Math.abs(x));
+  var d = 0.3989422804014327 * Math.exp(-x * x / 2);
+  var p = d * t * (0.319381530 + t * (-0.356563782 + t * (1.781477937 + t * (-1.821255978 + t * 1.330274429))));
+  return x > 0 ? 1 - p : p;
+}
+function bs(S, K, T, r, v, type){
+  if(T <= 0 || v <= 0) return type === 'c' ? Math.max(S - K, 0) : Math.max(K - S, 0);
+  var d1 = (Math.log(S / K) + (r + v * v / 2) * T) / (v * Math.sqrt(T));
+  var d2 = d1 - v * Math.sqrt(T);
+  return type === 'c' ? S * ncdf(d1) - K * Math.exp(-r * T) * ncdf(d2)
+                      : K * Math.exp(-r * T) * ncdf(-d2) - S * ncdf(-d1);
+}
+function probAbove(S, X, T, r, v){
+  var d2 = (Math.log(S / X) + (r - v * v / 2) * T) / (v * Math.sqrt(T));
+  return ncdf(d2);
+}
+var R = 0.03;
+
+/* ══════════ 2. 내재가치·시간가치 ══════════ */
+var mnType = 'c';
+function mnDraw(){
+  var S = +document.getElementById('mnS').value;
+  var K = +document.getElementById('mnK').value;
+  var days = +document.getElementById('mnDays').value;
+  var vol = +document.getElementById('mnVol').value / 100;
+  var T = days / 365;
+  document.getElementById('mnSOut').textContent = S;
+  document.getElementById('mnKOut').textContent = K;
+  document.getElementById('mnDaysOut').textContent = days + '일';
+  document.getElementById('mnVolOut').textContent = Math.round(vol * 100) + '%';
+
+  var prem = bs(S, K, T, R, vol, mnType);
+  var intr = mnType === 'c' ? Math.max(S - K, 0) : Math.max(K - S, 0);
+  var tv = Math.max(0, prem - intr);
+  var be = mnType === 'c' ? K + prem : K - prem;
+  var gap = mnType === 'c' ? S - K : K - S;
+  var state = Math.abs(S - K) <= 1 ? '등가격 (ATM)' : gap > 0 ? '내가격 (ITM)' : '외가격 (OTM)';
+  var nm = mnType === 'c' ? '콜' : '풋';
+
+  steps('mnSteps', [
+    { k:nm + ' 옵션 · 주가 ' + S + ' · 행사가 ' + K, v:state },
+    { k:'프리미엄 (이론값)', v:num(prem, 3) },
+    { k:'내재가치 = ' + (mnType === 'c' ? 'max(주가 − 행사가, 0)' : 'max(행사가 − 주가, 0)'), v:num(intr, 3) },
+    { k:'시간가치 = 프리미엄 − 내재가치', v:num(tv, 3) },
+    { k:'주가 대비 프리미엄', v:num(prem / S * 100, 2) + '%' },
+    { k:'만기 손익분기 = 행사가 ' + (mnType === 'c' ? '+' : '−') + ' 프리미엄', v:num(be, 2), total:true }
+  ]);
+
+  document.getElementById('mnPrem').textContent = num(prem, 3) + ' (내재 ' + num(intr, 2) + ' + 시간 ' + num(tv, 2) + ')';
+  document.getElementById('mnState').textContent = state;
+  document.getElementById('mnState').style.color = state.indexOf('내가격') === 0 ? 'var(--pos)' : state.indexOf('외가격') === 0 ? 'var(--neg)' : '';
+
+  var X0 = 60, W = 545;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="16">① 프리미엄 = 내재가치 + 시간가치</text>';
+  var maxP = Math.max(prem, 12);
+  var bw = W * 0.82;
+  var wi = intr / maxP * bw, wt = tv / maxP * bw;
+  g += '<rect x="' + X0 + '" y="28" width="' + Math.max(0, wi).toFixed(1) + '" height="26" fill="#5F7A52" fill-opacity=".55" stroke="#5F7A52" stroke-width="1.2"/>';
+  g += '<rect x="' + (X0 + wi).toFixed(1) + '" y="28" width="' + Math.max(1, wt).toFixed(1) + '" height="26" fill="#8E6B3A" fill-opacity=".45" stroke="#8E6B3A" stroke-width="1.2"/>';
+  g += '<text class="lblb" x="' + Math.min(X0 + wi + wt + 8, X0 + W - 110).toFixed(1) + '" y="46" fill="#8E6B3A">' + num(prem, 2) + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="72">초록: 내재가치 ' + num(intr, 2) + ' · 갈색: 시간가치 ' + num(tv, 2) + '</text>';
+
+  var ax = 150, lo = 65, hi = 135;
+  function xp(v){ return X0 + (Math.max(lo, Math.min(hi, v)) - lo) / (hi - lo) * W; }
+  g += '<text class="axt" x="' + X0 + '" y="104">② 가격 축 위의 세 점</text>';
+  var itmL = mnType === 'c' ? xp(K) : X0, itmR = mnType === 'c' ? X0 + W : xp(K);
+  g += '<rect x="' + itmL.toFixed(1) + '" y="' + (ax - 12) + '" width="' + Math.max(0, itmR - itmL).toFixed(1) + '" height="24" fill="#5F7A52" fill-opacity=".10"/>';
+  g += '<line x1="' + X0 + '" y1="' + ax + '" x2="' + (X0 + W) + '" y2="' + ax + '" class="axis"/>';
+  [70, 80, 90, 100, 110, 120, 130].forEach(function(t){
+    g += '<line x1="' + xp(t).toFixed(1) + '" y1="' + (ax - 4) + '" x2="' + xp(t).toFixed(1) + '" y2="' + (ax + 4) + '" stroke="#8A8474"/>';
+    g += '<text class="axt" x="' + xp(t).toFixed(1) + '" y="' + (ax + 18) + '" text-anchor="middle">' + t + '</text>';
+  });
+  function mark(v, label, col, dy){
+    var x = xp(v);
+    return '<line x1="' + x.toFixed(1) + '" y1="' + (ax - 18) + '" x2="' + x.toFixed(1) + '" y2="' + (ax + 2) + '" stroke="' + col + '" stroke-width="2.2"/>' +
+           '<text class="lblb" x="' + Math.min(Math.max(x, X0 + 30), X0 + W - 30).toFixed(1) + '" y="' + (ax - 24 - dy) + '" text-anchor="middle" fill="' + col + '">' + label + '</text>';
+  }
+  g += mark(K, '행사가 ' + K, '#6A5A8C', 0);
+  g += mark(be, '손익분기 ' + num(be, 1), '#8E4B3A', 16);
+  g += mark(S, '주가 ' + S, '#3F5F6F', Math.abs(S - K) < 6 ? 32 : 0);
+  g += '<text class="axt" x="' + X0 + '" y="' + (ax + 44) + '">연한 초록 구간이 이 ' + nm + '이 내가격이 되는 가격대입니다.</text>';
+  document.getElementById('mnScene').innerHTML = g;
+
+  var title, body, col;
+  if(state.indexOf('외가격') === 0){
+    col = '#8E4B3A';
+    title = '외가격 ' + nm + ' — 프리미엄 ' + num(prem, 2) + '가 전부 시간가치입니다';
+    body = '지금 행사하면 손해라 <b>내재가치는 0</b>입니다. <b>프리미엄 ' + num(prem, 2) + '는 전부 「만기까지 ' + (mnType === 'c' ? '행사가를 넘을' : '행사가 아래로 내려갈') + ' 가능성」의 값</b>입니다.<br><br>' +
+      '<b>이 가능성은 시간이 지나면 줄어듭니다.</b> <b>「만기까지 남은 날」을 줄여보세요.</b> <b>주가가 그대로여도 프리미엄이 녹아 0에 가까워집니다.</b><br><br>' +
+      '<b>그리고 손익분기는 ' + num(be, 2) + '</b>입니다. 지금 주가 <b>' + S + '</b>에서 <b>' + sgn((be / S - 1) * 100, 1) + '%</b> 움직여야 겨우 본전입니다.<br><br>' +
+      '<b>「변동성」을 올려보세요.</b> <b>크게 움직일 가능성이 커지니 외가격 옵션 값이 크게 오릅니다.</b> 06편의 주제입니다.';
+  } else if(state.indexOf('내가격') === 0){
+    col = '#5F7A52';
+    title = '내가격 ' + nm + ' — 내재가치 ' + num(intr, 2) + ' + 시간가치 ' + num(tv, 2);
+    body = '지금 행사해도 <b>' + num(intr, 2) + '</b>만큼 이득이라 <b>그 부분이 내재가치</b>입니다. <b>나머지 ' + num(tv, 2) + '</b>가 시간가치입니다.<br><br>' +
+      '<b>깊은 내가격일수록 시간가치의 비중이 작습니다.</b> 이미 행사가를 크게 넘어 있어서 <b>「더 좋아질 가능성」의 추가 값어치가 상대적으로 작기</b> 때문입니다.<br><br>' +
+      '<b>그래서 깊은 내가격 옵션은 「주식을 레버리지로 산 것」과 비슷하게</b> 움직입니다. <b>주가가 1 오르면 옵션도 거의 1 오릅니다.</b><br><br>' +
+      '<b>「현재 주가」를 행사가 쪽으로 옮겨보세요.</b> <b>내재가치가 줄어들수록 시간가치가 커지다가, 등가격에서 가장 큽니다.</b>';
+  } else {
+    col = '#8E6B3A';
+    title = '등가격 ' + nm + ' — 시간가치가 가장 큰 지점입니다';
+    body = '주가와 행사가가 거의 같아서 <b>내재가치는 ' + num(intr, 2) + '</b>, <b>시간가치는 ' + num(tv, 2) + '</b>입니다.<br><br>' +
+      '<b>등가격에서 시간가치가 가장 큽니다.</b> <b>어느 쪽으로 갈지 가장 불확실한 상태</b>라 <b>「가능성」의 값이 가장 크기</b> 때문입니다.<br><br>' +
+      '<b>그리고 등가격 옵션은 시간이 지날 때 가장 빨리 녹습니다.</b> 만기가 가까워질수록 특히 그렇습니다(06편).<br><br>' +
+      '<b>「현재 주가」를 좌우로 옮겨보세요.</b> <b>어느 쪽으로 가든 시간가치가 줄어듭니다</b> — 한쪽은 내재가치로 바뀌고, 다른 쪽은 사라집니다.';
+  }
+  document.getElementById('mnVerdict').querySelector('.vh').textContent = nm + '옵션';
+  verdict('mnVerdict', col, title, body);
+}
+bindBtnRow('#mnType', function(v){ mnType = v; mnDraw(); });
+['mnS', 'mnK', 'mnDays', 'mnVol'].forEach(function(id){ document.getElementById(id).addEventListener('input', mnDraw); });
+
+/* ══════════ 3. 같은 100만원 ══════════ */
+var LT_S = 100, LT_T = 30 / 365, LT_V = 0.25, CASH = 1e6;
+function ltDraw(){
+  var K = +document.getElementById('ltK').value;
+  var ST = +document.getElementById('ltEnd').value;
+  document.getElementById('ltKOut').textContent = K + (K < 100 ? ' (내가격)' : K === 100 ? ' (등가격)' : ' (외가격 ' + (K - 100) + '%)');
+  document.getElementById('ltEndOut').textContent = ST + ' (' + sgn(ST - 100, 0) + '%)';
+
+  var c = bs(LT_S, K, LT_T, R, LT_V, 'c');
+  var qty = CASH / c;
+  var be = K + c;
+  var p = probAbove(LT_S, be, LT_T, R, LT_V);
+  var pItm = probAbove(LT_S, K, LT_T, R, LT_V);
+  function callRet(st){ return (qty * Math.max(st - K, 0) / CASH - 1) * 100; }
+  var stockRet = (ST / 100 - 1) * 100;
+  var cRet = callRet(ST);
+
+  steps('ltSteps', [
+    { k:'행사가 ' + K + ' 콜 프리미엄 (이론값)', v:num(c, 3) },
+    { k:'100만원으로 살 수 있는 수량', v:Math.round(qty).toLocaleString('ko-KR') + '개' },
+    { k:'손익분기 = 행사가 + 프리미엄', v:num(be, 2) + ' (' + sgn((be / 100 - 1) * 100, 1) + '%)' },
+    { k:'모형상 만기에 행사가를 넘을 확률', v:num(pItm * 100, 1) + '%' },
+    { k:'모형상 손익분기를 넘을 확률', v:num(p * 100, 1) + '%' },
+    { k:'만기 주가 ' + ST + ' → 주식 / 콜', v:sgn(stockRet, 0) + '% / ' + sgn(cRet, 0) + '%', total:true }
+  ]);
+
+  document.getElementById('ltOut').textContent = sgn(stockRet, 0) + '% / ' + sgn(cRet, 0) + '%';
+  document.getElementById('ltOut').style.color = cRet < 0 ? 'var(--neg)' : 'var(--pos)';
+  document.getElementById('ltProb').textContent = num(p * 100, 1) + '%';
+  document.getElementById('ltProb').style.color = p < 0.25 ? 'var(--neg)' : '';
+
+  var scen = [-10, -5, 0, 5, 10, 20];
+  var X0 = 60, W = 545, YZ = 135, HH = 100, LIM = 500;
+  function yy(v){ return YZ - Math.max(-LIM, Math.min(LIM, v)) / LIM * HH; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="16">주가 시나리오별 수익률 (%) — 회색: 주식 · 초록: 콜 ' + K + '</text>';
+  g += '<line x1="' + X0 + '" y1="' + YZ + '" x2="' + (X0 + W) + '" y2="' + YZ + '" stroke="#8A8474" stroke-width="1.2"/>';
+  g += '<line x1="' + X0 + '" y1="' + yy(-100).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(-100).toFixed(1) + '" stroke="#8E4B3A" stroke-width="1" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(-100) + 4).toFixed(1) + '" text-anchor="end">−100</text>';
+  g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(500) + 4).toFixed(1) + '" text-anchor="end">+500</text>';
+  var gw = W / scen.length;
+  scen.forEach(function(m, i){
+    var cx = X0 + gw * i + gw / 2;
+    var st = 100 * (1 + m / 100);
+    var a = m, b = callRet(st);
+    var bw = 24;
+    function bar(x, v, col, op){
+      var y1 = yy(Math.max(0, v)), y2 = yy(Math.min(0, v));
+      return '<rect x="' + x.toFixed(1) + '" y="' + y1.toFixed(1) + '" width="' + bw + '" height="' + Math.max(1, y2 - y1).toFixed(1) + '" fill="' + col + '" fill-opacity="' + op + '" stroke="' + col + '" stroke-width="1"/>';
+    }
+    g += bar(cx - bw - 2, a, '#8A8474', '.4');
+    g += bar(cx + 2, b, b < 0 ? '#8E4B3A' : '#5F7A52', '.62');
+    var clipped = Math.abs(b) > LIM;
+    var ty = b >= 0 ? yy(b) - 6 : yy(b) + 14;
+    g += '<text class="lblb" x="' + (cx + bw / 2 + 2).toFixed(1) + '" y="' + Math.max(28, Math.min(YZ + HH + 12, ty)).toFixed(1) + '" text-anchor="middle" fill="' + (b < 0 ? '#8E4B3A' : '#5F7A52') + '">' + sgn(b, 0) + (clipped ? '↑' : '') + '</text>';
+    g += '<text class="axt" x="' + cx.toFixed(1) + '" y="' + (YZ + HH + 30) + '" text-anchor="middle">주가 ' + (m > 0 ? '+' : '') + m + '%</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="' + (YZ + HH + 50) + '">콜 막대가 −100 점선에 닿으면 100만원이 전부 사라진 것입니다.</text>';
+  document.getElementById('ltScene').innerHTML = g;
+
+  var title, body, col;
+  if(K <= 97){
+    col = '#5F7A52';
+    title = '내가격 콜 ' + K + ' — 비싸지만 덜 극단적입니다';
+    body = '행사가가 주가보다 낮아 <b>프리미엄이 ' + num(c, 2) + '</b>로 비쌉니다. 그래서 <b>살 수 있는 수량이 적고</b>, <b>수익률의 폭도 상대적으로 좁습니다.</b><br><br>' +
+      '<b>모형상 이익 확률은 ' + num(p * 100, 1) + '%</b>이고, 주가가 <b>제자리여도 일부는 남습니다</b>(내재가치).<br><br>' +
+      '<b>그래도 주식과는 다릅니다</b> — 주가가 <b>−5%만 가도 ' + sgn(callRet(95), 0) + '%</b>입니다. <b>레버리지가 붙은 주식</b>에 가깝습니다.<br><br>' +
+      '<b>「행사가」를 110, 120으로</b> 올려보세요. <b>같은 100만원이 점점 복권이 됩니다.</b>';
+  } else if(p < 0.12){
+    col = '#8E4B3A';
+    title = '외가격 콜 ' + K + ' — 모형상 이익 확률 ' + num(p * 100, 1) + '%, 복권의 모양입니다';
+    body = '프리미엄이 <b>' + num(c, 3) + '</b>로 매우 싸서 <b>' + Math.round(qty).toLocaleString('ko-KR') + '개</b>를 살 수 있습니다. <b>주가가 +20% 가면 ' + sgn(callRet(120), 0) + '%</b>입니다.<br><br>' +
+      '<b>그런데 주가가 +5%, +10% 올라도 ' + sgn(callRet(105), 0) + '%, ' + sgn(callRet(110), 0) + '%</b>입니다. <b>방향을 맞혀도 폭이 모자라면 전부 잃습니다.</b><br><br>' +
+      '<b>모형상 손익분기(' + num(be, 2) + ')를 넘을 확률은 ' + num(p * 100, 1) + '%</b>입니다. <b>열 번 중 아홉 번 이상은 100만원이 사라지는</b> 구조입니다.<br><br>' +
+      '<b>「주식은 조금 올라도 조금 번다」와 「외가격 콜은 크게 오르지 않으면 전부 잃는다」</b>는 <b>전혀 다른 물건</b>입니다. <b>같은 「상승에 거는 것」이 아닙니다.</b>';
+  } else {
+    col = '#8E6B3A';
+    title = '콜 ' + K + ' — 손익분기 ' + num(be, 2) + ', 모형상 이익 확률 ' + num(p * 100, 1) + '%';
+    body = '프리미엄 <b>' + num(c, 3) + '</b>로 <b>' + Math.round(qty).toLocaleString('ko-KR') + '개</b>를 삽니다. <b>주가가 ' + num(be, 2) + '를 넘어야</b> 이익입니다.<br><br>' +
+      '<b>주가가 제자리이거나 떨어지면 −100%</b>입니다. <b>주식이었다면 제자리이거나 소폭 손실</b>이었을 상황에서 <b>전부</b> 잃습니다.<br><br>' +
+      '<b>이것이 옵션 매수의 「손실 제한」의 실제 의미</b>입니다 — <b>최대 손실이 정해져 있지만, 그 최대 손실이 가장 흔한 결과</b>입니다.<br><br>' +
+      '<b>「만기 때 주가」 슬라이더를 움직여보세요.</b> <b>손익분기 근처에서 결과가 갑자기 뒤집히는</b> 것이 보입니다.';
+  }
+  verdict('ltVerdict', col, title, body);
+}
+['ltK', 'ltEnd'].forEach(function(id){ document.getElementById(id).addEventListener('input', ltDraw); });
+
+/* ══════════ 4. 조합 ══════════ */
+var CB_T = 30 / 365, CB_V = 0.25;
+var P95 = bs(100, 95, CB_T, R, CB_V, 'p');
+var C100 = bs(100, 100, CB_T, R, CB_V, 'c');
+var C110 = bs(100, 110, CB_T, R, CB_V, 'c');
+var CB = [
+  { h:'보호적 풋', legs:{ stock:1, putBuy:1 }, col:'#4C6B7A' },
+  { h:'커버드콜',  legs:{ stock:1, callSell:1 }, col:'#8E6B3A' },
+  { h:'콜 스프레드', legs:{ callBuy:1, callSell:1 }, col:'#5F7A52' },
+  { h:'칼라',      legs:{ stock:1, putBuy:1, callSell:1 }, col:'#6A5A8C' }
+];
+function comboVal(st, L){
+  var v = 0;
+  if(L.stock) v += st - 100;
+  if(L.putBuy) v += Math.max(95 - st, 0) - P95;
+  if(L.callSell) v += C110 - Math.max(st - 110, 0);
+  if(L.callBuy) v += Math.max(st - 100, 0) - C100;
+  return v;
+}
+var cbIdx = 0;
+function cbDraw(){
+  var c = CB[cbIdx];
+  var ST = +document.getElementById('cbEnd').value;
+  document.getElementById('cbEndOut').textContent = ST + ' (' + sgn(ST - 100, 0) + '%)';
+
+  var v = comboVal(ST, c.legs);
+  var stockOnly = c.legs.stock ? ST - 100 : null;
+  var net = 0;
+  if(c.legs.putBuy) net -= P95;
+  if(c.legs.callSell) net += C110;
+  if(c.legs.callBuy) net -= C100;
+  var vals = [];
+  for(var s = 0; s <= 300; s += 1){ vals.push(comboVal(s, c.legs)); }
+  var minV = Math.min.apply(null, vals), maxV = Math.max.apply(null, vals);
+  var lossTxt = (cbIdx === 1) ? num(comboVal(0, c.legs), 2) + ' (주가 0일 때)' : num(minV, 2);
+  var gainTxt = (cbIdx === 0) ? '제한 없음' : num(maxV, 2);
+
+  var rows = [];
+  if(c.legs.stock) rows.push({ k:'주식 (100에 매수)', v:sgn(ST - 100, 2) });
+  if(c.legs.putBuy) rows.push({ k:'풋 95 매수 (프리미엄 −' + num(P95, 3) + ')', v:sgn(Math.max(95 - ST, 0) - P95, 2) });
+  if(c.legs.callBuy) rows.push({ k:'콜 100 매수 (프리미엄 −' + num(C100, 3) + ')', v:sgn(Math.max(ST - 100, 0) - C100, 2) });
+  if(c.legs.callSell) rows.push({ k:'콜 110 매도 (프리미엄 +' + num(C110, 3) + ')', v:sgn(C110 - Math.max(ST - 110, 0), 2) });
+  rows.push({ k:'옵션 순비용 (시작 시점)', v:sgn(net, 3) });
+  rows.push({ k:'만기 주가 ' + ST + ' → 조합 손익', v:sgn(v, 2), total:true });
+  steps('cbSteps', rows);
+
+  document.getElementById('cbOut').textContent = sgn(v, 2) + (stockOnly !== null ? ' / ' + sgn(stockOnly, 2) : ' / (주식 없음)');
+  document.getElementById('cbOut').style.color = v >= 0 ? 'var(--pos)' : 'var(--neg)';
+  document.getElementById('cbRange').textContent = lossTxt + ' / ' + gainTxt;
+
+  var X0 = 60, W = 545, YZ = 125, HH = 95, lo = 60, hi = 140, LIM = 40;
+  function xx(s){ return X0 + (s - lo) / (hi - lo) * W; }
+  function yy(y){ return YZ - Math.max(-LIM, Math.min(LIM, y)) / LIM * HH; }
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="16">만기 손익 — 굵은 선: ' + c.h + ' · 회색 점선: 주식만 보유</text>';
+  g += '<line x1="' + X0 + '" y1="' + YZ + '" x2="' + (X0 + W) + '" y2="' + YZ + '" stroke="#8A8474" stroke-width="1.2"/>';
+  [-40, -20, 20, 40].forEach(function(t){
+    g += '<line x1="' + X0 + '" y1="' + yy(t).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + yy(t).toFixed(1) + '" class="gridl"/>';
+    g += '<text class="axt" x="' + (X0 - 6) + '" y="' + (yy(t) + 4).toFixed(1) + '" text-anchor="end">' + (t > 0 ? '+' : '') + t + '</text>';
+  });
+  [95, 100, 110].forEach(function(k){
+    g += '<line x1="' + xx(k).toFixed(1) + '" y1="' + (YZ - HH) + '" x2="' + xx(k).toFixed(1) + '" y2="' + (YZ + HH) + '" stroke="#C8C1AF" stroke-width="1" stroke-dasharray="2 3"/>';
+  });
+  [60, 80, 100, 120, 140].forEach(function(t){
+    g += '<text class="axt" x="' + xx(t).toFixed(1) + '" y="' + (YZ + HH + 16) + '" text-anchor="middle">' + t + '</text>';
+  });
+  var sp = [], cp = [];
+  for(var s2 = lo; s2 <= hi; s2 += 1){
+    sp.push(xx(s2).toFixed(1) + ' ' + yy(s2 - 100).toFixed(1));
+    cp.push(xx(s2).toFixed(1) + ' ' + yy(comboVal(s2, c.legs)).toFixed(1));
+  }
+  g += '<path d="M' + sp.join(' L') + '" fill="none" stroke="#8A8474" stroke-width="1.5" stroke-dasharray="5 3"/>';
+  g += '<path d="M' + cp.join(' L') + '" fill="none" stroke="' + c.col + '" stroke-width="3"/>';
+  g += '<circle cx="' + xx(ST).toFixed(1) + '" cy="' + yy(v).toFixed(1) + '" r="5.5" fill="' + c.col + '"/>';
+  var tx = Math.min(Math.max(xx(ST) + 10, X0 + 6), X0 + W - 56);
+  g += '<text class="lblb" x="' + tx.toFixed(1) + '" y="' + Math.max(YZ - HH + 12, Math.min(YZ + HH - 4, yy(v) + (v >= 0 ? -10 : 18))).toFixed(1) + '" fill="' + c.col + '">' + sgn(v, 2) + '</text>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (YZ + HH + 36) + '">세로 점선은 행사가격 95 · 100 · 110입니다. 선이 꺾이는 자리입니다.</text>';
+  document.getElementById('cbScene').innerHTML = g;
+
+  var T = [
+    { t:'보호적 풋 — 95 아래로는 더 잃지 않습니다',
+      b:'<b>주식을 들고 행사가 95 풋을 샀습니다.</b> 보험료는 <b>' + num(P95, 3) + '</b>입니다.<br><br>' +
+        '<b>그림에서 95 아래로 선이 평평</b>합니다. 주가가 <b>60이 되든 0이 되든 손실은 ' + num(-(5 + P95), 2) + '</b>에서 멈춥니다(하락 5 + 보험료).<br><br>' +
+        '<b>대신 모든 구간에서 주식만 들고 있을 때보다 ' + num(P95, 3) + '만큼 아래</b>에 있습니다. <b>아무 일도 없어도 보험료는 나갑니다.</b><br><br>' +
+        '<b>그리고 이 보험은 30일짜리</b>입니다. 계속 보호받으려면 <b>매달 새로 사야</b> 하고, <b>1년이면 보험료가 크게 쌓입니다</b>(아래 「자세히 보기」).' },
+    { t:'커버드콜 — 110 위의 상승을 팔고 프리미엄을 받았습니다',
+      b:'<b>주식을 들고 행사가 110 콜을 팔아</b> <b>' + num(C110, 3) + '</b>를 받았습니다.<br><br>' +
+        '<b>주가가 110 위로 가면 선이 평평</b>합니다. <b>+30%가 되어도 ' + num(10 + C110, 2) + '</b>까지만 가져갑니다. <b>그 위의 상승은 콜을 산 사람의 것</b>입니다.<br><br>' +
+        '<b>그런데 하락은 거의 그대로</b>입니다. 주가가 <b>70이면 ' + num(comboVal(70, c.legs), 2) + '</b>로, 주식만 들고 있을 때(−30)보다 <b>프리미엄만큼만</b> 덜 잃습니다.<br><br>' +
+        '<b>⚠️ 「커버드콜은 안전한 추가 수입」이라는 설명</b>은 절반만 맞습니다. <b>하락 위험은 주식과 거의 같고, 큰 상승은 포기</b>합니다. <b>07편</b>에서 자세히 다룹니다.' },
+    { t:'콜 스프레드 — 싸게 사는 대신 이익에 상한을 둡니다',
+      b:'<b>콜 100을 사고(' + num(C100, 3) + ') 콜 110을 팔아(' + num(C110, 3) + ')</b>, <b>순비용이 ' + num(C100 - C110, 3) + '</b>로 줄었습니다. <b>주식은 없습니다.</b><br><br>' +
+        '<b>최대 손실은 순비용 ' + num(C100 - C110, 2) + '</b>로 정해져 있고, <b>최대 이익은 ' + num(10 - (C100 - C110), 2) + '</b>로 정해져 있습니다. <b>양쪽이 다 막힌</b> 모양입니다.<br><br>' +
+        '<b>콜 100만 샀을 때보다 싸지만</b>, <b>110 위로 크게 올라도 추가 이익이 없습니다.</b><br><br>' +
+        '<b>「적당히 오를 것 같다」는 판단을 싸게 표현</b>하는 방법입니다. <b>크게 오를 것 같다면 맞지 않는 모양</b>입니다.' },
+    { t:'칼라 — −5%와 +10% 사이에 나를 가둡니다',
+      b:'<b>주식 + 풋 95 매수 + 콜 110 매도</b>입니다. <b>풋 보험료(' + num(P95, 3) + ')를 콜 프리미엄(' + num(C110, 3) + ')으로 일부 충당</b>해 <b>순비용이 ' + sgn(net, 3) + '</b>입니다.<br><br>' +
+        '<b>95 아래는 막히고(보험), 110 위도 막혔습니다(상승 판매).</b> <b>그림의 굵은 선이 양쪽에서 평평</b>합니다.<br><br>' +
+        '<b>「거의 공짜로 하락을 막는다」처럼 보이지만</b>, <b>보험료를 현금 대신 「110 위의 상승」으로</b> 낸 것입니다(아래 「자세히 보기」).<br><br>' +
+        '<b>04편의 선물 헤지와 비교하면</b> — 선물 헤지는 <b>모든 상승을 포기</b>하고, 칼라는 <b>110 위의 상승만</b> 포기합니다.' }
+  ];
+  document.getElementById('cbVerdict').querySelector('.vh').textContent = c.h;
+  verdict('cbVerdict', c.col, T[cbIdx].t, T[cbIdx].b);
+}
+bindBtnRow('#cbBtns', function(v){ cbIdx = +v; cbDraw(); });
+document.getElementById('cbEnd').addEventListener('input', cbDraw);
+
+/* ══════════ 5. 규칙 ══════════ */
+var RU = [
+  { h:'유럽형과 미국형', col:'#6A5A8C',
+    t:'언제 행사할 수 있느냐의 차이입니다',
+    p:'<b>유럽형</b> — <b>만기일에만</b> 행사할 수 있습니다. <b>코스피200 옵션 같은 주가지수 옵션</b>이 대체로 이 방식입니다.<br><br>' +
+      '<b>미국형</b> — <b>만기 전 아무 때나</b> 행사할 수 있습니다. <b>미국 개별 주식 옵션</b>이 대표적입니다.<br><br>' +
+      '<b>이름은 지역이 아니라 방식</b>을 뜻합니다. <b>미국에도 유럽형 옵션이 있고</b>, 그 반대도 있습니다.<br><br>' +
+      '<b>개인에게 실질적인 차이</b> — <b>미국형 옵션을 판 사람은 만기 전에 갑자기 행사를 당할 수</b> 있습니다(조기 배정). <b>특히 배당 직전</b>에 그런 일이 생기기도 합니다. <b>파는 쪽이라면 반드시 알아야 할 규칙</b>입니다.' },
+  { h:'결제 방식', col:'#3F5F6F',
+    t:'차액만 주고받거나, 실제 주식을 주고받습니다',
+    p:'<b>현금 결제</b> — <b>행사하면 차액만 현금으로</b> 받습니다. <b>주가지수 옵션</b>은 지수 자체를 주고받을 수 없으니 대체로 현금 결제입니다.<br><br>' +
+      '<b>실물 결제</b> — <b>행사하면 실제 주식을 사고팝니다.</b> <b>미국 주식 옵션은 1계약이 대체로 100주</b>입니다. <b>콜을 행사하면 100주를 행사가에 사야</b> 하므로 <b>그만큼의 현금이 필요</b>합니다.<br><br>' +
+      '<b>⚠️ 실물 결제 옵션을 산 사람이 만기에 내가격이면</b>, 증권사 규칙에 따라 <b>자동으로 행사되어 주식을 사게 될 수</b> 있습니다. <b>계좌에 돈이 없으면 곤란</b>해집니다. <b>만기 전에 정리할지, 행사할지</b>를 미리 정해야 합니다.' },
+  { h:'증거금은 파는 쪽만', col:'#8E4B3A',
+    t:'사는 쪽은 프리미엄을 다 내고, 파는 쪽은 담보를 맡깁니다',
+    p:'<b>옵션을 사는 사람</b>은 <b>프리미엄을 전액 지불</b>하고 끝입니다. <b>그 이상 잃을 수 없으니</b> 증거금이 필요 없습니다.<br><br>' +
+      '<b>옵션을 파는 사람</b>은 <b>의무를 지므로 증거금</b>을 맡겨야 합니다. 그리고 <b>그 증거금은 고정이 아닙니다.</b><br><br>' +
+      '· <b>기초자산이 불리하게 움직이면</b> 증거금 요구가 커집니다.<br>' +
+      '· <b>변동성이 커지면</b> 옵션 가격이 올라 <b>평가손실이 커지고</b>, 증거금 요구도 커집니다.<br>' +
+      '· <b>둘은 대체로 동시에</b> 옵니다 — 시장이 급락할 때입니다.<br><br>' +
+      '<b>그래서 옵션 매도는 「받은 프리미엄만큼 번다」가 아니라 「급락 때 증거금이 몇 배로 뛸 수 있다」</b>를 함께 봐야 합니다. <b>07편의 핵심</b>입니다.' },
+  { h:'만기 전에 파는 것', col:'#5F7A52',
+    t:'대부분의 옵션은 행사하지 않고 만기 전에 사고팔아 정리합니다',
+    p:'<b>옵션을 샀다고 반드시 만기까지 들고 가야 하는 것은 아닙니다.</b> <b>시장에서 그 옵션을 다시 팔면</b> 됩니다.<br><br>' +
+      '<b>이때 받는 가격은 「그 시점의 프리미엄」</b>입니다. <b>내재가치 + 남은 시간가치</b>입니다(2장).<br><br>' +
+      '<b>그래서 만기 전에 팔면 시간가치를 일부 돌려받을 수</b> 있습니다. 만기까지 들고 가면 <b>시간가치는 0</b>이 됩니다.<br><br>' +
+      '<b>⚠️ 다만 거래가 적은 옵션</b>은 <b>사는 호가와 파는 호가의 차이</b>가 커서, <b>팔 때 생각보다 훨씬 싸게</b> 넘겨야 할 수 있습니다. <b>특히 먼 만기나 깊은 외가격 옵션</b>이 그렇습니다. <b>「이론값」과 「실제로 팔 수 있는 값」은 다릅니다.</b>' }
+];
+bindBtnRow('#ruBtns', function(v){
+  var r = RU[+v];
+  document.getElementById('ruVerdict').querySelector('.vh').textContent = r.h;
+  verdict('ruVerdict', r.col, r.t, r.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 마지막 줄이 이 편의 결론입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+mnDraw(); ltDraw(); cbDraw();
+document.querySelector('#ruBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
