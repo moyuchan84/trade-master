@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>코스피200 · S&amp;P500 선물</title>
+<meta name="description" content="주식시장 전체를 한 계약으로 사고파는 지수선물. 승수와 명목금액, 계좌 대비 레버리지, 일일정산 경로를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --kr:#3F5F6F;--us:#6A5A8C;--acct:#8E6B3A;--call:#8E4B3A;--good:#5F7A52;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:760px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--kr));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--kr));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--kr));}
+  .steps-out{margin:16px 0 0;}
+  .steprow{display:flex;align-items:baseline;gap:10px;padding:8px 0;border-bottom:1px dotted var(--rule);font-size:13.8px;}
+  .steprow:last-child{border-bottom:0;}
+  .steprow .sk{flex:1 1 auto;color:var(--ink-soft);}
+  .steprow .sv{font-family:'IBM Plex Mono',monospace;font-size:13.5px;color:var(--ink);white-space:nowrap;}
+  .steprow.total{border-top:1px solid var(--rule);border-bottom:0;padding-top:11px;margin-top:4px;}
+  .steprow.total .sk{color:var(--ink);font-weight:600;}
+  .steprow.total .sv{font-weight:600;font-size:15px;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">선물·옵션 03 · 지수선물 · 투자 공부 노트</div>
+    <h1>코스피200 ·<br>S&amp;P500 선물</h1>
+    <p class="lede">주가지수 선물은 <b>주식시장 전체를 한 계약으로</b> 사고파는 방법입니다. 200개 종목을 하나하나 사지 않아도 <b>지수 전체에 한 번에</b> 노출됩니다. 그리고 그 한 계약이 <b>생각보다 훨씬 큽니다.</b></p>
+    <div class="callout">
+      <p><b>이 편의 세 숫자</b>입니다(모두 예시 가격 기준).</p>
+      <p><b>① 코스피200 선물 1계약 = 지수 × 25만원.</b> 지수가 400이면 <b>1억원</b>짜리 계약입니다. <b>지수가 1% 움직이면 계좌가 100만원</b> 움직입니다.</p>
+      <p><b>② 계좌가 3,000만원인데 1계약을 잡으면 이미 레버리지 3.3배</b>입니다. 「딱 한 계약만」이 결코 작은 크기가 아닙니다.</p>
+      <p><b>③ 가장 중요한 것 — 일일정산.</b> 같은 가격 경로에서 <b>결국 +5% 회복했는데</b>, 증거금만 넣어둔 사람은 <b>사흘째 청산되어 −318만원</b>으로 끝납니다. 그리고 <b>여유를 「조금」 더 둔 사람은 오히려 더 깊은 곳에서 청산되어 −785만원</b>입니다. 3장에서 경로를 따라갑니다.</p>
+      <p><b>⚠️ 계약 규격·증거금률·거래 시간은 거래소가 정하고 바뀔 수 있습니다.</b> 이 편의 수치는 구조를 보기 위한 예시이며, 실제 거래 전에는 반드시 거래소·증권사 안내를 확인하세요.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#size">1. 계약 하나의 크기</a>
+    <a href="#acct">2. 내 계좌와 계약 수</a>
+    <a href="#daily">3. 일일정산 경로</a>
+    <a href="#rules">4. 만기·롤·거래 시간</a>
+    <a href="#sum">5. 정리</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="size">
+    <div class="prod-head" style="--edge:var(--kr)">
+      <span class="prod-tag">01 · 크기</span>
+      <h2>「1포인트 25만원」이 뜻하는 것</h2>
+      <p class="one">지수선물은 <b>가격 × 승수</b>가 곧 계약 금액입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>과자 가게</b>에서 과자를 한 봉지씩 사면 한 봉지 값만 내면 돼.</p>
+      <p>그런데 <b>도매 시장</b>에 가면 과자를 <b>한 상자씩만</b> 팔아. 한 상자에 과자가 <b>250봉지</b> 들어 있어. 과자 한 봉지가 1,000원이면 <b>한 상자는 25만원</b>이야.</p>
+      <p>지수선물이 이 <b>도매 상자</b> 같은 거야. 코스피200 지수라는 <b>과자 값</b>에 <b>상자 크기(승수)</b>를 곱해서 한 계약이 돼. 지수가 400이면 <b>400 × 25만원 = 1억원</b>짜리 상자야.</p>
+      <p>그리고 무서운 점이 있어. <b>과자 값이 10원만 올라도</b> 한 봉지 살 땐 10원이지만 <b>상자로는 2,500원</b>이 움직여. 지수가 <b>1포인트만 움직여도 25만원</b>이 왔다 갔다 하는 거야.</p>
+      <p>그래서 요즘은 <b>「미니 상자」</b>도 팔아. 크기가 <b>5분의 1</b>이야. 그런데 <b>작은 상자를 다섯 개 사면</b> 결국 큰 상자랑 똑같다는 걸 기억해야 해.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CONTRACT SIZE · 상품을 골라보세요</div>
+      <p class="labsub">한 계약이 <b>얼마짜리</b>이고, <b>지수가 1% 움직이면 얼마</b>가 움직이는지입니다.</p>
+
+      <div class="btnrow" id="szBtns">
+        <button data-v="0" class="on">코스피200 선물</button>
+        <button data-v="1">미니 코스피200</button>
+        <button data-v="2">S&amp;P500 E-mini</button>
+        <button data-v="3">S&amp;P500 Micro</button>
+        <button data-v="4">나스닥100 E-mini</button>
+        <button data-v="5">나스닥100 Micro</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="szLvl">지수 수준 (예시 가격 대비)</label>
+        <input type="range" id="szLvl" min="60" max="140" step="1" value="100">
+        <output id="szLvlOut">100% (예시 가격 그대로)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="szFx">원/달러 환율 (해외 상품만)</label>
+        <input type="range" id="szFx" min="1000" max="1600" step="10" value="1350">
+        <output id="szFxOut">1,350원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="szIm">증거금률 (예시)</label>
+        <input type="range" id="szIm" min="3" max="20" step="1" value="9">
+        <output id="szImOut">9%</output>
+      </div>
+
+      <div class="steps-out" id="szSteps"></div>
+
+      <svg viewBox="0 0 640 248" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="상품별 1계약 명목금액">
+        <g id="szScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">1계약 명목금액</span><span class="rv" id="szNotional">—</span></div>
+        <div><span class="rk">지수 1% 움직이면</span><span class="rv" id="szOne">—</span></div>
+      </div>
+
+      <div class="verdict" id="szVerdict" style="--vc:var(--kr)">
+        <div class="vh">계약</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>예시 가격</b> — 코스피200 <b>400</b>, S&amp;P500 <b>6,000</b>, 나스닥100 <b>21,000</b>입니다. <b>실제 현재 지수가 아닙니다.</b> 슬라이더로 위아래를 바꿔볼 수 있습니다.<br><br>
+        <b>계산 기준.</b> <b>명목금액 = 지수 × 승수 (× 환율)</b>, <b>증거금 = 명목 × 증거금률</b>, <b>레버리지 = 명목 ÷ 증거금</b>입니다.<br><br>
+        <b>⚠️ 증거금률은 거래소가 변동성에 따라 조정</b>하고, <b>증권사가 더 높게 받기도</b> 합니다. 여기서는 모든 상품에 같은 비율을 적용했지만 실제로는 상품마다 다릅니다.
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>상품</th><th>승수</th><th>호가 한 칸</th><th>만기 (일반 원칙)</th><th>결제</th><th>통화</th></tr></thead>
+        <tbody>
+          <tr><th>코스피200 선물</th><td><b>25만원</b></td><td>0.05pt = 12,500원</td><td>3·6·9·12월 둘째 목요일</td><td>현금</td><td>원</td></tr>
+          <tr><th>미니 코스피200</th><td><b>5만원</b></td><td>0.02pt = 1,000원</td><td>결제월 둘째 목요일</td><td>현금</td><td>원</td></tr>
+          <tr><th>S&amp;P500 E-mini</th><td><b>$50</b></td><td>0.25pt = $12.50</td><td>3·6·9·12월 셋째 금요일</td><td>현금</td><td>달러</td></tr>
+          <tr><th>S&amp;P500 Micro</th><td><b>$5</b></td><td>0.25pt = $1.25</td><td>3·6·9·12월 셋째 금요일</td><td>현금</td><td>달러</td></tr>
+          <tr><th>나스닥100 E-mini</th><td><b>$20</b></td><td>0.25pt = $5.00</td><td>3·6·9·12월 셋째 금요일</td><td>현금</td><td>달러</td></tr>
+          <tr><th>나스닥100 Micro</th><td><b>$2</b></td><td>0.25pt = $0.50</td><td>3·6·9·12월 셋째 금요일</td><td>현금</td><td>달러</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · <b>계약 규격과 결제월 구성은 거래소가 바꿀 수 있으니 거래 전에 확인</b>하세요</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="acct">
+    <div class="prod-head" style="--edge:var(--acct)">
+      <span class="prod-tag">02 · 계좌</span>
+      <h2>레버리지는 계약이 아니라 계좌가 정합니다</h2>
+      <p class="one"><b>(계약 수 × 명목금액) ÷ 내 계좌</b> — 이것이 진짜 레버리지입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">MY ACCOUNT · 계좌와 계약 수를 정해보세요</div>
+      <p class="labsub"><b>증거금이 얼마인지가 아니라</b>, <b>내 전체 계좌 대비 얼마나 큰 것을 움직이는지</b>를 봅니다.</p>
+
+      <div class="btnrow" id="acBtns">
+        <button data-v="0" class="on">코스피200 선물</button>
+        <button data-v="1">미니 코스피200</button>
+        <button data-v="2">S&amp;P500 E-mini</button>
+        <button data-v="3">S&amp;P500 Micro</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="acMoney">내 계좌 금액</label>
+        <input type="range" id="acMoney" min="500" max="20000" step="100" value="3000">
+        <output id="acMoneyOut">3,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="acN">계약 수</label>
+        <input type="range" id="acN" min="1" max="10" step="1" value="1">
+        <output id="acNOut">1계약</output>
+      </div>
+
+      <div class="steps-out" id="acSteps"></div>
+
+      <svg viewBox="0 0 640 205" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="지수 하락별 계좌 손실">
+        <g id="acScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">실효 레버리지</span><span class="rv" id="acLev">—</span></div>
+        <div><span class="rk">지수 −10%면 계좌는</span><span class="rv" id="acHit">—</span></div>
+      </div>
+
+      <div class="verdict" id="acVerdict" style="--vc:var(--acct)">
+        <div class="vh">계좌</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> <b>실효 레버리지 = 계약 수 × 명목금액 ÷ 계좌 금액</b>, <b>지수 하락 시 계좌 손실 = 레버리지 × 하락률</b>입니다. 예시 가격(코스피200 400, S&amp;P500 6,000, 환율 1,350원)을 썼습니다.<br><br>
+        <b>「레버리지 1배」</b>는 <b>계좌 금액만큼만 지수에 노출</b>된 상태로, <b>현물 ETF를 계좌 전액으로 산 것과 같은 크기</b>입니다. <b>이보다 크면 빌린 돈으로 투자한 것과 같은 효과</b>가 납니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「미니·마이크로는 작아서 안전하다」는 착각</h3>
+      <p><b>미니 코스피200</b>이나 <b>마이크로 S&amp;P500</b> 같은 작은 계약은 <b>개인이 쓰기 쉽게</b> 만든 상품입니다. 그 자체로는 <b>좋은 변화</b>입니다. <b>큰 계약밖에 없으면 레버리지 1배를 맞추는 것 자체가 불가능</b>하기 때문입니다.</p>
+      <p>계산기에서 확인했듯이, <b>계좌 3,000만원으로 코스피200 선물을 잡으면 1계약만 해도 3.3배</b>입니다. <b>1배로 줄일 방법이 없습니다.</b> <b>미니는 1계약에 0.67배</b>라서 <b>크기를 계좌에 맞출 수</b> 있습니다.</p>
+      <p><b>그런데 여기서 착각이 생깁니다.</b></p>
+      <p><b>① 「작은 계약이니까 안전하다」</b> — <b>계약 크기와 위험은 무관</b>합니다. <b>미니 5계약 = 일반 1계약</b>입니다. 위험을 정하는 것은 <b>계좌 대비 총 노출</b>이지 <b>계약 한 개의 크기가 아닙니다.</b><br>
+         <b>② 「조금만 넣었으니 괜찮다」</b> — 작은 계약은 <b>증거금도 작아서 시작이 쉽습니다.</b> 그러면 <b>계좌에 남은 돈으로 계약을 더 늘리기도 쉽습니다.</b> <b>문턱이 낮은 만큼 쌓이기도 쉽습니다.</b><br>
+         <b>③ 「계좌 전체가 아니라 증거금만 위험하다」</b> — 선물은 <b>증거금을 넘어 손실이 날 수</b> 있고, 그 손실은 <b>계좌의 다른 돈에서 빠져나갑니다.</b> <b>실제로 위험에 노출된 것은 계좌 전체</b>입니다.</p>
+      <p class="plain"><b>그래서 작은 계약의 올바른 쓰임은 「크기를 계좌에 맞추는 것」</b>입니다. <b>레버리지를 1배 이하로 맞출 수 있게 해준다는 것</b>이 미니·마이크로의 값어치입니다.<br><br><b>⚠️ 반대로 「작으니까 여러 개」로 쓰면 일반 계약과 똑같거나 더 위험</b>합니다. <b>여러 개로 나뉘어 있으면 전체 크기가 덜 느껴지기</b> 때문입니다.<br><br><b>확인하는 법은 하나</b>입니다 — <b>「(계약 수 × 명목금액) ÷ 내 계좌」를 매번 계산해보는 것.</b> 이 숫자가 1을 넘으면 <b>빌린 돈으로 투자하는 것과 같은 상태</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="daily">
+    <div class="prod-head" style="--edge:var(--call)">
+      <span class="prod-tag">03 · 일일정산</span>
+      <h2>결국 올랐는데, 나는 그 자리에 없었습니다</h2>
+      <p class="one">선물은 <b>「최종 결과」가 아니라 「매일의 경로」</b>를 견뎌야 합니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DAILY SETTLEMENT · 20거래일을 따라가보세요</div>
+      <p class="labsub"><b>코스피200 선물 · 지수 400에서 시작 · 증거금률 9% · 유지증거금은 개시의 70%</b>(모두 예시)</p>
+
+      <div class="btnrow" id="dsPath">
+        <button data-v="0" class="on">급락 후 회복</button>
+        <button data-v="1">완만한 상승</button>
+        <button data-v="2">큰 진동</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label for="dsDep">처음 넣어둔 돈 (증거금 대비)</label>
+        <input type="range" id="dsDep" min="10" max="40" step="1" value="10">
+        <output id="dsDepOut">1.0배 (900만원)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dsN">계약 수</label>
+        <input type="range" id="dsN" min="1" max="3" step="1" value="1">
+        <output id="dsNOut">1계약</output>
+      </div>
+
+      <div class="btnrow" id="dsTop">
+        <button data-v="1" class="on">마진콜 때 추가 입금한다</button>
+        <button data-v="0">추가 입금하지 않는다 (강제 청산)</button>
+      </div>
+
+      <div class="steps-out" id="dsSteps"></div>
+
+      <svg viewBox="0 0 640 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="지수 경로와 계좌 잔액">
+        <g id="dsScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">20일 뒤 지수</span><span class="rv" id="dsIdx">—</span></div>
+        <div><span class="rk">내 최종 손익</span><span class="rv" id="dsPnl">—</span></div>
+      </div>
+
+      <div class="verdict" id="dsVerdict" style="--vc:var(--call)">
+        <div class="vh">경로</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 매일 장 마감에 <b>(오늘 지수 − 어제 지수) × 25만원 × 계약 수</b>를 계좌에 더하거나 뺍니다. 잔액이 <b>유지증거금 아래로</b> 내려가면 마진콜입니다. <b>추가 입금</b>을 고르면 <b>개시증거금까지 채워 넣고</b>, <b>입금하지 않음</b>을 고르면 <b>그날 종가로 강제 청산</b>합니다.<br><br>
+        <b>⚠️ 단순화한 모형</b>입니다. 실제로는 <b>장중에도 반대매매가 일어날 수</b> 있고, <b>추가 입금 기한과 방식</b>, <b>유지증거금 비율</b>이 거래소·증권사마다 다릅니다. <b>지수 경로는 가상의 예시</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「어정쩡한 여유」가 가장 나쁜 이유</h3>
+      <p>계산기에서 <b>「급락 후 회복」 경로</b>를 고르고 <b>「추가 입금하지 않는다」</b>로 둔 채, <b>처음 넣어둔 돈을 1.0배 → 1.5배 → 3.0배</b>로 바꿔보세요.</p>
+      <p><b>· 1.0배(900만원)</b> — <b>사흘째 청산, −318만원</b><br>
+         <b>· 1.5배(1,350만원)</b> — <b>엿새째 청산, −785만원</b><br>
+         <b>· 3.0배(2,700만원)</b> — <b>청산 없이 끝까지, +498만원</b></p>
+      <p><b>여유를 조금 더 뒀더니 오히려 두 배 넘게 잃었습니다.</b> 이상해 보이지만 구조는 단순합니다.</p>
+      <p><b>여유가 조금 있으면 초반 급락을 버팁니다.</b> 그런데 <b>급락이 계속되면</b> 결국 선을 넘고, <b>이번엔 훨씬 더 떨어진 가격에서</b> 청산됩니다. <b>버틴 만큼 더 깊은 곳까지 끌려간</b> 것입니다. 그리고 <b>회복은 청산된 다음에</b> 옵니다.</p>
+      <p class="plain"><b>그래서 여유의 크기는 「조금 더」가 아니라 「최악의 경로를 버틸 만큼」이어야 의미가 있습니다.</b> 그 중간은 <b>손실만 키우고 회복에는 참여하지 못하는</b> 구간이 될 수 있습니다.<br><br><b>⚠️ 그런데 「최악의 경로」가 얼마인지는 미리 알 수 없습니다.</b> 그래서 결론이 이렇게 됩니다 — <b>여유를 넉넉히 두는 것보다 계약 크기 자체를 줄이는 것</b>이 더 확실한 방법입니다. <b>계좌 대비 레버리지가 1배 이하면, 사실상 마진콜 걱정 없이 현물처럼 버틸 수</b> 있습니다(2장).</p>
+
+      <h3>「추가 입금」은 사실상 물타기와 같은 결정입니다</h3>
+      <p><b>「추가 입금한다」</b>를 고르면 대부분의 경로에서 <b>최종 손익이 지수 움직임과 같아집니다.</b> 버텼으니 회복에 참여한 것입니다. <b>그럼 추가 입금이 정답일까요.</b></p>
+      <p><b>세 가지를 함께 봐야 합니다.</b></p>
+      <p><b>① 그 돈이 그날 있어야 합니다.</b> 마진콜은 <b>「다음 달까지」가 아니라 대체로 「당일이나 다음 날까지」</b>입니다. <b>급락은 대개 다른 자산도 함께 떨어질 때</b> 오고, <b>그때 현금을 마련하려면 다른 것을 싸게 팔아야</b> 할 수 있습니다.</p>
+      <p><b>② 입금할 때마다 「더 걸기」로 결정한 것입니다.</b> 손실이 난 포지션에 <b>돈을 더 넣어서 유지</b>하는 것은 <b>떨어진 주식을 더 사는 물타기와 같은 판단</b>입니다. <b>회복하면 옳았던 것이고, 계속 떨어지면 손실을 키운 것</b>입니다. <b>그 순간에는 어느 쪽인지 모릅니다.</b></p>
+      <p><b>③ 급락할 때는 거래소가 증거금률을 올리기도 합니다.</b> 그러면 <b>손실 때문에 한 번, 증거금 인상 때문에 또 한 번</b> 돈을 넣어야 합니다(<a href="commodity-futures.html">원자재 05편</a>).</p>
+      <p class="plain"><b>그래서 「마진콜이 오면 입금하면 된다」는 계획은 계획이 아닙니다.</b> <b>「얼마까지 입금할 수 있고, 그 이상이면 정리한다」는 한도</b>가 미리 있어야 합니다. <b>한도 없는 추가 입금은 손실에 상한을 두지 않겠다는 결정</b>입니다.<br><br><b>09편에서 「손실 만회를 위한 추가 투입」이 파산 확률을 어떻게 바꾸는지</b> 계산합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="rules">
+    <div class="prod-head" style="--edge:var(--us)">
+      <span class="prod-tag">04 · 규칙</span>
+      <h2>만기, 롤오버, 거래 시간, 환율</h2>
+      <p class="one">현물 주식에는 없는 <b>네 가지 규칙</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">RULES · 눌러서 확인해보세요</div>
+      <p class="labsub"><b>계약을 잡기 전에</b> 알아야 할 것들입니다.</p>
+
+      <div class="btnrow" id="ruBtns">
+        <button data-v="0" class="on">만기와 결제</button>
+        <button data-v="1">롤오버</button>
+        <button data-v="2">거래 시간</button>
+        <button data-v="3">해외 지수선물과 환율</button>
+      </div>
+
+      <div class="verdict" id="ruVerdict" style="--vc:var(--us)">
+        <div class="vh">규칙</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="keyline" style="--edge2:var(--us)">
+      <div class="kt">현물 ETF와 지수선물의 차이를 한 줄로</div>
+      <div class="kb">같은 지수를 따라가지만, 선물은 <b>크기 · 매일의 정산 · 만기</b>를<br>내가 직접 관리해야 합니다.</div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="sum">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">05 · 정리</span>
+      <h2>이 편에서 남길 것</h2>
+      <p class="one"><b>크기를 먼저 계산</b>하는 습관입니다.</p>
+    </div>
+
+    <ul class="check" id="ckCheck">
+      <li><b>명목금액 = 지수 × 승수 (× 환율)</b>라는 것.</li>
+      <li><b>코스피200 1계약은 지수 400에서 1억원</b>이라는 것 (예시).</li>
+      <li><b>진짜 레버리지 = 계약 수 × 명목 ÷ 내 계좌</b>라는 것.</li>
+      <li><b>「1계약만」도 계좌에 따라 3배가 넘을 수</b> 있다는 것.</li>
+      <li><b>작은 계약은 크기를 맞추는 도구지 안전장치가 아니다</b>라는 것.</li>
+      <li><b>선물은 최종 결과가 아니라 매일의 경로를 견뎌야</b> 한다는 것.</li>
+      <li><b>어정쩡한 여유는 더 깊은 곳에서 청산될 수 있다</b>는 것.</li>
+      <li><b>추가 입금은 물타기와 같은 결정</b>이라는 것.</li>
+      <li><b>만기가 있어 계속 들려면 롤오버해야</b> 한다는 것.</li>
+      <li><b>해외 지수선물은 밤에 움직이고 환율이 섞인다</b>는 것.</li>
+    </ul>
+    <div class="checkcount" id="ckCount">0 / 10 확인함</div>
+
+    <div class="note" style="margin-top:26px;">
+      <p><b>이 편의 요약.</b> 지수선물은 <b>「지수를 사는 것」과 같은 방향</b>이지만, <b>세 가지가 다릅니다.</b> <b>계약 하나가 크고, 매일 정산되고, 만기가 있습니다.</b></p>
+      <p><b>그중 가장 과소평가되는 것이 매일의 정산</b>입니다. <b>현물은 「결국 오르면」 이기지만</b>, <b>선물은 「결국 오르기 전까지 버텨야」 이깁니다.</b> 그리고 <b>버티는 힘은 레버리지에 반비례</b>합니다.</p>
+      <p><b>그래서 이 편의 실천은 하나</b>입니다 — <b>계약을 잡기 전에 「계약 수 × 명목금액 ÷ 내 계좌」를 계산하는 것.</b> <b>1을 넘는다면, 그 초과분은 빌린 돈으로 투자하는 것과 같습니다.</b></p>
+      <p><b>다음 편은 04편 — 선물로 위험을 줄이는 법</b>입니다. 지금까지는 선물을 <b>「지수를 사는 다른 방법」</b>으로 봤다면, 다음 편은 선물이 만들어진 <b>원래 목적</b>, 즉 <b>가진 주식의 위험을 줄이는 헤지</b>를 계산합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 선물·옵션 03 · 지수선물<br>
+    <a href="index.html#futures">← 선물·옵션 목록으로</a> · <a href="futures-price.html">02 · 선물 가격은 어떻게 정해지나</a> · 04 · 선물로 위험을 줄이는 법 (준비 중)<br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 선물 거래를 권하지 않습니다.<br>
+    지수 수준·환율·증거금률·유지증거금 비율·지수 경로는 <b>예시</b>입니다. 계약 규격·만기·거래 시간·증거금은 거래소와 증권사가 정하며 변경될 수 있으니 반드시 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function num(v, d){ return v.toFixed(d === undefined ? 1 : d); }
+function sgn(v, d){
+  var dd = (d === undefined ? 1 : d);
+  var r = Number(v.toFixed(dd));
+  if(r === 0) r = 0;
+  return r >= 0 ? '+' + r.toFixed(dd) : '−' + Math.abs(r).toFixed(dd);
+}
+function man(won){ return Math.round(won / 10000).toLocaleString('ko-KR') + '만원'; }
+function smanw(won){ var r = Math.round(won / 10000); if(r === 0) r = 0; return (r >= 0 ? '+' : '−') + Math.abs(r).toLocaleString('ko-KR') + '만원'; }
+function wonf(won){ return Math.round(won).toLocaleString('ko-KR') + '원'; }
+function steps(id, rows){
+  var html = '';
+  rows.forEach(function(r){
+    html += '<div class="steprow' + (r.total ? ' total' : '') + '">' +
+            '<span class="sk">' + r.k + '</span><span class="sv">' + r.v + '</span></div>';
+  });
+  document.getElementById(id).innerHTML = html;
+}
+
+var PROD = [
+  { h:'코스피200 선물',   px:400,   mult:250000, usd:false, tick:0.05, col:'#3F5F6F' },
+  { h:'미니 코스피200',   px:400,   mult:50000,  usd:false, tick:0.02, col:'#5F7A8A' },
+  { h:'S&P500 E-mini',    px:6000,  mult:50,     usd:true,  tick:0.25, col:'#6A5A8C' },
+  { h:'S&P500 Micro',     px:6000,  mult:5,      usd:true,  tick:0.25, col:'#8A7AAC' },
+  { h:'나스닥100 E-mini', px:21000, mult:20,     usd:true,  tick:0.25, col:'#8E4B3A' },
+  { h:'나스닥100 Micro',  px:21000, mult:2,      usd:true,  tick:0.25, col:'#AE6B5A' }
+];
+
+/* ══════════ 1. 계약 크기 ══════════ */
+var szIdx = 0;
+function szDraw(){
+  var p = PROD[szIdx];
+  var lvl = +document.getElementById('szLvl').value / 100;
+  var fx = +document.getElementById('szFx').value;
+  var imr = +document.getElementById('szIm').value;
+  document.getElementById('szLvlOut').textContent = Math.round(lvl * 100) + '% (' + p.h + ' ' + Math.round(p.px * lvl).toLocaleString('en-US') + ')';
+  document.getElementById('szFxOut').textContent = fx.toLocaleString('ko-KR') + '원' + (p.usd ? '' : ' (이 상품엔 해당 없음)');
+  document.getElementById('szImOut').textContent = imr + '%';
+
+  var k = p.usd ? fx : 1;
+  var idx = p.px * lvl;
+  var notional = idx * p.mult * k;
+  var onePt = p.mult * k;
+  var onePct = notional * 0.01;
+  var tick = p.tick * p.mult * k;
+  var im = notional * imr / 100;
+  var lev = 100 / imr;
+
+  var rows = [
+    { k:'지수 (예시)', v:Math.round(idx).toLocaleString('en-US') },
+    { k:'승수', v:p.usd ? '$' + p.mult : p.mult.toLocaleString('ko-KR') + '원' }
+  ];
+  if(p.usd) rows.push({ k:'명목 (달러)', v:'$' + Math.round(idx * p.mult).toLocaleString('en-US') });
+  rows = rows.concat([
+    { k:'1계약 명목금액' + (p.usd ? ' (× 환율 ' + fx.toLocaleString('ko-KR') + ')' : ''), v:man(notional) },
+    { k:'지수 1포인트', v:wonf(onePt) },
+    { k:'호가 한 칸 (' + p.tick + 'pt)', v:wonf(tick) },
+    { k:'증거금 (' + imr + '%)', v:man(im) },
+    { k:'증거금 대비 레버리지', v:num(lev, 1) + '배' },
+    { k:'지수 1% 움직이면', v:man(onePct), total:true }
+  ]);
+  steps('szSteps', rows);
+
+  document.getElementById('szNotional').textContent = man(notional);
+  document.getElementById('szOne').textContent = '±' + man(onePct);
+
+  var X0 = 135, W = 380, Y0 = 36;
+  var vals = PROD.map(function(q){ return q.px * lvl * q.mult * (q.usd ? fx : 1); });
+  var maxV = Math.max.apply(null, vals);
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">1계약 명목금액 비교 (같은 지수 수준·환율 기준)</text>';
+  PROD.forEach(function(q, i){
+    var v = vals[i];
+    var y = Y0 + i * 30;
+    var w = Math.max(2, v / maxV * W);
+    var on = (i === szIdx);
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + w.toFixed(1) + '" height="20" rx="1.5" fill="' + q.col +
+         '" fill-opacity="' + (on ? '.6' : '.24') + '" stroke="' + q.col + '" stroke-width="' + (on ? '1.8' : '1') + '"/>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + (X0 - 10) + '" y="' + (y + 14) + '" text-anchor="end"' + (on ? ' fill="' + q.col + '"' : '') + '>' + q.h.replace('&', '&amp;') + '</text>';
+    g += '<text class="' + (on ? 'lblb' : 'axt') + '" x="' + Math.min(X0 + w + 8, X0 + W + 4).toFixed(1) + '" y="' + (y + 14) + '"' + (on ? ' fill="' + q.col + '"' : '') + '>' + man(v) + '</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + PROD.length * 30 + 18) + '">해외 상품은 환율이 오르면(원화 약세) 같은 계약이 원화로 더 커집니다.</text>';
+  document.getElementById('szScene').innerHTML = g;
+
+  var title, body;
+  if(szIdx === 0){
+    title = '코스피200 선물 1계약 = ' + man(notional);
+    body = '지수 <b>' + Math.round(idx) + ' × 25만원</b>이라 한 계약이 <b>' + man(notional) + '</b>입니다. <b>지수가 1포인트만 움직여도 25만원</b>, <b>1% 움직이면 ' + man(onePct) + '</b>입니다.<br><br>' +
+      '<b>호가 한 칸(0.05포인트)이 ' + wonf(tick) + '</b>입니다. <b>사자마자 팔면 호가 한두 칸만큼</b>은 대체로 손해를 보고 시작합니다(01편 2장).<br><br>' +
+      '<b>증거금은 ' + man(im) + '</b>(' + imr + '% 예시)이라 <b>증거금 대비 레버리지는 ' + num(lev, 1) + '배</b>입니다.<br><br>' +
+      '<b>⚠️ 그런데 진짜 레버리지는 증거금이 아니라 「내 계좌 전체」와 비교해야</b> 합니다. 2장에서 계산합니다.';
+  } else if(szIdx === 1){
+    title = '미니 코스피200 1계약 = ' + man(notional) + ' — 일반 계약의 5분의 1';
+    body = '승수가 <b>5만원</b>이라 한 계약이 <b>' + man(notional) + '</b>입니다. <b>일반 코스피200 선물의 정확히 5분의 1</b>입니다.<br><br>' +
+      '<b>지수 1%에 ' + man(onePct) + '</b>, <b>호가 한 칸에 ' + wonf(tick) + '</b>입니다.<br><br>' +
+      '<b>이 상품의 값어치는 「크기를 계좌에 맞출 수 있다」</b>는 것입니다. 일반 계약은 <b>한 개만 잡아도 1억원</b>이라 <b>계좌가 작으면 레버리지를 낮출 방법이 없습니다.</b><br><br>' +
+      '<b>⚠️ 다만 미니 5계약 = 일반 1계약</b>입니다. <b>「작은 계약」이 곧 「작은 위험」은 아닙니다</b>(2장 「자세히 보기」).';
+  } else {
+    title = p.h + ' 1계약 = ' + man(notional) + ' ($' + Math.round(idx * p.mult).toLocaleString('en-US') + ')';
+    body = '지수 <b>' + Math.round(idx).toLocaleString('en-US') + ' × $' + p.mult + '</b> = <b>$' + Math.round(idx * p.mult).toLocaleString('en-US') + '</b>이고, 환율 <b>' + fx.toLocaleString('ko-KR') + '원</b>을 곱하면 <b>' + man(notional) + '</b>입니다.<br><br>' +
+      '<b>지수 1%에 ' + man(onePct) + '</b>, <b>호가 한 칸(0.25포인트)에 ' + wonf(tick) + '</b>입니다.<br><br>' +
+      (p.mult >= 20
+        ? '<b>⚠️ 개인 계좌 기준으로 매우 큰 계약</b>입니다. <b>계좌가 ' + man(notional) + '보다 작다면 1계약만으로도 레버리지가 1배를 넘습니다.</b><br><br>'
+        : '<b>마이크로 계약은 E-mini의 10분의 1</b>이라 <b>계좌 크기에 맞추기 쉽습니다.</b> 대신 <b>문턱이 낮아 여러 개로 늘리기도 쉽습니다.</b><br><br>') +
+      '<b>「환율」 슬라이더를 움직여보세요.</b> <b>지수가 그대로여도 원화로 본 계약 크기가 달라집니다.</b> <b>해외 지수선물에는 환율이 한 겹 더</b> 붙습니다(4장).';
+  }
+  document.getElementById('szVerdict').querySelector('.vh').textContent = p.h;
+  verdict('szVerdict', p.col, title, body);
+}
+bindBtnRow('#szBtns', function(v){ szIdx = +v; szDraw(); });
+['szLvl', 'szFx', 'szIm'].forEach(function(id){ document.getElementById(id).addEventListener('input', szDraw); });
+
+/* ══════════ 2. 계좌와 계약 수 ══════════ */
+var acIdx = 0;
+function acDraw(){
+  var p = PROD[acIdx];
+  var money = +document.getElementById('acMoney').value * 10000;
+  var n = +document.getElementById('acN').value;
+  document.getElementById('acMoneyOut').textContent = man(money);
+  document.getElementById('acNOut').textContent = n + '계약';
+
+  var notional = p.px * p.mult * (p.usd ? 1350 : 1);
+  var expo = notional * n;
+  var lev = expo / money;
+  var oneX = money / notional;
+  var drops = [5, 10, 20, 30];
+
+  steps('acSteps', [
+    { k:'1계약 명목금액 (예시 가격)', v:man(notional) },
+    { k:'총 노출 = ' + n + '계약 × 명목', v:man(expo) },
+    { k:'내 계좌', v:man(money) },
+    { k:'실효 레버리지 = 총 노출 ÷ 계좌', v:num(lev, 2) + '배' },
+    { k:'레버리지 1배가 되는 계약 수', v:num(oneX, 2) + '계약' },
+    { k:'지수 −10%면 계좌', v:sgn(-lev * 10, 1) + '% (' + smanw(-expo * 0.10) + ')', total:true }
+  ]);
+
+  document.getElementById('acLev').textContent = num(lev, 2) + '배';
+  document.getElementById('acLev').style.color = lev > 3 ? 'var(--neg)' : lev <= 1 ? 'var(--pos)' : '';
+  document.getElementById('acHit').textContent = sgn(-lev * 10, 1) + '%';
+  document.getElementById('acHit').style.color = 'var(--neg)';
+
+  var X0 = 130, W = 400, Y0 = 36;
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="18">지수가 떨어지면 내 계좌는 몇 % 줄어드나</text>';
+  drops.forEach(function(d, i){
+    var loss = lev * d;
+    var y = Y0 + i * 32;
+    var w = Math.min(W, loss / 100 * W);
+    var over = loss >= 100;
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + W + '" height="21" rx="1.5" fill="none" stroke="#D9D2C0" stroke-width="1"/>';
+    g += '<rect x="' + X0 + '" y="' + y + '" width="' + Math.max(1, w).toFixed(1) + '" height="21" rx="1.5" fill="#8E4B3A" fill-opacity="' + (over ? '.75' : '.45') + '" stroke="#8E4B3A" stroke-width="1.2"/>';
+    g += '<text class="axt" x="' + (X0 - 10) + '" y="' + (y + 15) + '" text-anchor="end">지수 −' + d + '%</text>';
+    g += '<text class="lblb" x="' + (X0 + W + 8) + '" y="' + (y + 15) + '" fill="#8E4B3A">' + (over ? '−100% 초과' : '−' + num(loss, 1) + '%') + '</text>';
+  });
+  g += '<line x1="' + (X0 + W) + '" y1="' + (Y0 - 4) + '" x2="' + (X0 + W) + '" y2="' + (Y0 + drops.length * 32) + '" stroke="#8E4B3A" stroke-width="1.3" stroke-dasharray="3 2"/>';
+  g += '<text class="axt" x="' + X0 + '" y="' + (Y0 + drops.length * 32 + 18) + '">오른쪽 점선이 계좌 전액(−100%)입니다. 막대가 닿으면 계좌가 사라집니다.</text>';
+  document.getElementById('acScene').innerHTML = g;
+
+  var title, body, col;
+  if(lev <= 1.0001){
+    col = '#5F7A52';
+    title = '레버리지 ' + num(lev, 2) + '배 — 현물을 산 것과 같은 크기이거나 더 작습니다';
+    body = '총 노출 <b>' + man(expo) + '</b>이 계좌 <b>' + man(money) + '</b> 이하입니다. <b>지수가 10% 떨어지면 계좌는 ' + num(lev * 10, 1) + '%</b> 줄어듭니다.<br><br>' +
+      '<b>이 크기면 선물은 「현물 ETF를 산 것」과 거의 같은 위험</b>입니다. <b>남는 돈을 예금에 두면 결과도 비슷</b>합니다(02편 1장).<br><br>' +
+      '<b>마진콜 걱정도 사실상 없습니다.</b> <b>계좌에 여유가 증거금보다 훨씬 많기</b> 때문입니다. 3장에서 <b>「처음 넣어둔 돈」을 크게</b> 하면 무슨 일이 생기는지 확인해보세요.<br><br>' +
+      '<b>⚠️ 그렇다면 굳이 선물을 쓸 이유가 있는지</b>도 물어볼 만합니다. <b>같은 효과를 현물 ETF로 더 간단히</b> 얻을 수 있기 때문입니다. <b>선물이 필요한 경우는 대체로 헤지</b>입니다(04편).';
+  } else if(lev <= 3){
+    col = '#8E6B3A';
+    title = '레버리지 ' + num(lev, 2) + '배 — 빌린 돈으로 투자한 것과 같은 상태입니다';
+    body = '<b>' + n + '계약</b>의 총 노출이 <b>' + man(expo) + '</b>로, 계좌 <b>' + man(money) + '</b>의 <b>' + num(lev, 2) + '배</b>입니다.<br><br>' +
+      '<b>지수 −10%에 계좌 −' + num(lev * 10, 1) + '%</b>, <b>지수 −30%면 계좌 −' + num(Math.min(100, lev * 30), 1) + '%</b>입니다.<br><br>' +
+      '<b>이 크기를 계좌 기준으로 1배로 맞추려면 ' + num(oneX, 2) + '계약</b>이어야 합니다.' +
+      (acIdx === 0 && oneX < 1 ? ' <b>일반 코스피200 선물로는 1계약 미만이 불가능</b>하므로, <b>미니 계약</b>을 쓰지 않는 한 <b>이 계좌로는 레버리지를 낮출 방법이 없습니다.</b>' : '') + '<br><br>' +
+      '<b>「내 계좌」 슬라이더를 움직여</b> 레버리지 1배가 되는 계좌 크기를 찾아보세요.';
+  } else {
+    col = '#8E4B3A';
+    title = '레버리지 ' + num(lev, 2) + '배 — 지수 ' + num(100 / lev, 1) + '% 하락이면 계좌가 사라집니다';
+    body = '총 노출 <b>' + man(expo) + '</b>이 계좌 <b>' + man(money) + '</b>의 <b>' + num(lev, 2) + '배</b>입니다.<br><br>' +
+      '<b>지수가 ' + num(100 / lev, 1) + '%만 떨어지면 계좌 전액</b>이 사라집니다. <b>그 전에 마진콜과 강제 청산</b>이 먼저 옵니다.<br><br>' +
+      '<b>' + num(100 / lev, 1) + '% 하락은 드문 일이 아닙니다.</b> 주가지수는 <b>몇 주 사이에 이 정도 움직이는 일이 여러 번</b> 있었습니다.<br><br>' +
+      '<b>⚠️ 그리고 선물은 계좌 전액을 넘어 손실이 날 수</b> 있습니다. <b>밤사이 크게 움직이면 청산할 틈도 없이</b> 마이너스가 될 수 있습니다.<br><br>' +
+      '<b>「계약 수」를 1로 줄이거나 「미니」 버튼을 눌러</b> 같은 계좌에서 레버리지가 어떻게 달라지는지 보세요.';
+  }
+  document.getElementById('acVerdict').querySelector('.vh').textContent = PROD[acIdx].h + ' · ' + n + '계약';
+  verdict('acVerdict', col, title, body);
+}
+bindBtnRow('#acBtns', function(v){ acIdx = +v; acDraw(); });
+['acMoney', 'acN'].forEach(function(id){ document.getElementById(id).addEventListener('input', acDraw); });
+
+/* ══════════ 3. 일일정산 경로 ══════════ */
+var PATHS = [
+  { h:'급락 후 회복', r:[0,-1.2,-2.0,-1.5,-2.4,-1.0,0.6,1.4,1.2,1.8,1.0,0.9,1.3,0.8,0.7,1.1,0.4,0.6,0.5,0.8] },
+  { h:'완만한 상승', r:[0.3,0.2,-0.4,0.5,0.3,-0.2,0.4,0.2,0.3,-0.3,0.5,0.2,0.1,0.4,-0.2,0.3,0.2,0.4,0.1,0.3] },
+  { h:'큰 진동',     r:[1.8,-2.2,1.5,-2.6,2.0,-1.9,2.4,-2.1,1.7,-1.8,2.2,-2.5,1.9,-1.6,2.1,-2.0,1.8,-1.7,1.6,-1.2] }
+];
+var dsPath = 0, dsTop = 1;
+var DS_MULT = 250000, DS_IMR = 0.09, DS_MMR = 0.70;
+function dsSim(rets, deposit, n, topUp){
+  var px = 400, im = 400 * DS_MULT * DS_IMR * n, mm = im * DS_MMR;
+  var bal = deposit, added = 0, liq = false, liqDay = -1, calls = [];
+  var idxPath = [400], balPath = [bal];
+  for(var d = 0; d < rets.length; d++){
+    var np = px * (1 + rets[d] / 100);
+    if(!liq) bal += (np - px) * DS_MULT * n;
+    px = np;
+    if(!liq && bal < mm){
+      calls.push(d + 1);
+      if(topUp){ added += im - bal; bal = im; }
+      else { liq = true; liqDay = d + 1; }
+    }
+    idxPath.push(px); balPath.push(bal);
+  }
+  return { idxPath:idxPath, balPath:balPath, added:added, liq:liq, liqDay:liqDay, calls:calls, im:im, mm:mm,
+           net:bal - deposit - added, idxRet:(px / 400 - 1) * 100 };
+}
+function dsDraw(){
+  var path = PATHS[dsPath];
+  var depMul = +document.getElementById('dsDep').value / 10;
+  var n = +document.getElementById('dsN').value;
+  var im0 = 400 * DS_MULT * DS_IMR * n;
+  var deposit = im0 * depMul;
+  document.getElementById('dsDepOut').textContent = num(depMul, 1) + '배 (' + man(deposit) + ')';
+  document.getElementById('dsNOut').textContent = n + '계약 (명목 ' + man(400 * DS_MULT * n) + ')';
+
+  var s = dsSim(path.r, deposit, n, dsTop === 1);
+  var alt = dsSim(path.r, deposit, n, dsTop !== 1);
+  var fullPnl = (s.idxPath[s.idxPath.length - 1] - 400) * DS_MULT * n;
+
+  var rows = [
+    { k:'처음 넣어둔 돈', v:man(deposit) },
+    { k:'개시증거금 / 유지증거금', v:man(s.im) + ' / ' + man(s.mm) },
+    { k:'20일 뒤 지수', v:num(s.idxPath[20], 2) + ' (' + sgn(s.idxRet, 2) + '%)' },
+    { k:'끝까지 들고 있었다면 손익', v:smanw(fullPnl) },
+    { k:'마진콜', v:s.calls.length ? s.calls.length + '회 (' + s.calls.join('·') + '일째)' : '없음' }
+  ];
+  if(dsTop === 1) rows.push({ k:'추가로 넣은 돈', v:man(s.added) });
+  else rows.push({ k:'강제 청산', v:s.liq ? s.liqDay + '일째' : '없음' });
+  rows.push({ k:'내 최종 손익', v:smanw(s.net), total:true });
+  steps('dsSteps', rows);
+
+  document.getElementById('dsIdx').textContent = num(s.idxPath[20], 2) + ' (' + sgn(s.idxRet, 2) + '%)';
+  document.getElementById('dsPnl').textContent = smanw(s.net);
+  document.getElementById('dsPnl').style.color = s.net >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var X0 = 70, W = 530;
+  var iy0 = 115, ih = 85;
+  var by0 = 262, bh = 115;
+  function xx(d){ return X0 + d / 20 * W; }
+  var imin = Math.min.apply(null, s.idxPath) - 2, imax = Math.max.apply(null, s.idxPath) + 2;
+  function iy(v){ return iy0 - (v - imin) / (imax - imin) * ih; }
+  var balVals = s.balPath.concat([s.im, s.mm, 0]);
+  var bmin = Math.min.apply(null, balVals), bmax = Math.max.apply(null, balVals);
+  var bp = (bmax - bmin) * 0.08; bmin -= bp; bmax += bp;
+  function by(v){ return by0 - (v - bmin) / (bmax - bmin) * bh; }
+
+  var g = '';
+  g += '<text class="axt" x="' + X0 + '" y="14">① 코스피200 지수 (가상 경로)</text>';
+  g += '<line x1="' + X0 + '" y1="' + iy(400).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + iy(400).toFixed(1) + '" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (iy(400) + 4).toFixed(1) + '" text-anchor="end">400</text>';
+  var ip = s.idxPath.map(function(v, d){ return xx(d).toFixed(1) + ' ' + iy(v).toFixed(1); });
+  if(s.liq){
+    g += '<path d="M' + ip.slice(0, s.liqDay + 1).join(' L') + '" fill="none" stroke="#3F5F6F" stroke-width="2.4"/>';
+    g += '<path d="M' + ip.slice(s.liqDay).join(' L') + '" fill="none" stroke="#3F5F6F" stroke-width="1.6" stroke-dasharray="4 3" stroke-opacity=".55"/>';
+    g += '<text class="axt" x="' + Math.min(xx(s.liqDay) + 8, X0 + W - 150).toFixed(1) + '" y="' + (iy0 + 14) + '">청산 이후의 움직임 (나는 없음)</text>';
+  } else {
+    g += '<path d="M' + ip.join(' L') + '" fill="none" stroke="#3F5F6F" stroke-width="2.4"/>';
+  }
+
+  g += '<text class="axt" x="' + X0 + '" y="' + (by0 - bh - 10) + '">② 내 계좌 잔액</text>';
+  g += '<line x1="' + X0 + '" y1="' + by(s.im).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + by(s.im).toFixed(1) + '" stroke="#5F7A52" stroke-width="1.1" stroke-dasharray="4 3"/>';
+  g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (by(s.im) + 4).toFixed(1) + '" text-anchor="end">개시</text>';
+  g += '<line x1="' + X0 + '" y1="' + by(s.mm).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + by(s.mm).toFixed(1) + '" stroke="#8E4B3A" stroke-width="1.3" stroke-dasharray="4 3"/>';
+  g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (by(s.mm) + 4).toFixed(1) + '" text-anchor="end">유지</text>';
+  if(bmin < 0){
+    g += '<line x1="' + X0 + '" y1="' + by(0).toFixed(1) + '" x2="' + (X0 + W) + '" y2="' + by(0).toFixed(1) + '" class="axis"/>';
+    g += '<text class="axt" x="' + (X0 - 8) + '" y="' + (by(0) + 4).toFixed(1) + '" text-anchor="end">0</text>';
+  }
+  var bpath = s.balPath.map(function(v, d){ return xx(d).toFixed(1) + ' ' + by(v).toFixed(1); });
+  g += '<path d="M' + bpath.join(' L') + '" fill="none" stroke="#8E6B3A" stroke-width="2.4"/>';
+  s.calls.forEach(function(d){
+    g += '<circle cx="' + xx(d).toFixed(1) + '" cy="' + by(dsTop === 1 ? s.im : s.balPath[d]).toFixed(1) + '" r="5" fill="#8E4B3A"/>';
+  });
+  if(s.liq){
+    g += '<line x1="' + xx(s.liqDay).toFixed(1) + '" y1="' + (iy0 - ih) + '" x2="' + xx(s.liqDay).toFixed(1) + '" y2="' + by0 + '" stroke="#8E4B3A" stroke-width="1.2" stroke-dasharray="2 2"/>';
+  }
+  [0, 5, 10, 15, 20].forEach(function(d){
+    g += '<text class="axt" x="' + xx(d).toFixed(1) + '" y="' + (by0 + 15) + '" text-anchor="middle">' + d + '일</text>';
+  });
+  g += '<text class="axt" x="' + X0 + '" y="' + (by0 + 32) + '">붉은 점이 마진콜입니다.' + (dsTop === 1 ? ' 그때마다 개시증거금까지 돈을 채워 넣었습니다.' : ' 그날 종가로 강제 청산되었습니다.') + '</text>';
+  document.getElementById('dsScene').innerHTML = g;
+
+  var title, body, col;
+  if(s.liq){
+    col = '#8E4B3A';
+    title = s.liqDay + '일째 청산 — 지수는 ' + sgn(s.idxRet, 2) + '%로 끝났지만 나는 ' + smanw(s.net);
+    body = '<b>' + s.liqDay + '일째</b>에 잔액이 유지증거금 <b>' + man(s.mm) + '</b> 아래로 내려가 <b>강제 청산</b>되었습니다. 손실 <b>' + smanw(s.net) + '</b>이 확정됐습니다.<br><br>' +
+      '<b>그리고 지수는 그 뒤에 ' + num(s.idxPath[20], 2) + '까지 갔습니다.</b> <b>끝까지 들고 있었다면 ' + smanw(fullPnl) + '</b>였습니다.<br><br>' +
+      '<b>현물이었다면</b> — <b>떨어져도 팔지 않고 기다리면 회복에 그대로 참여</b>했을 것입니다. <b>선물은 「기다림」을 허락하지 않습니다.</b><br><br>' +
+      (depMul > 1.05 && depMul < 2.5
+        ? '<b>⚠️ 「처음 넣어둔 돈」을 1.0배로 내려보세요.</b> <b>여유가 적은 쪽이 오히려 덜 잃는</b> 경우가 있습니다. <b>조금 더 버틴 만큼 더 깊은 곳까지 끌려갔기</b> 때문입니다(아래 「자세히 보기」).'
+        : '<b>「처음 넣어둔 돈」을 3.0배로</b> 올려보세요. <b>같은 경로를 끝까지 버팁니다.</b> 그리고 <b>1.5배</b>도 해보세요 — <b>결과가 오히려 나빠질 수</b> 있습니다.');
+  } else if(s.calls.length){
+    col = '#8E6B3A';
+    title = '마진콜 ' + s.calls.length + '회 — ' + man(s.added) + '을 더 넣고 버텼습니다';
+    body = '<b>' + s.calls.join('일째, ') + '일째</b>에 마진콜이 왔고, <b>그때마다 개시증거금까지 채워 넣어 총 ' + man(s.added) + '</b>을 추가로 넣었습니다.<br><br>' +
+      '<b>그 결과 끝까지 버텨 최종 손익은 ' + smanw(s.net) + '</b>입니다. <b>지수 움직임을 그대로 가져갔습니다.</b><br><br>' +
+      '<b>그런데 확인할 것이 있습니다.</b><br>' +
+      '· <b>' + man(s.added) + '이 그날 계좌에 들어올 수 있었나?</b> 마진콜은 <b>대체로 당일이나 다음 날까지</b>입니다.<br>' +
+      '· <b>입금할 때 「회복할 것」을 알고 있었나?</b> 그 순간에는 <b>더 떨어질지도 몰랐습니다.</b> <b>추가 입금은 손실 난 포지션에 돈을 더 거는 결정</b>입니다.<br><br>' +
+      '<b>「추가 입금하지 않는다」를 눌러</b> 같은 경로에서 무슨 일이 생기는지 비교해보세요. 결과는 <b>' + (alt.liq ? alt.liqDay + '일째 청산, ' + smanw(alt.net) : smanw(alt.net)) + '</b>입니다.';
+  } else {
+    col = '#5F7A52';
+    title = '마진콜 없이 끝까지 — 최종 ' + smanw(s.net);
+    body = '잔액이 한 번도 유지증거금 아래로 내려가지 않아 <b>지수 움직임(' + sgn(s.idxRet, 2) + '%)을 그대로</b> 가져갔습니다.<br><br>' +
+      (depMul >= 2.5
+        ? '<b>처음에 증거금의 ' + num(depMul, 1) + '배를 넣어둔 덕분</b>입니다. <b>이 정도 여유가 있으면 계좌 대비 레버리지가 낮아져</b> 선물이 <b>현물과 비슷하게</b> 움직입니다.<br><br>'
+        : '<b>경로가 완만했거나 진동이 여유 안에 머물렀기 때문</b>입니다.<br><br>') +
+      '<b>「계약 수」를 늘리거나 「급락 후 회복」 경로</b>를 골라보세요. <b>같은 여유가 전혀 다른 결과</b>를 만듭니다.<br><br>' +
+      '<b>여기서 기억할 것</b> — <b>이 결과는 「이 경로」에서의 결과</b>입니다. <b>다음 20일이 어떤 경로일지는 모릅니다.</b> 그래서 <b>여유를 경로에 맞추는 것이 아니라, 최악의 경로에도 버틸 크기로 계약 자체를 줄이는 것</b>이 안전합니다.';
+  }
+  document.getElementById('dsVerdict').querySelector('.vh').textContent = path.h + ' · ' + (dsTop === 1 ? '추가 입금' : '입금 안 함');
+  verdict('dsVerdict', col, title, body);
+}
+bindBtnRow('#dsPath', function(v){ dsPath = +v; dsDraw(); });
+bindBtnRow('#dsTop', function(v){ dsTop = +v; dsDraw(); });
+['dsDep', 'dsN'].forEach(function(id){ document.getElementById(id).addEventListener('input', dsDraw); });
+
+/* ══════════ 4. 규칙 ══════════ */
+var RU = [
+  { h:'만기와 결제', col:'#3F5F6F',
+    t:'계약은 끝나는 날이 있고, 주가지수 선물은 현금으로 정산됩니다',
+    p:'<b>코스피200 선물은 3·6·9·12월 둘째 목요일</b>이 최종거래일입니다. <b>미국 E-mini·Micro 지수선물은 3·6·9·12월 셋째 금요일</b>이 일반적입니다.<br><br>' +
+      '<b>주가지수 선물은 「현금 결제」</b>입니다. <b>만기에 주식 200개를 주고받는 게 아니라</b>, <b>최종 결제가격과의 차액만 주고받고 끝</b>납니다. <a href="commodity-futures.html">원자재 선물</a>처럼 <b>실물을 받아야 하는 문제는 없습니다.</b><br><br>' +
+      '<b>거래는 가장 가까운 만기(근월물)에 몰립니다.</b> <b>먼 만기는 거래가 적어 호가 차이가 크고</b>, <b>체결 미끄러짐도 큽니다.</b><br><br>' +
+      '<b>⚠️ 만기일에는 차익거래 물량 정리로 장 막판 움직임이 커질 수</b> 있습니다(02편 4장 「자세히 보기」). <b>이날 짧게 사고파는 것은 특히 불리</b>합니다.' },
+  { h:'롤오버', col:'#8E6B3A',
+    t:'계속 들고 가려면 석 달마다 갈아타야 합니다',
+    p:'<b>코스피200 선물을 1년 들고 가고 싶다면</b> — <b>분기마다 만기가 오므로</b>, 만기 전에 <b>가까운 월물을 팔고 다음 월물을 사는</b> 일을 <b>1년에 네 번</b> 해야 합니다.<br><br>' +
+      '<b>그때마다 드는 것</b><br>' +
+      '· <b>거래 비용</b> — 두 번의 호가 차이와 수수료.<br>' +
+      '· <b>두 월물의 가격 차이</b> — 02편에서 봤듯이 <b>다음 월물은 대체로 「금리 − 배당」만큼 비쌉니다.</b> <b>남은 돈을 예금에 두면 그 이자가 이 차이를 상쇄</b>합니다.<br><br>' +
+      '<b>그래서 주가지수 선물의 롤은 원자재만큼 비싸지 않습니다.</b> <a href="commodity-roll.html">원자재 06편</a>의 <b>연 −18% 같은 롤 손실은 주가지수에서는 대체로 생기지 않습니다.</b> <b>주식은 보관비가 없고 차익거래가 쉽기</b> 때문입니다.<br><br>' +
+      '<b>⚠️ 다만 롤 날짜를 잊으면</b> 증권사가 <b>만기에 자동으로 정산해버립니다.</b> <b>포지션이 사라진다</b>는 것을 모르고 있다가 <b>다음 날 시장에 노출이 없는 상태</b>를 발견하는 경우가 있습니다.' },
+  { h:'거래 시간', col:'#6A5A8C',
+    t:'현물 주식보다 훨씬 오래 열려 있습니다 — 자는 동안에도',
+    p:'<b>국내 주가지수 선물</b>은 <b>정규 시간 외에 야간에도 거래할 수 있는 시장</b>이 운영됩니다. <b>운영 방식과 시간은 거래소 안내</b>를 확인해야 합니다.<br><br>' +
+      '<b>미국 E-mini·Micro 지수선물</b>은 <b>평일 거의 하루 종일(주중 약 23시간)</b> 거래됩니다. 한국 시간으로 <b>밤과 새벽에 가장 활발</b>합니다.<br><br>' +
+      '<b>이것이 개인에게 뜻하는 것</b><br>' +
+      '· <b>자는 동안 계좌가 크게 움직일 수</b> 있습니다.<br>' +
+      '· <b>아침에 일어나 보니 마진콜</b>인 상황이 생깁니다.<br>' +
+      '· <b>밤에 발표되는 미국 경제지표·연준 결정</b>에 그대로 노출됩니다.<br><br>' +
+      '<b>⚠️ 「언제든 거래할 수 있다」는 편리함이 곧 「언제든 확인해야 한다」는 부담</b>입니다. <b>수면·일상과 충돌하는 상품은 판단 품질을 떨어뜨립니다.</b>' },
+  { h:'해외 지수선물과 환율', col:'#8E4B3A',
+    t:'지수와 환율, 두 겹의 움직임이 섞입니다',
+    p:'<b>S&amp;P500·나스닥100 선물은 달러로 증거금을 내고 달러로 손익</b>이 납니다. <b>원화로 생활하는 사람에게는 환율이 한 겹 더</b> 붙습니다.<br><br>' +
+      '<b>두 가지 경로로 섞입니다.</b><br>' +
+      '· <b>손익의 원화 가치</b> — 달러로 번 이익이 <b>원화가 강해지면 줄어듭니다.</b><br>' +
+      '· <b>증거금의 원화 가치</b> — 원화를 달러로 바꿔 증거금을 넣었다면, <b>환율 변화가 그 돈에도</b> 영향을 줍니다.<br><br>' +
+      '<b>그리고 환전 비용</b>이 들어갈 때와 나올 때 각각 붙습니다.<br><br>' +
+      '<b>⚠️ 세금도 다릅니다.</b> <b>해외 파생상품 매매차익은 양도소득세 대상</b>으로, <b>연간 기본공제 뒤 22%</b>(지방세 포함)가 일반적인 원칙입니다. <b>국내 장내 파생상품과 과세 방식이 다르므로</b> 10편에서 함께 정리합니다. <b>세법은 바뀔 수 있어 최신 내용 확인</b>이 필요합니다.' }
+];
+bindBtnRow('#ruBtns', function(v){
+  var r = RU[+v];
+  document.getElementById('ruVerdict').querySelector('.vh').textContent = r.h;
+  verdict('ruVerdict', r.col, r.t, r.p);
+});
+
+/* ══════════ 체크리스트 ══════════ */
+(function(){
+  var items = document.querySelectorAll('#ckCheck li');
+  items.forEach(function(li){
+    li.addEventListener('click', function(){
+      li.classList.toggle('done');
+      var n = document.querySelectorAll('#ckCheck li.done').length;
+      document.getElementById('ckCount').textContent = n === items.length
+        ? items.length + ' / ' + items.length + ' — 세 번째 줄이 이 편의 핵심입니다.'
+        : n + ' / ' + items.length + ' 확인함';
+    });
+  });
+})();
+
+szDraw(); acDraw(); dsDraw();
+document.querySelector('#ruBtns button[data-v="0"]').click();
+</script>
+</body>
+</html>
