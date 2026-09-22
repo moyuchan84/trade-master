@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>재무제표란 무엇인가</title>
+<meta name="description" content="손익계산서·재무상태표·현금흐름표 3표의 관계, 주식회사와 일반회사의 차이를 그림과 퀴즈로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F2F1EB;--ink:#1E1D18;--ink-soft:#545045;--rule:#D7D0BE;--card:#FAF9F3;
+    --f1:#3F5A6F;--f2:#7A5535;--f3:#5A3F7F;--f4:#3F7A55;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#E9E4D4;--warn-ink:#233A5A;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:680px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EAE4D3;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#EFE9D9;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F6F1E3;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--f1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--f1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--f1));}
+  .gloss{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:6px 20px;margin:22px 0 0;}
+  .gloss .row{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px dotted var(--rule);}
+  .gloss .row:last-child{border-bottom:0;}
+  .gloss .term{flex:0 0 96px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--f1);font-weight:500;}
+  .gloss .def{flex:1 1 auto;font-size:14px;color:var(--ink-soft);line-height:1.6;}
+  .gloss .def b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .gloss .row{flex-direction:column;gap:3px;}
+    .gloss .term{flex:none;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">재무제표 01 · 기초 · 투자 공부 노트</div>
+    <h1>재무제표란<br>무엇인가</h1>
+    <p class="lede">기업을 뜯어보는 서류는 <b>딱 세 장</b>입니다. <b>「얼마나 벌었나(손익계산서)」, 「무엇을 가지고 무엇을 빚졌나(재무상태표)」, 「진짜 현금이 얼마나 남았나(현금흐름표)」</b>. 이 세 질문만 기억하면 재무제표가 훨씬 덜 어렵습니다.</p>
+    <div class="callout">
+      <p><b>이 트랙의 목표</b> — 모든 계정과목을 외우는 것이 아니라, <b>세 장의 관계와 「무엇이 중요한 흐름인지」</b>를 알아보는 것입니다. 전년 대비 변화, 미래를 암시하는 항목, 흑자도산 같은 함정, 기업의 자본 조달 흐름, 그리고 <b>섹터마다 다르게 봐야 할 부분</b>까지 10편에 걸쳐 정리합니다.</p>
+      <p><b>⚠️ 이 트랙의 모든 수치는 예시</b>이며, 실제 기업 분석에는 <b>전자공시시스템(DART) 등 공식 자료</b>를 확인해야 합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="회계 용어와 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#three">1. 세 장의 서류</a>
+    <a href="#quiz">2. 어느 표에 물어봐야 할까</a>
+    <a href="#company">3. 주식회사와 일반회사</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="three">
+    <div class="prod-head" style="--edge:var(--f1)">
+      <span class="prod-tag">01 · 개관</span>
+      <h2>용돈기입장, 재산목록, 그리고 지갑 속</h2>
+      <p class="one">세 장은 <b>서로 다른 질문에 답</b>합니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>「손익계산서」</b>는 <b>용돈기입장</b>과 같아. <b>이번 달에 얼마 벌고 얼마 썼는지</b>를 적어. 한 달(또는 1년) 동안의 <b>흐름</b>을 보여줘.</p>
+      <p><b>「재무상태표」</b>는 <b>지금 이 순간 내가 가진 것 전부와 빚 전부를 적은 목록</b>이야. <b>「오늘 기준으로」</b> 찍은 사진이야.</p>
+      <p><b>「현금흐름표」</b>는 <b>진짜 지갑에 돈이 얼마나 들어오고 나갔는지</b>를 적어. 용돈기입장에는 <b>「친구가 다음 달에 갚기로 하고 빌려간 돈」도 「번 돈」으로 적히지만</b>, 지갑에는 <b>실제로 들어온 돈만</b> 남아. 이 차이가 <b>05편(흑자도산)</b>의 핵심이야.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>표</th><th>영어 이름</th><th>답하는 질문</th><th>기간/시점</th></tr></thead>
+        <tbody>
+          <tr><th>손익계산서</th><td>Income Statement (P&L)</td><td>이 기간에 얼마나 벌었나?</td><td>기간(1년, 1분기)</td></tr>
+          <tr><th>재무상태표</th><td>Balance Sheet (B/S)</td><td>지금 무엇을 가지고 무엇을 빚졌나?</td><td>특정 시점(예: 12월 31일)</td></tr>
+          <tr><th>현금흐름표</th><td>Cash Flow Statement (CF)</td><td>실제 현금이 얼마나 오갔나?</td><td>기간(1년, 1분기)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+
+    <div class="keyline">
+      <div class="kt">이 편의 핵심</div>
+      <div class="kb">손익계산서는 <b>흐름</b>, 재무상태표는 <b>사진</b>,<br>현금흐름표는 <b>진짜 지갑</b>입니다.</div>
+    </div>
+
+    <div class="deep">
+      <h3>세 장은 서로 연결되어 있습니다</h3>
+      <p>손익계산서의 <b>순이익</b>은 재무상태표의 <b>자본(이익잉여금)</b>을 늘리는 재료가 되고, 현금흐름표의 <b>영업활동현금흐름</b>은 순이익에서 출발해 <b>「실제로 현금이 아닌 항목」을 다시 빼거나 더해서</b> 계산합니다. 그리고 세 표 모두 기말에는 <b>재무상태표의 현금 잔액</b>으로 이어집니다. <b>하나만 떼어놓고 보면 그림의 3분의 1만 보는 것</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="quiz">
+    <div class="prod-head" style="--edge:var(--f2)">
+      <span class="prod-tag">02 · 확인</span>
+      <h2>이 질문, 어느 표를 봐야 할까요</h2>
+      <p class="one">먼저 생각해보고 <b>정답을 확인</b>하세요.</p>
+    </div>
+
+    <div class="quiz">
+      <div class="quizq" data-a="1">
+        <div class="qq">1. 이 회사가 <b>작년보다 얼마나 더 많이 벌었는지</b> 알고 싶습니다.</div>
+        <div class="qbtns"><button data-v="0">재무상태표</button><button data-v="1">손익계산서</button><button data-v="2">현금흐름표</button></div>
+        <div class="qa">정답은 <b>손익계산서</b>입니다. 「얼마나 벌었나」는 <b>기간 동안의 흐름</b>이기 때문입니다(02편).</div>
+      </div>
+      <div class="quizq" data-a="0">
+        <div class="qq">2. 이 회사가 <b>빚(부채)이 자본보다 얼마나 많은지</b> 알고 싶습니다.</div>
+        <div class="qbtns"><button data-v="0">재무상태표</button><button data-v="1">손익계산서</button><button data-v="2">현금흐름표</button></div>
+        <div class="qa">정답은 <b>재무상태표</b>입니다. 특정 시점의 <b>자산·부채·자본 잔액</b>을 보여주기 때문입니다(03편).</div>
+      </div>
+      <div class="quizq" data-a="2">
+        <div class="qq">3. 순이익은 흑자인데, <b>실제로 회사 통장에 현금이 말라가고 있는지</b> 확인하고 싶습니다.</div>
+        <div class="qbtns"><button data-v="0">재무상태표</button><button data-v="1">손익계산서</button><button data-v="2">현금흐름표</button></div>
+        <div class="qa">정답은 <b>현금흐름표</b>입니다. 회계상 이익과 실제 현금은 다를 수 있습니다 — <b>흑자도산이 바로 이 괴리</b>에서 옵니다(05편).</div>
+      </div>
+    </div>
+    <div class="checkcount" id="quizCount">0 / 3 확인함</div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="company">
+    <div class="prod-head" style="--edge:var(--f3)">
+      <span class="prod-tag">03 · 회사의 종류</span>
+      <h2>주식회사와 일반회사, 왜 공시가 다른가</h2>
+      <p class="one"><b>「남의 돈을 모아서 사업한다」는 특성이 재무제표를 의무로 만듭니다.</b></p>
+    </div>
+
+    <p>동네 식당(개인사업자)은 <b>사장 혼자(또는 가족)의 돈으로</b> 운영되며, 재무제표를 <b>세무 신고 목적 외에는 공개할 의무가 없습니다.</b> 반면 <b>주식회사</b>는 <b>불특정 다수의 주주(투자자)로부터 돈을 모아 운영</b>되므로, <b>그 돈을 어떻게 쓰고 있는지 정기적으로 알릴 의무</b>가 있습니다. 특히 <b>주식시장에 상장된 회사</b>는 <b>분기마다 재무제표를 공시</b>해야 합니다.</p>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>구분</th><th>자금 조달</th><th>공시 의무</th><th>대표 예</th></tr></thead>
+        <tbody>
+          <tr><th>개인사업자</th><td>사장 본인 자금</td><td>없음(세무 신고만)</td><td>동네 가게</td></tr>
+          <tr><th>비상장 주식회사</th><td>소수 주주 + 대출</td><td>제한적(일정 규모 이상 외부감사)</td><td>중소·중견기업</td></tr>
+          <tr><th>상장 주식회사</th><td>불특정 다수 주주(주식시장)</td><td>분기별 공시 의무</td><td>삼성전자, 애플 등</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 한국은 <b>전자공시시스템(DART)</b>, 미국은 <b>SEC EDGAR</b>에서 상장기업 재무제표를 무료로 볼 수 있습니다</p>
+
+    <div class="deep">
+      <h3>「상장」이 재무제표에 갖는 의미</h3>
+      <p>비상장 회사일 때는 <b>몇몇 투자자에게만 재무 상태를 설명</b>하면 됐지만, <b>상장하는 순간 「전 국민 누구나」에게 같은 정보를 같은 시점에 공개</b>해야 합니다. 이것을 <b>「공정공시(Fair Disclosure)」 원칙</b>이라 부르며, 특정 투자자에게만 미리 정보를 흘리는 것은 <b>불공정거래(미공개정보 이용)</b>로 처벌 대상이 됩니다. 이 개념은 <b>08편(기업의 일생 — 상장)</b>에서 더 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 재무제표는 <b>손익계산서(흐름)·재무상태표(사진)·현금흐름표(진짜 지갑)</b> 세 장으로 이루어지고, 서로 연결되어 있습니다. <b>주식회사, 특히 상장기업</b>은 남의 돈을 모아 운영하기 때문에 이를 <b>정기적으로 공개할 의무</b>가 있습니다.</p>
+      <p><b>다음 편은 02편 — 손익계산서 읽는 법</b>입니다. 매출부터 순이익까지 <b>다섯 줄의 이익</b>을 계산기로 따라가 봅니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 재무제표 01 · 기초<br>
+    <a href="index.html#finstate">← 재무제표 목록으로</a> · <a href="finstate-income.html">02 · 손익계산서 읽는 법</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 특정 종목 매수를 권하지 않습니다.<br>
+    실제 기업 분석에는 <b>전자공시시스템(DART) 등 공식 자료</b>를 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+document.querySelectorAll('.quizq').forEach(function(q){
+  var answer = q.getAttribute('data-a');
+  q.querySelectorAll('.qbtns button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      if(q.classList.contains('answered')) return;
+      q.classList.add('answered');
+      q.querySelectorAll('.qbtns button').forEach(function(b){ b.disabled = true; });
+      btn.classList.add(btn.getAttribute('data-v') === answer ? 'right' : 'wrong');
+      if(btn.getAttribute('data-v') !== answer){
+        q.querySelector('.qbtns button[data-v="' + answer + '"]').classList.add('right');
+      }
+      var n = document.querySelectorAll('.quizq.answered').length;
+      document.getElementById('quizCount').textContent = n + ' / 3 확인함';
+    });
+  });
+});
+</script>
+</body>
+</html>

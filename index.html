@@ -35,6 +35,11 @@
     --sc2:#7A5535;
     --sc3:#5A3F7F;
     --sc4:#7A3F3F;
+    /* 재무제표 트랙 */
+    --fs1:#3F5A6F;
+    --fs2:#7A5535;
+    --fs3:#5A3F7F;
+    --fs4:#3F7A55;
     --b1:#4C6B7A;
     --b2:#7A5C3A;
     --b3:#5F7A52;
@@ -281,6 +286,7 @@
       <button data-t="commodity">🛢 원자재 <span class="cnt">10편</span></button>
       <button data-t="futures">📉 선물·옵션 <span class="cnt">10편</span></button>
       <button data-t="sector">🏭 산업·섹터 <span class="cnt">10편</span></button>
+      <button data-t="finstate">📊 재무제표 <span class="cnt">10편</span></button>
     </div>
   </header>
 
@@ -1356,6 +1362,131 @@
             <h3>섹터 투자 전략 총정리</h3>
             <p>3문항 진단과 <b>포트폴리오 섹터 분산 계산기</b>로 트랙을 마무리합니다.</p>
             <div class="meta"><span>진단</span><span>HHI 분산도</span><span>체크리스트</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+  </div>
+  <div class="track" id="t-finstate">
+
+    <p class="tintro">재무제표를 <b>모든 계정과목을 외우는 시험</b>처럼 접근하면 금방 지칩니다. 이 트랙은 <b>손익계산서·재무상태표·현금흐름표 3표의 관계, 전년 대비 추세, 흑자도산 같은 함정, 기업의 자본 조달 흐름, 섹터별로 다르게 봐야 할 지표</b>까지 <b>열 편</b>으로 정리합니다. <b>05편(흑자도산)</b>과 <b>10편(종합 체크리스트)</b>이 이 트랙의 핵심입니다.</p>
+
+    <div class="start" style="--edge:var(--fs1)">
+      <div class="sh">처음이라면 — 이 세 편만 먼저</div>
+      <p>순이익이 흑자라고 회사가 안전한 것은 아닙니다.</p>
+      <ol>
+        <li><a href="finstate-basics.html">재무제표 3표의 관계</a> — 흐름·사진·진짜 지갑</li>
+        <li><a href="finstate-bankruptcy.html">흑자도산이 왜 일어나는지</a> — 이익과 현금의 괴리</li>
+        <li><a href="finstate-strategy.html">종합 체크리스트</a> — 재무 건강도 스코어 계산기</li>
+      </ol>
+    </div>
+
+    <section class="part" style="--edge:var(--fs1)">
+      <div class="part-head">
+        <span class="part-num">PART A · 3표의 기초</span>
+        <h2>흐름, 사진, 그리고 진짜 지갑</h2>
+        <p>손익계산서·재무상태표·현금흐름표, <b>각각 답하는 질문이 다릅니다.</b></p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="finstate-basics.html">
+            <span class="num">01 · 기초</span>
+            <h3>재무제표란 무엇인가</h3>
+            <p>3표의 관계와 <b>주식회사·상장기업이 공시 의무를 지는 이유</b>를 정리합니다.</p>
+            <div class="meta"><span>손익계산서</span><span>재무상태표</span><span>현금흐름표</span><span>공시</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="finstate-income.html">
+            <span class="num">02 · 손익계산서</span>
+            <h3>손익계산서 읽는 법</h3>
+            <p>매출에서 순이익까지 <b>다섯 줄의 이익</b>을 워터폴 계산기로 따라갑니다.</p>
+            <div class="meta"><span>매출총이익</span><span>영업이익</span><span>영업외손익</span><span>순이익</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="finstate-balance.html">
+            <span class="num">03 · 재무상태표</span>
+            <h3>재무상태표 읽는 법</h3>
+            <p><b>자산 = 부채 + 자본.</b> 부채비율과 유동비율로 재무 위험을 재는 법.</p>
+            <div class="meta"><span>부채비율</span><span>유동비율</span><span>자본잠식</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="finstate-cashflow.html">
+            <span class="num">04 · 현금흐름표</span>
+            <h3>현금흐름표 읽는 법</h3>
+            <p>영업·투자·재무 <b>세 부호의 조합</b>으로 기업의 단계를 진단합니다.</p>
+            <div class="meta"><span>영업활동현금흐름</span><span>8가지 조합</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--fs2)">
+      <div class="part-head">
+        <span class="part-num">PART B · 함정과 추세</span>
+        <h2>이익과 현금의 괴리, 그리고 진짜 성장</h2>
+        <p>장부의 숫자가 <b>항상 실제를 그대로 보여주지는 않습니다.</b></p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="finstate-bankruptcy.html">
+            <span class="num">05 · 흑자도산</span>
+            <h3>흑자도산 — 이익은 났는데 왜 망하나</h3>
+            <p>매출채권·재고가 늘수록 <b>순이익과 영업현금흐름이 벌어지는 구조</b>를 계산합니다.</p>
+            <div class="meta"><span>발생주의</span><span>운전자본</span><span>분식회계</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="finstate-trend.html">
+            <span class="num">06 · 추세</span>
+            <h3>전년 대비 비교와 추세 읽기</h3>
+            <p>일회성 항목을 걸러낸 <b>조정 성장률</b>과 계절성을 상쇄하는 <b>YoY 비교</b>.</p>
+            <div class="meta"><span>일회성 항목</span><span>YoY vs QoQ</span><span>계절성</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="finstate-future.html">
+            <span class="num">07 · 미래 신호</span>
+            <h3>미래를 보는 항목들</h3>
+            <p>수주잔고·이연매출·CAPEX·R&D·가이던스처럼 <b>아직 실적에 안 잡힌 신호</b>들.</p>
+            <div class="meta"><span>이연매출</span><span>CAPEX</span><span>R&D</span><span>가이던스</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--fs3)">
+      <div class="part-head">
+        <span class="part-num">PART C · 자본과 섹터</span>
+        <h2>기업의 일생, 그리고 섹터별 특징</h2>
+        <p>회사가 <b>돈을 조달하는 방식</b>과 <b>산업마다 다른 핵심 지표</b>를 봅니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="finstate-lifecycle.html">
+            <span class="num">08 · 기업의 일생</span>
+            <h3>기업의 일생 — 자본금에서 상장까지</h3>
+            <p>설립자본부터 IPO, 유상증자까지. <b>지분 희석 계산기</b>로 확인합니다.</p>
+            <div class="meta"><span>VC 투자</span><span>IPO</span><span>유상증자</span><span>지분 희석</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="finstate-sector.html">
+            <span class="num">09 · 섹터별 특징</span>
+            <h3>섹터별로 다르게 봐야 할 재무제표</h3>
+            <p>바이오는 <b>런웨이</b>, 은행은 <b>BIS비율</b>. 산업마다 핵심 지표가 다릅니다.</p>
+            <div class="meta"><span>런웨이</span><span>BIS비율</span><span>수주잔고</span><span>재고회전율</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="finstate-strategy.html">
+            <span class="num">10 · 종합</span>
+            <h3>재무제표 분석 종합 체크리스트</h3>
+            <p>3문항 진단과 <b>재무 건강도 스코어 계산기</b>로 트랙을 마무리합니다.</p>
+            <div class="meta"><span>진단</span><span>건강도 스코어</span><span>체크리스트</span></div>
           </a>
         </li>
       </ol>

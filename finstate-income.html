@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>손익계산서 읽는 법</title>
+<meta name="description" content="매출에서 순이익까지 다섯 줄의 이익이 어떻게 깎여나가는지 워터폴 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F2F1EB;--ink:#1E1D18;--ink-soft:#545045;--rule:#D7D0BE;--card:#FAF9F3;
+    --f1:#3F5A6F;--f2:#7A5535;--f3:#5A3F7F;--f4:#3F7A55;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#E9E4D4;--warn-ink:#233A5A;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EAE4D3;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#EFE9D9;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F6F1E3;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--f1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--f1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--f1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">재무제표 02 · 손익계산서 · 투자 공부 노트</div>
+    <h1>손익계산서<br>읽는 법</h1>
+    <p class="lede">매출은 <b>다섯 번 깎여서</b> 순이익이 됩니다. 어디서 얼마나 깎이는지 순서대로 보면, <b>「이 회사가 본업으로 버는지, 다른 데서 버는지」</b>가 보입니다.</p>
+    <div class="callout">
+      <p><b>다섯 줄</b> — 매출 → <b>매출총이익</b>(매출원가를 뺌) → <b>영업이익</b>(판관비를 뺌) → <b>세전이익</b>(영업외손익을 더하고 뺌) → <b>순이익</b>(법인세를 뺌).</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계정과목과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 케이크를 자르듯</a>
+    <a href="#lab">2. 계산기: 이익 워터폴</a>
+    <a href="#gap">3. 영업이익과 순이익이 어긋날 때</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--f1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>매출이라는 케이크를 다섯 번 나눠 먹는다</h2>
+      <p class="one">각 단계는 <b>「무엇을 위해 쓴 돈인지」</b>를 구분해줍니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>레모네이드 가게를 한다고 생각해보자. <b>레모네이드를 팔아서 받은 돈 전부가 「매출」</b>이야.</p>
+      <p>그런데 <b>레몬과 설탕을 사는 데 돈이 들었지?</b> 그걸 빼면 <b>「매출총이익」</b>이야 — <b>「물건 자체로 얼마나 남는지」</b>야.</p>
+      <p>거기서 <b>가판대 자릿세, 간판 만드는 돈</b>처럼 <b>장사를 하기 위해 쓴 다른 돈</b>을 빼면 <b>「영업이익」</b>이야 — <b>「진짜 장사로 얼마나 남는지」</b>.</p>
+      <p>그런데 <b>은행에 맡긴 돈에서 이자를 받거나, 반대로 빌린 돈에 이자를 내면</b> 그것도 더하고 빼서 <b>「세전이익」</b>이 되고, 마지막으로 <b>나라에 세금을 내면</b> 진짜 내 손에 남는 <b>「순이익」</b>이야.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--f2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>다섯 줄의 이익, 직접 만들어보기</h2>
+      <p class="one">슬라이더로 <b>비용 구조를 바꿔보며</b> 워터폴이 어떻게 변하는지 확인하세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">INCOME WATERFALL · 매출 1,000을 기준으로</div>
+      <p class="labsub">매출원가율·판관비율·영업외손익·법인세율을 움직이면 <b>각 단계의 이익과 마진율</b>이 바뀝니다.</p>
+
+      <div class="ctrl-row">
+        <label for="isCogs">매출원가율</label>
+        <input type="range" id="isCogs" min="30" max="90" step="5" value="60">
+        <output id="isCogsOut">60%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="isSga">판관비율</label>
+        <input type="range" id="isSga" min="5" max="40" step="5" value="25">
+        <output id="isSgaOut">25%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="isNonop">영업외손익(매출 대비)</label>
+        <input type="range" id="isNonop" min="-10" max="10" step="1" value="-2">
+        <output id="isNonopOut">-2%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="isTax">법인세율</label>
+        <input type="range" id="isTax" min="0" max="30" step="1" value="22">
+        <output id="isTaxOut">22%</output>
+      </div>
+
+      <svg viewBox="0 0 640 260" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="이익 워터폴">
+        <g id="isScene"></g>
+      </svg>
+
+      <div class="steps-out" id="isSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">영업이익률</span><span class="rv" id="isOpM">—</span></div>
+        <div><span class="rk">순이익률</span><span class="rv" id="isNetM">—</span></div>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 매출총이익 = 매출 − 매출원가, 영업이익 = 매출총이익 − 판관비, 세전이익 = 영업이익 + 영업외손익, 순이익 = 세전이익 × (1 − 법인세율)(세전이익이 음수면 세금 0으로 처리).<br><br>
+        <b>⚠️ 실제 손익계산서는 판매비와관리비 안에 감가상각비·인건비 등 여러 항목이 섞여 있고</b>, 영업외손익에는 이자손익·외환손익·자산처분손익 등이 포함됩니다. 이 계산기는 <b>구조를 보여주기 위한 단순화</b>입니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="gap">
+    <div class="prod-head" style="--edge:var(--f3)">
+      <span class="prod-tag">03 · 주의</span>
+      <h2>영업이익은 좋은데 순이익이 나쁘다면</h2>
+      <p class="one"><b>본업과 무관한 「영업외손익」</b>이 원인인 경우가 많습니다.</p>
+    </div>
+
+    <p>위 계산기에서 <b>영업외손익을 −10%까지</b> 내려보세요. <b>영업이익은 그대로인데 순이익이 크게 줄어드는 것</b>을 볼 수 있습니다. 실제로 이런 일은 <b>환율이 갑자기 불리하게 움직여 「외환손실」이 크게 잡히거나, 보유 주식·부동산 가치가 떨어져 「평가손실」을 인식하거나, 오래된 소송에서 패소해 「손해배상충당금」을 쌓을 때</b> 생깁니다.</p>
+    <p class="plain"><b>투자자가 봐야 할 것.</b> <b>영업이익이 「본업 실력」에 가깝고, 순이익은 「그 해에 실제로 일어난 모든 일」을 반영</b>합니다. 뉴스에서 <b>「순이익 급감」 헤드라인</b>을 보면, <b>영업이익도 함께 줄었는지, 아니면 일회성 영업외손익 때문인지</b>를 먼저 구분해야 합니다. 일회성 항목을 걸러내는 방법은 <a href="finstate-trend.html">06편</a>에서 다룹니다.</p>
+
+    <div class="deep">
+      <h3>반대의 경우 — 영업이익은 나쁜데 순이익이 좋다면</h3>
+      <p>이 경우도 <b>주의가 필요</b>합니다. <b>본업(영업)에서는 부진했지만, 보유하던 자회사 지분이나 부동산을 팔아서 생긴 「일회성 처분이익」이 순이익을 부풀린 경우</b>가 흔합니다. 이런 순이익은 <b>다음 해에 반복되지 않을 가능성이 높아</b>, PER을 계산할 때 그대로 쓰면 <b>실제보다 회사를 싸 보이게 만드는 착시</b>를 일으킬 수 있습니다(06편의 「정당화되는 PER」 개념과 연결).</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 손익계산서는 <b>매출 → 매출총이익 → 영업이익 → 세전이익 → 순이익</b>의 다섯 줄로 이루어지고, 각 단계는 <b>서로 다른 종류의 비용</b>을 뺀 결과입니다. <b>영업이익과 순이익이 어긋나면 그 이유(본업 부진인지, 일회성 항목인지)를 먼저 구분</b>해야 합니다.</p>
+      <p><b>다음 편은 03편 — 재무상태표 읽는 법</b>입니다. 자산과 부채, 자본의 관계를 계산기로 확인합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 재무제표 02 · 손익계산서<br>
+    <a href="index.html#finstate">← 재무제표 목록으로</a> · <a href="finstate-basics.html">01 · 재무제표란 무엇인가</a> · <a href="finstate-balance.html">03 · 재무상태표 읽는 법</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    비용 구조 수치는 <b>구조 설명을 위한 예시</b>이며 실제 기업과 다를 수 있습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function isDraw(){
+  var rev = 1000;
+  var cogsPct = +document.getElementById('isCogs').value;
+  var sgaPct = +document.getElementById('isSga').value;
+  var nonopPct = +document.getElementById('isNonop').value;
+  var taxPct = +document.getElementById('isTax').value;
+  document.getElementById('isCogsOut').textContent = cogsPct + '%';
+  document.getElementById('isSgaOut').textContent = sgaPct + '%';
+  document.getElementById('isNonopOut').textContent = (nonopPct>=0?'+':'') + nonopPct + '%';
+  document.getElementById('isTaxOut').textContent = taxPct + '%';
+
+  var cogs = rev*cogsPct/100;
+  var gross = rev - cogs;
+  var sga = rev*sgaPct/100;
+  var opInc = gross - sga;
+  var nonop = rev*nonopPct/100;
+  var pretax = opInc + nonop;
+  var tax = Math.max(0,pretax)*taxPct/100;
+  var net = pretax - tax;
+
+  document.getElementById('isSteps').innerHTML =
+    '<div class="steprow"><span class="sk">매출</span><span class="sv">' + rev.toFixed(0) + '</span></div>' +
+    '<div class="steprow"><span class="sk">− 매출원가</span><span class="sv">' + cogs.toFixed(0) + '</span></div>' +
+    '<div class="steprow"><span class="sk">= 매출총이익</span><span class="sv">' + gross.toFixed(0) + '</span></div>' +
+    '<div class="steprow"><span class="sk">− 판관비</span><span class="sv">' + sga.toFixed(0) + '</span></div>' +
+    '<div class="steprow"><span class="sk">= 영업이익</span><span class="sv">' + opInc.toFixed(0) + '</span></div>' +
+    '<div class="steprow"><span class="sk">± 영업외손익</span><span class="sv">' + (nonop>=0?'+':'') + nonop.toFixed(0) + '</span></div>' +
+    '<div class="steprow"><span class="sk">= 세전이익</span><span class="sv">' + pretax.toFixed(0) + '</span></div>' +
+    '<div class="steprow"><span class="sk">− 법인세</span><span class="sv">' + tax.toFixed(0) + '</span></div>' +
+    '<div class="steprow total"><span class="sk">= 순이익</span><span class="sv">' + net.toFixed(0) + '</span></div>';
+
+  document.getElementById('isOpM').textContent = (opInc/rev*100).toFixed(1) + '%';
+  document.getElementById('isOpM').style.color = opInc >= 0 ? 'var(--pos)' : 'var(--neg)';
+  document.getElementById('isNetM').textContent = (net/rev*100).toFixed(1) + '%';
+  document.getElementById('isNetM').style.color = net >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var stages = [
+    { n:'매출', v:rev },
+    { n:'매출총이익', v:gross },
+    { n:'영업이익', v:opInc },
+    { n:'세전이익', v:pretax },
+    { n:'순이익', v:net }
+  ];
+  var X0=50, W=560, barW=80, gap=(W-barW)/(stages.length-1);
+  var maxV = rev, Y0=210, H=170;
+  function yv(v){ return Y0 - Math.max(0,v)/maxV*H; }
+  var g='';
+  g+='<line x1="'+X0+'" y1="'+Y0+'" x2="'+(X0+W)+'" y2="'+Y0+'" class="axis"/>';
+  stages.forEach(function(s,i){
+    var x = X0 + i*gap;
+    var y = yv(s.v);
+    var h = Y0-y;
+    var col = s.v>=0 ? '#3F5A6F' : '#8E4B3A';
+    g += '<rect x="'+x.toFixed(1)+'" y="'+y.toFixed(1)+'" width="'+barW+'" height="'+Math.max(1,h).toFixed(1)+'" fill="'+col+'" opacity="0.85"/>';
+    g += '<text class="lblb" x="'+(x+barW/2).toFixed(1)+'" y="'+(y-8).toFixed(1)+'" text-anchor="middle" fill="'+col+'">'+s.v.toFixed(0)+'</text>';
+    g += '<text class="axt" x="'+(x+barW/2).toFixed(1)+'" y="'+(Y0+18)+'" text-anchor="middle">'+s.n+'</text>';
+  });
+  document.getElementById('isScene').innerHTML = g;
+}
+['isCogs','isSga','isNonop','isTax'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', isDraw);
+});
+isDraw();
+</script>
+</body>
+</html>

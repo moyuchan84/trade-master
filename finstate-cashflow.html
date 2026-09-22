@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>현금흐름표 읽는 법</title>
+<meta name="description" content="영업·투자·재무 현금흐름 세 부호의 조합으로 기업의 단계를 진단하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F1F0E9;--ink:#1D1C18;--ink-soft:#524E44;--rule:#D5CEBB;--card:#FAF9F2;
+    --f1:#3F5A6F;--f2:#7A5535;--f3:#5A3F7F;--f4:#3F7A55;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#E8E2D0;--warn-ink:#233A5A;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#E8E1CE;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#EDE6D4;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F4EEDD;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--f1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--f1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--f1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  .signrow{display:flex;align-items:center;gap:14px;margin-bottom:12px;flex-wrap:wrap;}
+  .signrow .sl{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);min-width:120px;}
+  .signrow .sb{display:flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden;}
+  .signrow .sb button{font-family:'IBM Plex Mono',monospace;font-size:13px;padding:8px 20px;border:0;background:var(--paper);color:var(--ink-soft);cursor:pointer;}
+  .signrow .sb button + button{border-left:1px solid var(--rule);}
+  .signrow .sb button.on{background:var(--ink);color:var(--paper);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">재무제표 04 · 현금흐름표 · 투자 공부 노트</div>
+    <h1>현금흐름표<br>읽는 법</h1>
+    <p class="lede">현금흐름표는 <b>영업·투자·재무</b> 세 부분으로 나뉘고, 각각 <b>플러스(+, 현금이 들어옴)</b>이거나 <b>마이너스(−, 현금이 나감)</b>일 수 있습니다. 이 세 부호의 <b>조합</b>만 봐도 <b>이 회사가 지금 어떤 단계에 있는지</b> 대략 짐작할 수 있습니다.</p>
+    <div class="callout">
+      <p><b>영업활동현금흐름</b>은 <b>본업으로 번 진짜 현금</b>, <b>투자활동현금흐름</b>은 <b>설비·자산을 사고파는 데 쓴 현금</b>, <b>재무활동현금흐름</b>은 <b>빚을 내거나 갚고, 주식을 발행하거나 배당을 준 현금</b>입니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="8가지 조합의 근거까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 세 개의 물줄기</a>
+    <a href="#lab">2. 계산기: 8가지 조합 진단</a>
+    <a href="#why">3. 왜 영업현금흐름이 가장 중요한가</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--f1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>지갑으로 들어오고 나가는 세 갈래 물줄기</h2>
+      <p class="one">각 활동은 <b>돈이 오가는 이유가 다릅니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>「영업활동」</b>은 <b>장사해서 번 돈</b>이야. <b>플러스면 좋은 것</b>이지.</p>
+      <p><b>「투자활동」</b>은 <b>새 기계를 사거나(현금이 나감), 안 쓰는 건물을 팔거나(현금이 들어옴)</b> 하는 돈이야. <b>한창 크는 회사는 마이너스</b>인 경우가 많아 — <b>기계를 계속 사야</b> 하니까.</p>
+      <p><b>「재무활동」</b>은 <b>은행에서 돈을 빌리거나(들어옴), 빚을 갚거나 배당을 주거나(나감)</b> 하는 돈이야.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--f2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>세 부호를 골라 기업의 단계를 진단해보세요</h2>
+      <p class="one">8가지 조합 중 <b>어디에 해당하는지</b> 눌러서 확인합니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CASH FLOW SIGNS · +/−를 눌러보세요</div>
+      <p class="labsub"></p>
+
+      <div class="signrow">
+        <span class="sl">영업활동현금흐름</span>
+        <div class="sb" data-k="op"><button data-v="1" class="on">+</button><button data-v="0">−</button></div>
+      </div>
+      <div class="signrow">
+        <span class="sl">투자활동현금흐름</span>
+        <div class="sb" data-k="inv"><button data-v="1">+</button><button data-v="0" class="on">−</button></div>
+      </div>
+      <div class="signrow">
+        <span class="sl">재무활동현금흐름</span>
+        <div class="sb" data-k="fin"><button data-v="1">+</button><button data-v="0" class="on">−</button></div>
+      </div>
+
+      <div class="verdict" id="cfVerdict" style="--vc:var(--f2);margin-top:16px;">
+        <div class="vh">진단</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 이 진단은 「가장 흔히 관찰되는 전형적 해석」</b>입니다. 실제로는 <b>같은 부호 조합이라도 회사 상황에 따라 다른 이유</b>가 있을 수 있으니, <b>주석(재무제표 각주)에서 구체적인 항목을 확인</b>하는 것이 정확합니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="why">
+    <div class="prod-head" style="--edge:var(--f3)">
+      <span class="prod-tag">03 · 핵심</span>
+      <h2>세 흐름 중 하나만 봐야 한다면 영업활동현금흐름</h2>
+      <p class="one"><b>본업이 실제로 현금을 만들어내고 있는지</b>가 가장 근본적인 질문입니다.</p>
+    </div>
+
+    <p><b>투자활동과 재무활동은 「선택」의 결과</b>입니다 — 공장을 더 지을지, 빚을 낼지는 <b>경영진이 결정</b>합니다. 하지만 <b>영업활동현금흐름은 「본업이 실제로 얼마나 현금을 만드는가」라는 사실 자체</b>입니다. <b>여러 해에 걸쳐 영업활동현금흐름이 순이익보다 꾸준히 적거나 마이너스</b>라면, <b>회계상 이익이 진짜 현금으로 잘 전환되지 않고 있다는 경고 신호</b>입니다. 이 주제는 <a href="finstate-bankruptcy.html">05편(흑자도산)</a>에서 직접 계산해봅니다.</p>
+
+    <div class="deep">
+      <h3>배당은 어느 현금흐름에 들어갈까</h3>
+      <p><b>주주에게 지급한 배당금은 「재무활동현금흐름」에서 현금 유출</b>로 표시됩니다. <b>「이 회사가 배당을 얼마나 오래 유지할 수 있는가」</b>를 보려면, <b>배당금 총액과 영업활동현금흐름(또는 잉여현금흐름 = 영업현금흐름 − 설비투자)을 비교</b>해보는 것이 좋습니다. <b>배당이 잉여현금흐름보다 크게 많다면, 그 배당은 빚을 내서 주는 배당일 수 있습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 현금흐름표는 <b>영업·투자·재무</b> 세 활동으로 나뉘고, <b>부호의 조합</b>으로 기업의 대략적인 단계를 짐작할 수 있습니다. 그중 <b>영업활동현금흐름이 본업의 진짜 실력</b>을 보여줍니다.</p>
+      <p><b>다음 편은 05편 — 흑자도산</b>입니다. 순이익은 흑자인데 왜 회사가 망하는지, 직접 시뮬레이션으로 확인합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 재무제표 04 · 현금흐름표<br>
+    <a href="index.html#finstate">← 재무제표 목록으로</a> · <a href="finstate-balance.html">03 · 재무상태표 읽는 법</a> · <a href="finstate-bankruptcy.html">05 · 흑자도산</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    진단은 <b>일반적인 해석의 예시</b>이며 실제 재무제표 주석을 함께 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+var CF_STATE = { op:1, inv:0, fin:0 };
+var CF_TEXT = {
+  '1,0,0': { t:'성숙한 우량기업', b:'<b>본업으로 벌고(+), 그 돈으로 투자하고(−), 남는 돈으로 빚을 갚거나 배당(−)</b>을 주는 전형적인 안정기 기업의 모습입니다. 워런 버핏 스타일 투자자들이 선호하는 조합으로 자주 언급됩니다.' },
+  '1,0,1': { t:'공격적으로 성장 중인 기업', b:'<b>본업도 잘 벌고(+), 투자도 많이 하는데(−), 외부 자금까지 추가로 조달(+)</b>합니다. 성장 기회가 커서 <b>번 돈만으로는 부족해 자금을 더 끌어오는 성장기 기업</b>에서 흔히 보입니다.' },
+  '1,1,0': { t:'구조조정 또는 자산 효율화 중인 기업', b:'<b>본업은 흑자(+)이고, 동시에 자산을 팔아 현금을 만들며(+), 그 돈으로 빚을 갚는(−)</b> 조합입니다. 사업을 슬림화하며 재무구조를 개선하는 국면일 수 있습니다.' },
+  '1,1,1': { t:'드문 조합 — 이유를 반드시 확인해야 함', b:'<b>본업 흑자(+), 자산 매각(+), 외부 자금 조달(+)</b>이 동시에 일어나는 조합입니다. 인수합병 준비, 대규모 사업 재편 등 <b>특수한 상황일 가능성이 높아 주석을 반드시 확인</b>해야 합니다.' },
+  '0,0,1': { t:'적자를 감수하며 성장 중인 스타트업형 기업', b:'<b>본업은 아직 적자(−)지만 투자도 계속하고(−), 외부 투자금이나 대출로 버티는(+)</b> 조합입니다. 신약 개발 중인 바이오, 초기 플랫폼 기업에서 흔히 보입니다(09편).' },
+  '0,0,0': { t:'경고 — 모든 곳에서 현금이 빠져나가고 있음', b:'<b>본업도 적자(−), 투자도 지속(−), 갚아야 할 빚도 있는(−)</b> 조합입니다. <b>보유 현금이 빠르게 줄어드는 위험 신호</b>이며, 남은 현금으로 버틸 수 있는 기간(runway)을 반드시 확인해야 합니다(09편).' },
+  '0,1,0': { t:'자산을 팔아 버티며 빚도 갚는 위기 대응 기업', b:'<b>본업은 적자(−)지만 자산을 팔아(+) 현금을 만들고 빚을 갚는(−)</b> 조합입니다. 위기를 넘기기 위한 자산 매각이 진행 중일 수 있습니다.' },
+  '0,1,1': { t:'심각한 위기 — 생존을 위해 모든 수단을 동원 중', b:'<b>본업은 적자(−)인데 자산까지 팔고(+) 외부 자금도 추가로 끌어오는(+)</b> 조합입니다. <b>생존을 위해 가능한 모든 현금 확보 수단을 쓰고 있는 상태</b>로, 가장 주의 깊게 봐야 할 조합 중 하나입니다.' }
+};
+function cfKey(){ return CF_STATE.op + ',' + CF_STATE.inv + ',' + CF_STATE.fin; }
+function cfDraw(){
+  var d = CF_TEXT[cfKey()];
+  var col = CF_STATE.op===1 && (CF_STATE.inv+CF_STATE.fin)<=1 ? '#4C7A6D' : (CF_STATE.op===0 && CF_STATE.inv===0 && CF_STATE.fin===0 ? '#8E4B3A' : '#8E6B3A');
+  verdict('cfVerdict', col, d.t, d.b);
+}
+document.querySelectorAll('.sb').forEach(function(row){
+  var key = row.getAttribute('data-k');
+  row.querySelectorAll('button').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      row.querySelectorAll('button').forEach(function(b){ b.classList.remove('on'); });
+      btn.classList.add('on');
+      CF_STATE[key] = +btn.getAttribute('data-v');
+      cfDraw();
+    });
+  });
+});
+cfDraw();
+</script>
+</body>
+</html>

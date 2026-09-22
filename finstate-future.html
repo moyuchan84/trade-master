@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미래를 보는 항목들</title>
+<meta name="description" content="수주잔고·이연매출·CAPEX·가이던스처럼 지금 실적에는 안 잡히지만 미래를 암시하는 재무제표 항목을 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F1F0EA;--ink:#1D1C18;--ink-soft:#524E44;--rule:#D6CFBD;--card:#FAF9F3;
+    --f1:#3F7A55;--f2:#3F5A6F;--f3:#7A5535;--f4:#5A3F7F;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#DEE7DA;--warn-ink:#22461E;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#E2E9DE;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#E9EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F1F5EE;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--f1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--f1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--f1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">재무제표 07 · 미래 신호 · 투자 공부 노트</div>
+    <h1>미래를 보는<br>항목들</h1>
+    <p class="lede">지금 손익계산서의 매출과 이익은 <b>「이미 지나간 결과」</b>입니다. 재무제표 안에는 <b>「아직 실적에 잡히지 않았지만 앞날을 암시하는」</b> 몇 가지 항목이 숨어 있습니다.</p>
+    <div class="callout">
+      <p><b>대표적으로 네 가지</b> — <b>수주잔고(앞으로 만들 물량), 이연매출(이미 받았지만 아직 매출로 못 잡은 돈), CAPEX·R&D(미래를 위한 투자), 경영진 가이던스(회사 스스로의 예상)</b>입니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산식과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#four">1. 네 가지 미래 신호</a>
+    <a href="#lab">2. 계산기: 구독기업의 이연매출</a>
+    <a href="#capex">3. CAPEX와 R&D — 오늘의 비용, 내일의 자산</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="four">
+    <div class="prod-head" style="--edge:var(--f1)">
+      <span class="prod-tag">01 · 개관</span>
+      <h2>재무제표 안에 숨은 미래 신호 네 가지</h2>
+      <p class="one">각 산업마다 <b>중요하게 보는 신호가 다릅니다.</b></p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>신호</th><th>의미</th><th>주로 중요한 산업</th></tr></thead>
+        <tbody>
+          <tr><th>수주잔고</th><td>계약은 했지만 아직 만들지 않은 물량</td><td>조선·건설·방산(<a href="sector-industrial-consumer.html">산업·섹터 05편</a>)</td></tr>
+          <tr><th>이연매출</th><td>돈은 받았지만 서비스를 아직 다 제공하지 않은 몫</td><td>구독형 소프트웨어(SaaS), 회원권</td></tr>
+          <tr><th>CAPEX(설비투자)</th><td>미래 생산능력을 위해 지금 쓰는 돈</td><td>반도체, 제조업 전반</td></tr>
+          <tr><th>R&D(연구개발비)</th><td>미래 제품·신약을 위해 지금 쓰는 돈</td><td>바이오, 기술기업</td></tr>
+          <tr><th>가이던스</th><td>경영진이 스스로 제시하는 다음 분기·연도 예상치</td><td>모든 상장기업(달성 여부가 신뢰도를 만듦)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--f2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>구독형 기업의 이연매출은 왜 「좋은 부채」인가</h2>
+      <p class="one">회계상 <b>부채</b>로 잡히지만, 사실은 <b>이미 확보된 미래 매출</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DEFERRED REVENUE · 12개월 구독 계약금 1,200을 기준으로</div>
+      <p class="labsub">고객이 <b>1년치 구독료 1,200을 한 번에 미리 냈다</b>고 가정합니다. 시간이 지날수록 <b>「이연매출(부채)」이 「매출(수익)」로 옮겨갑니다.</b></p>
+
+      <div class="ctrl-row">
+        <label for="fuMonth">계약 후 경과 개월</label>
+        <input type="range" id="fuMonth" min="0" max="12" step="1" value="4">
+        <output id="fuMonthOut">4개월</output>
+      </div>
+
+      <svg viewBox="0 0 640 90" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="이연매출에서 매출로 전환">
+        <g id="fuScene"></g>
+      </svg>
+
+      <div class="steps-out" id="fuSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">지금까지 인식한 매출</span><span class="rv" id="fuRev">—</span></div>
+        <div><span class="rk">남은 이연매출(부채)</span><span class="rv" id="fuDef">—</span></div>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 인식 매출 = 계약금액 × (경과 개월 / 12). 남은 이연매출 = 계약금액 − 인식 매출. <b>고객이 돈을 「먼저」 냈기 때문에, 아직 서비스를 제공하지 않은 몫은 「부채(의무)」로 잡힙니다.</b>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>이연매출 잔액이 늘어나는 것이 왜 좋은 신호인가</h3>
+      <p>구독형 기업의 <b>「이연매출」 잔액이 매 분기 꾸준히 늘어난다</b>는 것은, <b>새로운 고객이 계속 선결제하며 계약을 맺고 있다</b>는 뜻입니다. 이는 <b>아직 손익계산서의 매출로는 잡히지 않았지만, 앞으로 몇 개월간 확정적으로 인식될 매출이 쌓이고 있다</b>는 신호로 흔히 해석됩니다. 그래서 구독형(SaaS) 기업을 분석할 때는 <b>당기 매출뿐 아니라 이연매출 잔액의 증가 추세</b>를 함께 봅니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="capex">
+    <div class="prod-head" style="--edge:var(--f3)">
+      <span class="prod-tag">03 · 투자</span>
+      <h2>CAPEX와 R&D — 오늘의 비용이 내일의 자산이 될 수도</h2>
+      <p class="one">지금 이익을 깎아 먹지만, <b>미래 경쟁력을 만드는 지출</b>일 수 있습니다.</p>
+    </div>
+
+    <p><b>CAPEX(설비투자)</b>는 <b>현금흐름표의 투자활동에서 현금 유출</b>로 나타나고, <b>재무상태표의 자산(유형자산)</b>을 늘립니다. 반도체 회사가 <b>공장을 짓는 데 수조 원을 쓰는 뉴스</b>를 보면, 이는 <b>당장의 이익을 깎지만 몇 년 뒤의 생산능력을 만드는 투자</b>입니다.</p>
+    <p><b>R&D(연구개발비)</b>는 회계 기준에 따라 <b>비용으로 즉시 처리되거나, 일정 조건을 만족하면 「무형자산」으로 자산화</b>될 수 있습니다. <b>이 처리 방식의 차이가 섹터마다 재무제표를 다르게 보이게 만드는 대표적인 이유</b> 중 하나이며, <a href="finstate-sector.html">09편(섹터별 특징)</a>에서 바이오 산업을 예로 자세히 다룹니다.</p>
+
+    <p class="plain"><b>투자자가 보는 습관.</b> <b>CAPEX·R&D 지출이 매출 대비 꾸준히 늘고 있는지, 그리고 그 지출이 실제로 몇 년 뒤 매출 성장으로 이어졌는지(과거 지출과 이후 실적을 시차를 두고 비교)</b>를 함께 보면, <b>이 회사가 미래에 얼마나 투자하고 있는지</b> 가늠할 수 있습니다.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 수주잔고·이연매출·CAPEX·R&D·가이던스는 <b>지금 손익계산서 숫자에는 다 담기지 않는 미래 신호</b>입니다. <b>산업마다 어느 신호가 더 중요한지 다릅니다.</b></p>
+      <p><b>다음 편은 08편 — 기업의 일생</b>입니다. 자본금으로 시작해 투자를 받고, 상장하고, 유상증자를 하는 흐름을 따라갑니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 재무제표 07 · 미래 신호<br>
+    <a href="index.html#finstate">← 재무제표 목록으로</a> · <a href="finstate-trend.html">06 · 전년 대비 비교와 추세 읽기</a> · <a href="finstate-lifecycle.html">08 · 기업의 일생</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    계산 예시는 <b>구조 설명용</b>이며 실제 계약·회계처리는 기업마다 다릅니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function fuDraw(){
+  var m = +document.getElementById('fuMonth').value;
+  document.getElementById('fuMonthOut').textContent = m + '개월';
+
+  var total = 1200;
+  var rev = total * (m/12);
+  var def = total - rev;
+
+  document.getElementById('fuSteps').innerHTML =
+    '<div class="steprow"><span class="sk">계약금액(1년치 선결제)</span><span class="sv">' + total + '</span></div>' +
+    '<div class="steprow"><span class="sk">인식 매출 = 계약금액 × (' + m + '/12)</span><span class="sv">' + rev.toFixed(0) + '</span></div>' +
+    '<div class="steprow total"><span class="sk">남은 이연매출(부채)</span><span class="sv">' + def.toFixed(0) + '</span></div>';
+
+  document.getElementById('fuRev').textContent = rev.toFixed(0);
+  document.getElementById('fuDef').textContent = def.toFixed(0);
+
+  var X0=20, W=600, H=40, Y0=30;
+  var revW = W * (m/12);
+  var g = '';
+  g += '<rect x="'+X0+'" y="'+Y0+'" width="'+W+'" height="'+H+'" fill="none" stroke="#8A8474" stroke-width="1"/>';
+  g += '<rect x="'+X0+'" y="'+Y0+'" width="'+revW.toFixed(1)+'" height="'+H+'" fill="#3F7A55" opacity="0.85"/>';
+  g += '<rect x="'+(X0+revW).toFixed(1)+'" y="'+Y0+'" width="'+(W-revW).toFixed(1)+'" height="'+H+'" fill="#3F5A6F" opacity="0.55"/>';
+  g += '<text class="lblb" x="'+(X0+8)+'" y="'+(Y0+H/2+4)+'" fill="#fff">인식 매출 ' + rev.toFixed(0) + '</text>';
+  if(W-revW > 90) g += '<text class="lblb" x="'+(X0+W-8)+'" y="'+(Y0+H/2+4)+'" text-anchor="end" fill="#fff">이연매출 ' + def.toFixed(0) + '</text>';
+  g += '<text class="axt" x="'+X0+'" y="'+(Y0+H+16)+'">0개월</text>';
+  g += '<text class="axt" x="'+(X0+W)+'" y="'+(Y0+H+16)+'" text-anchor="end">12개월</text>';
+  document.getElementById('fuScene').innerHTML = g;
+}
+document.getElementById('fuMonth').addEventListener('input', fuDraw);
+fuDraw();
+</script>
+</body>
+</html>

@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>흑자도산 — 이익은 났는데 왜 망하나</title>
+<meta name="description" content="회계상 이익과 실제 현금의 괴리, 매출채권·재고 증가가 흑자도산으로 이어지는 구조를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F1EFE7;--ink:#1E1C18;--ink-soft:#524D42;--rule:#D6CDB9;--card:#FAF9F1;
+    --f1:#7A3F3F;--f2:#3F5A6F;--f3:#7A5535;--f4:#3F7A55;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#E8DFCE;--warn-ink:#5A2A22;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--f1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--f1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--f1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">재무제표 05 · 흑자도산 · 투자 공부 노트</div>
+    <h1>흑자도산 — 이익은<br>났는데 왜 망하나</h1>
+    <p class="lede">손익계산서에는 <b>순이익 플러스</b>라고 적혀 있는데, 회사가 <b>부도</b>가 나는 경우가 실제로 있습니다. 이유는 <b>「이익」과 「현금」이 다르기 때문</b>입니다.</p>
+    <div class="callout">
+      <p><b>회계는 「발생주의」</b>를 씁니다 — <b>물건을 팔면, 돈을 아직 못 받았어도 「매출」로 기록</b>합니다. 그런데 <b>직원 월급과 은행 이자는 「현금」으로 내야</b> 합니다. <b>장부의 이익과 통장의 현금 사이에 시차와 괴리</b>가 생기는 이유입니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="운전자본 계산식과 사례까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 외상장부와 진짜 지갑</a>
+    <a href="#lab">2. 계산기: 순이익 vs 영업현금흐름</a>
+    <a href="#fraud">3. 분식회계라는 극단적인 경우</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--f1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>「팔았다」와 「돈을 받았다」는 다른 일이다</h2>
+      <p class="one">그 사이의 간격이 <b>운전자본</b>입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>친구에게 <b>과자를 외상으로</b> 팔았어. 용돈기입장에는 <b>「과자 판 돈 1,000원 벌었다」고 적어.</b> 그런데 <b>친구가 아직 돈을 안 줬으면</b>, 내 <b>지갑에는 그 1,000원이 없어.</b></p>
+      <p>그런데 <b>나는 오늘 당장 새 과자 재료값을 현금으로 내야</b> 해. <b>장부에는 「이익」이라고 적혀 있는데, 지갑에는 정작 낼 돈이 없는 상황</b>이 생겨. 이게 여러 번, 크게 쌓이면 <b>「흑자도산」</b>이 될 수 있어.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--f2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>순이익은 플러스인데 현금흐름은 마이너스일 수 있다</h2>
+      <p class="one"><b>매출채권과 재고가 늘어날수록</b> 그 간격이 벌어집니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">EARNINGS vs CASH · 순이익 100을 기준으로</div>
+      <p class="labsub">매출채권(외상으로 판 돈)·재고·매입채무(외상으로 산 돈)가 <b>어떻게 변했는지</b> 슬라이더로 정해보세요.</p>
+
+      <div class="ctrl-row">
+        <label for="bkDep">감가상각비(현금 유출 없는 비용)</label>
+        <input type="range" id="bkDep" min="0" max="60" step="5" value="20">
+        <output id="bkDepOut">20</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="bkAr">매출채권 증가액</label>
+        <input type="range" id="bkAr" min="0" max="200" step="10" value="30">
+        <output id="bkArOut">30</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="bkInv">재고자산 증가액</label>
+        <input type="range" id="bkInv" min="0" max="200" step="10" value="20">
+        <output id="bkInvOut">20</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="bkAp">매입채무 증가액</label>
+        <input type="range" id="bkAp" min="0" max="100" step="10" value="10">
+        <output id="bkApOut">10</output>
+      </div>
+
+      <div class="steps-out" id="bkSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">순이익(장부상)</span><span class="rv">100</span></div>
+        <div><span class="rk">영업활동현금흐름(실제)</span><span class="rv" id="bkOcf">—</span></div>
+      </div>
+
+      <div class="verdict" id="bkVerdict" style="--vc:var(--f2)">
+        <div class="vh">진단</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 운전자본 증가 = 매출채권 증가 + 재고 증가 − 매입채무 증가. 영업활동현금흐름 = 순이익 + 감가상각비(현금이 안 나간 비용을 다시 더함) − 운전자본 증가.<br><br>
+        <b>⚠️ 실제 현금흐름표 계산에는 이 외에도 여러 조정 항목</b>이 있습니다. 이 계산기는 <b>「매출채권·재고가 늘수록 현금흐름이 나빠진다」는 핵심 구조</b>를 보여주는 단순화입니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="fraud">
+    <div class="prod-head" style="--edge:var(--f3)">
+      <span class="prod-tag">03 · 극단적 사례</span>
+      <h2>분식회계 — 매출채권을 고의로 부풀리는 경우</h2>
+      <p class="one">위 계산기의 구조는 <b>회계 부정을 알아채는 단서</b>로도 쓰입니다.</p>
+    </div>
+
+    <p>일부 부실기업은 <b>실제로 팔리지 않은 물건을 「팔린 것처럼」 장부에 기록</b>해 매출과 이익을 부풀립니다. 이 경우 <b>매출채권(아직 못 받은 돈)이 매출 증가 속도보다 훨씬 빠르게 쌓이는 특징</b>이 나타납니다. 왜냐하면 <b>가짜 매출은 영원히 현금으로 들어오지 않기 때문</b>입니다.</p>
+    <p class="plain"><b>투자자가 확인하는 습관.</b> <b>「매출채권 회전율(매출 / 매출채권)」이 갑자기 나빠지거나(회수 속도가 느려지거나), 매출 증가율보다 매출채권 증가율이 몇 년째 꾸준히 더 높다면</b> 주의 깊게 볼 신호입니다. <b>순이익은 계속 흑자인데 영업활동현금흐름이 여러 해 마이너스</b>인 것도 대표적인 경고 신호입니다.</p>
+
+    <div class="deep">
+      <h3>실제로 있었던 패턴 — 회계 부정이 드러나는 순서</h3>
+      <p>과거 여러 회계 부정 사례를 보면 <b>공통된 순서</b>가 있었습니다. <b>① 매출·이익이 예상보다 꾸준히 좋게 나오는데 ② 영업활동현금흐름은 그만큼 따라오지 않고 ③ 매출채권·재고가 계속 쌓이다가 ④ 결국 감사인이나 외부에서 문제를 지적하며 드러나는 흐름</b>입니다. <b>한 해의 숫자만 보면 발견하기 어렵지만, 여러 해를 나란히 놓고 「이익과 현금의 격차가 벌어지는 추세」를 보면 신호가 보이는 경우</b>가 많습니다. 추세를 보는 방법은 <a href="finstate-trend.html">06편</a>에서 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 순이익(발생주의)과 영업활동현금흐름(현금주의)은 <b>매출채권·재고 같은 운전자본의 변화 때문에 어긋날 수 있고</b>, 이 괴리가 오래 지속되거나 심해지면 <b>흑자도산이나 회계 부정의 신호</b>일 수 있습니다.</p>
+      <p><b>다음 편은 06편 — 전년 대비 비교와 추세 읽기</b>입니다. 일회성 항목을 걸러내고 <b>본업의 진짜 실력</b>을 보는 법을 다룹니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 재무제표 05 · 흑자도산<br>
+    <a href="index.html#finstate">← 재무제표 목록으로</a> · <a href="finstate-cashflow.html">04 · 현금흐름표 읽는 법</a> · <a href="finstate-trend.html">06 · 전년 대비 비교와 추세 읽기</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 특정 기업의 회계 부정을 암시하지 않습니다.<br>
+    계산 예시는 <b>구조 설명용</b>이며 실제 기업 분석에는 공식 재무제표와 감사보고서를 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function bkDraw(){
+  var net = 100;
+  var dep = +document.getElementById('bkDep').value;
+  var ar = +document.getElementById('bkAr').value;
+  var inv = +document.getElementById('bkInv').value;
+  var ap = +document.getElementById('bkAp').value;
+  document.getElementById('bkDepOut').textContent = dep;
+  document.getElementById('bkArOut').textContent = ar;
+  document.getElementById('bkInvOut').textContent = inv;
+  document.getElementById('bkApOut').textContent = ap;
+
+  var wc = ar + inv - ap;
+  var ocf = net + dep - wc;
+
+  document.getElementById('bkSteps').innerHTML =
+    '<div class="steprow"><span class="sk">순이익</span><span class="sv">100</span></div>' +
+    '<div class="steprow"><span class="sk">+ 감가상각비(현금 아닌 비용 환입)</span><span class="sv">+' + dep + '</span></div>' +
+    '<div class="steprow"><span class="sk">운전자본 증가 = 매출채권+재고−매입채무</span><span class="sv">' + wc + '</span></div>' +
+    '<div class="steprow total"><span class="sk">− 운전자본 증가 = 영업활동현금흐름</span><span class="sv">' + ocf.toFixed(0) + '</span></div>';
+
+  document.getElementById('bkOcf').textContent = ocf.toFixed(0);
+  document.getElementById('bkOcf').style.color = ocf >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var col, title, body;
+  if(ocf < 0){
+    col='#8E4B3A';
+    title='흑자도산 경고 — 순이익은 흑자인데 실제 현금은 빠져나가고 있습니다';
+    body='순이익은 <b>100으로 흑자</b>인데, 영업활동현금흐름은 <b>' + ocf.toFixed(0) + '로 마이너스</b>입니다. <b>매출채권과 재고에 돈이 묶여 있어, 장부의 이익만큼 실제 현금이 들어오지 않고 있다</b>는 뜻입니다. 이 상태가 오래 지속되면 <b>직원 월급이나 이자를 낼 현금이 부족</b>해질 수 있습니다.';
+  } else if(ocf < net*0.5){
+    col='#8E6B3A';
+    title='주의 — 이익 대비 현금 전환이 약합니다';
+    body='영업활동현금흐름(' + ocf.toFixed(0) + ')이 순이익(100)의 <b>절반에도 못 미칩니다.</b> <b>운전자본에 상당한 현금이 묶여 있다</b>는 뜻이며, 이 추세가 계속되는지 다음 분기·연도와 비교해볼 필요가 있습니다.';
+  } else {
+    col='#4C7A6D';
+    title='양호 — 이익이 현금으로 잘 전환되고 있습니다';
+    body='영업활동현금흐름(' + ocf.toFixed(0) + ')이 순이익(100)에 가깝거나 더 큽니다. <b>장부의 이익이 실제 현금으로 잘 이어지고 있다</b>는 신호입니다.';
+  }
+  verdict('bkVerdict', col, title, body);
+}
+['bkDep','bkAr','bkInv','bkAp'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', bkDraw);
+});
+bkDraw();
+</script>
+</body>
+</html>
