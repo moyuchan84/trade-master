@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>금융·에너지·소재 섹터</title>
+<meta name="description" content="은행은 금리에, 정유는 유가에, 화학은 원가율에 실적이 흔들리는 이유를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F2F0E9;--ink:#211F1A;--ink-soft:#585448;--rule:#D9D2C0;--card:#FBFAF6;
+    --s1:#3F5F7F;--s2:#7A5535;--s3:#5A6F3F;--s4:#6F3F5A;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#EDE7D8;--warn-ink:#5A4A22;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EBE6D6;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F0EBDC;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F6F2E5;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--s1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--s1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--s1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">산업·섹터 04 · 금리·원자재 · 투자 공부 노트</div>
+    <h1>금융·에너지·소재<br>섹터</h1>
+    <p class="lede">이 세 섹터는 <b>회사가 잘하고 못하고를 떠나</b>, <b>금리와 원자재 가격이라는 「외부 변수」에 실적이 크게 좌우</b>됩니다. 그래서 뉴스에서 <b>기준금리·유가·환율</b>이 나올 때마다 이 섹터들이 함께 언급됩니다.</p>
+    <div class="callout">
+      <p><b>은행은 금리로, 정유는 유가로, 화학은 원자재 원가율로</b> — 각각 다른 변수에 반응하지만 <b>「내가 통제할 수 없는 가격에 이익이 좌우된다」는 공통점</b>이 있습니다.</p>
+      <p><b>⚠️ 실제 은행·정유·화학사의 이익 구조는 이 편의 단순 모형보다 훨씬 복잡합니다.</b> 방향성 이해를 위한 예시로 봐주세요.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산식과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 세 섹터, 세 가지 외부 변수</a>
+    <a href="#lab">2. 계산기: 금리·유가·원가율 민감도</a>
+    <a href="#why">3. 왜 이렇게 반응하나</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--s1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>같은 회사라도 날씨가 다르면 매출이 다르다</h2>
+      <p class="one"><b>업(業)의 구조 자체가 외부 가격에 연동</b>되어 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>은행</b>은 돈을 빌려주고 <b>이자를 받아서</b> 돈을 벌어. 그런데 <b>이자율 자체를 은행이 마음대로 못 정해.</b> 나라의 기준금리가 오르내리면 은행이 버는 이자도 따라 움직여.</p>
+      <p><b>정유회사</b>는 <b>원유를 사서 휘발유로 만들어</b> 팔아. 원유 값이 갑자기 뛰면 <b>미리 사둔 원유는 싼값에 산 거라 이득</b>을 볼 수도 있고, 반대로 <b>손해</b>를 볼 수도 있어.</p>
+      <p><b>화학회사</b>는 <b>원료(나프타 같은 것)를 사서 플라스틱 같은 걸</b> 만들어. 원료 값이 오르는데 <b>파는 값을 못 올리면 남는 돈이 확 줄어.</b></p>
+      <p>셋 다 <b>「내가 정하지 않은 가격」에 이익이 좌우</b>된다는 공통점이 있어.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--s2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>세 섹터의 민감도 비교하기</h2>
+      <p class="one">버튼으로 <b>섹터를 고르고</b> 슬라이더로 <b>변수를 움직여보세요.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SENSITIVITY · 섹터를 선택하세요</div>
+      <p class="labsub">각 섹터가 <b>가장 크게 반응하는 하나의 변수</b>만 골라 단순화했습니다.</p>
+
+      <div class="btnrow" id="feBtns">
+        <button data-v="0" class="on">은행 — 기준금리</button>
+        <button data-v="1">정유 — 정제마진</button>
+        <button data-v="2">화학 — 원가율</button>
+      </div>
+
+      <div class="ctrl-row">
+        <label id="feLabel" for="feX">기준금리 변동</label>
+        <input type="range" id="feX" min="-2" max="2" step="0.25" value="1">
+        <output id="feXOut">+1.00%p</output>
+      </div>
+
+      <div class="steps-out" id="feSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">영업이익(순이익) 변화율(예시)</span><span class="rv" id="feResult">—</span></div>
+        <div><span class="rk">방향</span><span class="rv" id="feDir">—</span></div>
+      </div>
+
+      <div class="verdict" id="feVerdict" style="--vc:var(--s2)">
+        <div class="vh">해석</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain" id="feNote"></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="why">
+    <div class="prod-head" style="--edge:var(--s3)">
+      <span class="prod-tag">03 · 원리</span>
+      <h2>왜 화학이 가장 크게 흔들렸을까 — 영업 레버리지</h2>
+      <p class="one"><b>매출원가 비중이 높을수록, 원가율 변화가 이익에 증폭</b>되어 반영됩니다.</p>
+    </div>
+
+    <p>화학처럼 <b>매출원가율이 80%, 영업이익률이 8%인 회사</b>는 <b>원가율이 2%p만 올라도 영업이익률이 6%로, 상대적으로 25% 줄어듭니다.</b> 반대로 <b>영업이익률이 20%인 회사</b>라면 같은 2%p 원가율 상승이 <b>훨씬 덜 아픕니다.</b> 이것을 <b>「영업 레버리지가 높다」</b>고 표현합니다 — 매출·원가의 작은 변화가 <b>이익에는 크게 증폭</b>되어 나타나는 구조입니다. <a href="commodity-products.html">원자재 트랙 07편</a>에서 다룬 개념과 같습니다.</p>
+
+    <div class="deep">
+      <h3>은행이 「금리가 오르면 무조건 좋다」는 아닌 이유</h3>
+      <p>이 계산기는 <b>단순화를 위해 「금리가 오르면 은행이 유리하다」는 방향</b>으로 설계했지만, 실제로는 <b>금리가 너무 빠르게 오르면</b> 대출을 갚지 못하는 사람이 늘어 <b>「대손충당금(떼일 것에 대비해 미리 쌓아두는 돈)」이 커져 오히려 순이익이 줄어드는 경우</b>도 있습니다. <b>2023년 실리콘밸리은행(SVB) 사태</b>처럼, 급격한 금리 인상이 <b>은행이 보유한 채권 가치를 떨어뜨려 위기로 번진 사례</b>도 있습니다. <b>「금리 인상 = 은행 무조건 호재」는 지나친 단순화</b>라는 점을 기억해두세요.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 은행·정유·화학은 각각 <b>금리·정제마진·원가율</b>이라는 외부 변수에 이익이 좌우되며, <b>매출원가 비중이 높을수록 그 변화가 이익에 증폭</b>됩니다.</p>
+      <p><b>다음 편은 05편 — 산업재·소비재·커뮤니케이션 섹터</b>입니다. 조선·방산부터 플랫폼까지, <b>서로 다른 성격의 섹터들</b>을 비교합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 산업·섹터 04 · 금리·원자재<br>
+    <a href="index.html#sector">← 산업·섹터 목록으로</a> · <a href="sector-tech.html">03 · 기술·반도체 섹터</a> · <a href="sector-industrial-consumer.html">05 · 산업재·소비재·커뮤니케이션 섹터</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    민감도 계산은 <b>단순화된 예시</b>이며 실제 재무구조와 다를 수 있습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+var FE_CONFIG = [
+  { label:'기준금리 변동', min:-2, max:2, step:0.25, def:1, unit:'%p', fmt:function(v){ return (v>=0?'+':'') + v.toFixed(2) + '%p'; },
+    calc:function(v){ return v * 12; },
+    note:'<b>계산 기준.</b> 순이익 변화율(%) = 금리변동(%p) × 12. 대출 금리가 예금 금리보다 <b>빠르게 재조정</b>되는 구조를 가정한 단순 민감도 예시입니다.<br><br><b>⚠️ 실제로는 대손충당금, 자산-부채 만기 구조 등 훨씬 복잡한 요인</b>이 함께 작용합니다.',
+    dirText:function(v){ return v>0 ? '금리 상승 → 이자마진 확대 (예시 가정)' : (v<0 ? '금리 하락 → 이자마진 축소 (예시 가정)' : '변화 없음'); } },
+  { label:'정제마진 변화', min:-6, max:6, step:0.5, def:3, unit:'$/bbl', fmt:function(v){ return (v>=0?'+':'') + v.toFixed(1) + '$/bbl'; },
+    calc:function(v){ return v * 8; },
+    note:'<b>계산 기준.</b> 영업이익 변화율(%) = 정제마진 변화($/bbl) × 8. 정제마진은 <b>원유를 사서 석유제품으로 판 값의 차이</b>이며, 정유사 이익의 핵심 변수입니다.<br><br><b>⚠️ 유가 「자체」의 등락보다 정제마진의 변화가 정유사 실적에 더 직접적</b>입니다. 유가가 급등해도 정제마진이 얇으면 이익이 늘지 않을 수 있습니다.',
+    dirText:function(v){ return v>0 ? '정제마진 확대 → 이익 개선 (예시 가정)' : (v<0 ? '정제마진 축소 → 이익 악화 (예시 가정)' : '변화 없음'); } },
+  { label:'매출원가율 변화', min:-6, max:6, step:0.5, def:2, unit:'%p', fmt:function(v){ return (v>=0?'+':'') + v.toFixed(1) + '%p'; },
+    calc:function(v){
+      var cogs=0.80, sga=0.12, baseOp=1-cogs-sga;
+      var newCogs = cogs + v/100;
+      var newOp = 1 - newCogs - sga;
+      if(newOp <= 0.001) return -99.9;
+      return (newOp/baseOp - 1) * 100;
+    },
+    note:'<b>계산 기준.</b> 매출원가율 80%, 판관비율 12%, 영업이익률 8%인 회사를 가정합니다. 원가율이 오르면 <b>영업이익률이 그만큼 깎이고, 상대적 변화율은 훨씬 커집니다</b>(영업 레버리지).<br><br><b>⚠️ 원가율 변화가 크면 영업이익률이 0에 가까워지며 변화율이 매우 커집니다</b> — 실제로는 판가 인상 등으로 일부 전가되는 경우가 많습니다.',
+    dirText:function(v){ return v>0 ? '원가율 상승 → 이익률 축소 (예시 가정)' : (v<0 ? '원가율 하락 → 이익률 확대 (예시 가정)' : '변화 없음'); } }
+];
+var feMode = 0;
+
+function feDraw(){
+  var cfg = FE_CONFIG[feMode];
+  var slider = document.getElementById('feX');
+  var v = +slider.value;
+  document.getElementById('feLabel').textContent = cfg.label;
+  document.getElementById('feXOut').textContent = cfg.fmt(v);
+
+  var r = cfg.calc(v);
+  var rShown = Math.max(-99.9, Math.min(200, r));
+  document.getElementById('feResult').textContent = (rShown>=0?'+':'') + rShown.toFixed(1) + '%';
+  document.getElementById('feResult').style.color = rShown >= 0 ? 'var(--pos)' : 'var(--neg)';
+  document.getElementById('feDir').textContent = cfg.dirText(v);
+
+  document.getElementById('feSteps').innerHTML =
+    '<div class="steprow"><span class="sk">' + cfg.label + '</span><span class="sv">' + cfg.fmt(v) + '</span></div>' +
+    '<div class="steprow total"><span class="sk">영업(순)이익 변화율</span><span class="sv">' + (rShown>=0?'+':'') + rShown.toFixed(1) + '%</span></div>';
+
+  var col = rShown >= 0 ? '#4C7A6D' : '#8E4B3A';
+  var title = rShown >= 0 ? '이 변수는 지금 이 섹터에 유리하게 작용합니다' : '이 변수는 지금 이 섹터에 불리하게 작용합니다';
+  verdict('feVerdict', col, title, cfg.dirText(v) + ' — 위 계산은 <b>구조를 보여주기 위한 단순 예시</b>이며 실제 수치가 아닙니다.');
+
+  document.getElementById('feNote').innerHTML = cfg.note;
+}
+bindBtnRow('#feBtns', function(v){
+  feMode = +v;
+  var cfg = FE_CONFIG[feMode];
+  var slider = document.getElementById('feX');
+  slider.min = cfg.min; slider.max = cfg.max; slider.step = cfg.step; slider.value = cfg.def;
+  feDraw();
+});
+document.getElementById('feX').addEventListener('input', feDraw);
+feDraw();
+</script>
+</body>
+</html>

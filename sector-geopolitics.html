@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>전쟁·환율·국제정세와 섹터</title>
+<meta name="description" content="전쟁이 방산·에너지에 미치는 영향, 환율 변동이 수출·수입 기업의 영업이익을 어떻게 흔드는지 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F1EFE8;--ink:#201E19;--ink-soft:#585245;--rule:#D7D0BC;--card:#FAF9F3;
+    --s1:#7A3F3F;--s2:#3F5A6F;--s3:#7A5535;--s4:#3F7A55;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#E9E3D2;--warn-ink:#5A2A22;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#E7E0CB;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#EDE7D2;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F4EFE0;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--s1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--s1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--s1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">산업·섹터 08 · 지정학 · 투자 공부 노트</div>
+    <h1>전쟁·환율·<br>국제정세와 섹터</h1>
+    <p class="lede">뉴스에 <b>「전쟁」, 「환율 급등」, 「관세」</b>가 나올 때마다 주식시장이 출렁입니다. 이 편은 그 뉴스를 <b>「어느 섹터에 유리하고 어느 섹터에 불리한가」</b>로 번역하는 법을 다룹니다.</p>
+    <div class="callout">
+      <p><b>핵심 원리는 두 가지</b>입니다. <b>① 전쟁·분쟁은 방산·에너지에 직접적</b>이고, <b>② 환율은 「매출을 어디서 벌고 원가를 어디서 쓰는가」에 따라 정반대로</b> 작용합니다.</p>
+      <p><b>⚠️ 지정학 이벤트는 예측이 극히 어렵습니다.</b> 이 편은 <b>사건이 일어났을 때 그 영향을 해석하는 틀</b>을 제공하는 것이지, 사건을 예측하는 도구가 아닙니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산식과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#war">1. 전쟁과 섹터</a>
+    <a href="#lab">2. 계산기: 환율 민감도</a>
+    <a href="#chain">3. 공급망과 인플레이션 연결</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="war">
+    <div class="prod-head" style="--edge:var(--s1)">
+      <span class="prod-tag">01 · 전쟁</span>
+      <h2>전쟁 뉴스가 뜨면 어느 섹터가 움직이나</h2>
+      <p class="one">방향이 <b>비교적 뚜렷한 섹터들</b>이 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>동네에 큰불이 나면 <b>소방차 만드는 회사와 물 파는 가게</b>는 갑자기 바빠지겠지? 전쟁도 비슷해. <b>무기(방산)와 에너지(석유·가스)를 파는 회사</b>는 <b>수요가 갑자기 늘어나는 경우</b>가 많아. 반대로 <b>그 지역에서 물건을 만들거나 여행객을 받던 회사</b>는 <b>어려워질 수</b> 있어.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>섹터</th><th>전쟁·분쟁 시 방향(일반적 경향)</th><th>이유</th></tr></thead>
+        <tbody>
+          <tr><th>방위산업</th><td>수혜 경향</td><td>각국 국방예산 증액, 무기 수출 확대</td></tr>
+          <tr><th>에너지</th><td>수혜 경향</td><td>공급 차질 우려로 가격 상승 압력</td></tr>
+          <tr><th>금(귀금속)</th><td>수혜 경향</td><td>안전자산 수요 증가</td></tr>
+          <tr><th>항공·여행</th><td>타격 경향</td><td>운항 차질, 여행 수요 위축, 유가 상승분 원가 부담</td></tr>
+          <tr><th>해운·물류</th><td>혼재</td><td>항로 우회로 운임 상승(수혜) vs 교역량 자체 감소(타격)</td></tr>
+          <tr><th>수출 제조업(해당 지역 노출)</th><td>타격 경향</td><td>현지 공장·거래처 차질</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 「일반적 경향」이며 <b>사건의 성격과 규모에 따라 다르게 나타날 수 있습니다</b></p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--s2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>환율은 왜 어떤 회사엔 좋고 어떤 회사엔 나쁠까</h2>
+      <p class="one"><b>수출 비중과 수입 원가 비중</b>이 정반대의 결과를 만듭니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">FX SENSITIVITY · 세 값을 슬라이더로 움직여보세요</div>
+      <p class="labsub">원/달러 환율이 오르면(<b>원화 약세</b>) 매출 100 기준, 수출 매출은 원화 환산액이 늘고, 수입 원가는 원화 환산 부담이 커집니다.</p>
+
+      <div class="ctrl-row">
+        <label for="fxRate">원/달러 환율 변동</label>
+        <input type="range" id="fxRate" min="-20" max="20" step="2" value="10">
+        <output id="fxRateOut">+10% (원화 약세)</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fxExport">수출 매출 비중</label>
+        <input type="range" id="fxExport" min="0" max="100" step="5" value="40">
+        <output id="fxExportOut">40%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="fxImport">원가 중 수입 비중</label>
+        <input type="range" id="fxImport" min="0" max="50" step="5" value="10">
+        <output id="fxImportOut">10%</output>
+      </div>
+
+      <div class="steps-out" id="fxSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">영업이익 변화율(예시)</span><span class="rv" id="fxResult">—</span></div>
+        <div><span class="rk">이 회사 유형</span><span class="rv" id="fxType">—</span></div>
+      </div>
+
+      <div class="verdict" id="fxVerdict" style="--vc:var(--s2)">
+        <div class="vh">해석</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 매출원가율 80%(기준)로 가정합니다. 매출 = <b>내수 + 수출 × (1+환율변동)</b>, 원가 = <b>국내조달원가 + 수입원가 × (1+환율변동)</b>입니다. 영업이익 = 매출−원가, 변화율은 <b>기존 영업이익(20) 대비</b>입니다.<br><br>
+        <b>⚠️ 실제로는 원자재 헤지, 판가 전가력, 경쟁사 동향 등이 함께 작용</b>합니다. 이 계산기는 <b>「수출 비중이 클수록 원화 약세가 유리하고, 수입 원가 비중이 클수록 원화 약세가 불리하다」는 방향성</b>을 보여주는 단순화된 예시입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「수출주」인데도 환율 약세가 마냥 좋지만은 않은 이유</h3>
+      <p>슬라이더에서 <b>수출 비중을 80%, 원가 중 수입 비중도 40%로</b> 함께 올려보세요. 원화 약세(+환율)의 효과가 <b>수출 매출 증가와 수입 원가 증가가 서로 상쇄</b>되어 처음 예상보다 <b>작아지는 것</b>을 볼 수 있습니다. <b>자동차·조선처럼 수출 비중이 높은 산업도, 철강·부품 등 원자재를 수입에 의존</b>한다면 환율 효과가 <b>생각보다 단순하지 않습니다.</b> <b>「수출주는 원화 약세에 무조건 좋다」는 말은 원가 구조를 확인하지 않은 절반의 진실</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="chain">
+    <div class="prod-head" style="--edge:var(--s3)">
+      <span class="prod-tag">03 · 연결</span>
+      <h2>지정학 → 공급망 → 원자재 → 인플레이션</h2>
+      <p class="one">하나의 사건이 <b>여러 트랙에 걸쳐 파장을 일으킵니다.</b></p>
+    </div>
+
+    <p>지정학적 긴장은 <b>원자재 공급 차질(원자재 트랙 02~04편)</b>로 이어지고, 이는 <b>물가 상승(인플레이션)</b>으로 번지며, 중앙은행의 <b>금리 정책</b>에 영향을 주고, 그 금리가 다시 <b>금융·성장주 섹터의 밸류에이션(06편)</b>에 영향을 줍니다. <b>하나의 사건이 여러 섹터에 시차를 두고 전달되는 「전달 경로」</b>를 이해하면, 뉴스 하나를 보고도 <b>「이게 다음에 어디로 튈까」</b>를 그려볼 수 있습니다.</p>
+
+    <div class="keyline">
+      <div class="kt">전달 경로 예시</div>
+      <div class="kb">지정학 사건 → <b>원자재 가격</b> → <b>인플레이션</b> → <b>금리</b> → <b>밸류에이션</b></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 전쟁·분쟁은 <b>방산·에너지·안전자산</b>에 비교적 뚜렷하게 작용하고, <b>환율은 수출 비중과 수입 원가 비중의 조합</b>에 따라 회사마다 다르게 작용합니다. 지정학 사건은 <b>원자재-물가-금리-밸류에이션으로 이어지는 긴 전달 경로</b>를 갖습니다.</p>
+      <p><b>다음 편은 09편 — 미국 vs 한국 산업 구조 비교</b>입니다. 두 나라의 <b>산업 비중이 왜 다른지</b> 비교합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 산업·섹터 08 · 지정학<br>
+    <a href="index.html#sector">← 산업·섹터 목록으로</a> · <a href="sector-decades.html">07 · 연대별 주도 산업의 변천</a> · <a href="sector-us-kr.html">09 · 미국 vs 한국 산업 구조 비교</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    환율 민감도 계산은 <b>구조 설명을 위한 예시</b>이며 실제 기업 재무구조와 다를 수 있습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function fxCalc(fx,e,m){
+  var cogsRate=0.80, rev=100, cogs=rev*cogsRate;
+  var domRev=rev*(1-e/100), expRev=rev*(e/100);
+  var newRev = domRev + expRev*(1+fx/100);
+  var domCogs = cogs*(1-m/100), impCogs = cogs*(m/100);
+  var newCogs = domCogs + impCogs*(1+fx/100);
+  var baseOp = rev-cogs;
+  var newOp = newRev-newCogs;
+  return { change:(newOp/baseOp-1)*100 };
+}
+function fxDraw(){
+  var fx=+document.getElementById('fxRate').value;
+  var e=+document.getElementById('fxExport').value;
+  var m=+document.getElementById('fxImport').value;
+  document.getElementById('fxRateOut').textContent = (fx>=0?'+':'') + fx + '% (' + (fx>=0?'원화 약세':'원화 강세') + ')';
+  document.getElementById('fxExportOut').textContent = e + '%';
+  document.getElementById('fxImportOut').textContent = m + '%';
+
+  var res = fxCalc(fx,e,m);
+  document.getElementById('fxSteps').innerHTML =
+    '<div class="steprow"><span class="sk">수출 매출(원화환산) 변화</span><span class="sv">' + (fx>=0?'+':'') + (e*fx/100).toFixed(1) + '(매출 100 기준)</span></div>' +
+    '<div class="steprow"><span class="sk">수입 원가(원화환산) 변화</span><span class="sv">' + (fx>=0?'+':'') + (80*m/100*fx/100).toFixed(1) + '</span></div>' +
+    '<div class="steprow total"><span class="sk">영업이익 변화율</span><span class="sv">' + (res.change>=0?'+':'') + res.change.toFixed(1) + '%</span></div>';
+
+  document.getElementById('fxResult').textContent = (res.change>=0?'+':'') + res.change.toFixed(1) + '%';
+  document.getElementById('fxResult').style.color = res.change >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var type = e>60 ? '수출 비중이 큰 회사' : (e<20 ? '내수 중심 회사' : '수출·내수 혼합형');
+  document.getElementById('fxType').textContent = type;
+
+  var col = res.change >= 0 ? '#4C7A6D' : '#8E4B3A';
+  var title = res.change >= 0 ? '이 환율 변동은 지금 이 회사에 유리합니다' : '이 환율 변동은 지금 이 회사에 불리합니다';
+  var body = '수출 비중 ' + e + '%, 수입 원가 비중 ' + m + '%인 회사가 환율이 ' + (fx>=0?'+':'') + fx + '% 움직이면, 이 단순 모형에서는 <b>영업이익이 ' + (res.change>=0?'+':'') + res.change.toFixed(1) + '%</b> 변합니다. <b>수출 비중이 수입 원가 비중보다 크면 원화 약세가 유리</b>하고, 반대면 불리합니다.';
+  verdict('fxVerdict', col, title, body);
+}
+['fxRate','fxExport','fxImport'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', fxDraw);
+});
+fxDraw();
+</script>
+</body>
+</html>

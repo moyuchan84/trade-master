@@ -30,6 +30,11 @@
     --m2:#8E6B3A;
     --m3:#5F7A52;
     --m4:#8E4B3A;
+    /* 산업·섹터 트랙 */
+    --sc1:#3F6F5F;
+    --sc2:#7A5535;
+    --sc3:#5A3F7F;
+    --sc4:#7A3F3F;
     --b1:#4C6B7A;
     --b2:#7A5C3A;
     --b3:#5F7A52;
@@ -275,6 +280,7 @@
       <button data-t="tax">🧾 세금 <span class="cnt">7편</span></button>
       <button data-t="commodity">🛢 원자재 <span class="cnt">10편</span></button>
       <button data-t="futures">📉 선물·옵션 <span class="cnt">10편</span></button>
+      <button data-t="sector">🏭 산업·섹터 <span class="cnt">10편</span></button>
     </div>
   </header>
 
@@ -1225,6 +1231,131 @@
             <h3>개인에게 파생상품이 필요한가</h3>
             <p>대부분에게 답은 <b>「필요 없다」</b>입니다. 필요한 경우와, 그때 지킬 규칙을 정리합니다.</p>
             <div class="meta"><span>제도·교육</span><span>세금</span><span>보험으로서의 풋</span><span>체크리스트</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+  </div>
+  <div class="track" id="t-sector">
+
+    <p class="tintro">같은 「주식」이라도 <b>은행과 반도체 회사는 전혀 다른 방식으로 돈을 법니다.</b> 이 트랙은 <b>섹터(업종) 분류, 섹터별 평균 밸류에이션, 미국·한국의 대표 기업, 연대별 주도 산업의 변천, 전쟁·환율·국제정세가 섹터에 미치는 영향</b>까지 <b>열 편</b>으로 정리합니다. <b>06편(밸류에이션)</b>과 <b>10편(전략 총정리)</b>이 이 트랙의 핵심입니다.</p>
+
+    <div class="start" style="--edge:var(--sc1)">
+      <div class="sh">처음이라면 — 이 세 편만 먼저</div>
+      <p>섹터를 모르고 종목만 보면 <b>위험이 어디서 오는지 모른 채</b> 투자하게 됩니다.</p>
+      <ol>
+        <li><a href="sector-basics.html">섹터란 무엇인지</a> — 왜 같은 업종끼리 묶어서 보는가</li>
+        <li><a href="sector-valuation.html">섹터마다 PER이 다른 이유</a> — ROE·성장률·요구수익률의 함수</li>
+        <li><a href="sector-strategy.html">내 포트폴리오는 얼마나 분산돼 있나</a> — 진단과 계산기</li>
+      </ol>
+    </div>
+
+    <section class="part" style="--edge:var(--sc1)">
+      <div class="part-head">
+        <span class="part-num">PART A · 기초</span>
+        <h2>섹터라는 상자, 경기라는 변수</h2>
+        <p>회사를 <b>어떻게 묶어서 보는지</b>, 그리고 <b>경기 국면에 따라 왜 다르게 반응하는지</b>를 봅니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="sector-basics.html">
+            <span class="num">01 · 기초</span>
+            <h3>섹터란 무엇인가</h3>
+            <p>GICS 11개 섹터와 <b>종목 → 산업 → 섹터</b>의 계층 구조. 같은 업종끼리 묶어야 PER 비교가 의미를 가집니다.</p>
+            <div class="meta"><span>GICS</span><span>업종분류</span><span>계층구조</span><span>대표기업</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="sector-cycle.html">
+            <span class="num">02 · 순환</span>
+            <h3>경기방어주와 경기민감주</h3>
+            <p>수요의 필수성에 따라 <b>섹터마다 경기 민감도(베타)가 다릅니다.</b> 서프라이즈 계산기로 확인합니다.</p>
+            <div class="meta"><span>섹터 로테이션</span><span>베타</span><span>영업 레버리지</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--sc2)">
+      <div class="part-head">
+        <span class="part-num">PART B · 섹터 각론</span>
+        <h2>기술·금융·에너지·소재·산업재·소비재·통신</h2>
+        <p>섹터마다 <b>돈 버는 방식과 외부 변수에 반응하는 방식</b>이 다릅니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="sector-tech.html">
+            <span class="num">03 · 기술</span>
+            <h3>기술·반도체 섹터</h3>
+            <p>팹리스·파운드리·IDM 밸류체인과 <b>재고-가격 사이클</b>. 미국은 설계, 한국은 메모리가 강합니다.</p>
+            <div class="meta"><span>밸류체인</span><span>반도체 사이클</span><span>메모리 vs 시스템</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="sector-finance-energy.html">
+            <span class="num">04 · 금리·원자재</span>
+            <h3>금융·에너지·소재 섹터</h3>
+            <p>은행은 <b>금리</b>, 정유는 <b>정제마진</b>, 화학은 <b>원가율</b>에 이익이 좌우됩니다. 셋을 계산기로 비교합니다.</p>
+            <div class="meta"><span>NIM</span><span>정제마진</span><span>영업 레버리지</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="sector-industrial-consumer.html">
+            <span class="num">05 · 산업재·소비재·통신</span>
+            <h3>산업재·소비재·커뮤니케이션 섹터</h3>
+            <p>수주산업, 브랜드산업, 그리고 <b>규모의 경제</b>로 이익률이 개선되는 통신·플랫폼 산업을 비교합니다.</p>
+            <div class="meta"><span>수주잔고</span><span>브랜드 파워</span><span>규모의 경제</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--sc3)">
+      <div class="part-head">
+        <span class="part-num">PART C · 응용과 전략</span>
+        <h2>밸류에이션 · 역사 · 지정학 · 국가 비교 · 전략</h2>
+        <p>섹터 지식을 <b>실제 판단과 포트폴리오</b>에 연결합니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="sector-valuation.html">
+            <span class="num">06 · 밸류에이션</span>
+            <h3>섹터별 평균 PER과 밸류에이션</h3>
+            <p>정당화되는 PER = <b>ROE·성장률·요구수익률의 함수.</b> 낮은 PER도 높은 PER도 그 자체로 답이 아닙니다.</p>
+            <div class="meta"><span>고든 성장모형</span><span>PEG</span><span>밸류 트랩</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="sector-decades.html">
+            <span class="num">07 · 역사</span>
+            <h3>연대별 주도 산업의 변천</h3>
+            <p>1980년대부터 지금까지, <b>미국과 한국에서 시장을 이끈 산업이 10년마다 바뀌어온 흐름</b>을 정리합니다.</p>
+            <div class="meta"><span>닷컴버블</span><span>금융위기</span><span>반도체 슈퍼사이클</span><span>AI 붐</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="sector-geopolitics.html">
+            <span class="num">08 · 지정학</span>
+            <h3>전쟁·환율·국제정세와 섹터</h3>
+            <p>전쟁은 <b>방산·에너지</b>에, 환율은 <b>수출 비중과 수입 원가 비중</b>에 따라 정반대로 작용합니다.</p>
+            <div class="meta"><span>방위산업</span><span>환노출</span><span>공급망</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="sector-us-kr.html">
+            <span class="num">09 · 국가 비교</span>
+            <h3>미국 vs 한국 산업 구조 비교</h3>
+            <p>내수·플랫폼형 미국과 수출·제조형 한국. <b>산업 구조 자체가 다른 두 시장</b>을 비교합니다.</p>
+            <div class="meta"><span>S&P500</span><span>코스피</span><span>코리아 디스카운트</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="sector-strategy.html">
+            <span class="num">10 · 전략</span>
+            <h3>섹터 투자 전략 총정리</h3>
+            <p>3문항 진단과 <b>포트폴리오 섹터 분산 계산기</b>로 트랙을 마무리합니다.</p>
+            <div class="meta"><span>진단</span><span>HHI 분산도</span><span>체크리스트</span></div>
           </a>
         </li>
       </ol>

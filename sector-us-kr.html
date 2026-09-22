@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>미국 vs 한국 산업 구조 비교</title>
+<meta name="description" content="수출주도형 한국과 내수·플랫폼형 미국, 두 나라 대표 지수의 섹터 구성이 왜 다른지 비교하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F1F0EA;--ink:#1F1E1A;--ink-soft:#555148;--rule:#D6D0C0;--card:#FAF9F4;
+    --s1:#3F5A6F;--s2:#7A3F3F;--s3:#5A3F7F;--s4:#3F7A55;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#E9E4D5;--warn-ink:#233A5A;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#E8E3D4;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#EEE9DA;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F5F1E3;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--s1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--s1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--s1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">산업·섹터 09 · 비교 · 투자 공부 노트</div>
+    <h1>미국 vs 한국<br>산업 구조 비교</h1>
+    <p class="lede">S&P500과 코스피는 <b>구성 자체가 다른 지수</b>입니다. 미국 지수는 <b>내수·플랫폼 대형 기업 비중</b>이 크고, 한국 지수는 <b>수출 제조업(반도체·자동차·조선) 비중</b>이 큽니다. 이 차이를 알면 <b>「왜 두 지수가 같은 뉴스에 다르게 반응하는지」</b> 이해할 수 있습니다.</p>
+    <div class="callout">
+      <p><b>⚠️ 아래 비중 수치는 「구조를 보여주기 위한 예시」</b>입니다. <b>실제 지수 구성비는 매일 바뀌며</b>, 정확한 현재 비중은 <b>지수 제공사(S&P, 한국거래소)의 공식 자료</b>를 확인해야 합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="구조적 배경까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 두 나라, 두 성장 방정식</a>
+    <a href="#lab">2. 지수 구성 비교하기</a>
+    <a href="#implication">3. 투자자에게 의미하는 것</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--s1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>내수·플랫폼 경제 vs 수출·제조 경제</h2>
+      <p class="one">두 나라의 <b>경제가 돈을 버는 방식 자체가 다릅니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>미국은 <b>땅도 넓고 사람도 많아서, 자기 나라 안에서 물건을 팔아도(내수) 큰 회사가 될 수</b> 있어. 그래서 <b>구글, 아마존처럼 전 세계에서 쓰는 서비스를 만드는 회사</b>가 크게 자랐어.</p>
+      <p>한국은 <b>땅도 좁고 인구도 적어서, 나라 안에서만 팔면 한계</b>가 있어. 그래서 <b>「우리가 잘 만드는 물건을 세계에 내다 파는」 전략</b>을 오랫동안 써왔어 — 반도체, 자동차, 배, 배터리처럼. 그래서 한국 대표 기업들은 <b>수출 비중이 매우 높아.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--s2)">
+      <span class="prod-tag">02 · 비교</span>
+      <h2>대표 지수의 섹터 구성 비교(예시)</h2>
+      <p class="one">버튼을 눌러 <b>두 지수의 대략적인 성격 차이</b>를 확인하세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">INDEX COMPOSITION · 지수를 선택하세요</div>
+      <p class="labsub"><b>⚠️ 아래 비중은 구조적 특징을 보여주기 위한 예시적 근사치</b>이며, 실제 비중이 아닙니다.</p>
+
+      <div class="btnrow" id="ixBtns">
+        <button data-v="0" class="on">🇺🇸 S&P500 (미국, 예시)</button>
+        <button data-v="1">🇰🇷 코스피 (한국, 예시)</button>
+      </div>
+
+      <div class="stack" id="ixStack"></div>
+
+      <div class="verdict" id="ixVerdict" style="--vc:var(--s2)">
+        <div class="vh">특징</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>비교 항목</th><th>미국(S&P500)</th><th>한국(코스피)</th></tr></thead>
+        <tbody>
+          <tr><th>가장 큰 섹터</th><td>정보기술 · 커뮤니케이션</td><td>정보기술(반도체)</td></tr>
+          <tr><th>수출 의존도</th><td>낮음 (내수 시장이 큼)</td><td>높음 (수출이 성장의 핵심)</td></tr>
+          <tr><th>환율 민감도</th><td>상대적으로 낮음</td><td>상대적으로 높음(08편)</td></tr>
+          <tr><th>대형주 성격</th><td>플랫폼·소프트웨어 중심</td><td>제조업(반도체·자동차·화학) 중심</td></tr>
+          <tr><th>배당 성향</th><td>기업마다 다름, 자사주 매입 병행</td><td>전통적으로 배당보다 재투자 중시 경향</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 일반적 경향의 예시이며 <b>기업·시점마다 다릅니다</b></p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="implication">
+    <div class="prod-head" style="--edge:var(--s3)">
+      <span class="prod-tag">03 · 시사점</span>
+      <h2>이 차이가 투자자에게 의미하는 것</h2>
+      <p class="one"><b>「분산투자」의 의미가 국가 간에도 적용</b>됩니다.</p>
+    </div>
+
+    <p><b>① 한국 지수에만 투자하면 「제조·수출 리스크」에 집중</b>됩니다. 환율, 글로벌 경기, 반도체 사이클(03편)에 코스피 전체가 크게 흔들리는 경향이 있습니다.</p>
+    <p><b>② 미국 지수는 상대적으로 「플랫폼·소비 리스크」에 집중</b>됩니다. 빅테크 몇 개 기업의 비중이 매우 커서, 그 기업들의 실적·규제 이슈가 지수 전체에 영향을 줍니다.</p>
+    <p><b>③ 두 시장을 함께 담으면 「산업 구조가 다른 두 경제」에 분산</b>하는 효과가 있습니다. 이것이 <b>「해외(미국) 투자를 함께 고려하라」는 조언이 자주 나오는 구조적 이유 중 하나</b>입니다.</p>
+
+    <div class="deep">
+      <h3>「한국 증시는 왜 저평가됐나」 논쟁을 구조로 이해하기</h3>
+      <p>흔히 <b>「코리아 디스카운트」</b>라 불리는 현상 — 한국 기업들이 비슷한 이익 대비 다른 나라 기업보다 낮은 PER로 거래되는 경향 — 에는 여러 설명이 있습니다. <b>수출·제조 중심이라 경기 변동성이 크다는 점, 지배구조 이슈, 배당 성향이 상대적으로 낮았던 관행, 지정학적 리스크(08편)</b> 등이 함께 거론됩니다. <b>이 트랙은 어느 한 설명이 「정답」이라고 주장하지 않으며</b>, 06편에서 다룬 <b>「성장률·ROE·요구수익률이 PER을 결정한다」는 원리로 각자 따져보는 것</b>을 권합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 미국은 <b>내수·플랫폼 중심</b>, 한국은 <b>수출·제조 중심</b>으로 산업 구조가 다르고, 이 차이가 <b>환율 민감도, 경기 변동성, 지수 성격</b>을 다르게 만듭니다. 두 시장을 함께 보는 것은 <b>산업 구조 자체의 분산</b>이 됩니다.</p>
+      <p><b>다음 편은 10편(마지막) — 섹터 투자 전략 총정리</b>입니다. 진단 퀴즈와 포트폴리오 배분 계산기로 트랙을 마무리합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 산업·섹터 09 · 비교<br>
+    <a href="index.html#sector">← 산업·섹터 목록으로</a> · <a href="sector-geopolitics.html">08 · 전쟁·환율·국제정세와 섹터</a> · <a href="sector-strategy.html">10 · 섹터 투자 전략 총정리</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    지수 구성비는 <b>예시이며 실제와 다릅니다.</b> 정확한 수치는 지수 제공사 공식 자료를 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+var IDX = [
+  { rows:[
+      {n:'정보기술',v:32},{n:'커뮤니케이션',v:10},{n:'금융',v:13},{n:'헬스케어',v:11},
+      {n:'임의소비재',v:10},{n:'산업재',v:8},{n:'필수소비재',v:6},{n:'에너지',v:4},
+      {n:'소재',v:2},{n:'유틸리티',v:2},{n:'부동산',v:2}
+    ],
+    title:'대형 플랫폼·소프트웨어 비중이 매우 큽니다',
+    body:'상위 몇 개 <b>정보기술·커뮤니케이션 기업의 시가총액 비중이 매우 커서</b>, 이 소수 기업의 실적과 주가가 지수 전체 흐름에 큰 영향을 줍니다. <b>내수(자국) 매출 비중이 높은 기업이 많아 환율 영향은 상대적으로 제한적</b>인 경향이 있습니다.' },
+  { rows:[
+      {n:'정보기술(반도체)',v:35},{n:'산업재(조선·자동차 등)',v:15},{n:'소재(화학·2차전지)',v:12},
+      {n:'금융',v:10},{n:'헬스케어',v:8},{n:'임의소비재',v:7},{n:'커뮤니케이션',v:5},
+      {n:'에너지',v:3},{n:'유틸리티',v:3},{n:'필수소비재',v:2}
+    ],
+    title:'반도체와 수출 제조업 비중이 매우 큽니다',
+    body:'<b>정보기술(주로 반도체)과 산업재·소재(조선·자동차·화학·배터리) 비중을 합치면 지수의 큰 부분</b>을 차지합니다. <b>수출 비중이 높은 기업이 많아 환율·글로벌 경기·반도체 사이클(03, 08편)에 지수 전체가 함께 움직이는 경향</b>이 있습니다.' }
+];
+
+function ixDraw(i){
+  var d = IDX[i];
+  var colors = ['#3F5A6F','#7A3F3F','#5A3F7F','#3F7A55','#8E6B3A','#4C7A6D','#7A5535','#5A6F3F','#3F5F7F','#6F3F5A','#556f3f'];
+  var html='';
+  d.rows.forEach(function(r,idx){
+    html += '<div class="srow"><span class="sname">'+r.n+'</span>' +
+      '<div class="strack"><div class="sfill" style="width:'+ (r.v*2.4).toFixed(1) +'%;background:'+colors[idx%colors.length]+'"></div></div>' +
+      '<span class="sval">'+r.v+'%(예시)</span></div>';
+  });
+  document.getElementById('ixStack').innerHTML = html;
+  verdict('ixVerdict', 'var(--s2)', d.title, d.body);
+}
+bindBtnRow('#ixBtns', function(v){ ixDraw(+v); });
+ixDraw(0);
+</script>
+</body>
+</html>

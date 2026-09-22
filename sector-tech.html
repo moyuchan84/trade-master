@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>기술·반도체 섹터</title>
+<meta name="description" content="팹리스·파운드리·IDM 밸류체인, 미국과 한국의 반도체 대표기업, 반도체 사이클을 재고-가격 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F1F1EE;--ink:#1E2023;--ink-soft:#54585E;--rule:#D2D4D6;--card:#FAFAF9;
+    --s1:#3F5F7F;--s2:#6F5A3F;--s3:#5A3F7F;--s4:#3F7F6E;--good:#4C7A6D;--gold:#8E6B3A;
+    --warn-bg:#E6E9EC;--warn-ink:#233A5A;--pos:#3F7F6E;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:680px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#E6E7E4;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#ECEDEA;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F4F4F2;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--s1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--s1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--s1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">산업·섹터 03 · 기술 · 투자 공부 노트</div>
+    <h1>기술·반도체<br>섹터</h1>
+    <p class="lede">반도체는 <b>「설계하는 회사」와 「만드는 회사」가 나뉘어 있는 산업</b>입니다. 이 구조를 모르면 <b>엔비디아와 삼성전자가 왜 경쟁자가 아니라 다른 역할</b>인지 헷갈립니다.</p>
+    <div class="callout">
+      <p><b>이 편의 두 축</b> — <b>① 밸류체인(누가 설계하고 누가 만드나)</b>과 <b>② 반도체 사이클(재고와 가격이 왜 요동치나)</b>입니다.</p>
+      <p><b>⚠️ 반도체는 정보기술 섹터에서 가장 널리 다뤄지는 산업</b>이지만, 정보기술 섹터에는 소프트웨어·하드웨어 등 다른 산업도 있습니다. 이 편은 <b>반도체에 집중</b>합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="사이클 계산식과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#chain">1. 설계와 생산의 분업</a>
+    <a href="#compare">2. 미국 vs 한국</a>
+    <a href="#lab">3. 계산기: 반도체 사이클</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="chain">
+    <div class="prod-head" style="--edge:var(--s1)">
+      <span class="prod-tag">01 · 밸류체인</span>
+      <h2>레시피를 만드는 사람과 요리하는 사람</h2>
+      <p class="one"><b>팹리스 · 파운드리 · IDM</b>, 세 가지 역할이 있습니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>과자를 만든다고 생각해보자. <b>「레시피만 만드는 사람」</b>이 있고, <b>「그 레시피대로 진짜 과자를 굽는 공장」</b>이 있어. 어떤 회사는 <b>둘 다 자기가</b> 해.</p>
+      <p><b>레시피만 만드는 회사</b>를 「팹리스(Fabless, 공장이 없다는 뜻)」라고 해. 엔비디아가 그래. <b>공장 없이 설계도만</b> 그리고, 진짜 칩은 <b>다른 회사(파운드리)에 맡겨서</b> 만들어.</p>
+      <p><b>남의 레시피대로 대신 구워주는 공장</b>을 「파운드리」라고 해. 대만의 TSMC가 세계에서 제일 커.</p>
+      <p><b>레시피도 만들고 공장도 직접 돌리는 회사</b>를 「IDM」이라고 해. 삼성전자가 그래 — <b>메모리칩은 설계부터 생산까지 다 직접</b> 해.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>역할</th><th>하는 일</th><th>대표 기업</th></tr></thead>
+        <tbody>
+          <tr><th>팹리스</th><td>설계만, 생산은 위탁</td><td>엔비디아, 퀄컴, AMD, 애플(자체 칩)</td></tr>
+          <tr><th>파운드리</th><td>남의 설계를 위탁생산</td><td>TSMC(대만), 삼성전자 파운드리사업부</td></tr>
+          <tr><th>IDM</th><td>설계 + 생산 모두 직접</td><td>삼성전자(메모리), SK하이닉스(메모리), 인텔</td></tr>
+          <tr><th>장비</th><td>반도체 만드는 기계를 파는 회사</td><td>ASML(네덜란드), 어플라이드머티어리얼즈(미국)</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="compare">
+    <div class="prod-head" style="--edge:var(--s2)">
+      <span class="prod-tag">02 · 비교</span>
+      <h2>미국은 설계, 한국은 메모리</h2>
+      <p class="one">두 나라는 <b>같은 반도체 산업에서 다른 자리</b>를 차지하고 있습니다.</p>
+    </div>
+
+    <p><b>메모리 반도체</b>(D램, 낸드플래시)는 <b>데이터를 저장</b>하는 용도이고 <b>표준화된 제품</b>이라 대량생산 효율이 승부를 가릅니다. <b>삼성전자와 SK하이닉스가 세계 메모리 시장의 큰 비중</b>을 차지합니다.</p>
+    <p><b>비메모리(시스템) 반도체</b>는 <b>연산·제어를 담당</b>하며 설계 기술과 소프트웨어 생태계가 중요합니다. <b>엔비디아(GPU), 퀄컴(모바일 AP), 인텔·AMD(CPU)</b> 등 <b>미국 기업이 설계를 주도</b>하고, 생산은 대만 TSMC에 크게 의존합니다.</p>
+
+    <div class="deep">
+      <h3>「반도체 자립」 뉴스를 이렇게 읽으면 됩니다</h3>
+      <p>미국의 <b>반도체 지원법(CHIPS Act)</b>이나 각국의 <b>공장 유치 경쟁</b> 뉴스가 나올 때, <b>「누가 설계하는가」와 「어디서 생산하는가」를 나눠서</b> 보면 이해가 쉽습니다. 미국은 <b>설계 우위는 있지만 첨단 생산은 대만·한국에 의존</b>하는 구조라, <b>자국 내 파운드리(생산) 역량을 키우려는 정책</b>이 반복적으로 나옵니다.</p>
+      <p>한국 입장에서는 <b>메모리 한 축이 강하지만, 시스템반도체(설계)·파운드리 점유율을 키우는 것이 오래된 정책 과제</b>입니다. 삼성전자가 <b>메모리 IDM이면서 동시에 파운드리 사업도 키우는 이유</b>가 여기에 있습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--s3)">
+      <span class="prod-tag">03 · 계산기</span>
+      <h2>반도체 사이클 — 재고가 가격을 뒤집는다</h2>
+      <p class="one">반도체, 특히 <b>메모리는 재고 며칠 치인지에 따라 가격이 크게 흔들립니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">CHIP CYCLE · 재고일수를 슬라이더로 움직여보세요</div>
+      <p class="labsub">정상 재고를 <b>60일</b>로 두고, 실제 재고일수가 그보다 많고 적음에 따라 <b>가격이 어떻게 반응하는지</b> 단순화한 예시입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="chInv">현재 재고일수</label>
+        <input type="range" id="chInv" min="20" max="120" step="5" value="60">
+        <output id="chInvOut">60일</output>
+      </div>
+
+      <div class="steps-out" id="chSteps"></div>
+
+      <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="재고일수와 가격 반응">
+        <g id="chScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">가격 반응(예시)</span><span class="rv" id="chPrice">—</span></div>
+        <div><span class="rk">국면</span><span class="rv" id="chPhase">—</span></div>
+      </div>
+
+      <div class="verdict" id="chVerdict" style="--vc:var(--s3)">
+        <div class="vh">사이클 국면</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 가격 반응(%) = <b>−민감도 × (재고일수 − 정상재고) / 정상재고 × 100</b>, 민감도는 <b>0.8</b>로 두었습니다. <b>재고가 정상보다 많으면(공급 과잉) 가격이 내려가고, 적으면(공급 부족) 가격이 올라간다</b>는 방향성만 보여주는 단순화된 예시입니다.<br><br>
+        <b>⚠️ 실제 반도체 가격은 수요(AI 서버 투자, 스마트폰 판매), 공급(신규 공장 가동), 환율 등 훨씬 복잡한 요인</b>이 함께 작용합니다. 이 모형은 <b>「재고가 가격에 영향을 준다」는 방향성 이해용</b>입니다. 원자재 재고-가격 관계의 기본 개념은 <a href="commodity-price.html">원자재 트랙 03편</a>과 같은 원리입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 메모리가 유독 사이클이 큰가</h3>
+      <p>메모리는 <b>표준화된 제품</b>이라 <b>가격 협상력이 낮고</b>, 공장을 새로 짓는 데 <b>1~2년이 걸려</b> 공급이 수요를 따라가는 데 시차가 생깁니다. <b>수요가 갑자기 늘면(예: AI 서버 붐) 공급이 즉시 못 따라가 가격이 급등</b>하고, <b>그 신호를 보고 너도나도 증설하면 1~2년 뒤 공급 과잉으로 가격이 급락</b>하는 패턴이 반복됩니다. 이것이 <b>「반도체 슈퍼사이클」과 「반도체 한파」가 번갈아 오는 이유</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 반도체는 <b>설계(팹리스)·생산(파운드리)·둘 다(IDM)</b>로 역할이 나뉘고, 미국은 <b>설계</b>, 한국은 <b>메모리 생산</b>에서 강합니다. 메모리는 <b>재고-공급 시차 때문에 가격 사이클이 유독 큽니다.</b></p>
+      <p><b>다음 편은 04편 — 금융·에너지·소재 섹터</b>입니다. <b>금리와 유가</b>가 실적을 어떻게 흔드는지 계산기로 확인합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 산업·섹터 03 · 기술<br>
+    <a href="index.html#sector">← 산업·섹터 목록으로</a> · <a href="sector-cycle.html">02 · 경기방어주와 경기민감주</a> · <a href="sector-finance-energy.html">04 · 금융·에너지·소재 섹터</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    민감도·가격반응 수치는 <b>구조 설명을 위한 예시</b>이며 실제 시장과 다를 수 있습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function chDraw(){
+  var inv = +document.getElementById('chInv').value;
+  var normal = 60, sens = 0.8;
+  document.getElementById('chInvOut').textContent = inv + '일';
+
+  var dev = (inv - normal) / normal;
+  var priceChange = -sens * dev * 100;
+
+  document.getElementById('chSteps').innerHTML =
+    '<div class="steprow"><span class="sk">정상 재고</span><span class="sv">' + normal + '일</span></div>' +
+    '<div class="steprow"><span class="sk">재고 편차 = (' + inv + ' − ' + normal + ') / ' + normal + '</span><span class="sv">' + (dev*100).toFixed(1) + '%</span></div>' +
+    '<div class="steprow total"><span class="sk">가격 반응 = −0.8 × 편차</span><span class="sv">' + (priceChange >= 0 ? '+' : '') + priceChange.toFixed(1) + '%</span></div>';
+
+  document.getElementById('chPrice').textContent = (priceChange >= 0 ? '+' : '') + priceChange.toFixed(1) + '%';
+  document.getElementById('chPrice').style.color = priceChange >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var phase, title, body, col;
+  if(inv < 45){
+    phase = '공급 부족 (업사이클)';
+    col = 'var(--pos)';
+    title = '재고가 부족합니다 — 가격 상승 압력';
+    body = '재고일수가 정상(60일)보다 <b>훨씬 적습니다.</b> 주문해도 <b>제때 받기 어려운 상태</b>이며, 이럴 때 <b>가격 협상력이 공급자(반도체 회사) 쪽으로</b> 넘어갑니다.';
+  } else if(inv < 75){
+    phase = '균형';
+    col = 'var(--s2)';
+    title = '재고가 정상 범위에 가깝습니다';
+    body = '수요와 공급이 <b>비교적 균형</b>을 이루고 있는 상태의 예시입니다. 가격 변동이 <b>상대적으로 완만</b>합니다.';
+  } else {
+    phase = '공급 과잉 (다운사이클)';
+    col = 'var(--neg)';
+    title = '재고가 쌓여 있습니다 — 가격 하락 압력';
+    body = '재고일수가 정상보다 <b>훨씬 많습니다.</b> 창고에 <b>팔리지 않은 칩이 쌓여 있는 상태</b>이며, 이럴 때 <b>가격 협상력이 구매자 쪽으로</b> 넘어가 제조사들이 <b>감산(생산을 줄임)</b>을 검토하게 됩니다.';
+  }
+  document.getElementById('chPhase').textContent = phase;
+  verdict('chVerdict', col, title, body);
+
+  var X0=60,Y0=170,W=545,H=120;
+  var g='';
+  g+='<line x1="'+X0+'" y1="'+(Y0-H/2)+'" x2="'+(X0+W)+'" y2="'+(Y0-H/2)+'" stroke="#8A8474" stroke-width="1" stroke-dasharray="3 3"/>';
+  g+='<text class="axt" x="'+(X0-8)+'" y="'+(Y0-H/2+4)+'" text-anchor="end">0%</text>';
+  function xx(d){ return X0 + (d-20)/100*W; }
+  function yy(p){ return Y0 - H/2 - Math.max(-1,Math.min(1,p/60))*H/2; }
+  var pts=[];
+  for(var d=20; d<=120; d+=4){
+    var pc = -sens*((d-normal)/normal)*100;
+    pts.push(xx(d).toFixed(1)+' '+yy(pc).toFixed(1));
+  }
+  g+='<path d="M'+pts.join(' L')+'" fill="none" stroke="#5A3F7F" stroke-width="2.4"/>';
+  g+='<circle cx="'+xx(inv).toFixed(1)+'" cy="'+yy(priceChange).toFixed(1)+'" r="5.5" fill="#5A3F7F"/>';
+  g+='<line x1="'+X0+'" y1="'+Y0+'" x2="'+(X0+W)+'" y2="'+Y0+'" class="axis"/>';
+  [20,40,60,80,100,120].forEach(function(d){
+    g+='<text class="axt" x="'+xx(d).toFixed(1)+'" y="'+(Y0+16)+'" text-anchor="middle">'+d+'일</text>';
+  });
+  g+='<text class="axt" x="'+X0+'" y="18">재고일수에 따른 가격 반응(예시)</text>';
+  document.getElementById('chScene').innerHTML=g;
+}
+document.getElementById('chInv').addEventListener('input', chDraw);
+chDraw();
+</script>
+</body>
+</html>
