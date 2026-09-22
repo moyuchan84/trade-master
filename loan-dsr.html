@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSR 완전정리 — 대출의 총량 규제</title>
+<meta name="description" content="여러 대출을 합산해 소득 대비 상환능력을 재는 DSR의 원리, 신용대출 산정만기가 실제 부담보다 크게 잡히는 이유를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#EFF1F0;--ink:#1C201E;--ink-soft:#4E5650;--rule:#CDD6D1;--card:#F8FAF9;
+    --l1:#2F6F5F;--l2:#3F5A6F;--l3:#7A5535;--l4:#7A3F3F;--good:#2F6F5F;--bad:#8E4B3A;
+    --warn-bg:#DCE9E3;--warn-ink:#1F4A3C;--pos:#2F6F5F;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#DEE8E3;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#E5EEE9;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#EEF5F1;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--l1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--l1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--l1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">대출·상환 02 · DSR · 투자 공부 노트</div>
+    <h1>DSR 완전정리 —<br>대출의 총량 규제</h1>
+    <p class="lede">DSR은 <b>「내가 가진 모든 대출을 합쳐서, 소득 대비 얼마를 갚아야 하는지」</b>를 보는 규제입니다. 그런데 <b>대출 종류마다 「계산에 잡히는 원리금」이 실제로 내는 돈과 다를 수</b> 있습니다.</p>
+    <div class="callout">
+      <p><b>이 편의 핵심</b> — <b>신용대출·카드론 같은 대출은 실제 만기와 상관없이 「짧은 산정만기」를 가정해 원리금을 계산</b>하기 때문에, <b>실제 이자 부담보다 DSR에 훨씬 크게 잡힙니다.</b></p>
+      <p>주택담보대출 하나만의 <b>LTV·DTI·DSR 최대한도 계산기</b>는 <a href="realestate-loan.html">부동산 트랙 05편</a>에 있습니다. 이 편은 <b>여러 대출을 합산하는 원리</b>에 집중합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="산정만기 규칙까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 모든 빚을 한 바구니에</a>
+    <a href="#lab">2. 계산기: 신용대출이 DSR을 더 잡아먹는 이유</a>
+    <a href="#table">3. 대출 종류별 산정만기(예시)</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--l1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>DSR은 「내 모든 빚」을 합쳐서 본다</h2>
+      <p class="one">주담대 하나만 볼 때와 <b>결과가 완전히 달라질 수 있습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>용돈으로 <b>매달 갚아야 할 돈</b>이 있다고 하자. <b>집 대출 갚을 돈, 자동차 할부금, 신용카드 할부금</b>을 <b>따로따로 보면 각각은 감당될 것 같아도, 다 합치면 용돈보다 많을 수</b> 있어. <b>DSR은 「다 합쳐서 보자」는 규칙</b>이야.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--l2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>신용대출은 왜 실제 이자보다 DSR에 크게 잡힐까</h2>
+      <p class="one">신용대출이 <b>만기일시상환(이자만 내다가 만기에 원금 한번에)</b>이어도, DSR은 <b>짧은 기간에 나눠 갚는다고 가정</b>합니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">DSR SPLIT · 값을 슬라이더로 움직여보세요</div>
+      <p class="labsub">연소득 <b>6,000만원</b>을 기준으로, 주택담보대출(원리금균등)과 신용대출을 함께 봅니다.</p>
+
+      <div class="ctrl-row">
+        <label for="dsMortgage">주택담보대출(만원)</label>
+        <input type="range" id="dsMortgage" min="0" max="60000" step="1000" value="30000">
+        <output id="dsMortgageOut">30,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dsCredit">신용대출(만원)</label>
+        <input type="range" id="dsCredit" min="0" max="20000" step="500" value="5000">
+        <output id="dsCreditOut">5,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="dsCreditRate">신용대출 금리</label>
+        <input type="range" id="dsCreditRate" min="4" max="10" step="0.5" value="6">
+        <output id="dsCreditRateOut">6.0%</output>
+      </div>
+
+      <div class="steps-out" id="dsSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">신용대출 「실제」 월 이자(만기일시)</span><span class="rv" id="dsActual">—</span></div>
+        <div><span class="rk">신용대출 「DSR 산정」 연간 원리금</span><span class="rv" id="dsCalc">—</span></div>
+      </div>
+
+      <div class="readout two">
+        <div><span class="rk">종합 DSR</span><span class="rv" id="dsTotal">—</span></div>
+        <div><span class="rk">40% 한도까지 여유</span><span class="rv" id="dsRoom">—</span></div>
+      </div>
+
+      <div class="verdict" id="dsVerdict" style="--vc:var(--l2)">
+        <div class="vh">해석</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 주담대는 <b>실제 만기 30년, 원리금균등 금리 4%</b>로 가정합니다. 신용대출은 <b>실제로는 이자만 내는 만기일시상환</b>이지만, <b>DSR 계산에는 「산정만기 5년, 원리금균등 상환」을 가정</b>해 반영합니다.<br><br>
+        <b>⚠️ 실제 산정만기·상환방식 인정 기준은 금융기관과 상품, 규제 개정에 따라 다릅니다.</b> 이 계산기는 <b>「왜 신용대출이 DSR에 크게 잡히는지」 원리를 보여주는 예시</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 이런 규칙을 만들었을까</h3>
+      <p>신용대출을 <b>「만기 때 원금을 한 번에 갚아야 한다」는 사실 그대로 반영</b>하면, 지금 당장의 부담(이자만)은 작아 보여 <b>DSR 한도 안에서 대출을 더 받을 수 있는 것처럼</b> 보입니다. 그런데 <b>만기가 오면 목돈을 갚거나 다시 대출을 받아야(재연장)</b> 합니다. <b>「짧은 산정만기로 미리 부담을 크게 계산해두는 것」</b>은 이런 <b>「나중에 갑자기 닥칠 상환 부담」을 지금 미리 걸러내려는 규제 취지</b>입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="table">
+    <div class="prod-head" style="--edge:var(--l3)">
+      <span class="prod-tag">03 · 참고</span>
+      <h2>대출 종류별 DSR 산정만기(예시)</h2>
+      <p class="one">⚠️ <b>실제 값은 금융기관·상품·규제 개정에 따라 다릅니다.</b></p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>대출 종류</th><th>DSR 산정만기(예시 경향)</th><th>실제 상환방식과의 차이</th></tr></thead>
+        <tbody>
+          <tr><th>주택담보대출(원리금균등)</th><td>실제 만기 그대로</td><td>차이 거의 없음</td></tr>
+          <tr><th>주택담보대출(만기일시)</th><td>규제상 짧게 산정</td><td>실제보다 크게 잡힘</td></tr>
+          <tr><th>신용대출</th><td>짧게 산정(예: 5년 등)</td><td>실제 만기가 길거나 만기일시면 크게 잡힘</td></tr>
+          <tr><th>마이너스통장</th><td>한도 전액을 쓴 것으로 가정하는 경우가 흔함</td><td>실제 사용액과 무관하게 잡힐 수 있음</td></tr>
+          <tr><th>전세자금대출</th><td>규제·상품별로 산입 여부·방식이 다름</td><td>정책 변경이 잦은 영역</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · <b>최신 기준은 반드시 금융기관에 확인</b>하세요</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> DSR은 <b>모든 대출을 합쳐서 소득 대비 상환능력을 재는 규제</b>이며, <b>신용대출처럼 실제 만기가 불확실하거나 짧게 산정되는 대출은 DSR에 실제 부담보다 크게 잡힙니다.</b></p>
+      <p><b>다음 편은 03편 — 원리금균등 vs 원금균등</b>입니다. 같은 대출을 <b>다르게 나눠 갚는 두 방식의 현금흐름 차이</b>를 계산기로 확인합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 대출·상환 02 · DSR<br>
+    <a href="index.html#loan">← 대출·상환 목록으로</a> · <a href="loan-basics.html">01 · 대출이라는 상품</a> · <a href="loan-repayment.html">03 · 원리금균등 vs 원금균등</a><br>
+    <br>
+    개인 학습용 정리이며 <b>금융 조언이 아닙니다.</b><br>
+    산정만기·규제 기준은 <b>구조 설명을 위한 예시</b>이며 최신 규정은 금융기관에서 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function annualPI(principal, ratePct, years){
+  var r = ratePct/100/12, n = years*12;
+  var M = r===0 ? principal/n : principal*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  return M*12;
+}
+function dsDraw(){
+  var income = 6000;
+  var mortgage = +document.getElementById('dsMortgage').value;
+  var credit = +document.getElementById('dsCredit').value;
+  var creditRate = +document.getElementById('dsCreditRate').value;
+  document.getElementById('dsMortgageOut').textContent = mortgage.toLocaleString('ko-KR') + '만원';
+  document.getElementById('dsCreditOut').textContent = credit.toLocaleString('ko-KR') + '만원';
+  document.getElementById('dsCreditRateOut').textContent = creditRate.toFixed(1) + '%';
+
+  var mortAnnual = annualPI(mortgage, 4, 30);
+  var creditAnnualDsr = annualPI(credit, creditRate, 5);
+  var creditActualAnnual = credit*creditRate/100;
+  var creditActualMonthly = creditActualAnnual/12;
+
+  var totalDsrAnnual = mortAnnual + creditAnnualDsr;
+  var dsrPct = totalDsrAnnual/income*100;
+  var roomPct = 40 - dsrPct;
+
+  document.getElementById('dsSteps').innerHTML =
+    '<div class="steprow"><span class="sk">주담대 연간 원리금(30년, 4%)</span><span class="sv">' + mortAnnual.toFixed(0) + '만원</span></div>' +
+    '<div class="steprow"><span class="sk">신용대출 DSR 산정 연간 원리금(5년 가정)</span><span class="sv">' + creditAnnualDsr.toFixed(0) + '만원</span></div>' +
+    '<div class="steprow total"><span class="sk">DSR 산정 총 연간 원리금</span><span class="sv">' + totalDsrAnnual.toFixed(0) + '만원</span></div>';
+
+  document.getElementById('dsActual').textContent = creditActualMonthly.toFixed(0) + '만원/월';
+  document.getElementById('dsCalc').textContent = creditAnnualDsr.toFixed(0) + '만원/년';
+  document.getElementById('dsTotal').textContent = dsrPct.toFixed(1) + '%';
+  document.getElementById('dsTotal').style.color = dsrPct > 40 ? 'var(--neg)' : 'var(--pos)';
+  document.getElementById('dsRoom').textContent = (roomPct>=0?'+':'') + roomPct.toFixed(1) + '%p';
+
+  var ratio = credit>0 ? creditAnnualDsr/creditActualAnnual : 0;
+  var col, title, body;
+  if(dsrPct > 40){
+    col='#8E4B3A'; title='흔히 언급되는 DSR 40% 한도를 넘습니다';
+    body='실제 매달 내는 신용대출 이자는 <b>' + creditActualMonthly.toFixed(0) + '만원</b>뿐이지만, DSR 계산에는 <b>연 ' + creditAnnualDsr.toFixed(0) + '만원(약 ' + ratio.toFixed(1) + '배)</b>이 잡혀 한도를 넘습니다.';
+  } else {
+    col='#2F6F5F'; title='DSR 한도 안에 있습니다';
+    body='신용대출의 실제 이자 부담(월 ' + creditActualMonthly.toFixed(0) + '만원)보다 <b>DSR 계산상 부담(연 ' + creditAnnualDsr.toFixed(0) + '만원)이 약 ' + ratio.toFixed(1) + '배 크게 잡혀도</b> 아직 한도 안입니다.';
+  }
+  verdict('dsVerdict', col, title, body);
+}
+['dsMortgage','dsCredit','dsCreditRate'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', dsDraw);
+});
+dsDraw();
+</script>
+</body>
+</html>

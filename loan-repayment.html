@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>원리금균등 vs 원금균등</title>
+<meta name="description" content="같은 대출, 다른 현금흐름. 원리금균등과 원금균등 상환방식의 월별 상환액과 총이자를 계산기로 비교하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#EFF1F0;--ink:#1C201E;--ink-soft:#4E5650;--rule:#CDD6D1;--card:#F8FAF9;
+    --l1:#2F6F5F;--l2:#3F5A6F;--l3:#7A5535;--l4:#7A3F3F;--good:#2F6F5F;--bad:#8E4B3A;
+    --warn-bg:#DCE9E3;--warn-ink:#1F4A3C;--pos:#2F6F5F;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--l1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--l1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--l1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">대출·상환 03 · 상환방식 · 투자 공부 노트</div>
+    <h1>원리금균등<br>vs 원금균등</h1>
+    <p class="lede">같은 금액을 같은 금리로 빌려도, <b>상환방식에 따라 「매달 내는 돈의 모양」과 「총이자」가 달라집니다.</b> 은행 창구에서 <b>가장 먼저 선택하게 되는 갈림길</b>입니다.</p>
+    <div class="callout">
+      <p><b>원리금균등</b>은 <b>매달 똑같은 금액</b>을 내고, <b>원금균등</b>은 <b>매달 원금은 똑같이, 이자는 줄어드는 금액</b>을 냅니다. 그래서 <b>원금균등은 처음엔 부담이 크고 갈수록 가벼워지며, 총이자는 원리금균등보다 적습니다.</b></p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산식과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 평평한 길과 내리막길</a>
+    <a href="#lab">2. 계산기: 두 방식의 월별 상환 곡선</a>
+    <a href="#choose">3. 어떤 상황에 어느 쪽이 맞나</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--l1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>평평한 언덕과 내리막 언덕</h2>
+      <p class="one">총 걷는 거리(원금+이자)는 <b>내리막이 더 짧습니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p><b>원리금균등</b>은 <b>매달 똑같은 무게의 짐을 지고 걷는 것</b>과 같아. 처음부터 끝까지 <b>편하기는 한데, 알고 보면 초반에는 「이자」 무게가 더 크고 「원금 갚는 몫」은 작아.</b></p>
+      <p><b>원금균등</b>은 <b>매달 원금은 똑같이 갚고</b>, 남은 빚이 줄어드니까 <b>이자도 점점 줄어.</b> 그래서 <b>처음엔 무겁고 갈수록 가벼워져.</b></p>
+      <p>결과적으로 <b>원금을 더 빨리 갚아나가는 원금균등이 「전체 이자를 덜 무는」</b> 방식이 돼.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--l2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>두 방식의 월별 상환액 곡선 비교</h2>
+      <p class="one"><b>첫 달과 마지막 달의 격차</b>를 직접 확인해보세요.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">REPAYMENT CURVE · 세 값을 슬라이더로 움직여보세요</div>
+      <p class="labsub"></p>
+
+      <div class="ctrl-row">
+        <label for="rpAmount">대출금액(만원)</label>
+        <input type="range" id="rpAmount" min="3000" max="80000" step="1000" value="30000">
+        <output id="rpAmountOut">30,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rpRate">연 금리</label>
+        <input type="range" id="rpRate" min="2" max="8" step="0.1" value="4">
+        <output id="rpRateOut">4.0%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rpYears">대출기간(년)</label>
+        <input type="range" id="rpYears" min="5" max="40" step="1" value="30">
+        <output id="rpYearsOut">30년</output>
+      </div>
+
+      <svg viewBox="0 0 640 230" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="원리금균등과 원금균등 월 상환액 비교">
+        <g id="rpScene"></g>
+      </svg>
+
+      <div class="steps-out" id="rpSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">원리금균등 총이자</span><span class="rv" id="rpPiInterest">—</span></div>
+        <div><span class="rk">원금균등 총이자</span><span class="rv" id="rpPpInterest">—</span></div>
+      </div>
+
+      <div class="verdict" id="rpVerdict" style="--vc:var(--l2)">
+        <div class="vh">비교</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 원리금균등 월 상환액은 매달 동일한 표준 공식으로 계산합니다. 원금균등은 <b>매달 「원금/개월수」를 고정</b>하고, <b>이자는 그때그때 남은 잔액 × 월이자율</b>로 계산해 매달 합산합니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="choose">
+    <div class="prod-head" style="--edge:var(--l3)">
+      <span class="prod-tag">03 · 선택</span>
+      <h2>그래서 어떤 상황에 어느 쪽을 고를까</h2>
+      <p class="one"><b>「지금 감당할 수 있는 금액」과 「총비용」은 다른 기준</b>입니다.</p>
+    </div>
+
+    <p><b>원리금균등이 유리한 경우</b> — <b>초반 소득이 상대적으로 빠듯하거나, 매달 정확히 같은 금액으로 예산을 짜고 싶은 경우.</b> 사회초년기 실거주 대출에서 흔히 선택됩니다.</p>
+    <p><b>원금균등이 유리한 경우</b> — <b>초반의 다소 높은 상환액을 감당할 수 있고, 총이자를 최대한 줄이고 싶은 경우.</b> 소득이 이미 안정적이거나, 목돈을 최대한 아끼고 싶은 경우에 적합합니다.</p>
+
+    <div class="deep">
+      <h3>「거치기간」을 붙이면 무슨 일이 생기나</h3>
+      <p>많은 대출에 <b>「거치기간(예: 1~3년은 이자만 낸다)」 옵션</b>이 있습니다. 이 기간에는 <b>원금이 전혀 줄지 않아</b>, 거치기간이 끝난 뒤 <b>남은 짧은 기간에 원금 전체를 몰아 갚아야 해 월 상환액이 급격히 커집니다.</b> <b>초반 부담을 줄이는 대신, 「나중에 더 크게 돌아온다」는 원리</b>는 이 트랙 전체에서 반복되는 주제입니다. 실제 소득 흐름과 함께 시뮬레이션하는 법은 <a href="loan-simulator.html">05편</a>에서 다룹니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 원리금균등은 <b>매달 같은 금액</b>, 원금균등은 <b>초반에 무겁고 갈수록 가벼워지는 금액</b>이며, <b>원금균등이 총이자는 더 적습니다.</b> 선택은 <b>초반 감당 능력과 총비용 중 무엇을 우선하는지</b>에 달려 있습니다.</p>
+      <p><b>다음 편은 04편 — 고정금리 vs 변동금리</b>입니다. 금리가 오르내릴 때 <b>무엇을 걸고 선택하는지</b> 봅니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 대출·상환 03 · 상환방식<br>
+    <a href="index.html#loan">← 대출·상환 목록으로</a> · <a href="loan-dsr.html">02 · DSR 완전정리</a> · <a href="loan-ratetype.html">04 · 고정금리 vs 변동금리</a><br>
+    <br>
+    개인 학습용 정리이며 <b>금융 조언이 아닙니다.</b><br>
+    계산은 <b>구조 설명을 위한 예시</b>이며 실제 대출 조건은 금융기관에서 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function equalPI(P, ratePct, years){
+  var r = ratePct/100/12, n = years*12;
+  var M = r===0 ? P/n : P*r*Math.pow(1+r,n)/(Math.pow(1+r,n)-1);
+  return { M:M, n:n, total:M*n, interest:M*n-P };
+}
+function equalPrincipalSeries(P, ratePct, years){
+  var r = ratePct/100/12, n = years*12;
+  var principalPer = P/n;
+  var balance = P, totalInterest = 0, series = [];
+  for(var i=0;i<n;i++){
+    var interest = balance*r;
+    totalInterest += interest;
+    var pay = principalPer + interest;
+    series.push(pay);
+    balance -= principalPer;
+  }
+  return { series:series, n:n, totalInterest:totalInterest, first:series[0], last:series[series.length-1] };
+}
+
+function rpDraw(){
+  var amount = +document.getElementById('rpAmount').value;
+  var ratePct = +document.getElementById('rpRate').value;
+  var years = +document.getElementById('rpYears').value;
+  document.getElementById('rpAmountOut').textContent = amount.toLocaleString('ko-KR') + '만원';
+  document.getElementById('rpRateOut').textContent = ratePct.toFixed(1) + '%';
+  document.getElementById('rpYearsOut').textContent = years + '년';
+
+  var pi = equalPI(amount, ratePct, years);
+  var pp = equalPrincipalSeries(amount, ratePct, years);
+
+  document.getElementById('rpSteps').innerHTML =
+    '<div class="steprow"><span class="sk">원리금균등 월 상환액(고정)</span><span class="sv">' + pi.M.toFixed(0) + '만원</span></div>' +
+    '<div class="steprow"><span class="sk">원금균등 첫 달 → 마지막 달</span><span class="sv">' + pp.first.toFixed(0) + '만원 → ' + pp.last.toFixed(0) + '만원</span></div>' +
+    '<div class="steprow total"><span class="sk">총이자 차이(원리금균등 − 원금균등)</span><span class="sv">' + (pi.interest-pp.totalInterest).toFixed(0) + '만원</span></div>';
+
+  document.getElementById('rpPiInterest').textContent = pi.interest.toFixed(0) + '만원';
+  document.getElementById('rpPpInterest').textContent = pp.totalInterest.toFixed(0) + '만원';
+  document.getElementById('rpPpInterest').style.color = 'var(--pos)';
+
+  var saved = pi.interest - pp.totalInterest;
+  var savedPct = saved/pi.interest*100;
+  verdict('rpVerdict', 'var(--l2)', '원금균등이 총이자를 ' + saved.toFixed(0) + '만원(' + savedPct.toFixed(0) + '%) 아낍니다',
+    '대신 <b>원금균등의 첫 달 상환액(' + pp.first.toFixed(0) + '만원)이 원리금균등(' + pi.M.toFixed(0) + '만원)보다 큽니다.</b> 초반 현금흐름을 감당할 수 있는지가 선택의 기준입니다.');
+
+  var X0=60, Y0=195, W=545, H=150;
+  var maxPay = Math.max(pi.M, pp.first);
+  function xx(i){ return X0 + i/(pp.n-1)*W; }
+  function yy(v){ return Y0 - Math.max(0,v)/maxPay*H; }
+  var g='';
+  g += '<text class="axt" x="'+X0+'" y="18">월별 상환액 비교 (원리금균등: 파란 직선, 원금균등: 갈색 내리막)</text>';
+  g += '<line x1="'+X0+'" y1="'+Y0+'" x2="'+(X0+W)+'" y2="'+Y0+'" class="axis"/>';
+  [0,0.25,0.5,0.75,1].forEach(function(f){
+    var v = maxPay*f;
+    var y = yy(v);
+    g += '<line x1="'+X0+'" y1="'+y.toFixed(1)+'" x2="'+(X0+W)+'" y2="'+y.toFixed(1)+'" class="gridl"/>';
+    g += '<text class="axt" x="'+(X0-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+v.toFixed(0)+'</text>';
+  });
+  var piPts=[], ppPts=[];
+  var step = Math.max(1, Math.floor(pp.n/60));
+  for(var i=0;i<pp.n;i+=step){
+    piPts.push(xx(i).toFixed(1)+' '+yy(pi.M).toFixed(1));
+    ppPts.push(xx(i).toFixed(1)+' '+yy(pp.series[i]).toFixed(1));
+  }
+  piPts.push(xx(pp.n-1).toFixed(1)+' '+yy(pi.M).toFixed(1));
+  ppPts.push(xx(pp.n-1).toFixed(1)+' '+yy(pp.series[pp.n-1]).toFixed(1));
+  g += '<path d="M'+piPts.join(' L')+'" fill="none" stroke="#3F5A6F" stroke-width="2.4"/>';
+  g += '<path d="M'+ppPts.join(' L')+'" fill="none" stroke="#7A5535" stroke-width="2.4"/>';
+  g += '<text class="axt" x="'+X0+'" y="'+(Y0+18)+'">1개월</text>';
+  g += '<text class="axt" x="'+(X0+W)+'" y="'+(Y0+18)+'" text-anchor="end">'+pp.n+'개월</text>';
+  document.getElementById('rpScene').innerHTML = g;
+}
+['rpAmount','rpRate','rpYears'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', rpDraw);
+});
+rpDraw();
+</script>
+</body>
+</html>

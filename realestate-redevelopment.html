@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>재개발·재건축 — 프리미엄과 리스크</title>
+<meta name="description" content="조합원 입주권과 일반분양권의 차이, 감정평가·비례율·권리가액·추가분담금 구조를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F1F0E7;--ink:#1E1D17;--ink-soft:#524E42;--rule:#D6CEB9;--card:#FAF9F1;
+    --r1:#6B7A52;--r2:#8E6B3A;--r3:#3A5A8E;--r4:#7A5C9E;--good:#4C7A6D;--bad:#8E4B3A;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .gloss{background:var(--card);border:1px solid var(--rule);border-radius:3px;padding:6px 20px;margin:22px 0 0;}
+  .gloss .row{display:flex;gap:14px;align-items:baseline;padding:11px 0;border-bottom:1px dotted var(--rule);}
+  .gloss .row:last-child{border-bottom:0;}
+  .gloss .term{flex:0 0 96px;font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--r1);font-weight:500;}
+  .gloss .def{flex:1 1 auto;font-size:14px;color:var(--ink-soft);line-height:1.6;}
+  .gloss .def b{color:var(--ink);font-weight:600;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--r1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--r1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--r1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .gloss .row{flex-direction:column;gap:3px;}
+    .gloss .term{flex:none;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">부동산 14 · 재개발·재건축 · 투자 공부 노트</div>
+    <h1>재개발·재건축 —<br>프리미엄과 리스크</h1>
+    <p class="lede">낡은 빌라나 아파트를 <b>「지금 값」이 아니라 「새 아파트가 됐을 때의 값」</b>으로 미리 사는 것이 재개발·재건축 투자입니다. 그 사이를 잇는 계산이 <b>감정평가·비례율·권리가액·분담금</b>입니다.</p>
+    <div class="callout">
+      <p><b>⚠️ 이 편의 용어와 계산은 대표적인 흐름을 단순화한 것</b>이며, <b>실제 조합마다 정관과 관리처분계획이 다릅니다.</b> 투자 전 <b>조합 총회 자료와 관리처분계획인가 내용을 직접 확인</b>해야 합니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="용어와 절차까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#words">1. 입주권과 분양권</a>
+    <a href="#lab">2. 계산기: 권리가액과 분담금</a>
+    <a href="#risk">3. 사업 지연이라는 리스크</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="words">
+    <div class="prod-head" style="--edge:var(--r1)">
+      <span class="prod-tag">01 · 용어</span>
+      <h2>조합원 입주권 vs 일반분양권</h2>
+      <p class="one">둘 다 <b>새 아파트에 들어갈 권리</b>지만 <b>계산법이 다릅니다.</b></p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>낡은 빌라를 허물고 <b>새 아파트를 짓는다</b>고 하자. <b>원래 그 동네에 집을 갖고 있던 사람(조합원)</b>은 <b>새 아파트를 「원가에 가깝게」</b> 받을 수 있어. 이걸 <b>「조합원 입주권」</b>이라고 해.</p>
+      <p>그런데 <b>새로 지은 집 중에 조합원 몫을 빼고 남는 집</b>은 <b>일반인에게 분양</b>해. 이걸 <b>「일반분양권」</b>이라고 하는데, <b>보통 조합원보다 비싸게</b> 사야 해.</p>
+      <p>그래서 <b>「낡은 집을 먼저 사서 조합원이 되는 것」</b>이 재개발·재건축 투자의 기본 그림이야.</p>
+    </div>
+
+    <div class="gloss">
+      <div class="row"><span class="term">감정평가액</span><span class="def">조합원이 <b>원래 가지고 있던 집(종전자산)의 공식 평가 가치</b>입니다.</span></div>
+      <div class="row"><span class="term">비례율</span><span class="def">사업이 끝난 뒤 <b>「개발이익이 얼마나 났는지」를 나타내는 비율</b>입니다. <b>100%보다 높으면 사업성이 좋다</b>는 뜻입니다.</span></div>
+      <div class="row"><span class="term">권리가액</span><span class="def"><b>감정평가액 × 비례율</b>. 조합원이 <b>새 아파트를 받을 때 인정받는 「내 몫의 가치」</b>입니다.</span></div>
+      <div class="row"><span class="term">조합원분양가</span><span class="def">조합원이 <b>새 아파트를 받을 때 내야 하는 가격</b>입니다(일반분양가보다 저렴).</span></div>
+      <div class="row"><span class="term">추가분담금</span><span class="def">조합원분양가가 <b>권리가액보다 크면</b> 그 차액을 <b>추가로 내야</b> 합니다. 반대로 작으면 <b>환급</b>받습니다.</span></div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--r2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>내가 낼 분담금(또는 받을 환급금) 계산해보기</h2>
+      <p class="one"><b>비례율이 높을수록 내가 인정받는 몫이 커집니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">SETTLEMENT · 세 값을 슬라이더로 움직여보세요</div>
+      <p class="labsub">단위는 <b>만원</b>입니다.</p>
+
+      <div class="ctrl-row">
+        <label for="rdAppraisal">종전자산 감정평가액</label>
+        <input type="range" id="rdAppraisal" min="10000" max="60000" step="1000" value="30000">
+        <output id="rdAppraisalOut">30,000만원</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rdRatio">비례율</label>
+        <input type="range" id="rdRatio" min="60" max="140" step="5" value="100">
+        <output id="rdRatioOut">100%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="rdSalePrice">조합원분양가(원하는 평형)</label>
+        <input type="range" id="rdSalePrice" min="30000" max="90000" step="1000" value="60000">
+        <output id="rdSalePriceOut">60,000만원</output>
+      </div>
+
+      <div class="steps-out" id="rdSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">권리가액</span><span class="rv" id="rdRight">—</span></div>
+        <div><span class="rk">분담금(+) / 환급금(−)</span><span class="rv" id="rdSettle">—</span></div>
+      </div>
+
+      <div class="verdict" id="rdVerdict" style="--vc:var(--r2)">
+        <div class="vh">해석</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 권리가액 = 감정평가액 × 비례율. 분담금 = 조합원분양가 − 권리가액(양수면 추가로 내야 하고, 음수면 환급받습니다).<br><br>
+        <b>⚠️ 실제로는 이주비 대출 이자, 조합운영비, 재건축초과이익환수제(재건축의 경우) 등 추가 비용이 있습니다.</b> 이 계산기는 <b>핵심 구조만 보여주는 단순화</b>입니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="risk">
+    <div class="prod-head" style="--edge:var(--r3)">
+      <span class="prod-tag">03 · 위험</span>
+      <h2>사업 지연이 왜 수익률을 갉아먹나</h2>
+      <p class="one">재개발·재건축은 <b>「시간」이 가장 큰 비용</b>입니다.</p>
+    </div>
+
+    <p>재개발·재건축은 <b>조합설립 → 사업시행인가 → 관리처분인가 → 이주·철거 → 착공 → 준공</b>까지 <b>보통 10년 안팎, 길게는 20년 넘게 걸리기도</b> 합니다. 그 사이 <b>조합 내부 갈등, 소송, 정책·규제 변화(재건축초과이익환수제 등)로 사업이 몇 년씩 멈추는 경우</b>가 드물지 않습니다.</p>
+    <p class="plain"><b>사업 지연의 비용.</b> 그 기간 동안 <b>낸 돈에 대한 기회비용(다른 곳에 투자했다면 벌었을 수익)</b>이 계속 쌓이고, <b>이주비 대출 이자도 계속 나갑니다.</b> <b>「비례율 100% 이상, 좋은 입지」라는 겉모습만 보지 말고 「이 조합의 사업 진행 속도와 갈등 이력」을 함께 확인</b>하는 것이 중요합니다.</p>
+
+    <div class="deep">
+      <h3>「몸테크」라는 말의 의미와 대가</h3>
+      <p><b>「몸테크」</b>는 <b>낡고 불편한 재건축 대상 아파트에 직접 살면서 버티는 것</b>을 뜻하는 말입니다. <b>이주비 대출 이자나 전세를 놓는 비용을 아낄 수 있다는 장점</b>이 있지만, <b>주거 환경이 열악하고, 사업이 예상보다 늦어지면 그만큼 오래 불편을 감수해야 한다는 대가</b>가 따릅니다. <b>「몸테크만 하면 무조건 이득」이 아니라, 본인의 주거 환경 감수 능력과 사업 지연 가능성을 함께 저울질</b>해야 합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 재개발·재건축은 <b>감정평가액 × 비례율 = 권리가액</b>을 기준으로 <b>분담금 또는 환급금</b>이 정해집니다. <b>비례율과 조합원분양가만큼이나 「사업 지연 가능성」이 실제 수익률을 좌우</b>합니다.</p>
+      <p><b>다음 편은 15편(부동산 트랙 완결) — 내 자산에서 부동산 비중</b>입니다. 순자산과 레버리지를 함께 고려한 배분을 계산기로 확인합니다.</p>
+    </div>
+  </section>
+
+  <footer>
+    투자 공부 노트 · 부동산 14 · 재개발·재건축<br>
+    <a href="index.html#realestate">← 부동산 목록으로</a> · <a href="realestate-commercial.html">13 · 상가·수익형 부동산</a> · <a href="realestate-portfolio.html">15 · 내 자산에서 부동산 비중</a><br>
+    <br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b> 특정 조합·물건 매수를 권하지 않습니다.<br>
+    비례율·분담금 계산은 <b>구조 설명을 위한 예시</b>이며 실제 조합의 관리처분계획을 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function rdDraw(){
+  var appraisal = +document.getElementById('rdAppraisal').value;
+  var ratio = +document.getElementById('rdRatio').value;
+  var salePrice = +document.getElementById('rdSalePrice').value;
+  document.getElementById('rdAppraisalOut').textContent = appraisal.toLocaleString('ko-KR') + '만원';
+  document.getElementById('rdRatioOut').textContent = ratio + '%';
+  document.getElementById('rdSalePriceOut').textContent = salePrice.toLocaleString('ko-KR') + '만원';
+
+  var rightValue = appraisal * ratio/100;
+  var settlement = salePrice - rightValue;
+
+  document.getElementById('rdSteps').innerHTML =
+    '<div class="steprow"><span class="sk">권리가액 = 감정평가액 × 비례율</span><span class="sv">' + rightValue.toLocaleString('ko-KR') + '만원</span></div>' +
+    '<div class="steprow total"><span class="sk">분담금 = 조합원분양가 − 권리가액</span><span class="sv">' + (settlement>=0?'+':'') + settlement.toLocaleString('ko-KR') + '만원</span></div>';
+
+  document.getElementById('rdRight').textContent = rightValue.toLocaleString('ko-KR') + '만원';
+  document.getElementById('rdSettle').textContent = (settlement>=0?'+':'') + settlement.toLocaleString('ko-KR') + '만원';
+  document.getElementById('rdSettle').style.color = settlement >= 0 ? 'var(--neg)' : 'var(--pos)';
+
+  var col, title, body;
+  if(settlement > 0){
+    col='#8E6B3A'; title='추가로 ' + settlement.toLocaleString('ko-KR') + '만원을 더 내야 합니다';
+    body='<b>조합원분양가가 권리가액보다 큽니다.</b> 원하는 평형을 받으려면 <b>차액을 추가분담금으로 납부</b>해야 합니다. 이 자금 계획을 미리 세워둬야 합니다.';
+  } else {
+    col='#4C7A6D'; title=Math.abs(settlement).toLocaleString('ko-KR') + '만원을 환급받습니다';
+    body='<b>권리가액이 조합원분양가보다 큽니다.</b> 차액만큼 <b>현금으로 환급</b>받거나, 더 넓은 평형을 선택할 때 그만큼 반영됩니다.';
+  }
+  verdict('rdVerdict', col, title, body);
+}
+['rdAppraisal','rdRatio','rdSalePrice'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', rdDraw);
+});
+rdDraw();
+</script>
+</body>
+</html>

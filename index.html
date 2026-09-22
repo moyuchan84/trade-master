@@ -40,6 +40,11 @@
     --fs2:#7A5535;
     --fs3:#5A3F7F;
     --fs4:#3F7A55;
+    /* 대출·상환 트랙 */
+    --ln1:#2F6F5F;
+    --ln2:#3F5A6F;
+    --ln3:#7A5535;
+    --ln4:#7A3F3F;
     --b1:#4C6B7A;
     --b2:#7A5C3A;
     --b3:#5F7A52;
@@ -280,13 +285,14 @@
     <div class="tracks" id="tracks">
       <button data-t="stock" class="on">📈 주식 <span class="cnt">11편</span></button>
       <button data-t="coin">🪙 코인 <span class="cnt">8편</span></button>
-      <button data-t="realestate">🏠 부동산 <span class="cnt">11편</span></button>
+      <button data-t="realestate">🏠 부동산 <span class="cnt">15편</span></button>
       <button data-t="bond">📜 채권 <span class="cnt">10편</span></button>
       <button data-t="tax">🧾 세금 <span class="cnt">7편</span></button>
       <button data-t="commodity">🛢 원자재 <span class="cnt">10편</span></button>
       <button data-t="futures">📉 선물·옵션 <span class="cnt">10편</span></button>
       <button data-t="sector">🏭 산업·섹터 <span class="cnt">10편</span></button>
       <button data-t="finstate">📊 재무제표 <span class="cnt">10편</span></button>
+      <button data-t="loan">🏦 대출·상환 <span class="cnt">7편</span></button>
     </div>
   </header>
 
@@ -823,7 +829,7 @@
   <!-- ══════════ 예정 트랙 ══════════ -->
   <div class="track" id="t-realestate">
 
-    <p class="tintro">집은 <b>대부분의 가정에서 가장 큰 자산이자 가장 큰 빚</b>입니다. 그래서 이 트랙은 <b>「어디가 오를까」보다 「무엇을 확인하고 얼마를 빌릴까」</b>에 무게를 둡니다. <b>열한 편</b>이고, 앞에서 뒤로 읽도록 짰습니다.</p>
+    <p class="tintro">집은 <b>대부분의 가정에서 가장 큰 자산이자 가장 큰 빚</b>입니다. 그래서 이 트랙은 <b>「어디가 오를까」보다 「무엇을 확인하고 얼마를 빌릴까」</b>에 무게를 둡니다. <b>열다섯 편</b>이고, 앞에서 뒤로 읽도록 짰습니다. <b>12~14편</b>은 토지·상가·재개발 같은 <b>투자형 부동산</b>을, <b>15편</b>은 <b>내 자산에서 부동산 비중</b>을 다룹니다.</p>
 
     <div class="start" style="--edge:var(--r1)">
       <div class="sh">읽는 법</div>
@@ -968,6 +974,48 @@
             <h3>내 상황에서의 판단</h3>
             <p>무주택·1주택·다주택은 셈법이 완전히 다릅니다. 레버리지가 기본인 자산에서의 <b>포지션 사이징</b>.</p>
             <div class="meta"><span>상황별 셈법</span><span>감당 가능성</span><span>자산 집중도</span><span>체크리스트</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--r4)">
+      <div class="part-head">
+        <span class="part-num">PART D · 투자형 부동산과 배분</span>
+        <h2>토지·상가·재개발, 그리고 내 자산에서의 비중</h2>
+        <p>실거주를 넘어 <b>투자 목적으로 접근하는 부동산 유형</b>과, <b>순자산 대비 얼마나 노출돼 있는지</b>를 다룹니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="realestate-land.html">
+            <span class="num">12 · 토지</span>
+            <h3>토지 투자 — 지목·용도지역·개발호재</h3>
+            <p>용도지역이 <b>같은 땅의 가치를 몇 배씩</b> 가릅니다. 기획부동산·맹지 리스크도 함께.</p>
+            <div class="meta"><span>지목</span><span>용도지역</span><span>용적률</span><span>기획부동산</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="realestate-commercial.html">
+            <span class="num">13 · 수익형</span>
+            <h3>상가·수익형 부동산</h3>
+            <p>시세차익이 아니라 <b>임대수익률</b>로 가치를 매깁니다. 공실률 계산기로 확인합니다.</p>
+            <div class="meta"><span>임대수익률</span><span>공실률</span><span>확정수익 보장의 함정</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="realestate-redevelopment.html">
+            <span class="num">14 · 재개발·재건축</span>
+            <h3>재개발·재건축 — 프리미엄과 리스크</h3>
+            <p>감정평가·비례율·권리가액·분담금 구조를 계산기로 확인합니다.</p>
+            <div class="meta"><span>조합원 입주권</span><span>비례율</span><span>추가분담금</span><span>사업 지연 리스크</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="realestate-portfolio.html">
+            <span class="num">15 · 자산배분</span>
+            <h3>내 자산에서 부동산 비중</h3>
+            <p>순자산 대비 부동산 지분 비중과 <b>레버리지 노출배율</b>을 계산기로 확인하는 트랙 완결편.</p>
+            <div class="meta"><span>순자산</span><span>레버리지 노출</span><span>영끌</span></div>
           </a>
         </li>
       </ol>
@@ -1487,6 +1535,107 @@
             <h3>재무제표 분석 종합 체크리스트</h3>
             <p>3문항 진단과 <b>재무 건강도 스코어 계산기</b>로 트랙을 마무리합니다.</p>
             <div class="meta"><span>진단</span><span>건강도 스코어</span><span>체크리스트</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+  </div>
+  <div class="track" id="t-loan">
+
+    <p class="tintro">대출은 <b>부동산 트랙 05편(LTV·DTI·DSR)</b>에서 한도를, 이 트랙은 <b>그 이후 — 어떻게 갚아나갈지</b>를 다룹니다. <b>DSR 총량 규제의 원리, 원리금균등·원금균등 상환방식, 고정·변동금리 선택, 그리고 내 소득으로 실제 감당할 수 있는지 시뮬레이션</b>까지 <b>일곱 편</b>으로 정리합니다. <b>05편(월급 대비 상환 시뮬레이터)</b>이 이 트랙의 핵심입니다.</p>
+
+    <div class="start" style="--edge:var(--ln1)">
+      <div class="sh">처음이라면 — 이 세 편만 먼저</div>
+      <p>대출 승인은 순간이지만, 상환은 수십 년입니다.</p>
+      <ol>
+        <li><a href="loan-dsr.html">DSR의 원리</a> — 신용대출이 실제보다 크게 잡히는 이유</li>
+        <li><a href="loan-repayment.html">원리금균등과 원금균등</a> — 같은 대출, 다른 현금흐름</li>
+        <li><a href="loan-simulator.html">월급 대비 상환 시뮬레이터</a> — 소득감소·금리상승까지 함께 확인</li>
+      </ol>
+    </div>
+
+    <section class="part" style="--edge:var(--ln1)">
+      <div class="part-head">
+        <span class="part-num">PART A · 기초와 한도</span>
+        <h2>대출이라는 계약, 그리고 DSR</h2>
+        <p>대출은 <b>미래 소득을 당겨쓰는 계약</b>이고, DSR은 <b>그 총량을 재는 규제</b>입니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="loan-basics.html">
+            <span class="num">01 · 기초</span>
+            <h3>대출이라는 상품 — 왜 알아야 하나</h3>
+            <p>대출 총비용 계산기로 <b>기간이 길어질수록 총이자가 커지는 이유</b>를 확인합니다.</p>
+            <div class="meta"><span>원금·이자</span><span>거치기간</span><span>담보·신용대출</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="loan-dsr.html">
+            <span class="num">02 · DSR</span>
+            <h3>DSR 완전정리 — 대출의 총량 규제</h3>
+            <p><b>신용대출은 실제 이자보다 DSR에 훨씬 크게 잡힙니다.</b> 그 이유를 계산기로 봅니다.</p>
+            <div class="meta"><span>산정만기</span><span>합산 규제</span><span>신용대출의 함정</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--ln2)">
+      <div class="part-head">
+        <span class="part-num">PART B · 상환방식과 금리</span>
+        <h2>어떻게 나눠 갚고, 어떤 금리를 고를까</h2>
+        <p>같은 대출도 <b>상환방식과 금리 유형에 따라 현금흐름이 완전히 달라집니다.</b></p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="loan-repayment.html">
+            <span class="num">03 · 상환방식</span>
+            <h3>원리금균등 vs 원금균등</h3>
+            <p>월별 상환액 곡선과 총이자를 계산기로 비교합니다.</p>
+            <div class="meta"><span>월 상환액 곡선</span><span>총이자 비교</span><span>거치기간</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="loan-ratetype.html">
+            <span class="num">04 · 금리선택</span>
+            <h3>고정금리 vs 변동금리</h3>
+            <p>금리가 오르내리는 시나리오별로 <b>총비용이 어떻게 달라지는지</b> 계산합니다.</p>
+            <div class="meta"><span>금리 시나리오</span><span>혼합형</span><span>소득 안정성</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--ln3)">
+      <div class="part-head">
+        <span class="part-num">PART C · 실전 시뮬레이션</span>
+        <h2>내 월급으로 버틸 수 있을까</h2>
+        <p>이 트랙의 핵심 — <b>실제 현금흐름 시뮬레이션과 갈아타기 판단, 그리고 전략 총정리.</b></p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="loan-simulator.html">
+            <span class="num">05 · 시뮬레이터</span>
+            <h3>월급 대비 상환 시뮬레이터</h3>
+            <p>소득·생활비·대출조건을 넣어 <b>60개월 가처분 현금흐름</b>을 소득감소·금리상승 시나리오와 함께 확인합니다.</p>
+            <div class="meta"><span>가처분 현금흐름</span><span>소득감소 시나리오</span><span>금리상승 시나리오</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="loan-refinance.html">
+            <span class="num">06 · 갈아타기</span>
+            <h3>대환대출·갈아타기</h3>
+            <p>중도상환수수료와 절감이자의 <b>손익분기점</b>을 계산기로 확인합니다.</p>
+            <div class="meta"><span>중도상환수수료</span><span>손익분기점</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="loan-strategy.html">
+            <span class="num">07 · 전략</span>
+            <h3>대출 전략 총정리</h3>
+            <p>3문항 진단으로 <b>나에게 맞는 상환방식·금리유형 조합</b>을 정리하며 트랙을 마무리합니다.</p>
+            <div class="meta"><span>진단</span><span>체크리스트</span></div>
           </a>
         </li>
       </ol>
