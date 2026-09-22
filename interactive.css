@@ -351,10 +351,80 @@ ul.check li.done b{color:var(--kid-ink);}
 .verdict p{font-size:14px;color:var(--ink-soft);margin:0;max-width:none;line-height:1.7;}
 .verdict p + p{margin-top:8px;}
 
+/* ── 페이지 이동 내비게이션 (이전편 · 목록 · 다음편) ── */
+.pagenav{
+  display:flex;
+  gap:10px;
+  margin:44px 0 0;
+  flex-wrap:wrap;
+}
+.pagenav a{
+  flex:1 1 170px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:3px;
+  padding:14px 16px;
+  border:1px solid var(--rule);
+  border-radius:8px;
+  background:var(--card);
+  color:var(--ink);
+  text-decoration:none;
+  text-align:center;
+  line-height:1.4;
+  transition:border-color .15s ease, background .15s ease, transform .1s ease;
+}
+.pagenav a:hover{border-color:var(--ink-soft);background:var(--paper);}
+.pagenav a:active{transform:scale(.98);}
+.pagenav a .pnlabel{
+  font-family:'IBM Plex Mono',monospace;
+  font-size:10.5px;
+  letter-spacing:.03em;
+  color:var(--ink-faint);
+}
+.pagenav a .pntitle{font-size:13.5px;font-weight:500;color:var(--ink);}
+.pagenav a.pn-home{
+  flex:0 1 200px;
+  background:var(--ink);
+  border-color:var(--ink);
+}
+.pagenav a.pn-home .pnlabel{color:rgba(255,255,255,.6);}
+.pagenav a.pn-home .pntitle{color:var(--paper);}
+.pagenav a.pn-home:hover{opacity:.88;}
+
+/* ── 항상 떠 있는 홈 버튼 (모든 문서 페이지 공통, interactive.js가 주입) ── */
+.homefab{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:40;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:10px 16px 10px 13px;
+  border-radius:999px;
+  background:var(--ink);
+  color:var(--paper);
+  text-decoration:none;
+  font-family:'IBM Plex Sans KR',sans-serif;
+  font-size:13px;
+  font-weight:500;
+  box-shadow:0 4px 16px rgba(0,0,0,.18);
+  opacity:.92;
+  transition:opacity .15s ease, transform .15s ease;
+}
+.homefab:hover{opacity:1;transform:translateY(-1px);}
+.homefab .fi{font-size:15px;line-height:1;}
+
 @media (max-width:640px){
   .lab{padding:17px 15px 19px;}
   .ctrl-row label{min-width:100%;}
   .readout,.readout.two{grid-template-columns:1fr;gap:13px;}
   .readout .rv{font-size:18px;}
   .btnrow button{width:100%;}
+  .pagenav{flex-direction:column;}
+  .pagenav a{flex:1 1 auto;}
+  .pagenav a.pn-home{flex:1 1 auto;order:-1;}
+  .homefab{right:14px;bottom:14px;padding:9px 14px 9px 12px;font-size:12.5px;}
 }

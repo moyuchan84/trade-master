@@ -110,3 +110,26 @@ function bindBtnRow(selector, handler){
     });
   });
 }
+
+/* 모든 문서 페이지 우하단에 떠 있는 홈 버튼을 붙입니다.
+   index.html은 이 스크립트를 불러오지 않으므로 문서 페이지에만 나타납니다.
+   .pagenav 안의 「목록」 링크(index.html#트랙)를 그대로 재사용해
+   지금 보던 트랙 탭으로 돌아가게 합니다. */
+(function(){
+  function addHomeFab(){
+    if(document.querySelector('.homefab')) return;
+    var target = 'index.html';
+    var listLink = document.querySelector('.pagenav a.pn-home, footer a[href^="index.html"]');
+    if(listLink) target = listLink.getAttribute('href');
+    var a = document.createElement('a');
+    a.className = 'homefab';
+    a.href = target;
+    a.innerHTML = '<span class="fi">🏠</span><span>홈</span>';
+    document.body.appendChild(a);
+  }
+  if(document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', addHomeFab);
+  } else {
+    addHomeFab();
+  }
+})();
