@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>투자의 사계절 — 금리·전쟁·경제패권과 자산배분</title>
+<meta name="description" content="성장과 물가의 조합으로 보는 투자의 사계절, 전쟁·기근 같은 공급충격, 미중 경제패권이 신흥국과 자산가격에 미치는 영향, 자산군간 상관관계가 국면마다 바뀌는 이유를 정리하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --sp1:#3A5A8E;--sp2:#9E7A2E;--sp3:#7A5C9E;--sp4:#4C7A6D;--warn:#8E4B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--sp1));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--sp1));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--sp1));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  .quad{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:8px;margin:20px 0 0;}
+  .quad button{border:1px solid var(--rule);border-radius:6px;background:var(--card);padding:16px 14px;text-align:left;cursor:pointer;font-family:'IBM Plex Sans KR',sans-serif;transition:all .15s ease;}
+  .quad button:hover{border-color:var(--ink-soft);}
+  .quad button.on{background:var(--ink);border-color:var(--ink);}
+  .quad button.on .qt{color:var(--paper);}
+  .quad button.on .qs{color:rgba(255,255,255,.65);}
+  .quad .qt{display:block;font-weight:600;font-size:14.5px;color:var(--ink);margin-bottom:4px;}
+  .quad .qs{display:block;font-size:12px;color:var(--ink-soft);font-family:'IBM Plex Mono',monospace;}
+  .corrgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:1px;background:var(--rule);margin:20px 0 0;border:1px solid var(--rule);font-size:12px;}
+  .corrgrid > div{background:var(--card);padding:9px 6px;text-align:center;}
+  .corrgrid > div.h{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+    .quad{grid-template-columns:1fr;}
+    .corrgrid{font-size:10px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">주식 12 · 거시와 계절 · 투자 공부 노트</div>
+    <h1>투자의 사계절 —<br>금리·전쟁·경제패권과 자산배분</h1>
+    <p class="lede">주식은 <b>진공 속에서 움직이지 않습니다.</b> 금리, 전쟁, 흉작, 그리고 미국과 중국의 힘겨루기까지 — 이 편은 <b>거시적인 사건들이 어떤 경로로 자산 가격에 도달하는지</b>를 역사적 사례와 함께 정리합니다.</p>
+    <div class="callout">
+      <p><b>이 편의 핵심 도구는 「투자의 사계절」</b> — 경제 성장과 물가라는 두 축의 조합으로 <b>어느 자산군이 유리한 국면인지</b> 가늠하는 틀입니다. <a href="macro-guide.html">04편(금리·거시지표)</a>과 <a href="history-guide.html">09편(역사와 사이클)</a>을 이미 읽었다면 자연스럽게 이어집니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="역사적 배경과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#seasons">1. 투자의 사계절</a>
+    <a href="#emdebt">2. 계산기: 신흥국의 달러 부채 함정</a>
+    <a href="#shock">3. 전쟁·기근이라는 공급 충격</a>
+    <a href="#hegemony">4. 미중 경제패권과 신흥국</a>
+    <a href="#corr">5. 자산군 상관관계는 고정불변이 아니다</a>
+    <a href="#note">6. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="seasons">
+    <div class="prod-head" style="--edge:var(--sp1)">
+      <span class="prod-tag">01 · 사계절</span>
+      <h2>성장과 물가, 두 축으로 나눈 네 계절</h2>
+      <p class="one">옷을 계절에 맞춰 입듯, <b>포트폴리오도 경제 계절에 맞춰 구성</b>한다는 발상입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>날씨를 <b>「덥다/춥다」와 「비 온다/맑다」</b> 두 가지로 나누면 <b>네 가지 조합</b>이 나오지? <b>「덥고 맑음」엔 반팔, 「춥고 비옴」엔 우비 달린 패딩</b>이 필요하잖아.</p>
+      <p>경제도 <b>「성장이 좋다/나쁘다」와 「물가가 오른다/안정적이다」</b>로 나누면 <b>네 계절</b>이 나와. 계절마다 <b>잘 맞는 자산(옷)이 달라</b>.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">FOUR SEASONS · 네 칸 중 하나를 눌러보세요</div>
+      <p class="labsub"></p>
+
+      <div class="quad" id="seasonQuad">
+        <button data-v="0" class="on">
+          <span class="qt">🌱 성장↑ 물가↓ — 골디락스</span>
+          <span class="qs">GROWTH UP · INFLATION DOWN</span>
+        </button>
+        <button data-v="1">
+          <span class="qt">🔥 성장↑ 물가↑ — 리플레이션</span>
+          <span class="qs">GROWTH UP · INFLATION UP</span>
+        </button>
+        <button data-v="2">
+          <span class="qt">🥶 성장↓ 물가↑ — 스태그플레이션</span>
+          <span class="qs">GROWTH DOWN · INFLATION UP</span>
+        </button>
+        <button data-v="3">
+          <span class="qt">❄️ 성장↓ 물가↓ — 디플레이션</span>
+          <span class="qs">GROWTH DOWN · INFLATION DOWN</span>
+        </button>
+      </div>
+
+      <div class="verdict" id="seasonVerdict" style="--vc:var(--sp1);margin-top:16px;">
+        <div class="vh">유리한 자산군(일반적 경향)</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 이 표는 「일반적으로 관찰되는 경향」</b>이며 <b>모든 국면에서 항상 성립하는 법칙이 아닙니다.</b> 실제로는 <b>「이미 시장이 그 국면을 얼마나 예상하고 있었는가」에 따라 정반대로 움직이기도</b> 합니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>지금이 무슨 계절인지는 왜 실시간으로 알기 어려운가</h3>
+      <p>성장과 물가 지표는 <b>발표 자체가 한두 달씩 늦게 나오고(macro-guide 01편 「서프라이즈」 개념), 그마저도 나중에 수정</b>됩니다. 그래서 <b>「지금이 봄인지 여름인지」는 몇 달이 지나서야 확실해지는 경우</b>가 많습니다. 이 프레임워크는 <b>미래를 예측하는 도구라기보다, 이미 벌어진 상황을 정리해 「내 포트폴리오가 지금 계절에 맞게 짜여 있는가」를 점검하는 도구</b>에 가깝습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="emdebt">
+    <div class="prod-head" style="--edge:var(--sp2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>미국 금리가 오르면 신흥국이 이중으로 힘든 이유</h2>
+      <p class="one"><b>달러 강세</b>가 신흥국에 <b>부채 부담 증가</b>로 그대로 전이되는 구조입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">EM DOLLAR DEBT · 슬라이더를 움직여보세요</div>
+      <p class="labsub">신흥국 정부·기업이 <b>달러로 100(기준)만큼 빚을 지고 있다</b>고 가정합니다.</p>
+
+      <div class="ctrl-row">
+        <label for="emFx">자국 통화 대비 달러 강세 정도</label>
+        <input type="range" id="emFx" min="0" max="60" step="5" value="30">
+        <output id="emFxOut">+30%</output>
+      </div>
+
+      <div class="steps-out" id="emSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">자국 통화 환산 부채(기준 100)</span><span class="rv" id="emDebt">—</span></div>
+        <div><span class="rk">부채 부담 증가율</span><span class="rv" id="emIncrease">—</span></div>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 자국통화 환산 부채 = 100 × (1 + 달러 강세율). <b>빚은 달러로 고정</b>되어 있는데 <b>자국 통화 가치가 떨어지면, 그 빚을 갚기 위해 벌어야 할 자국 통화가 그만큼 늘어납니다.</b><br><br>
+        <b>⚠️ 실제로는 이 효과에 더해, 미국 금리가 오르면 「더 안전하고 수익률 높은 미국 자산」으로 투자금이 빠져나가며(자본 유출) 신흥국 통화가 추가로 더 약해지는 악순환</b>이 겹칩니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>1997년 아시아 금융위기와 2013년 「테이퍼 탄트럼」</h3>
+      <p><b>1997년 아시아 금융위기</b>는 여러 원인이 겹쳤지만, <b>태국·한국 등이 달러 표시 단기 부채에 크게 의존하고 있던 상태</b>에서 <b>외국 자본이 급격히 빠져나가며 통화 가치가 폭락</b>한 것이 핵심 축 중 하나였습니다.</p>
+      <p><b>2013년 「테이퍼 탄트럼」</b>은 미국 연준이 <b>양적완화를 줄이겠다(테이퍼링)고 시사하자, 신흥국에서 자금이 급격히 빠져나가며 신흥국 통화·주식이 동반 급락</b>한 사건입니다. <b>미국의 통화정책 방향 전환이 대서양·태평양 건너 신흥국 시장까지 즉각 전이</b>된다는 것을 보여준 대표 사례입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="shock">
+    <div class="prod-head" style="--edge:var(--warn)">
+      <span class="prod-tag">03 · 공급충격</span>
+      <h2>전쟁과 기근 — 물량 자체가 사라지는 충격</h2>
+      <p class="one">수요가 아니라 <b>「공급 자체가 갑자기 줄어드는」 종류의 인플레이션</b>입니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>시기(대략)</th><th>사건</th><th>경로</th></tr></thead>
+        <tbody>
+          <tr><th>1973, 1979</th><td>1·2차 오일쇼크</td><td>중동발 원유 공급 축소 → 유가 급등 → 전방위 물가 상승(스태그플레이션) → 주식·채권 동반 부진</td></tr>
+          <tr><th>2020~2021</th><td>코로나19 공급망 충격</td><td>공장 셧다운·물류 정체 → 부품·원자재 부족 → 인플레이션 압력 누적</td></tr>
+          <tr><th>2022~</th><td>러시아-우크라이나 전쟁</td><td>천연가스·원유·곡물(밀·옥수수) 주요 수출국의 공급 차질 → 에너지·식량 가격 급등 → 유럽 중심 인플레이션 압박</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 공급충격형 인플레이션의 원리는 <a href="sector-geopolitics.html">산업·섹터 트랙 08편</a>과 같은 구조입니다</p>
+
+    <p class="plain"><b>왜 이런 충격이 특히 다루기 어려운가.</b> 중앙은행은 <b>금리를 올려 「수요」를 억누르는 도구</b>는 갖고 있지만, <b>전쟁이나 흉작으로 줄어든 「공급」 자체를 되돌리는 도구는 없습니다.</b> 그래서 공급충격형 인플레이션 국면에서는 <b>「성장은 둔화되는데 물가는 오르는」 스태그플레이션</b>이 나타나기 쉽고, 이는 앞서 본 사계절 중 <b>가장 다루기 어려운 계절</b>로 꼽힙니다.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="hegemony">
+    <div class="prod-head" style="--edge:var(--sp3)">
+      <span class="prod-tag">04 · 패권</span>
+      <h2>미국과 중국, 두 개의 중력이 신흥국에 미치는 영향</h2>
+      <p class="one">신흥국은 <b>미국의 금리(자금 조달 비용)</b>와 <b>중국의 성장(수요처)</b>, 두 힘 사이에 놓여 있습니다.</p>
+    </div>
+
+    <p><b>미국이 금리를 올리면</b> 앞서 본 것처럼 <b>신흥국에서 자금이 빠져나가는 압력</b>이 생깁니다. <b>동시에 중국의 경제 성장이 둔화되면</b>, 원자재·부품을 중국에 수출하던 신흥국(호주, 브라질, 동남아 국가 등)은 <b>수요처를 잃는 이중의 타격</b>을 받습니다.</p>
+    <p><b>2018~2019년 미중 무역분쟁</b>은 이 구도를 잘 보여줍니다. 미국이 중국산 제품에 관세를 부과하자 <b>중국의 대미 수출과 성장세가 둔화</b>됐고, <b>중국에 원자재·중간재를 공급하던 여러 신흥국의 수출도 함께 흔들렸습니다.</b> 두 강대국의 정책 결정이 <b>제3국의 경제에 직접 파급되는 구조</b>입니다.</p>
+
+    <div class="deep">
+      <h3>「디커플링(탈동조화)」이 신흥국에 던지는 질문</h3>
+      <p>최근에는 미국과 중국이 <b>서로의 공급망에서 분리되려는(디커플링) 움직임</b>이 이어지고 있습니다. 이 과정에서 <b>베트남, 인도, 멕시코처럼 중국을 대체하는 생산기지로 부상하는 신흥국</b>이 있는 반면, <b>기존에 중국 중심 공급망에 깊이 편입되어 있던 국가는 재편의 충격을 받을 수 있습니다.</b> <b>「미중 관계 뉴스」가 나올 때마다 「이게 어느 신흥국에 유리하고 불리한가」</b>를 함께 물어보는 습관이 <a href="sector-us-kr.html">산업·섹터 트랙 09편</a>에서 다룬 국가별 산업구조 이해와 자연스럽게 연결됩니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="corr">
+    <div class="prod-head" style="--edge:var(--sp4)">
+      <span class="prod-tag">05 · 상관관계</span>
+      <h2>주식과 채권은 항상 반대로 움직이지 않는다</h2>
+      <p class="one">자산군간 상관관계는 <b>고정된 물리 법칙이 아니라 「그 시기의 인플레이션 체제」에 달려 있습니다.</b></p>
+    </div>
+
+    <div class="corrgrid">
+      <div class="h"></div><div class="h">주식</div><div class="h">채권</div><div class="h">금</div><div class="h">달러</div>
+      <div class="h">주식</div><div>1.0</div><div>보통 음(−)</div><div>약한 음(−)</div><div>약한 음(−)</div>
+      <div class="h">채권</div><div>보통 음(−)</div><div>1.0</div><div>약한 양(+)</div><div>혼재</div>
+      <div class="h">금</div><div>약한 음(−)</div><div>약한 양(+)</div><div>1.0</div><div>보통 음(−)</div>
+      <div class="h">달러</div><div>약한 음(−)</div><div>혼재</div><div>보통 음(−)</div><div>1.0</div>
+    </div>
+    <p class="scrollhint">← 「일반적으로 관찰되는 평상시 경향」의 예시입니다. 실제 상관계수는 기간에 따라 크게 바뀝니다</p>
+
+    <p><b>2022년은 이 「평상시 공식」이 깨진 대표적인 해</b>였습니다. 인플레이션을 잡기 위해 중앙은행들이 <b>빠르게 금리를 올리자, 평소라면 반대로 움직여야 할 주식과 채권이 동시에 급락</b>했습니다. <b>금리 상승이라는 하나의 원인이 주식(할인율 상승 → 밸류에이션 하락)과 채권(가격이 금리와 반대로 움직임) 모두에 동시에 나쁘게 작용</b>했기 때문입니다.</p>
+    <p class="plain"><b>이것이 의미하는 것.</b> <b>「주식과 채권을 섞으면 항상 분산된다」는 가정에 기대어 포트폴리오를 짜면, 인플레이션 충격 국면에서는 그 가정이 무너질 수 있습니다.</b> 그래서 진짜 분산을 원한다면 <b>「국면이 바뀌어도 상관관계가 크게 흔들리지 않는 자산(원자재, 일부 대안자산)」을 함께 고려</b>하라는 조언이 나옵니다 — <a href="commodity-strategy.html">원자재 트랙 10편</a>에서 다룬 분산 원리와 이어집니다.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 6 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 자산 가격은 <b>성장·물가 조합(사계절), 금리를 통한 신흥국 전이, 전쟁·기근 같은 공급충격, 미중 패권 경쟁, 그리고 국면에 따라 바뀌는 자산군 상관관계</b>라는 거시적인 힘들에 영향을 받습니다.</p>
+      <p><b>이 편의 도구들은 예측이 아니라 「지금 어떤 힘이 작용하고 있는지 이름 붙이는 지도」</b>로 쓰는 것이 안전합니다.</p>
+    </div>
+  </section>
+
+    <nav class="pagenav">
+    <a href="dca-guide.html" class="pn-prev"><span class="pnlabel">◀ 이전편</span><span class="pntitle">11 · 시뮬레이터</span></a>
+    <a href="index.html#stock" class="pn-home"><span class="pnlabel">📚 목록</span><span class="pntitle">📈 주식 전체 보기</span></a>
+  </nav>
+
+<footer>
+    투자 공부 노트 · 주식 12 · 거시와 계절<br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    역사적 사례는 <b>단순화된 설명</b>이며, 실제 사건에는 이 편에서 다루지 않은 훨씬 많은 원인이 함께 작용했습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+var SEASONS = [
+  { t:'🌱 성장↑ 물가↓ — 골디락스', b:'경제는 성장하는데 물가는 안정적인, <b>가장 이상적인 조합</b>으로 흔히 불립니다. <b>주식(특히 성장주)이 유리한 경향</b>이 있습니다 — 기업 이익은 늘어나는데 금리 인상 압박은 크지 않기 때문입니다.' },
+  { t:'🔥 성장↑ 물가↑ — 리플레이션', b:'경제도 성장하고 물가도 오르는 국면입니다. <b>원자재·경기민감주(산업재, 금융)가 유리한 경향</b>이 있습니다 — 수요가 강해 가격 결정력이 있는 실물 자산과, 금리 상승의 수혜를 받는 은행 섹터가 부각되는 경우가 많습니다.' },
+  { t:'🥶 성장↓ 물가↑ — 스태그플레이션', b:'가장 다루기 어려운 조합입니다. <b>현금·금·일부 원자재가 상대적으로 선호</b>되는 경향이 있습니다. 주식과 채권 모두 <b>동시에 부진하기 쉬운 국면</b>입니다(1970년대가 대표 사례).' },
+  { t:'❄️ 성장↓ 물가↓ — 디플레이션', b:'경기 침체와 물가 하락이 겹치는 국면입니다. <b>국채 등 안전자산이 유리한 경향</b>이 있습니다 — 중앙은행이 금리를 낮추며 채권 가격이 오르고, 위험자산에서 자금이 이탈하는 경우가 많습니다.' }
+];
+function seasonDraw(i){
+  var s = SEASONS[i];
+  verdict('seasonVerdict', 'var(--sp1)', s.t, s.b);
+}
+bindBtnRow('#seasonQuad', function(v){ seasonDraw(+v); });
+seasonDraw(0);
+
+function emDraw(){
+  var fx = +document.getElementById('emFx').value;
+  document.getElementById('emFxOut').textContent = '+' + fx + '%';
+
+  var debtAfter = 100 * (1 + fx/100);
+
+  document.getElementById('emSteps').innerHTML =
+    '<div class="steprow"><span class="sk">달러 표시 부채(불변)</span><span class="sv">100</span></div>' +
+    '<div class="steprow"><span class="sk">자국 통화 가치 하락률</span><span class="sv">' + fx + '%</span></div>' +
+    '<div class="steprow total"><span class="sk">자국 통화 환산 부채</span><span class="sv">' + debtAfter.toFixed(0) + '</span></div>';
+
+  document.getElementById('emDebt').textContent = debtAfter.toFixed(0);
+  document.getElementById('emDebt').style.color = fx > 0 ? 'var(--neg)' : '';
+  document.getElementById('emIncrease').textContent = '+' + fx + '%';
+}
+document.getElementById('emFx').addEventListener('input', emDraw);
+emDraw();
+</script>
+</body>
+</html>

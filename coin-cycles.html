@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>반감기·로그스케일과 알트코인의 역사적 이벤트</title>
+<meta name="description" content="비트코인 반감기와 로그스케일·파워로우 예측모델을 비판적으로 검증하고, 이더리움·리플이 오르내린 역사적 이벤트와 시장 전체를 흔든 규제·거시 사건을 정리하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F6F3EC;--ink:#232019;--ink-soft:#5B5648;--rule:#D9D2C0;--card:#FCFBF7;
+    --btc:#B8860B;--eth:#3A5A8E;--xrp:#4C7A6D;--warn:#8E4B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  .keyline{background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--edge2,var(--btc));border-radius:3px;padding:22px 24px;margin:26px 0;text-align:center;}
+  .keyline .kt{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--edge2,var(--btc));margin-bottom:12px;}
+  .keyline .kb{font-family:'Newsreader',serif;font-size:20px;line-height:1.5;color:var(--ink);}
+  .keyline .kb b{color:var(--edge2,var(--btc));}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+    .keyline .kb{font-size:17px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">코인 09 · 사이클과 사건 · 투자 공부 노트</div>
+    <h1>반감기·로그스케일과<br>알트코인의 역사적 이벤트</h1>
+    <p class="lede">"로그스케일로 보면 다음 가격이 예측된다"는 말을 들어본 적 있을 겁니다. 이 편은 그 주장의 <b>구조를 이해하고, 실제로 얼마나 잘 맞았는지 직접 검증</b>합니다. 그리고 이더리움·리플이 <b>구체적으로 어떤 사건에 오르내렸는지</b> 역사를 정리합니다.</p>
+    <div class="callout">
+      <p><b>먼저 밝혀둘 결론</b> — 반감기·로그스케일·파워로우 모델은 <b>「그럴듯한 이야기」이지 「검증된 예측 도구」가 아닙니다.</b> 이 편의 계산기로 <b>왜 그런지</b> 직접 확인해보세요.</p>
+      <p>⚠️ 이 편의 가격 수치는 <b>학습 목적의 예시</b>이며, 실제 정확한 시세·날짜는 자료마다 다를 수 있습니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="모델의 수식과 한계까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#halving">1. 반감기의 원리</a>
+    <a href="#logscale">2. 로그스케일의 착시</a>
+    <a href="#powerlaw">3. 파워로우 모델 검증</a>
+    <a href="#eth">4. 이더리움의 순간들</a>
+    <a href="#xrp">5. 리플의 순간들</a>
+    <a href="#market">6. 시장 전체를 흔든 사건</a>
+    <a href="#note">7. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="halving">
+    <div class="prod-head" style="--edge:var(--btc)">
+      <span class="prod-tag">01 · 반감기</span>
+      <h2>4년마다 절반이 되는 채굴 보상</h2>
+      <p class="one">비트코인은 <b>공급이 늘어나는 속도가 미리 정해져 있고, 4년마다 그 속도가 절반</b>이 됩니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>비트코인을 캐는 사람(채굴자)들은 <b>새 블록을 만들 때마다 보상으로 새 비트코인</b>을 받아. 그런데 이 보상이 <b>대략 4년마다 딱 절반</b>으로 줄어들도록 처음부터 프로그램돼 있어. <b>「같은 노력을 들여도 예전의 절반만 받는다」</b>는 뜻이야.</p>
+      <p>그래서 사람들은 <b>「새로 나오는 양이 줄어드니까 가격이 오르지 않을까」</b>라고 생각해. 수요가 그대로인데 <b>공급 증가 속도가 느려지면 가격이 오른다는 기본적인 경제 원리</b>는 맞습니다. 문제는 <b>「얼마나, 언제」까지 정확히 맞히는 건 완전히 다른 이야기</b>라는 점이에요.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>회차</th><th>시기(대략)</th><th>블록당 보상</th></tr></thead>
+        <tbody>
+          <tr><th>시작</th><td>2009년</td><td>50 BTC</td></tr>
+          <tr><th>1차 반감기</th><td>2012년 11월</td><td>25 BTC</td></tr>
+          <tr><th>2차 반감기</th><td>2016년 7월</td><td>12.5 BTC</td></tr>
+          <tr><th>3차 반감기</th><td>2020년 5월</td><td>6.25 BTC</td></tr>
+          <tr><th>4차 반감기</th><td>2024년 4월</td><td>3.125 BTC</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 다음 반감기는 2028년경으로 예상됩니다(정확한 날짜는 채굴 속도에 따라 변동)</p>
+
+    <div class="deep">
+      <h3>「반감기 후 N개월 뒤 고점」이라는 법칙이 위험한 이유</h3>
+      <p>과거 세 번의 반감기 이후 실제로 <b>강세장이 뒤따른 경우가 많았습니다.</b> 그런데 이 관찰은 <b>표본이 서너 개뿐</b>입니다. <a href="coin-invest.html">08편</a>에서 다뤘듯, <b>표본이 서너 개면 어떤 규칙이든 만들어낼 수 있습니다.</b> 게다가 <b>같은 기간 동안 전 세계 금리·유동성 환경도 함께 바뀌고 있었기 때문에</b>, "반감기 때문에" 오른 것인지 "마침 그 시기에 유동성이 풍부했기 때문에" 오른 것인지 <b>분리해서 증명하기 어렵습니다.</b></p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="logscale">
+    <div class="prod-head" style="--edge:var(--eth)">
+      <span class="prod-tag">02 · 착시</span>
+      <h2>로그스케일이 「보기 편해지는」 이유</h2>
+      <p class="one">가격이 아니라 <b>「가격이 몇 배로 뛰었는가」</b>를 보여주는 방식입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>1이 10이 되는 것과, 10000이 100000이 되는 것은 <b>둘 다 「10배가 됐다」는 점에서 똑같아.</b> 그런데 일반 그래프(선형축)로 그리면, <b>작은 숫자일 때의 변화는 너무 작아서 안 보이고 큰 숫자일 때의 변화만 어마어마하게</b> 보여. 로그축은 <b>「몇 배가 됐는지」를 같은 크기로</b> 그려줘서, <b>초기의 변화도 나중의 변화만큼 잘 보이게</b> 해줘.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">LINEAR vs LOG · 같은 데이터, 다른 축</div>
+      <p class="labsub">아래는 <b>학습용 예시 가격 곡선</b>입니다. 버튼을 눌러 <b>같은 데이터가 축에 따라 얼마나 다르게 보이는지</b> 확인하세요.</p>
+
+      <div class="btnrow" id="axBtns">
+        <button data-v="linear" class="on">선형축(일반 그래프)</button>
+        <button data-v="log">로그축</button>
+      </div>
+
+      <svg viewBox="0 0 640 240" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="선형축과 로그축 비교">
+        <g id="axScene"></g>
+      </svg>
+
+      <div class="plain">
+        <b>같은 데이터입니다.</b> 선형축에서는 <b>최근 구간의 등락만 거대하게</b> 보이고 초기 변화는 바닥에 눌려 보이지 않습니다. 로그축에서는 <b>초기의 「1달러 → 10달러」와 최근의 「10,000달러 → 100,000달러」가 그래프 상에서 똑같은 크기의 움직임</b>으로 그려집니다.<br><br>
+        <b>⚠️ 로그축은 「보기 좋게 바꾸는 도구」일 뿐, 미래를 예측해주지 않습니다.</b> 「로그로 보면 패턴이 보인다」는 말은, <b>사람 눈이 직선처럼 보이는 것에 유독 신뢰를 느끼는 심리적 착시</b>를 이용한 이야기에 가깝습니다.
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="powerlaw">
+    <div class="prod-head" style="--edge:var(--warn)">
+      <span class="prod-tag">03 · 검증</span>
+      <h2>파워로우(거듭제곱법칙) 모델, 실제로 맞았을까</h2>
+      <p class="one">"시간이 지날수록 가격이 일정한 규칙으로 커진다"는 모델을 <b>직접 검증</b>해봅니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">POWER LAW CHECK · 예시 모델과 예시 실제가를 비교하세요</div>
+      <p class="labsub">아래는 <b>두 지점(2013년 초, 2021년 초)을 지나도록 만든 학습용 가상의 파워로우 모델</b>입니다(실제 유명 모델의 정확한 계수가 아닙니다). 이 모델이 <b>다른 시점에서 실제(예시)와 얼마나 어긋나는지</b> 확인하세요.</p>
+
+      <div class="btnrow" id="plBtns">
+        <button data-v="0" class="on">2017-12 (예시 고점)</button>
+        <button data-v="1">2021-11 (예시 고점)</button>
+        <button data-v="2">2022-11 (예시 저점)</button>
+        <button data-v="3">2024-03 (예시 고점)</button>
+      </div>
+
+      <div class="steps-out" id="plSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">모델 예측가(예시)</span><span class="rv" id="plPred">—</span></div>
+        <div><span class="rk">실제 가격(예시)</span><span class="rv" id="plActual">—</span></div>
+      </div>
+
+      <div class="verdict" id="plVerdict" style="--vc:var(--warn)">
+        <div class="vh">오차</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> log10(가격) = a + b × log10(제네시스 이후 경과일). a, b는 <b>2013-01과 2021-01, 두 예시 지점을 지나도록</b> 역산했습니다. <b>이렇게 「과거의 두 점」으로만 모델을 만들면, 그 두 점 사이·바깥에서는 얼마든지 크게 어긋날 수 있습니다</b> — 그것이 이 계산기가 보여주는 것입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 이런 모델이 계속 인기 있을까</h3>
+      <p>파워로우나 스톡투플로우 같은 모델은 <b>실제로 유명한 애널리스트·투자자들이 발표해 널리 회자</b>되었고, <b>몇 년 동안은 그럴듯하게 맞아떨어지는 것처럼 보인 시기</b>도 있었습니다. 그런데 그런 모델들이 <b>이후 실제 가격과 크게 어긋난 시기가 왔다는 것도 공개적으로 널리 보도</b>되었습니다. <b>「몇 년간 맞았다」는 것은 「앞으로도 맞는다」를 보장하지 않습니다</b> — 이는 <a href="sector-decades.html">산업·섹터 트랙 07편</a>에서 다룬 "유행의 정점에서 확신이 가장 강하다"는 패턴과 같은 구조입니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="eth">
+    <div class="prod-head" style="--edge:var(--eth)">
+      <span class="prod-tag">04 · 이더리움</span>
+      <h2>이더리움이 오르내린 순간들</h2>
+      <p class="one">이더리움의 가격은 <b>기술적 이벤트와 그 위에서 벌어진 「유행」이 함께</b> 움직였습니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">ETH TIMELINE · 눌러서 각 사건을 확인하세요</div>
+      <p class="labsub"></p>
+
+      <div class="btnrow" id="ethBtns">
+        <button data-v="0" class="on">2016 · The DAO 해킹</button>
+        <button data-v="1">2017 · ICO 붐</button>
+        <button data-v="2">2020 · DeFi 서머</button>
+        <button data-v="3">2021 · NFT 붐 · EIP-1559</button>
+        <button data-v="4">2022 · The Merge</button>
+        <button data-v="5">2024 · 현물 ETF</button>
+      </div>
+
+      <div class="verdict" id="ethVerdict" style="--vc:var(--eth)">
+        <div class="vh">사건</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 5 -->
+  <section id="xrp">
+    <div class="prod-head" style="--edge:var(--xrp)">
+      <span class="prod-tag">05 · 리플</span>
+      <h2>리플이 오르내린 순간들</h2>
+      <p class="one">리플(XRP)의 가격은 <b>기술보다 「소송과 규제」에 더 크게 흔들려온 대표적인 사례</b>입니다.</p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">XRP TIMELINE · 눌러서 각 사건을 확인하세요</div>
+      <p class="labsub"></p>
+
+      <div class="btnrow" id="xrpBtns">
+        <button data-v="0" class="on">2017-18 · 알트코인 붐 편승</button>
+        <button data-v="1">2020.12 · SEC 소송 제기</button>
+        <button data-v="2">2023.7 · 부분 승소</button>
+        <button data-v="3">은행 파트너십 뉴스</button>
+      </div>
+
+      <div class="verdict" id="xrpVerdict" style="--vc:var(--xrp)">
+        <div class="vh">사건</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>「소송 리스크」라는 것이 코인에도 있다는 것</h3>
+      <p>주식(사업 자체의 소송 리스크)이나 재무제표(회계 부정 소송)에서 보던 <b>「법적 불확실성이 가격에 직접 반영되는 현상」</b>이 코인에서도 똑같이 나타납니다. <b>「이 코인이 미국법상 증권으로 분류되는가」</b>라는 하나의 법적 질문이 <b>몇 년간 가격의 가장 큰 변수</b>가 되기도 합니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 6 -->
+  <section id="market">
+    <div class="prod-head" style="--edge:var(--neutral)">
+      <span class="prod-tag">06 · 시장 전체</span>
+      <h2>코인 시장 전체를 흔든 규제·거시 사건</h2>
+      <p class="one">개별 코인이 아니라 <b>시장 전체가 함께 흔들린 사건들</b>입니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>시기(대략)</th><th>사건</th><th>영향</th></tr></thead>
+        <tbody>
+          <tr><th>2021.5~6</th><td>중국, 비트코인 채굴 전면 금지</td><td>해시레이트 급락, 채굴장 해외(미국 등) 이전, 단기 공급 충격</td></tr>
+          <tr><th>2022.5</th><td>테라·루나 스테이블코인 붕괴</td><td>스테이블코인 전반에 대한 신뢰 위기, 연쇄 매도</td></tr>
+          <tr><th>2022.11</th><td>대형 거래소 FTX 파산</td><td>시장 전체 신뢰 위기, 장기 약세장 진입의 계기 중 하나</td></tr>
+          <tr><th>2024.1</th><td>미국 현물 비트코인 ETF 승인</td><td>기관 자금이 들어올 수 있는 새로운 통로 개설</td></tr>
+          <tr><th>지속적</th><td>각국 규제 프레임워크 정비(스테이블코인법, 거래소 인가 등)</td><td>제도권 편입 신호로 해석되기도, 규제 강화 우려로 해석되기도 함</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 정확한 날짜·수치는 자료마다 다를 수 있으니 <b>최신 뉴스로 확인</b>하세요</p>
+
+    <div class="deep">
+      <h3>코인도 결국 「유동성」과 「신뢰」로 움직인다</h3>
+      <p>위 사건들을 관통하는 공통점은 <b>「돈이 얼마나 들어올 수 있는가(유동성·제도적 접근성)」와 「이 시스템을 믿을 수 있는가(신뢰)」</b> 두 가지입니다. <b>중앙은행이 금리를 낮춰 유동성이 풍부해지면 코인 같은 위험자산에도 돈이 흘러들고</b>, 반대로 <b>금리가 오르며 유동성이 마르면 코인부터 먼저 빠지는 경향</b>이 있습니다. 이 원리는 <a href="macro-guide.html">주식 트랙의 금리·유동성 개념(macro-guide)</a>과 근본적으로 같습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 7 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 반감기는 <b>실재하는 공급 감소 이벤트</b>이지만, <b>「언제 얼마나 오른다」를 정확히 맞히는 로그스케일·파워로우 모델은 검증된 도구가 아닙니다.</b> 이더리움·리플의 가격은 <b>기술 이벤트, 유행, 그리고 특히 리플의 경우 소송·규제</b>에 크게 좌우되어 왔고, 시장 전체는 <b>유동성과 신뢰</b>라는 두 축으로 함께 움직입니다.</p>
+      <p><b>예측 모델을 하나의 「이야기」로 참고하는 것은 괜찮지만, 그것을 근거로 큰 금액을 걸지 않는 것</b>이 이 편의 결론입니다.</p>
+    </div>
+  </section>
+
+    <nav class="pagenav">
+    <a href="coin-invest.html" class="pn-prev"><span class="pnlabel">◀ 이전편</span><span class="pntitle">08 · 투자 실전</span></a>
+    <a href="index.html#coin" class="pn-home"><span class="pnlabel">📚 목록</span><span class="pntitle">🪙 코인 전체 보기</span></a>
+  </nav>
+
+<footer>
+    투자 공부 노트 · 코인 09 · 사이클과 사건<br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    가격·날짜는 학습 목적의 <b>예시</b>이며 실제 수치와 다를 수 있습니다. 정확한 시세와 사건 경위는 공식 자료로 확인하세요.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+/* ══════════ 로그/선형축 ══════════ */
+var AX_DATA = [
+  { t:2011, v:1 },
+  { t:2013, v:1000 },
+  { t:2015, v:300 },
+  { t:2017.9, v:19000 },
+  { t:2018.9, v:3200 },
+  { t:2021.3, v:64000 },
+  { t:2021.9, v:69000 },
+  { t:2022.9, v:16000 },
+  { t:2024.2, v:73000 }
+];
+function axDraw(mode){
+  var X0=62, W=553, Y0=195, H=155;
+  var minT = AX_DATA[0].t, maxT = AX_DATA[AX_DATA.length-1].t;
+  function xx(t){ return X0 + (t-minT)/(maxT-minT)*W; }
+  var vals = AX_DATA.map(function(d){ return d.v; });
+  var maxV = Math.max.apply(null, vals), minV = Math.min.apply(null, vals);
+  var yy = mode==='linear'
+    ? function(v){ return Y0 - v/maxV*H; }
+    : function(v){ return Y0 - (Math.log10(v)-Math.log10(minV))/(Math.log10(maxV)-Math.log10(minV))*H; };
+
+  var g='';
+  g += '<text class="axt" x="'+X0+'" y="18">예시 가격 곡선(달러, '+(mode==='linear'?'선형':'로그')+' 표시)</text>';
+  g += '<line x1="'+X0+'" y1="'+Y0+'" x2="'+(X0+W)+'" y2="'+Y0+'" class="axis"/>';
+  var gridVals = mode==='linear' ? [0,0.25,0.5,0.75,1].map(function(f){ return maxV*f; }) : [1,10,100,1000,10000,100000];
+  gridVals.forEach(function(v){
+    var y = yy(v);
+    g += '<line x1="'+X0+'" y1="'+y.toFixed(1)+'" x2="'+(X0+W)+'" y2="'+y.toFixed(1)+'" class="gridl"/>';
+    g += '<text class="axt" x="'+(X0-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">$'+Math.round(v).toLocaleString('en-US')+'</text>';
+  });
+  var pts = AX_DATA.map(function(d){ return xx(d.t).toFixed(1)+' '+yy(d.v).toFixed(1); });
+  g += '<path d="M'+pts.join(' L')+'" fill="none" stroke="#B8860B" stroke-width="2.4"/>';
+  AX_DATA.forEach(function(d){
+    g += '<circle cx="'+xx(d.t).toFixed(1)+'" cy="'+yy(d.v).toFixed(1)+'" r="3.5" fill="#B8860B"/>';
+  });
+  g += '<text class="axt" x="'+X0+'" y="'+(Y0+18)+'">'+AX_DATA[0].t+'</text>';
+  g += '<text class="axt" x="'+(X0+W)+'" y="'+(Y0+18)+'" text-anchor="end">'+AX_DATA[AX_DATA.length-1].t+'</text>';
+  document.getElementById('axScene').innerHTML = g;
+}
+bindBtnRow('#axBtns', function(v){ axDraw(v); });
+axDraw('linear');
+
+/* ══════════ 파워로우 검증 ══════════ */
+var GENESIS = new Date('2009-01-03').getTime();
+function daysSince(dateStr){ return (new Date(dateStr).getTime()-GENESIS)/(1000*60*60*24); }
+var D1=daysSince('2013-01-01'), P1=Math.log10(13);
+var D2=daysSince('2021-01-01'), P2=Math.log10(29000);
+var PL_B=(P2-P1)/(Math.log10(D2)-Math.log10(D1));
+var PL_A=P1-PL_B*Math.log10(D1);
+function plPredict(dateStr){ return Math.pow(10, PL_A+PL_B*Math.log10(daysSince(dateStr))); }
+
+var PL_CHECKPOINTS = [
+  { date:'2017-12-01', actual:19000, label:'2017-12' },
+  { date:'2021-11-01', actual:69000, label:'2021-11' },
+  { date:'2022-11-01', actual:16000, label:'2022-11' },
+  { date:'2024-03-01', actual:73000, label:'2024-03' }
+];
+function plDraw(idx){
+  var c = PL_CHECKPOINTS[idx];
+  var pred = plPredict(c.date);
+  var err = (pred/c.actual - 1) * 100;
+
+  document.getElementById('plSteps').innerHTML =
+    '<div class="steprow"><span class="sk">경과일(제네시스 이후)</span><span class="sv">' + Math.round(daysSince(c.date)).toLocaleString('ko-KR') + '일</span></div>' +
+    '<div class="steprow total"><span class="sk">모델 오차 = 예측/실제 − 1</span><span class="sv">' + (err>=0?'+':'') + err.toFixed(0) + '%</span></div>';
+
+  document.getElementById('plPred').textContent = '$' + Math.round(pred).toLocaleString('en-US');
+  document.getElementById('plActual').textContent = '$' + c.actual.toLocaleString('en-US');
+
+  var col, title, body;
+  if(Math.abs(err) < 20){
+    col='#4C7A6D'; title='이 시점에서는 비교적 비슷했습니다';
+    body='모델과 실제(예시)의 차이가 <b>' + Math.abs(err).toFixed(0) + '%</b>로 크지 않습니다. 하지만 다른 버튼도 눌러보면 <b>훨씬 크게 어긋나는 시점</b>이 있습니다.';
+  } else if(err > 0){
+    col='#8E4B3A'; title='모델이 실제보다 훨씬 높게 예측했습니다';
+    body='모델은 <b>$' + Math.round(pred).toLocaleString('en-US') + '</b>를 예측했지만, 실제(예시)는 <b>$' + c.actual.toLocaleString('en-US') + '</b>였습니다 — <b>' + err.toFixed(0) + '% 과대예측</b>입니다. 이 시점에 이 모델을 믿고 "지금이 바닥이니 더 오를 일만 남았다"고 판단했다면 큰 손실로 이어질 수 있었습니다.';
+  } else {
+    col='#8E6B3A'; title='모델이 실제보다 훨씬 낮게 예측했습니다';
+    body='모델은 <b>$' + Math.round(pred).toLocaleString('en-US') + '</b>를 예측했지만, 실제(예시)는 <b>$' + c.actual.toLocaleString('en-US') + '</b>였습니다 — <b>' + Math.abs(err).toFixed(0) + '% 과소예측</b>입니다. 이번엔 반대로, 모델을 믿고 "고평가"라며 일찍 팔았다면 이후 상승분을 놓쳤을 것입니다.';
+  }
+  verdict('plVerdict', col, title, body);
+}
+bindBtnRow('#plBtns', function(v){ plDraw(+v); });
+plDraw(0);
+
+/* ══════════ 이더리움 타임라인 ══════════ */
+var ETH_EVENTS = [
+  { t:'2016 · The DAO 해킹', b:'이더리움 기반의 탈중앙 투자펀드 「The DAO」가 해킹당해 대규모 자금이 빠져나갔습니다. 커뮤니티는 <b>거래를 되돌리는 하드포크</b>를 단행했고, 이에 반대한 그룹이 <b>이더리움클래식(ETC)</b>으로 갈라져 나갔습니다. "코드가 곧 법"이라는 이상과 현실 사이의 첫 번째 큰 충돌 사례입니다.' },
+  { t:'2017 · ICO 붐', b:'누구나 이더리움 위에서 손쉽게 <b>새 토큰을 발행해 자금을 모을 수 있는(ICO)</b> 열풍이 불며, 이더리움 자체 수요가 급증했습니다. 이후 대부분의 ICO 프로젝트가 실패하며 <b>2018년 약세장의 원인 중 하나</b>가 되기도 했습니다.' },
+  { t:'2020 · DeFi 서머', b:'탈중앙 금융(DeFi) 서비스에 코인을 맡기고 이자를 받는 「이자농사」가 유행하며 이더리움 사용량과 <b>가스비(수수료)가 급등</b>했습니다. 네트워크 사용량 자체가 늘어난다는 내러티브가 가격 상승을 뒷받침했습니다.' },
+  { t:'2021 · NFT 붐 · EIP-1559', b:'대체불가토큰(NFT) 거래가 폭발적으로 늘며 추가 수요가 생겼고, 같은 해 <b>EIP-1559 업그레이드로 거래 수수료 일부가 소각(영구 삭제)</b>되기 시작해 공급 감소 요인이 더해졌습니다.' },
+  { t:'2022 · The Merge', b:'이더리움이 <b>작업증명(PoW)에서 지분증명(PoS)으로 전환</b>했습니다. 채굴 보상이 사라지며 신규 발행량이 크게 줄어, "울트라 사운드 머니(초건전화폐)"라는 내러티브가 등장했습니다. 같은 해 테라·루나 붕괴와 FTX 파산이 겹치며 <b>전체 시장은 오히려 약세</b>였습니다 — 개별 호재가 시장 전체 악재를 이기지 못한 사례입니다.' },
+  { t:'2024 · 현물 ETF', b:'미국에서 <b>이더리움 현물 ETF가 승인</b>되며 기관 자금이 들어올 수 있는 새로운 통로가 열렸습니다.' }
+];
+function ethDraw(i){
+  var e = ETH_EVENTS[i];
+  verdict('ethVerdict', 'var(--eth)', e.t, e.b);
+}
+bindBtnRow('#ethBtns', function(v){ ethDraw(+v); });
+ethDraw(0);
+
+/* ══════════ 리플 타임라인 ══════════ */
+var XRP_EVENTS = [
+  { t:'2017~2018 · 알트코인 붐 편승', b:'비트코인·이더리움이 급등하던 시기, 은행간 송금 솔루션을 표방한 리플도 <b>알트코인 전반의 투기 열풍에 편승해 크게 상승</b>했습니다. 이후 버블이 꺼지며 다른 알트코인과 함께 크게 하락했습니다.' },
+  { t:'2020.12 · SEC 소송 제기', b:'미국 증권거래위원회(SEC)가 리플랩스를 상대로 <b>「미등록 증권을 판매했다」며 소송을 제기</b>했습니다. 법적 불확실성 때문에 <b>여러 미국 거래소가 XRP 상장을 일시 중단·폐지</b>했고, 가격이 급락했습니다.' },
+  { t:'2023.7 · 부분 승소', b:'법원이 <b>「일반 투자자 대상 거래소 판매는 증권법 위반이 아니다」는 취지의 부분 승소 판결</b>을 내리며 XRP 가격이 급등했습니다. 소송이라는 하나의 사법적 사건이 가격에 얼마나 직접적인 영향을 주는지 보여준 사례입니다.' },
+  { t:'은행 파트너십 뉴스', b:'리플랩스가 <b>해외 송금·유동성 공급 서비스를 위해 은행·금융기관과 파트너십</b>을 맺었다는 뉴스가 나올 때마다 "실사용 채택이 늘어난다"는 기대로 단기 상승 반응이 나타나는 경우가 많았습니다. 다만 <b>파트너십 발표가 실제 대규모 사용량 증가로 이어졌는지는 별도로 검증</b>해야 합니다.' }
+];
+function xrpDraw(i){
+  var e = XRP_EVENTS[i];
+  verdict('xrpVerdict', 'var(--xrp)', e.t, e.b);
+}
+bindBtnRow('#xrpBtns', function(v){ xrpDraw(+v); });
+xrpDraw(0);
+</script>
+</body>
+</html>
