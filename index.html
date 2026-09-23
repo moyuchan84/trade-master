@@ -45,6 +45,11 @@
     --ln2:#3F5A6F;
     --ln3:#7A5535;
     --ln4:#7A3F3F;
+    /* 투자전략 트랙 */
+    --sg1:#3A5A8E;
+    --sg2:#9E7A2E;
+    --sg3:#7A5C9E;
+    --sg4:#4C7A6D;
     --b1:#4C6B7A;
     --b2:#7A5C3A;
     --b3:#5F7A52;
@@ -293,6 +298,7 @@
       <button data-t="sector">🏭 산업·섹터 <span class="cnt">10편</span></button>
       <button data-t="finstate">📊 재무제표 <span class="cnt">10편</span></button>
       <button data-t="loan">🏦 대출·상환 <span class="cnt">7편</span></button>
+      <button data-t="strategy">🎯 투자전략 <span class="cnt">7편</span></button>
     </div>
   </header>
 
@@ -1652,6 +1658,107 @@
             <h3>대출 전략 총정리</h3>
             <p>3문항 진단으로 <b>나에게 맞는 상환방식·금리유형 조합</b>을 정리하며 트랙을 마무리합니다.</p>
             <div class="meta"><span>진단</span><span>체크리스트</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+  </div>
+  <div class="track" id="t-strategy">
+
+    <p class="tintro">포트폴리오 구성 원리부터 <b>투자 대가들의 철학, 퀀트 투자, 손절·익절, 보유 전략, 투자 격언</b>까지 <b>일곱 편</b>으로 정리합니다. <b>「최대한 잃지 않는 방향」</b>으로 투자하는 법을 찾는 트랙입니다. <b>01편(포트폴리오)</b>과 <b>07편(종합 체크리스트)</b>이 핵심입니다.</p>
+
+    <div class="start" style="--edge:var(--sg1)">
+      <div class="sh">처음이라면 — 이 세 편만 먼저</div>
+      <p>화려한 비법보다 <b>분산·규율·기대값 계산</b>이 먼저입니다.</p>
+      <ol>
+        <li><a href="strategy-portfolio.html">포트폴리오 구성의 기초</a> — 위험은 산수처럼 더해지지 않습니다</li>
+        <li><a href="strategy-stoploss.html">손절매와 익절</a> — 승률보다 손익비와 기대값</li>
+        <li><a href="strategy-checklist.html">잃지 않는 투자 체크리스트</a> — 리스크 예산과 포지션 사이징</li>
+      </ol>
+    </div>
+
+    <section class="part" style="--edge:var(--sg1)">
+      <div class="part-head">
+        <span class="part-num">PART A · 포트폴리오와 대가들</span>
+        <h2>구성 원리와 서로 다른 철학</h2>
+        <p>한 종목이 아니라 <b>포트폴리오로 접근해야 하는 이유</b>와, <b>서로 다른 시대의 서로 다른 답</b>을 봅니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="strategy-portfolio.html">
+            <span class="num">01 · 포트폴리오</span>
+            <h3>포트폴리오 구성의 기초</h3>
+            <p>두 자산을 섞으면 위험이 얼마나 줄어드는지, <b>상관관계 계산기</b>로 확인합니다.</p>
+            <div class="meta"><span>분산</span><span>상관관계</span><span>기대수익·변동성</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="strategy-masters.html">
+            <span class="num">02 · 대가들</span>
+            <h3>투자 대가들의 철학</h3>
+            <p>그레이엄·버핏·린치·달리오·사이먼스·소로스, <b>여섯 가지 철학과 각자에게 필요한 자원</b>을 비교합니다.</p>
+            <div class="meta"><span>가치투자</span><span>리스크 패리티</span><span>퀀트</span><span>매크로</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--sg2)">
+      <div class="part-head">
+        <span class="part-num">PART B · 규칙과 손익</span>
+        <h2>퀀트, 그리고 손절·익절</h2>
+        <p>규칙을 세우는 법과, <b>그 규칙이 미래에도 통할지 검증하는 법</b>입니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="strategy-quant.html">
+            <span class="num">03 · 퀀트</span>
+            <h3>퀀트 투자란 무엇인가</h3>
+            <p>규칙이 복잡해질수록 <b>표본 밖 성과가 오히려 나빠지는 과최적화</b>를 계산기로 확인합니다.</p>
+            <div class="meta"><span>팩터</span><span>오버피팅</span><span>백테스트</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="strategy-stoploss.html">
+            <span class="num">04 · 손절·익절</span>
+            <h3>손절매와 익절 — 언제 어떻게 정하나</h3>
+            <p><b>승률과 손익비로 기대값</b>을 계산하고, %기준과 변동성(ATR) 기준을 비교합니다.</p>
+            <div class="meta"><span>기대값</span><span>손익비</span><span>ATR</span></div>
+          </a>
+        </li>
+      </ol>
+    </section>
+
+    <section class="part" style="--edge:var(--sg3)">
+      <div class="part-head">
+        <span class="part-num">PART C · 태도와 종합</span>
+        <h2>보유 전략, 격언, 그리고 총정리</h2>
+        <p>얼마나 자주 움직일지, <b>그리고 흔들리지 않는 원칙</b>으로 트랙을 마무리합니다.</p>
+      </div>
+      <ol class="docs">
+        <li>
+          <a class="doc" href="strategy-holding.html">
+            <span class="num">05 · 보유전략</span>
+            <h3>보유 전략 — 매수 후 보유 vs 잦은 매매</h3>
+            <p><b>세금 이연과 매매비용</b>이 20년 뒤 자산에 만드는 차이를 계산기로 확인합니다.</p>
+            <div class="meta"><span>Buy&amp;Hold</span><span>과세이연</span><span>리밸런싱</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="strategy-proverbs.html">
+            <span class="num">06 · 격언</span>
+            <h3>투자 격언 해부</h3>
+            <p>"떨어지는 칼날은 잡지 마라"부터 "달리는 말에 올라타라"까지, <b>언제 맞고 언제 틀린지</b> 확인합니다.</p>
+            <div class="meta"><span>추세추종</span><span>역발상</span><span>과욕 경계</span></div>
+          </a>
+        </li>
+        <li>
+          <a class="doc" href="strategy-checklist.html">
+            <span class="num">07 · 종합</span>
+            <h3>잃지 않는 투자 체크리스트</h3>
+            <p>3문항 진단과 <b>리스크 예산·포지션 사이징 계산기</b>로 트랙을 마무리합니다.</p>
+            <div class="meta"><span>진단</span><span>포지션 사이징</span><span>체크리스트</span></div>
           </a>
         </li>
       </ol>

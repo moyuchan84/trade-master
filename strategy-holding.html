@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>보유 전략 — 매수 후 보유 vs 잦은 매매</title>
+<meta name="description" content="매수 후 보유(Buy and Hold)가 세금 이연과 비용 절감으로 잦은 매매를 이기는 구조를 계산기로 확인하고, 리밸런싱이라는 중간 지점을 정리하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F3F1EA;--ink:#201F1A;--ink-soft:#565246;--rule:#D9D2C0;--card:#FBFAF5;
+    --st1:#3A5A8E;--st2:#9E7A2E;--st3:#7A5C9E;--st4:#4C7A6D;--warn:#8E4B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">투자전략 05 · 보유전략 · 투자 공부 노트</div>
+    <h1>보유 전략 —<br>매수 후 보유 vs 잦은 매매</h1>
+    <p class="lede">"가만히 들고만 있어도 되나?"라는 질문에는 <b>수학적으로 꽤 명확한 답</b>이 있습니다. <b>매매 비용과 세금이 복리로 쌓이는 방식</b> 때문입니다.</p>
+    <div class="callout">
+      <p><b>핵심 원리</b> — 팔지 않으면 <b>세금을 미룰 수 있고(과세이연)</b>, <b>거래 비용 자체가 발생하지 않습니다.</b> 이 두 가지가 오랜 기간에 걸쳐 <b>생각보다 큰 차이</b>를 만듭니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="계산식과 예외까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 팔지 않으면 세금도 없다</a>
+    <a href="#lab">2. 계산기: 20년 뒤의 차이</a>
+    <a href="#rebalance">3. 리밸런싱이라는 중간 지점</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--st1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>팔지 않으면 세금 낼 일도 없다</h2>
+      <p class="one"><b>과세이연(세금을 나중으로 미루는 것)</b>이 복리로 쌓이면 큰 차이가 됩니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>저금통에 돈을 모으다가, <b>매달 저금통을 열어서 「그동안 늘어난 돈」에 대해 세금을 내야</b> 한다고 하자. 그럼 <b>매달 조금씩 떼이니까 다음 달에 굴릴 돈이 줄어들어.</b></p>
+      <p>반대로 <b>「저금통을 아예 안 열고 몇 년 뒤에 딱 한 번만 열면」</b>, 그 사이엔 <b>세금을 안 내니까 그 돈까지 계속 굴러가면서 불어나.</b> 이게 <b>「팔지 않고 오래 들고 있으면 유리하다」는 계산의 핵심</b>이야.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--st2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>20년 동안 매년 매매한 것과 그냥 보유한 것의 차이</h2>
+      <p class="one">같은 연 수익률이라도, <b>「언제 세금을 내는가」가 최종 결과를 바꿉니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">HOLD vs TRADE · 값을 슬라이더로 움직여보세요</div>
+      <p class="labsub">시작 자산 <b>100</b>, 매년 <b>동일한 수익률로 성장</b>한다고 가정합니다.</p>
+
+      <div class="ctrl-row">
+        <label for="hdGrowth">연 수익률(세전)</label>
+        <input type="range" id="hdGrowth" min="2" max="15" step="1" value="8">
+        <output id="hdGrowthOut">8%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdYears">보유 기간(년)</label>
+        <input type="range" id="hdYears" min="5" max="40" step="5" value="20">
+        <output id="hdYearsOut">20년</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdTax">양도소득세율</label>
+        <input type="range" id="hdTax" min="0" max="40" step="2" value="22">
+        <output id="hdTaxOut">22%</output>
+      </div>
+      <div class="ctrl-row">
+        <label for="hdCost">매매 1회당 비용(수수료+슬리피지)</label>
+        <input type="range" id="hdCost" min="0" max="2" step="0.1" value="0.5">
+        <output id="hdCostOut">0.5%</output>
+      </div>
+
+      <div class="steps-out" id="hdSteps"></div>
+
+      <div class="readout two">
+        <div><span class="rk">보유(Buy&amp;Hold) 최종 자산</span><span class="rv" id="hdHold">—</span></div>
+        <div><span class="rk">매년 매매 최종 자산</span><span class="rv" id="hdTrade">—</span></div>
+      </div>
+
+      <div class="verdict" id="hdVerdict" style="--vc:var(--st2)">
+        <div class="vh">비교</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>계산 기준.</b> 보유 전략은 <b>기간 끝에 딱 한 번만 세금</b>을 냅니다. 매년 매매 전략은 <b>매년 그해 오른 만큼 세금을 내고, 매매 비용도 매년 뗀 뒤 재투자</b>합니다. 두 전략 모두 <b>세전 연 수익률은 동일</b>하다고 가정합니다.<br><br>
+        <b>⚠️ 실제로는 손실이 난 해에는 세금을 안 내거나(손익통산), 장기보유 시 세율 우대가 있는 등 세부 규칙이 다를 수 있습니다.</b> 이 계산기는 <b>「이연 효과와 매매비용의 방향성」을 보여주는 단순화</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>수익률이 「매번 똑같이」 나지 않아도 결론은 비슷하다</h3>
+      <p>이 계산기는 <b>단순화를 위해 매년 똑같은 수익률</b>을 가정했지만, 실제로는 <b>오르는 해도 내리는 해도 있습니다.</b> 그래도 결론의 방향은 크게 다르지 않습니다 — <b>「자주 팔았다가 다시 사는 행위」 자체가 매번 비용과 세금이라는 「마찰」을 만들고, 그 마찰이 복리로 쌓이기 때문</b>입니다. <a href="finstate-lifecycle.html">재무제표 트랙 08편</a>에서 다룬 「기업의 자본조달」처럼, <b>「가만히 두면 저절로 불어나는 것을 굳이 건드려서 마찰을 만들 필요가 있는가」</b>를 항상 자문해보는 것이 좋습니다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="rebalance">
+    <div class="prod-head" style="--edge:var(--st3)">
+      <span class="prod-tag">03 · 절충</span>
+      <h2>완전히 안 파는 것도 답은 아니다 — 리밸런싱</h2>
+      <p class="one">가만히만 두면 <b>포트폴리오 비중이 원래 계획과 어긋나게 됩니다.</b></p>
+    </div>
+
+    <p>주식이 많이 올라 포트폴리오에서 <b>원래 60%였던 주식 비중이 80%로 커졌다면</b>, <b>내 의도보다 훨씬 위험한 포트폴리오</b>가 되어 있는 셈입니다. <b>「연 1회, 또는 비중이 일정 폭 이상 벌어졌을 때만」 원래 비중으로 되돌리는 리밸런싱</b>은 <b>완전한 무매매와 잦은 매매 사이의 절충안</b>입니다.</p>
+    <p class="plain"><b>리밸런싱의 부가 효과.</b> 리밸런싱은 <b>구조적으로 「많이 오른 것을 조금 팔고, 덜 오른 것을 조금 사는」 방식</b>이라, 의도치 않게 <b>「비쌀 때 팔고 쌀 때 사는」 효과</b>가 생깁니다. 이는 <a href="commodity-strategy.html">원자재 트랙 10편</a>에서 다룬 리밸런싱 시뮬레이터와 같은 원리입니다. 다만 <b>리밸런싱도 매매인 이상 위에서 본 세금·비용은 그대로 발생</b>하므로, <b>너무 자주 하지 않는 것</b>이 좋습니다.</p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 매수 후 보유는 <b>세금 이연과 매매비용 절감이라는 두 가지 구조적 이점</b>을 가지며, 이는 오랜 기간에 걸쳐 복리로 쌓여 큰 차이를 만듭니다. <b>리밸런싱은 완전한 무매매와 잦은 매매 사이의 절충안</b>입니다.</p>
+      <p><b>다음 편은 06편 — 투자 격언 해부</b>입니다. "떨어지는 칼날은 잡지 마라"부터 "달리는 말에 올라타라"까지, <b>언제 맞고 언제 틀린지</b> 봅니다.</p>
+    </div>
+  </section>
+
+    <nav class="pagenav">
+    <a href="strategy-stoploss.html" class="pn-prev"><span class="pnlabel">◀ 이전편</span><span class="pntitle">04 · 손절·익절</span></a>
+    <a href="index.html#strategy" class="pn-home"><span class="pnlabel">📚 목록</span><span class="pntitle">🎯 투자전략 전체 보기</span></a>
+    <a href="strategy-proverbs.html" class="pn-next"><span class="pnlabel">다음편 ▶</span><span class="pntitle">06 · 격언</span></a>
+  </nav>
+
+<footer>
+    투자 공부 노트 · 투자전략 05 · 보유전략<br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    세율·비용 수치는 <b>구조 설명을 위한 예시</b>이며 실제 세법·수수료는 다를 수 있습니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function buyHold(P0, g, years, taxRate){
+  var final = P0*Math.pow(1+g,years);
+  var gain = final-P0;
+  return P0 + gain*(1-taxRate);
+}
+function activeTrade(P0, g, years, taxRate, costPct){
+  var bal = P0;
+  for(var y=0;y<years;y++){
+    var grown = bal*(1+g);
+    var gain = grown-bal;
+    var afterTax = bal + gain*(1-taxRate);
+    bal = afterTax*(1-costPct);
+  }
+  return bal;
+}
+function hdDraw(){
+  var g = +document.getElementById('hdGrowth').value/100;
+  var years = +document.getElementById('hdYears').value;
+  var taxRate = +document.getElementById('hdTax').value/100;
+  var costPct = +document.getElementById('hdCost').value/100;
+  document.getElementById('hdGrowthOut').textContent = (g*100).toFixed(0) + '%';
+  document.getElementById('hdYearsOut').textContent = years + '년';
+  document.getElementById('hdTaxOut').textContent = (taxRate*100).toFixed(0) + '%';
+  document.getElementById('hdCostOut').textContent = (costPct*100).toFixed(1) + '%';
+
+  var hold = buyHold(100, g, years, taxRate);
+  var trade = activeTrade(100, g, years, taxRate, costPct);
+  var diff = hold - trade;
+  var diffPct = trade>0 ? diff/trade*100 : 0;
+
+  document.getElementById('hdSteps').innerHTML =
+    '<div class="steprow"><span class="sk">보유 전략 최종 자산(세후, 100 기준)</span><span class="sv">' + hold.toFixed(1) + '</span></div>' +
+    '<div class="steprow"><span class="sk">매년 매매 전략 최종 자산(세후·비용후)</span><span class="sv">' + trade.toFixed(1) + '</span></div>' +
+    '<div class="steprow total"><span class="sk">차이</span><span class="sv">+' + diff.toFixed(1) + ' (상대 +' + diffPct.toFixed(0) + '%)</span></div>';
+
+  document.getElementById('hdHold').textContent = hold.toFixed(1);
+  document.getElementById('hdTrade').textContent = trade.toFixed(1);
+
+  var col, title, body;
+  if(diffPct > 30){
+    col='#4C7A6D'; title='보유 전략이 크게 유리합니다';
+    body='<b>' + years + '년 동안 보유 전략이 매년 매매 전략보다 ' + diffPct.toFixed(0) + '% 더 큰 자산</b>을 남깁니다. 세율과 매매비용이 클수록 이 차이는 더 벌어집니다.';
+  } else if(diffPct > 5){
+    col='#8E6B3A'; title='보유 전략이 어느 정도 유리합니다';
+    body='보유 전략이 <b>' + diffPct.toFixed(0) + '% 더 큰 자산</b>을 남깁니다. 세율·비용이 낮은 조합이라 차이가 크지 않습니다.';
+  } else {
+    col='#5B5648'; title='두 전략의 차이가 크지 않습니다';
+    body='이 조합(낮은 세율·낮은 비용)에서는 <b>두 전략의 차이가 ' + diffPct.toFixed(0) + '%로 미미</b>합니다. 다만 <b>매매 자체의 판단 위험(잘못된 타이밍)은 이 계산에 포함되지 않았습니다.</b>';
+  }
+  verdict('hdVerdict', col, title, body);
+}
+['hdGrowth','hdYears','hdTax','hdCost'].forEach(function(id){
+  document.getElementById(id).addEventListener('input', hdDraw);
+});
+hdDraw();
+</script>
+</body>
+</html>

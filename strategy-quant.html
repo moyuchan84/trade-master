@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>퀀트 투자란 무엇인가</title>
+<meta name="description" content="규칙 기반 투자의 원리, 가치·모멘텀·퀄리티·저변동성 팩터, 그리고 백테스트가 복잡해질수록 실전에서 무너지는 과최적화(오버피팅)를 계산기로 확인하는 학습 자료.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="interactive.css">
+<style>
+  :root{
+    --paper:#F3F1EA;--ink:#201F1A;--ink-soft:#565246;--rule:#D9D2C0;--card:#FBFAF5;
+    --st1:#3A5A8E;--st2:#9E7A2E;--st3:#7A5C9E;--st4:#4C7A6D;--warn:#8E4B3A;--neutral:#5B5648;
+    --warn-bg:#F1E6DD;--warn-ink:#6B3A22;--pos:#4C7A6D;--neg:#8E4B3A;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:'IBM Plex Sans KR',sans-serif;line-height:1.7;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:820px;margin:0 auto;padding:64px 24px 100px;}
+  h1,h2,h3,h4{font-family:'Newsreader',serif;font-weight:600;letter-spacing:-0.01em;color:var(--ink);}
+  header.top{margin-bottom:8px;}
+  .kicker{font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-soft);margin-bottom:14px;}
+  h1{font-size:36px;line-height:1.28;margin:0 0 18px;}
+  .lede{font-size:16.5px;color:var(--ink-soft);max-width:62ch;margin:0;}
+  .callout{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:18px 20px;font-size:14.5px;margin:28px 0 0;border-radius:2px;}
+  .callout b{font-weight:600;}
+  .callout p{margin:0;font-size:14.5px;color:inherit;max-width:none;}
+  .callout p + p{margin-top:10px;}
+  nav.toc{margin:24px 0 56px;padding:20px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);display:flex;flex-wrap:wrap;gap:8px 18px;font-family:'IBM Plex Mono',monospace;font-size:13px;}
+  nav.toc a{color:var(--ink-soft);text-decoration:none;border-bottom:1px dotted var(--rule);}
+  nav.toc a:hover{color:var(--ink);}
+  section{margin:0 0 66px;scroll-margin-top:20px;}
+  .prod-head{border-left:3px solid var(--edge,var(--rule));padding-left:18px;margin-bottom:22px;}
+  .prod-tag{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--edge,var(--ink-soft));display:block;margin-bottom:6px;}
+  .prod-head h2{font-size:26px;margin:0 0 8px;line-height:1.32;}
+  .prod-head .one{font-size:15px;color:var(--ink-soft);margin:0;max-width:60ch;}
+  h3{font-size:18px;margin:32px 0 10px;}
+  p{font-size:15.2px;margin:0 0 14px;max-width:66ch;}
+  .tablewrap{overflow-x:auto;margin:24px 0 6px;-webkit-overflow-scrolling:touch;}
+  table.cmp{border-collapse:collapse;width:100%;min-width:640px;font-size:13.4px;background:var(--card);}
+  table.cmp th,table.cmp td{border:1px solid var(--rule);padding:10px 13px;text-align:left;vertical-align:top;line-height:1.58;}
+  table.cmp thead th{background:#EFEADF;font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:500;white-space:nowrap;}
+  table.cmp tbody th{font-family:'IBM Plex Mono',monospace;font-size:11.5px;font-weight:500;color:var(--ink-soft);background:#F3EFE5;white-space:nowrap;}
+  table.cmp tbody tr:hover td{background:#F8F5EC;}
+  .scrollhint{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--ink-faint);margin:0 0 24px;}
+  .note{background:var(--warn-bg);color:var(--warn-ink);border-left:3px solid var(--warn-ink);padding:16px 18px;font-size:14px;border-radius:2px;margin:22px 0;}
+  .note b{font-weight:600;}
+  .note p{margin:0;font-size:14px;color:inherit;max-width:none;}
+  .note p + p{margin-top:9px;}
+  .plain{background:none;border-left:3px solid var(--rule);color:var(--ink-soft);padding:12px 15px;font-size:13.6px;margin:16px 0 0;}
+  .plain b{color:var(--ink);font-weight:600;}
+  hr.rule{border:0;border-top:1px solid var(--rule);margin:0 0 56px;}
+  footer{margin-top:60px;padding-top:22px;border-top:1px solid var(--rule);font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-soft);line-height:1.9;}
+  footer a{color:var(--ink-soft);}
+  @media (max-width:640px){
+    .wrap{padding:44px 18px 72px;}
+    h1{font-size:27px;}
+    .prod-head h2{font-size:21px;}
+  }
+</style>
+</head>
+<body class="simple">
+<div class="wrap">
+
+  <header class="top">
+    <div class="kicker">투자전략 03 · 퀀트 · 투자 공부 노트</div>
+    <h1>퀀트 투자란<br>무엇인가</h1>
+    <p class="lede">퀀트 투자는 <b>"느낌이나 뉴스가 아니라, 미리 정한 규칙과 데이터로만 사고파는"</b> 방식입니다. 원리는 단순하지만, <b>「규칙을 얼마나 정교하게 짜야 할까」에 함정</b>이 있습니다.</p>
+    <div class="callout">
+      <p><b>이 편의 핵심 경고</b> — <b>과거 데이터에 완벽하게 들어맞는 규칙일수록, 미래에는 오히려 더 위험할 수 있습니다.</b> 이것을 <b>과최적화(오버피팅)</b>라고 부릅니다.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <span class="tl">읽기 모드</span>
+    <div class="seg">
+      <button id="mSimple" class="on" onclick="setMode('simple')">쉽게 보기</button>
+      <button id="mFull" onclick="setMode('full')">자세히 보기</button>
+    </div>
+    <span class="hint" id="modeHint"
+          data-simple="비유와 그림 위주 — 아이와 함께 보기 좋아요"
+          data-full="팩터와 한계까지 전부 표시합니다">비유와 그림 위주 — 아이와 함께 보기 좋아요</span>
+  </div>
+
+  <nav class="toc">
+    <a href="#idea">1. 규칙으로만 사고판다</a>
+    <a href="#lab">2. 계산기: 규칙이 복잡해지면 생기는 일</a>
+    <a href="#factors">3. 개인이 참고할 수 있는 팩터들</a>
+    <a href="#note">4. 요약</a>
+  </nav>
+
+  <!-- 1 -->
+  <section id="idea">
+    <div class="prod-head" style="--edge:var(--st1)">
+      <span class="prod-tag">01 · 개념</span>
+      <h2>감정을 빼고 규칙만 남긴다</h2>
+      <p class="one">퀀트의 핵심은 <b>「같은 상황에서 항상 같은 결정」</b>을 내리는 것입니다.</p>
+    </div>
+
+    <div class="analogy">
+      <div class="al">🧒 아이 눈높이</div>
+      <p>엄마가 <b>"숙제를 다 끝내면 그때만 게임하기"</b>라는 규칙을 정해뒀다고 하자. 이 규칙을 <b>기분에 따라 지키기도 하고 안 지키기도</b> 하면 흔들리지만, <b>「숙제 끝 → 게임」을 항상 똑같이</b> 지키면 <b>일관된 결과</b>가 나와.</p>
+      <p>퀀트 투자도 <b>"이 조건이면 사고, 이 조건이면 판다"는 규칙을 미리 정해두고, 그날의 기분이나 뉴스에 흔들리지 않고 그대로 지키는 것</b>이야.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 2 -->
+  <section id="lab">
+    <div class="prod-head" style="--edge:var(--st2)">
+      <span class="prod-tag">02 · 계산기</span>
+      <h2>규칙을 복잡하게 만들수록 왜 위험해질까</h2>
+      <p class="one"><b>과거에 완벽했던 규칙이 미래에도 통한다는 보장은 없습니다.</b></p>
+    </div>
+
+    <div class="lab">
+      <div class="labtitle">OVERFITTING · 규칙의 복잡도를 슬라이더로 움직여보세요</div>
+      <p class="labsub">아래는 <b>학습용 예시 곡선</b>입니다. 규칙에 조건을 하나씩 추가할수록(복잡도↑) <b>과거 데이터에서의 성과(표본 내)</b>와 <b>실제 미래 성과(표본 밖)</b>가 어떻게 벌어지는지 보여줍니다.</p>
+
+      <div class="ctrl-row">
+        <label for="qtComplex">규칙의 복잡도(추가 조건 개수)</label>
+        <input type="range" id="qtComplex" min="0" max="10" step="1" value="2">
+        <output id="qtComplexOut">2개</output>
+      </div>
+
+      <svg viewBox="0 0 640 220" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="복잡도에 따른 표본내 표본외 성과">
+        <g id="qtScene"></g>
+      </svg>
+
+      <div class="readout two">
+        <div><span class="rk">표본 내(과거) 성과(예시)</span><span class="rv" id="qtIn">—</span></div>
+        <div><span class="rk">표본 밖(실전) 성과(예시)</span><span class="rv" id="qtOut">—</span></div>
+      </div>
+
+      <div class="verdict" id="qtVerdict" style="--vc:var(--st2)">
+        <div class="vh">진단</div>
+        <div class="vt">—</div>
+        <p></p>
+      </div>
+
+      <div class="plain">
+        <b>⚠️ 이 곡선은 「오버피팅이 왜 위험한지」 원리를 보여주기 위한 가상의 예시</b>이며, 실제 백테스트 결과가 아닙니다. <b>핵심은 「표본 내 성과는 복잡할수록 항상 좋아 보이지만, 표본 밖 성과는 어느 지점을 넘으면 오히려 나빠진다」는 방향성</b>입니다.
+      </div>
+    </div>
+
+    <div class="deep">
+      <h3>왜 복잡한 규칙이 과거에는 잘 맞았을까</h3>
+      <p>조건을 충분히 많이 추가하면, <b>「과거 데이터의 우연한 잡음(노이즈)」까지도 규칙에 끼워 맞출 수 있게</b> 됩니다. 예를 들어 <b>「화요일이고, 전날 거래량이 평균의 1.3배 이상이고, RSI가 47~53 사이일 때만 산다」</b>처럼 조건을 계속 추가하면, <b>과거 몇 년의 데이터에는 우연히 딱 들어맞는 시점들만 골라낼 수</b> 있습니다. 그런데 <b>그 우연한 조합은 미래에 반복될 이유가 전혀 없습니다.</b></p>
+      <p class="plain"><b>이것을 줄이는 방법들.</b> ① <b>표본 내/표본 밖을 반드시 나눠서 검증</b>한다(예: 최근 2년은 검증용으로 따로 떼어둔다). ② <b>규칙이 「왜 통하는지」 경제적 설명이 되는지</b> 확인한다(설명이 안 되면 우연일 가능성이 높다). ③ <b>조건의 개수를 최소한으로</b> 유지한다.</p>
+    </div>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 3 -->
+  <section id="factors">
+    <div class="prod-head" style="--edge:var(--st3)">
+      <span class="prod-tag">03 · 팩터</span>
+      <h2>개인도 참고할 수 있는 네 가지 팩터</h2>
+      <p class="one">사이먼스 수준의 복잡한 모델이 아니어도, <b>학계에서 널리 검증된 몇 가지 「팩터」</b>가 있습니다.</p>
+    </div>
+
+    <div class="tablewrap">
+      <table class="cmp">
+        <thead><tr><th>팩터</th><th>기준</th><th>기본 아이디어</th></tr></thead>
+        <tbody>
+          <tr><th>가치(Value)</th><td>PER·PBR이 낮은 종목</td><td>싸게 사면 장기적으로 유리 — <a href="sector-valuation.html">산업·섹터 06편</a></td></tr>
+          <tr><th>모멘텀(Momentum)</th><td>최근 6~12개월 수익률이 높았던 종목</td><td>오르는 추세가 당분간 이어지는 경향</td></tr>
+          <tr><th>퀄리티(Quality)</th><td>ROE가 높고 부채비율이 낮은 종목</td><td>재무구조가 튼튼한 회사가 위기에 강함 — <a href="finstate-balance.html">재무제표 03편</a></td></tr>
+          <tr><th>저변동성(Low Volatility)</th><td>주가 변동폭이 작았던 종목</td><td>변동성이 낮은 종목이 위험 대비 수익이 의외로 괜찮은 경향</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="scrollhint">← 표가 잘리면 옆으로 넘겨보세요 · <b>이 팩터들도 특정 기간에는 통하지 않을 수 있습니다</b></p>
+  </section>
+
+  <hr class="rule">
+
+  <!-- 4 -->
+  <section id="note">
+    <div class="note">
+      <p><b>이 편의 요약.</b> 퀀트 투자는 <b>감정을 배제한 규칙 기반 투자</b>이지만, <b>규칙이 복잡해질수록 「과거에만 맞는 우연」을 학습할 위험(오버피팅)이 커집니다.</b> 가치·모멘텀·퀄리티·저변동성처럼 <b>경제적으로 설명 가능한 단순한 팩터</b>가 개인에게 더 안전한 출발점입니다.</p>
+      <p><b>다음 편은 04편 — 손절매와 익절</b>입니다. 손실을 어디서 끊고 이익을 어디서 챙길지, <b>기대값 계산</b>으로 확인합니다.</p>
+    </div>
+  </section>
+
+    <nav class="pagenav">
+    <a href="strategy-masters.html" class="pn-prev"><span class="pnlabel">◀ 이전편</span><span class="pntitle">02 · 대가들</span></a>
+    <a href="index.html#strategy" class="pn-home"><span class="pnlabel">📚 목록</span><span class="pntitle">🎯 투자전략 전체 보기</span></a>
+    <a href="strategy-stoploss.html" class="pn-next"><span class="pnlabel">다음편 ▶</span><span class="pntitle">04 · 손절·익절</span></a>
+  </nav>
+
+<footer>
+    투자 공부 노트 · 투자전략 03 · 퀀트<br>
+    개인 학습용 정리이며 <b>투자 권유가 아닙니다.</b><br>
+    계산과 곡선은 <b>구조 설명을 위한 예시</b>이며 실제 백테스트 결과가 아닙니다.
+  </footer>
+
+</div>
+
+<script src="interactive.js"></script>
+<script>
+function inSample(c){ return 5 + c*1.5; }
+function outSample(c){ return 5 + c*0.5 - c*c*0.08; }
+
+function qtDraw(){
+  var c = +document.getElementById('qtComplex').value;
+  document.getElementById('qtComplexOut').textContent = c + '개';
+
+  var inV = inSample(c), outV = outSample(c);
+  document.getElementById('qtIn').textContent = '+' + inV.toFixed(1) + '%';
+  document.getElementById('qtOut').textContent = (outV>=0?'+':'') + outV.toFixed(1) + '%';
+  document.getElementById('qtOut').style.color = outV >= 0 ? 'var(--pos)' : 'var(--neg)';
+
+  var col, title, body;
+  var gap = inV - outV;
+  if(c <= 3){
+    col='#4C7A6D'; title='단순한 규칙 — 표본 내외 성과 차이가 작습니다';
+    body='조건이 ' + c + '개로 단순해서, <b>표본 내(' + inV.toFixed(1) + '%)와 표본 밖(' + outV.toFixed(1) + '%)의 차이가 크지 않습니다.</b> 이 규칙은 우연이 아니라 <b>진짜 패턴을 잡았을 가능성이 상대적으로 높습니다.</b>';
+  } else if(c <= 6){
+    col='#8E6B3A'; title='복잡도가 늘며 차이가 벌어지기 시작합니다';
+    body='조건이 ' + c + '개가 되며 <b>표본 내 성과는 계속 좋아지는데(' + inV.toFixed(1) + '%), 표본 밖 성과는 정체·둔화(' + outV.toFixed(1) + '%)</b>되고 있습니다. 과최적화의 초기 신호입니다.';
+  } else {
+    col='#8E4B3A'; title='과최적화 — 표본 밖에서는 오히려 나빠집니다';
+    body='조건이 ' + c + '개나 되어 <b>표본 내 성과(' + inV.toFixed(1) + '%)는 화려해 보이지만, 표본 밖 성과는 ' + outV.toFixed(1) + '%로 오히려 나쁩니다.</b> 이 규칙은 <b>과거의 우연한 잡음을 외운 것</b>일 가능성이 높습니다.';
+  }
+  verdict('qtVerdict', col, title, body);
+
+  var X0=60, Y0=190, W=545, H=150;
+  var maxV=20, minV=0;
+  function xx(cc){ return X0 + cc/10*W; }
+  function yy(v){ return Y0 - (Math.max(minV,Math.min(maxV,v))-minV)/(maxV-minV)*H; }
+  var g='';
+  g += '<text class="axt" x="'+X0+'" y="18">복잡도에 따른 표본내(파랑) vs 표본외(주황) 성과(예시)</text>';
+  g += '<line x1="'+X0+'" y1="'+Y0+'" x2="'+(X0+W)+'" y2="'+Y0+'" class="axis"/>';
+  [0,5,10,15,20].forEach(function(v){
+    var y=yy(v);
+    g += '<line x1="'+X0+'" y1="'+y.toFixed(1)+'" x2="'+(X0+W)+'" y2="'+y.toFixed(1)+'" class="gridl"/>';
+    g += '<text class="axt" x="'+(X0-8)+'" y="'+(y+4).toFixed(1)+'" text-anchor="end">'+v+'%</text>';
+  });
+  var inPts=[], outPts=[];
+  for(var cc=0; cc<=10; cc+=0.5){
+    inPts.push(xx(cc).toFixed(1)+' '+yy(inSample(cc)).toFixed(1));
+    outPts.push(xx(cc).toFixed(1)+' '+yy(outSample(cc)).toFixed(1));
+  }
+  g += '<path d="M'+inPts.join(' L')+'" fill="none" stroke="#3A5A8E" stroke-width="2.2"/>';
+  g += '<path d="M'+outPts.join(' L')+'" fill="none" stroke="#9E7A2E" stroke-width="2.2"/>';
+  g += '<circle cx="'+xx(c).toFixed(1)+'" cy="'+yy(inV).toFixed(1)+'" r="5" fill="#3A5A8E"/>';
+  g += '<circle cx="'+xx(c).toFixed(1)+'" cy="'+yy(outV).toFixed(1)+'" r="5" fill="#9E7A2E"/>';
+  [0,2,4,6,8,10].forEach(function(cc){
+    g += '<text class="axt" x="'+xx(cc).toFixed(1)+'" y="'+(Y0+18)+'" text-anchor="middle">'+cc+'</text>';
+  });
+  document.getElementById('qtScene').innerHTML = g;
+}
+document.getElementById('qtComplex').addEventListener('input', qtDraw);
+qtDraw();
+</script>
+</body>
+</html>
